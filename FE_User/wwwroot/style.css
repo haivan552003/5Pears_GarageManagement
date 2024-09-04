@@ -1,0 +1,467 @@
+﻿body {
+    font-family: 'Montserrat';
+}
+
+/* margin */
+.mt-90 {
+    margin-top: 90px;
+}
+
+.fs-8 {
+    font-size: 8px;
+}
+
+.fs-10 {
+    font-size: 10px;
+}
+/* font-size */
+.fs-12 {
+    font-size: 12px;
+}
+
+.fs-16 {
+    font-size: 16px;
+}
+
+.fs-24 {
+    font-size: 24px;
+}
+
+/* color */
+.color-2E2E2E {
+    color: #2E2E2E;
+}
+
+.color-000099 {
+    color: #000099;
+}
+
+/* giới hạn dòng và dấu .. */
+.ellipsis {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.block-ellipsis {
+    display: block;
+    display: -webkit-box;
+    max-width: 100%;
+    margin: 0 auto;
+    line-height: 1.7;
+    /* -webkit-line-clamp: 6; */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-buses h2 {
+    font-weight: bold;
+    text-align: center;
+    margin-top: 90px;
+    margin-bottom: 40px;
+}
+
+.form-check-inline {
+    font-size: medium;
+}
+
+.form-check-input {
+    border: 2px solid #0000CC;
+}
+
+.form-container {
+    background-color: #A3C3E7;
+    padding: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.btn-search-buses {
+    background-color: #00008B;
+    color: white;
+    border: none;
+    padding: 20px 60px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin: 30px 0 -50px 0;
+}
+
+.btn-SignUp-Car {
+    background-color: #00008B;
+    color: white;
+    border: none;
+    width: 150px;
+    height: 45px;
+    padding: 10px 10px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    margin: 20px 0 0 180px;
+}
+
+.swap-icon {
+    position: absolute;
+    top: 42%;
+    left: 24.5%;
+    width: 45px;
+    height: 45px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 50px;
+    margin-left: -20px;
+    padding: 6px;
+    z-index: 1;
+    cursor: pointer;
+    font-size: 30px;
+}
+
+.form-search-buses {
+    height: 50px;
+    border: 2px solid #0000CC;
+}
+
+.card-news {
+    margin-top: 70px;
+}
+
+    .card-news h2 {
+        font-weight: bold;
+        text-align: center;
+        margin: 40px 0 40px 0;
+    }
+
+
+.card-bus {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-img-top-bus {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 1px;
+}
+
+.destination-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1px;
+}
+
+.destination {
+    font-size: fs-16;
+    color: #0056b3;
+    margin: 0;
+}
+
+.price {
+    font-weight: bold;
+    color: #28a745;
+}
+
+.SignUp-Car-input {
+    border: 2px solid #0000CC;
+}
+
+.trip-details, .departure-date {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0;
+}
+
+.contact-with-me {
+    border: none;
+    background-color: transparent;
+}
+
+.card-img-top-contact {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.card-title-contact {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.SignUp-Car-brc-blue {
+    background-color: #A3C3E7;
+    margin-top: 60px;
+}
+
+.featured-driver {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.title-featured-driver {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.description-featured-driver {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.driver-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.driver-card {
+    background-color: #e6f2ff;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    text-align: left;
+}
+
+.driver-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px;
+}
+
+.driver-info {
+    flex: 1;
+}
+
+.driver-name {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.driver-stats {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0;
+}
+
+.hire-button {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.service-item-l img {
+    width: 125px;
+    height: 125px;
+    border-radius: 200px;
+    margin-left: 80px;
+    margin-bottom: 20px;
+}
+
+.introduce-service > .card {
+    background-color: #A3C3E7;
+    margin-bottom: 90px;
+}
+
+.service-item-r {
+    margin-left: 40px;
+    margin-top: 15px;
+}
+
+.img-big-introduce-service {
+    width: 670px;
+    height: 408px;
+    margin-right: 80px;
+}
+
+.rental-car {
+    margin-top: 90px;
+    margin-bottom: 90px;
+}
+
+.nav-rental {
+    padding-left: 0px;
+    align-items: center;
+}
+
+.search-trip input {
+    border: 2px solid #0000CC;
+}
+
+.search-driver input {
+    border: 2px solid #0000CC;
+}
+
+.list-trip .btn-book-car {
+    background-color: #00008B;
+    color: white;
+    border: none;
+    width: 157px;
+    height: 31px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.list-infor-driver .btn-book-driver {
+    background-color: #00008B;
+    color: white;
+    border: none;
+    width: 157px;
+    height: 31px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.header-content-color {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    color: white;
+    background-color: #00008B;
+}
+
+.header-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    color: white;
+}
+
+.search-trip {
+    margin-top: 90px;
+}
+
+.a_chinhsua {
+    padding-left: 13px;
+    text-align: center;
+}
+
+.header-content-color .nav1 {
+    color: white;
+}
+
+    .header-content-color .nav1:hover {
+        color: #080707;
+    }
+
+.nav1 {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+    .nav1::before {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .nav1:hover::before {
+        width: 100%;
+    }
+
+    .nav1:hover {
+        color: #000099 !important;
+    }
+
+/*footer*/
+.bg-blue {
+    background-color: #000066;
+}
+
+.bottom .chair_line_left {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+}
+
+.bottom .chair_line_mid {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+}
+
+.bottom .chair_line_right {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+}
+
+.top .chair_line_left {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+}
+
+.top .chair_line_mid {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+}
+
+.top .chair_line_right {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+}
+
+.chair_empty {
+    width: 60px;
+    height: 40px;
+}
+
+.has_pick {
+    width: 60px;
+    height: 40px;
+}
+
+.infor_customer input {
+    border: 2px solid #0000CC;
+    ;
+}
+
+.infor_return_receive select {
+    border: 2px solid #0000CC;
+    ;
+}
+
+.history .card {
+    margin-top: 90px;
+    background-color: #A3C3E7;
+}
