@@ -17,6 +17,9 @@ create table roles(
 	date_update datetime
 );
 
+alter table roles
+add name nvarchar(150)
+
 create table role_task_role(
 	id_role_task_role int identity(1, 1) primary key,
 	date_create datetime,
@@ -120,6 +123,9 @@ create table news(
 		references employees(id_emp)
 );
 
+alter table news
+add is_delete bit
+
 create table banner(
 	id_banner int identity(1, 1) primary key,
 	img_banner nvarchar(max),
@@ -130,6 +136,10 @@ create table banner(
 	id_emp int foreign key
 		references employees(id_emp)
 );
+
+
+alter table banner
+add [status] bit
 
 create table trip(
 	id_trip int identity(1, 1) primary key,
@@ -258,6 +268,19 @@ create table guest_trip(
 		references trip_detail(id_trip_detail)
 );
 
+create table seat_guest_trip(
+	id_seat_guest_trip int identity(1, 1) primary key,
+	is_delete bit,
+	status nvarchar(150),
+	date_create datetime,
+	date_update datetime,
+
+	id_guest_trip int foreign key
+		references guest_trip(id_guest_trip),
+	id_car_seat int foreign key
+		references car_seat(id_car_seat)
+);
+
 create table guest_driver(
 	id_guest_driver int identity(1, 1) primary key,
 	id_guest int foreign key
@@ -269,6 +292,27 @@ create table guest_driver(
 	id_driver int foreign key
 		references driver(id_driver)
 );
+
+alter table guest_driver
+add date_start datetime
+
+alter table guest_driver
+add date_end datetime
+
+alter table guest_driver
+add price float
+
+alter table guest_driver
+add [status] nvarchar(150)
+
+alter table guest_driver
+add is_delete bit
+
+alter table guest_driver
+add date_create datetime
+
+alter table guest_driver
+add date_update datetime
 
 create table guest_car_driver(
 	id_guest_car_driver int identity(1, 1) primary key,
@@ -316,6 +360,132 @@ as
 	end
 
 exec sp_view_role_task
+
+--proc xem danh sách 3 tin tức mới nhất trang chủ
+create or alter proc sp_view_3_news_1
+as
+	begin
+		select top 3 id_news, news_img, title 
+		from news
+		order by id_news DESC
+	end
+
+exec sp_view_3_news_1
+
+--
+create or alter proc sp_view_3_news_2
+as
+	begin
+		select top 3 id_news, news_img, title
+			from news
+			where id_news not in (select top 3 id_news from news order by id_news DESC )
+			order by id_news DESC 
+   end
+
+   exec sp_view_3_news_2
+
+--
+create or alter proc sp_view_3_news_3
+as
+	begin
+		select top 3 id_news, news_img, title
+			from news
+			where id_news not in (select top 6 id_news from news order by id_news DESC )
+			order by id_news DESC 
+   end
+
+   exec sp_view_3_news_3
+
+--proc chuyến xe phổ biến trang chủ
+create or alter proc sp_view_trip_hot_1
+as
+	begin
+		select top 3 
+			t.id_trip, [from], [to], distance, img_trip, td.price, td.time_start
+			from trip t
+			join trip_detail td
+			on t.id_trip = td.id_trip
+			where [t].[from] = N'Cần Thơ' and t.is_delete = 'False'
+			order by td.id_trip DESC
+   end
+
+   exec sp_view_trip_hot_1
+   
+--
+create or alter proc sp_view_trip_hot_2
+as
+	begin
+		select top 3 
+			t.id_trip, [from], [to], distance, img_trip, td.price, td.time_start
+			from trip t
+			join trip_detail td
+			on t.id_trip = td.id_trip
+			where [t].[from] = N'Hồ Chí Minh' and t.is_delete = 'False' and td.is_delete = 'False'
+			order by td.id_trip DESC
+   end
+
+   exec sp_view_trip_hot_2
+
+--
+create or alter proc sp_view_trip_hot_3
+as
+	begin
+		select top 3 
+			t.id_trip, [from], [to], distance, img_trip, td.price, td.time_start
+			from trip t
+			join trip_detail td
+			on t.id_trip = td.id_trip
+			where [t].[from] = N'Hà Nội' and t.is_delete = 'False' and td.is_delete = 'False'
+			order by td.id_trip DESC
+   end
+
+   exec sp_view_trip_hot_3
+
+--proc khuyến mãi nổi bật trang chủ
+create or alter proc sp_view_voucher_home
+as
+	begin
+		select top 3 
+			img_banner
+			from banner
+			where title = N'voucher' and status = 0
+			order by id_banner DESC
+   end
+
+   exec sp_view_voucher_home
+
+--proc tài xế nổi bật trong tháng trang trang chủ
+create or alter proc sp_view_driver_home
+as
+	begin
+		select top 4
+			 d.id_driver, 
+			 d.full_name, 
+			 d.img_driver, 
+			 count(td.id_driver) as trip_count, 
+			 DATEDIFF(YEAR, d.birthday, GETDATE()) as birthday
+			from driver d 
+			join trip_detail td on d.id_driver = td.id_driver
+			join guest_driver gd on d.id_driver = gd.id_driver
+			join guest_car_driver gcd on d.id_driver = gd.id_driver
+			where d.is_delete = 0 
+					and gd.is_delete = 0 
+					and gcd.is_delete = 0 
+					and td.is_delete = 0
+				    and gd.date_end >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)
+					and gd.date_end < DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()), 0)			
+					and td.time_end >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)
+					and td.time_end < DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()), 0)			
+					and gcd.date_end >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)
+					and gcd.date_end < DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()), 0)			
+					group by d.id_driver, d.full_name, d.img_driver, d.birthday
+			having count(td.id_driver) > 0
+			order by count(td.id_driver) DESC
+   end
+
+   exec sp_view_driver_home
+
+
 
 
 --------------------------------------------------------------------------------------------------------------------------------------

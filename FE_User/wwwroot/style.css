@@ -1,5 +1,21 @@
 ﻿body {
     font-family: 'Montserrat';
+    color: #2E2E2E;
+    font-size: 16px;
+}
+
+img {
+    object-fit: cover
+}
+
+/*background*/
+.bg-C8DAEE {
+    background-color: #C8DAEE;
+}
+
+/* padding */
+.pt-90 {
+    padding-top: 90px;
 }
 
 /* margin */
@@ -7,6 +23,15 @@
     margin-top: 90px;
 }
 
+.mt-75 {
+    margin-top: 75px;
+}
+
+.mb-30 {
+    margin-bottom: 30px;
+}
+
+/* font-size */
 .fs-8 {
     font-size: 8px;
 }
@@ -14,17 +39,26 @@
 .fs-10 {
     font-size: 10px;
 }
-/* font-size */
-.fs-12 {
-    font-size: 12px;
+
+.fs-14 {
+    font-size: 14px;
 }
 
 .fs-16 {
     font-size: 16px;
 }
 
+.fs-18 {
+    font-size: 18px;
+}
+
+
 .fs-24 {
     font-size: 24px;
+}
+
+.fs-25 {
+    font-size: 25px;
 }
 
 /* color */
@@ -36,6 +70,13 @@
     color: #000099;
 }
 
+.color-000066 {
+    color: #000066;
+}
+
+.color-B8B8B8 {
+    color: #B8B8B8
+}
 /* giới hạn dòng và dấu .. */
 .ellipsis {
     white-space: nowrap;
@@ -100,7 +141,7 @@
     font-size: 12px;
     font-weight: bold;
     text-align: center;
-    margin: 20px 0 0 180px;
+    margin: 0 auto;
 }
 
 .swap-icon {
@@ -125,29 +166,8 @@
 }
 
 .card-news {
-    margin-top: 70px;
-}
-
-    .card-news h2 {
-        font-weight: bold;
-        text-align: center;
-        margin: 40px 0 40px 0;
-    }
-
-
-.card-bus {
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.card-img-top-bus {
-    height: 200px;
-    object-fit: cover;
-}
-
-.card-body {
-    padding: 15px;
+    margin-top: 90px;
+    border: 0;
 }
 
 .card-title {
@@ -161,17 +181,6 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1px;
-}
-
-.destination {
-    font-size: fs-16;
-    color: #0056b3;
-    margin: 0;
-}
-
-.price {
-    font-weight: bold;
-    color: #28a745;
 }
 
 .SignUp-Car-input {
@@ -203,26 +212,9 @@
 }
 
 .SignUp-Car-brc-blue {
-    background-color: #A3C3E7;
-    margin-top: 60px;
-}
-
-.featured-driver {
-    padding: 40px 20px;
-    text-align: center;
-}
-
-.title-featured-driver {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-}
-
-.description-featured-driver {
-    font-size: 16px;
-    color: #666;
-    margin-bottom: 30px;
+    background-color: #C8DAEE;
+    margin-top: 90px;
+    border: 0;
 }
 
 .driver-grid {
@@ -234,7 +226,7 @@
 }
 
 .driver-card {
-    background-color: #e6f2ff;
+    background-color: #C8DAEE;
     border-radius: 10px;
     padding: 20px;
     display: flex;
@@ -243,49 +235,21 @@
 }
 
 .driver-image {
-    width: 100px;
-    height: 100px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
-    object-fit: cover;
-    margin-right: 20px;
 }
 
 .driver-info {
     flex: 1;
 }
 
-.driver-name {
-    font-size: 18px;
-    margin-bottom: 5px;
-}
-
-.driver-stats {
-    font-size: 14px;
-    color: #666;
-    margin: 5px 0;
-}
-
-.hire-button {
-    background-color: #0056b3;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
 .service-item-l img {
     width: 125px;
     height: 125px;
-    border-radius: 200px;
+    border-radius: 50%;
     margin-left: 80px;
     margin-bottom: 20px;
-}
-
-.introduce-service > .card {
-    background-color: #A3C3E7;
-    margin-bottom: 90px;
 }
 
 .service-item-r {
@@ -397,7 +361,7 @@
     }
 
     .nav1:hover {
-        color: #000099 !important;
+        color: #a_chinhsua !important;
     }
 
 /*footer*/
@@ -464,4 +428,24 @@
 .history .card {
     margin-top: 90px;
     background-color: #A3C3E7;
+}
+
+/* input */
+input {
+    border: 2px solid #0000CC;
+    border-radius: 5px;
+    height: 35px;
+    width: -moz-available;
+}
+
+select {
+    border: 2px solid #0000CC;
+    border-radius: 5px;
+    background-color: white;
+    width: -moz-available;
+    height: 35px;
+}
+
+.start-43 {
+    left: 44%;
 }
