@@ -2,109 +2,77 @@
 @inject HttpClient httpClient
 @inject IJSRuntime js
 
-
-<style>
-    /* input */
-    input {
-        border: 2px solid #0000CC;
-        border-radius: 5px;
-        height: 35px;
-        width: -moz-available;
-    }
-
-    select {
-        border: 2px solid #0000CC;
-        border-radius: 5px;
-        background-color: white;
-        width: -moz-available;
-        height: 35px;
-    }
-
-    .start-43 {
-        left: 44%;
-    }
-
-    .mt-75 {
-        margin-top: 75px;
-    }
-</style>
-
 <div class="container">
     <div class="pt-90">
-        <p class="fs-24 fw-bold text-center">TÌM CHUYẾN XE</p>
         <div class="position-relative">
-            <div class="col-md-8 mx-auto bg-C8DAEE border-0 rounded-3 p-3 pb-5">
+            <div class="col-md-8 mx-auto bg-white shadow-lg rounded-4 p-3 pb-5 border border-primary" style="border-radius: 15px; box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);">
                 <div class="row m-0">
                     <div class="form-check col-md-2">
-                        <input class="form-check-input" type="radio" name="flexRadioDefault"
-                               id="flexRadioDefault1">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
                         <label class="form-check-label" for="flexRadioDefault1">
                             Một chiều
                         </label>
                     </div>
                     <div class="form-check col-md-2">
-                        <input class="form-check-input" type="radio" name="flexRadioDefault"
-                               id="flexRadioDefault2" checked>
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
                         <label class="form-check-label" for="flexRadioDefault2">
                             Khứ hồi
                         </label>
                     </div>
                 </div>
+
                 <div class="row m-0">
                     <div class="col-md-6 position-relative p-3">
                         <div class="row pe-4">
                             <div class="col-md-6 ps-0 pe-3">
-                                <label class="form-label">Điểm Đi</label>
-                                <select aria-label="Default select example">
-                                    <option selected>Open this select menu</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
-                                </select>
+                                <MudStack Style="width: -moz-available">
+                                    <MudSelect @bind-Value="_value" Variant="Variant.Text" Margin="Margin.None" Dense="_dense"
+                                               Disabled="_disabled" ReadOnly="_readonly" Placeholder="Chọn Điểm Đi"
+                                               HelperText="@(_helperText ? "Helper Text" : null)"
+                                               HelperTextOnFocus="_helperTextOnFocus" Clearable="_clearable" Label="Điểm Đi">
+                                        @foreach (var state in _states)
+                                        {
+                                            <MudSelectItem Value="state">@state</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudStack>
                             </div>
                             <div class="col-md-6 pe-0 ps-3">
-                                <label class="form-label">Điểm Đến</label>
-                                <select aria-label="Default select example">
-                                    <option selected>Open this select menu</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
-                                </select>
-                            </div>
-
-                        </div>
-                        <div class="position-absolute top-50 start-43">
-                            <div class="bg-white rounded-circle shadow-sm" style="width: 30px; height: 30px;">
-                                <img src="https://www.svgrepo.com/show/450633/arrow-right-left.svg"
-                                     class="rounded-circle p-1" style="width: 30px; height: 30px;">
+                                <MudStack Style="width: -moz-available">
+                                    <MudSelect @bind-Value="_value" Variant="Variant.Text" Margin="Margin.None" Dense="_dense"
+                                               Disabled="_disabled" ReadOnly="_readonly" Placeholder="Chọn Điểm Đi"
+                                               HelperText="@(_helperText ? "Helper Text" : null)"
+                                               HelperTextOnFocus="_helperTextOnFocus" Clearable="_clearable" Label="Điểm Đến">
+                                        @foreach (var state in _states)
+                                        {
+                                            <MudSelectItem Value="state">@state</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudStack>
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-6 p-3">
                         <div class="row ps-4">
                             <div class="col-md-6 ps-0 pe-3">
-                                <label for="" class="form-label">Ngày Khởi Hành</label>
-                                <input type="date">
+                                <MudTextField T="DateTime?" Format="yyyy-MM-dd" Label="Ngày Khởi Hành" InputType="InputType.Date" />
                             </div>
                             <div class="col-md-6 pe-0 ps-3">
-                                <label for="" class="form-label">Số Vé</label>
-                                <input type="number">
+                                <MudNumericField Label="Số Vé" Variant="Variant.Text" Min="0" Max="10" />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <a href="" class="btn btn-primary position-absolute top-100 start-50 translate-middle">
-                Tìm Chuyến
-                Xe
-            </a>
 
+            <MudButton Variant="Variant.Filled" class="position-absolute text-white top-100 start-50 translate-middle" Color="Color.Primary">Tìm Chuyến Xe</MudButton>
         </div>
 
     </div>
 
-    <div class="mt-90 bg-white rounded-top p-3">
-        <p class="fs-24 fw-bold text-center mt-75 mb-5">TIN TỨC</p>
+    <div class="mt-90 bg-white rounded-4 p-3">
+        <p class="fs-24 fw-bold text-center mt-90 mb-5">TIN TỨC</p>
         <MudCarousel Class="mud-width-full" Style="height: 330px" TData="news" ShowBullets="false">
             <!-- Slide 1 -->
             <MudCarouselItem Transition="Transition.Slide">
@@ -155,7 +123,7 @@
             </MudCarouselItem>
         </MudCarousel>
 
-        <p class="fs-24 fw-bold text-center mt-75 mb-5">TUYẾN XE PHỔ BIẾN</p>
+        <p class="fs-24 fw-bold text-center mt-90 mb-5">TUYẾN XE PHỔ BIẾN</p>
         <div class="row">
             <div class="col-md-4">
                 <div class="card rounded-3 shadow">
@@ -228,7 +196,7 @@
             </div>
         </div>
 
-        <p class="fs-24 fw-bold text-center mt-75 mb-5">KHUYẾN MÃI NỔI BẬT</p>
+        <p class="fs-24 fw-bold text-center mt-90 mb-5">KHUYẾN MÃI NỔI BẬT</p>
         <div class="row">
             @foreach (var item in eVoucher)
             {
@@ -239,7 +207,7 @@
             }
         </div>
 
-        <p class="fs-24 fw-bold text-center mt-75 mb-5">KẾT NỐI VỚI CHÚNG TÔI</p>
+        <p class="fs-24 fw-bold text-center mt-90 mb-5">KẾT NỐI VỚI CHÚNG TÔI</p>
         <p class="text-center fs-16 mb-5 mt-0">
             Kết nối với chúng tôi thông qua website BOXCARS: Đặt vé xe, thuê
             xe,...
@@ -278,163 +246,174 @@
             </div>
         </div>
     </div>
-</div>
 
-
-<div class="mt-90">
-    <div class="col-md-8 mx-auto bg-C8DAEE">
-        <div class="col-md-7 mx-auto">
-            <p class="fs-24 fw-bold text-center color-000099 pt-5">ĐĂNG KÝ THUÊ XE NGAY TẠI ĐÂY</p>
-            <div class="card p-4 border-0 shadow">
-                <form>
-                    <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label fw-semibold">Họ Tên</label>
-                        <input type="text" id="exampleInputEmail1" placeholder="Họ Tên"
-                               aria-describedby="emailHelp">
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleInputPassword1" class="form-label fw-semibold">
-                            Số Điện
-                            Thoại
-                        </label>
-                        <input type="phone" id="exampleInputPassword1" placeholder="Số Điện Thoại">
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label fw-semibold">
-                            Thời Gian Bắt
-                            Đầu
-                        </label>
-                        <input type="datetime-local" id="exampleInputEmail1" aria-describedby="emailHelp">
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleInputPassword1" class="form-label fw-semibold">
-                            Thời Gian Kết
-                            Thúc
-                        </label>
-                        <input type="datetime-local" id="exampleInputPassword1">
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleInputPassword1" class="form-label fw-semibold">Loại xe</label>
-                        <select class=" SignUp-Car-input" aria-label="Default select example">
-                            <option selected>Chọn loại xe</option>
-                            <option value="1">BMW</option>
-                            <option value="2">Toyota</option>
-                            <option value="3">huyndai</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleInputPassword1" class="form-label">Hãng xe</label>
-                        <select aria-label="Default select example">
-                            <option selected>Chọn hãng xe</option>
-                            <option value="1">BMW</option>
-                            <option value="2">Toyota</option>
-                            <option value="3">huyndai</option>
-                        </select>
-                    </div>
-                    <a type="submit" class="btn btn-primary">Đăng ký thuê</a>
-                </form>
+    <div class="mt-90">
+        <div class="col-md-8 mx-auto rounded-3 bg-C0D0FF">
+            <div class="col-md-7 mx-auto">
+                <p class="fs-24 fw-bold text-center color-000099 pt-5">ĐĂNG KÝ THUÊ XE NGAY TẠI ĐÂY</p>
+                <div class="card p-4 border-0 shadow">
+                    <form>
+                        <div class="mb-3">
+                            <MudTextField T="string" Placeholder="Họ Tên" Label="Họ Tên" Typo="Typo.input"></MudTextField>
+                        </div>
+                        <div class="mb-3">
+                            <MudTextField T="string" Placeholder="Số Điện Thoại" Label="Số Điện Thoại" Typo="Typo.input"></MudTextField>
+                        </div>
+                        <div class="mb-3">
+                            <MudTextField T="DateTime?" Format="s" Label="Thời Gian Bắt Đầu" InputType="InputType.DateTimeLocal" />
+                        </div>
+                        <div class="mb-3">
+                            <MudTextField T="DateTime?" Format="s" Label="Thời Gian Kết Thúc" InputType="InputType.DateTimeLocal" />
+                        </div>
+                        <div class="mb-3">
+                            <MudStack Style="width: -moz-available">
+                                <MudSelect @bind-Value="_value"
+                                           Variant="Variant.Text"
+                                           Margin="_margin"
+                                           Dense="_dense"
+                                           Disabled="_disabled"
+                                           ReadOnly="_readonly"
+                                           Placeholder="Chọn Loại Xe"
+                                           HelperText="@(_helperText ? "Helper Text" : null)"
+                                           HelperTextOnFocus="_helperTextOnFocus"
+                                           Clearable="_clearable" Label="Loại Xe">
+                                    @foreach (var state in _states)
+                                    {
+                                        <MudSelectItem Value="state">@state</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudStack>
+                        </div>
+                        <div class="mb-3">
+                            <MudStack Style="width: -moz-available">
+                                <MudSelect @bind-Value="_value"
+                                           Variant="Variant.Text"
+                                           Margin="_margin"
+                                           Dense="_dense"
+                                           Disabled="_disabled"
+                                           ReadOnly="_readonly"
+                                           Placeholder="Chọn Hãng Xe"
+                                           HelperText="@(_helperText ? "Helper Text" : null)"
+                                           HelperTextOnFocus="_helperTextOnFocus"
+                                           Clearable="_clearable" Label="Hãng Xe">
+                                    @foreach (var state in _states)
+                                    {
+                                        <MudSelectItem Value="state">@state</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudStack>
+                        </div>
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary">Đăng Ký Thuê</MudButton>
+                    </form>
+                </div>
+                <p class="text-danger pb-5 mt-2">
+                    <span class="fw-bold">Lưu ý: </span>Thời gian nhận xe không quá 24 giờ
+                    kể từ ngày đăng ký, nếu quá thời hạn đăng ký nhận xe chúng tôi sẽ hủy thông tin đăng ký
+                </p>
             </div>
-            <p class="text-danger pb-5 mt-2">
-                <span class="fw-bold">Lưu ý: </span>Thời gian nhận xe không quá 24 giờ
-                kể từ ngày đăng ký, nếu quá thời hạn đăng ký nhận xe chúng tôi sẽ hủy thông tin đăng ký
-            </p>
         </div>
     </div>
-</div>
 
-<div class="container text-center mt-90">
-    <p class="fs-24 fw-bold text-center">TÀI XẾ NỔI BẬT THÁNG TRƯỚC</p>
-    <p class="text-center mb-30">
-        BOXCARS ưu tiên tuyển chọn những tài xế dày dặn kinh nghiệm để đảm
-        bảo an toàn cho hành khách
-    </p>
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="row">
-                @foreach (var item in eDriver)
-                {
-                    <div class="col-md-6 mt-4">
-                        <div class="driver-grid">
-                            <div class="driver-card">
-                                <img src="@item.img_driver"
-                                     alt="@item.full_name" class="driver-image">
-                                <div class="driver-info ms-3">
-                                    <p class="mb-2 fs-18 fw-bold">@item.full_name</p>
+    <div class="mt-90">
+        <p class="fs-24 fw-bold text-center">TÀI XẾ NỔI BẬT THÁNG TRƯỚC</p>
+        <p class="text-center mb-30">
+            BOXCARS ưu tiên tuyển chọn những tài xế dày dặn kinh nghiệm để đảm
+            bảo an toàn cho hành khách
+        </p>
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="row">
+                    @foreach (var item in eDriver)
+                    {
+                        <div class="col-md-6 mt-4 mb-4 p-4">
+                            <div class="row bg-C0D0FF rounded-3 p-4">
+                                <div class="col-md-5">
+                                    <img src="@item.img_driver"
+                                         alt="@item.fullname" class="img-fluid rounded-circle w-100 h-100">
+                                </div>
+                                <div class="col-md-7 ps-3">
+                                    <p class="mb-2 fs-18 fw-bold">@item.fullname</p>
                                     <p class="mb-1 fs-14">@item.birthday tuổi</p>
                                     <p class="mb-1 fs-14">@item.trip_count chuyến xe trong tháng</p>
-                                    <button class="btn btn-primary mt-2">Thuê Tài Xế</button>
+                                    <MudButton Variant="Variant.Filled" class="mt-2" Color="Color.Primary">Thuê Tài Xế</MudButton>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
         </div>
     </div>
+
+    <div class="mt-90 p-5 bg-C0D0FF">
+        <div class="col-md-8 mx-auto">
+            <p class="fs-24 fw-bold text-center mb-1">BOXCARS</p>
+            <p class="fs-24 fw-bold text-center mb-1">CHẤT LƯỢNG LÀ DANH DỰ HÀNG ĐẦU CỦA CHÚNG TÔI</p>
+            <p class="text-center color-000099">
+                Được khách hàng tin tưởng và lựa chọn là niềm vinh hạnh của chúng
+                tôi
+            </p>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-3">
+                        <img class="rounded-circle" style="width: 125px; height: 125px;"
+                             src="https://img.freepik.com/free-vector/people-traveling-flat-style_23-2147767901.jpg?t=st=1725768707~exp=1725772307~hmac=3c6f90d9b11d047fbf4cd9f34e491f05fbeecbe6c40dfbbffe5f88ed0a6c700c&w=740"
+                             alt="">
+                    </div>
+                    <div class="col-md-9 align-self-center">
+                        <p class="fs-24 fw-bold">
+                            Hơn 2000+ lượt khách mỗi ngày
+                        </p>
+                        <p class="fs-18"> <strong>BOXCARS</strong> luôn được khách hàng tin tưởng</p>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <img class="rounded-circle" style="width: 125px; height: 125px;"
+                             src="https://img.freepik.com/free-vector/bus-interior-set-seat-bus-bus-stop-buying-tickets_613284-547.jpg?t=st=1725769417~exp=1725773017~hmac=0d31b0ce0e0c77a5ea5e6b7432179bc6753f91378a6e06aa4ad51a2de59dc33d&w=996"
+                             alt="">
+                    </div>
+                    <div class="col-md-9 align-self-center">
+                        <p class="fs-24 fw-bold">
+                            Hơn 250 phòng vé - bưu cục
+                        </p>
+                        <p class="fs-18">
+                            <strong>BOXCARS</strong> có hơn 350 phòng vé, bến xe,... trên toàn hệ
+                            thống
+                        </p>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <img class="rounded-circle" style="width: 125px; height: 125px;"
+                             src="https://img.freepik.com/free-vector/car-parking-city-street-luxury-automobiles_33099-1995.jpg?t=st=1725769583~exp=1725773183~hmac=3c92c9f7a2873d75a088575cac107f530fd64197400b95e70583eb2197d70120&w=1380"
+                             alt="">
+                    </div>
+                    <div class="col-md-9 align-self-center">
+                        <p class="fs-24 fw-bold">
+                            Hơn 1000 chuyến xe
+                        </p>
+                        <p class="fs-18">
+                            <strong>BOXCARS</strong> phục vụ hơn 1,000 chuyến xe đường dài và liên
+                            tỉnh mỗi ngày
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <img class="img-fluid h-100" src="https://img.freepik.com/free-vector/family-choosing-new-car-automobile-store-vehicle-kid-auto-flat-vector-illustration-shopping-transportation-concept_74855-10047.jpg?t=st=1725769799~exp=1725773399~hmac=7ff291e93178ea5069dfa0e70b3c7d5aa0788ff898a66511e6f2dd4319010725&w=996" alt="">
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<div class="container mt-90 p-5 bg-C8DAEE">
-    <div class="col-md-8 mx-auto">
-        <p class="fs-24 fw-bold text-center mb-1">BOXCARS</p>
-        <p class="fs-24 fw-bold text-center mb-1">CHẤT LƯỢNG LÀ DANH DỰ HÀNG ĐẦU CỦA CHÚNG TÔI</p>
-        <p class="text-center color-000099">
-            Được khách hàng tin tưởng và lựa chọn là niềm vinh hạnh của chúng
-            tôi
-        </p>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="row">
-                <div class="col-md-3">
-                    <img class="rounded-circle" style="width: 125px; height: 125px;"
-                         src="https://img.freepik.com/free-vector/people-traveling-flat-style_23-2147767901.jpg?t=st=1725768707~exp=1725772307~hmac=3c6f90d9b11d047fbf4cd9f34e491f05fbeecbe6c40dfbbffe5f88ed0a6c700c&w=740"
-                         alt="">
-                </div>
-                <div class="col-md-9 align-self-center">
-                    <p class="fs-24 fw-bold">
-                        Hơn 2000+ lượt khách mỗi ngày
-                    </p>
-                    <p class="fs-18"> <strong>BOXCARS</strong> luôn được khách hàng tin tưởng</p>
-                </div>
-            </div>
-            <div class="row mt-4">
-                <div class="col-md-3">
-                    <img class="rounded-circle" style="width: 125px; height: 125px;"
-                         src="https://img.freepik.com/free-vector/bus-interior-set-seat-bus-bus-stop-buying-tickets_613284-547.jpg?t=st=1725769417~exp=1725773017~hmac=0d31b0ce0e0c77a5ea5e6b7432179bc6753f91378a6e06aa4ad51a2de59dc33d&w=996"
-                         alt="">
-                </div>
-                <div class="col-md-9 align-self-center">
-                    <p class="fs-24 fw-bold">
-                        Hơn 250 phòng vé - bưu cục
-                    </p>
-                    <p class="fs-18">
-                        <strong>BOXCARS</strong> có hơn 350 phòng vé, bến xe,... trên toàn hệ
-                        thống
-                    </p>
-                </div>
-            </div>
-            <div class="row mt-4">
-                <div class="col-md-3">
-                    <img class="rounded-circle" style="width: 125px; height: 125px;"
-                         src="https://img.freepik.com/free-vector/car-parking-city-street-luxury-automobiles_33099-1995.jpg?t=st=1725769583~exp=1725773183~hmac=3c92c9f7a2873d75a088575cac107f530fd64197400b95e70583eb2197d70120&w=1380"
-                         alt="">
-                </div>
-                <div class="col-md-9 align-self-center">
-                    <p class="fs-24 fw-bold">
-                        Hơn 1000 chuyến xe
-                    </p>
-                    <p class="fs-18">
-                        <strong>BOXCARS</strong> phục vụ hơn 1,000 chuyến xe đường dài và liên
-                        tỉnh mỗi ngày
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <img class="img-fluid h-100" src="https://img.freepik.com/free-vector/family-choosing-new-car-automobile-store-vehicle-kid-auto-flat-vector-illustration-shopping-transportation-concept_74855-10047.jpg?t=st=1725769799~exp=1725773399~hmac=7ff291e93178ea5069dfa0e70b3c7d5aa0788ff898a66511e6f2dd4319010725&w=996" alt="">
-        </div>
-    </div>
-</div>
+
+
+
+
 
 <script>
     setTimeout(function () {
@@ -444,6 +423,16 @@
 </script>
 @code {
     public string TextValue { get; set; }
+    string _value;
+    Margin _margin;
+    bool _dense;
+    bool _disabled;
+    bool _readonly;
+    bool _placeholder;
+    bool _helperText;
+    bool _helperTextOnFocus;
+    bool _clearable;
+
     private Transition transition = Transition.Slide;
 
     private IEnumerable<news> eNews1 = new List<news>();
@@ -470,6 +459,20 @@
     private string urlDriver = "http://localhost:49922/api/HomePage/DriverHome";
 
     private string urlVoucher = "http://localhost:49922/api/HomePage/VoucherHome";
+
+    private string[] _states =
+       {
+        "Alabama", "Alaska", "Arizona", "Arkansas", "California",
+        "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+        "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas",
+        "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
+        "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana",
+        "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
+        "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma",
+        "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+        "Tennessee", "Texas", "Utah", "Vermont", "Virginia",
+        "Washington", "West Virginia", "Wisconsin", "Wyoming"
+    };
 
     protected override async Task OnInitializedAsync()
     {

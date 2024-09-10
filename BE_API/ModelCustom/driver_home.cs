@@ -6,7 +6,7 @@ namespace BE_API.ModelCustom
     {
         public int id_driver { get; set; }
         public string img_driver { get; set; }
-        public string full_name { get; set; }
+        public string fullname { get; set; }
         public int birthday { get; set; }
         public int trip_count { get; set; }
     }

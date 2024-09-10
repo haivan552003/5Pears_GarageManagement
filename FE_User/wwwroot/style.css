@@ -7,10 +7,9 @@
 img {
     object-fit: cover
 }
-
 /*background*/
-.bg-C8DAEE {
-    background-color: #C8DAEE;
+.bg-C0D0FF {
+    background-color: #C0D0FF;
 }
 
 /* padding */
@@ -209,39 +208,6 @@ img {
     font-size: 18px;
     font-weight: bold;
     color: #333;
-}
-
-.SignUp-Car-brc-blue {
-    background-color: #C8DAEE;
-    margin-top: 90px;
-    border: 0;
-}
-
-.driver-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.driver-card {
-    background-color: #C8DAEE;
-    border-radius: 10px;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    text-align: left;
-}
-
-.driver-image {
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-}
-
-.driver-info {
-    flex: 1;
 }
 
 .service-item-l img {
