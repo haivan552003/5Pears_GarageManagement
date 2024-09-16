@@ -1,4 +1,6 @@
-﻿<header>
+﻿@inject IJSRuntime js
+@inject NavigationManager NavigationManager
+<header>
     <img src="https://th.bing.com/th/id/R.92443da6a61f320a7fa10e9aa761bd40?rik=X%2bmLJT5%2fy5AMBA&riu=http%3a%2f%2fs3.caradvice.com.au%2fwp-content%2fuploads%2f2016%2f09%2frac_intellibus_05.jpg&ehk=Qe8g%2foAu4OYJdrdPE30yU9c1305aPeinfnf182i8SE0%3d&risl=&pid=ImgRaw&r=0" width="100%" height="700px" alt="">
     <div class="header-content">
         <nav class="container fixed-top pt-3 pb-2" style="background: radial-gradient(circle, rgba(0,0,102,0.8655111702884278) 75%, rgba(229,229,229,0.04478287897190125) 100%)">
@@ -31,21 +33,80 @@
                 </div>
                 <div class="col-md-3 text-center">
                     <ul class="nav justify-content-center">
-                        @*     <li class="nav-item">
-                        <a class="a_chinhsua nav-link nav1 active fs-16 fw-bold text-white mx-auto" aria-current="page"
-                        href="#"> Xin chào, Vân</a>
-                        </li> *@
-                        <li class="nav-item">
-                            <a class="a_chinhsua nav-link nav1 active fs-16 fw-bold text-white" aria-current="page"
-                               href="#"> Đăng Nhập</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="a_chinhsua nav-link nav1 active fs-16 fw-bold text-white" aria-current="page"
-                               href="#"> Đăng Ký</a>
-                        </li>
+                        @if (!string.IsNullOrEmpty(username))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="a_chinhsua nav-link nav1 active fs-16 fw-bold text-white mx-auto dropdown-toggle"
+                                  type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Xin chào, @username
+                                </a>
+
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/profile">Thông tin cá nhân</a></li>
+                                    <li><a class="dropdown-item" href="/settings">Cài đặt</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#" @onclick="Logout">Đăng xuất</a></li>
+                                </ul>
+                            </li>
+
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="a_chinhsua nav-link nav1 active fs-16 fw-bold text-white" aria-current="page"
+                                   href="#"> Đăng Nhập</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="a_chinhsua nav-link nav1 active fs-16 fw-bold text-white" aria-current="page"
+                                   href="#"> Đăng Ký</a>
+                            </li>
+                        }
+
                     </ul>
                 </div>
             </div>
         </nav>
     </div>
 </header>
+
+<script>
+    // Lấy token từ localStorage
+    function getAuthToken() {
+        return localStorage.getItem("authToken");
+    }
+
+</script>
+
+@code {
+    private string username;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Lấy JWT token từ localStorage
+        var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            // Giải mã token
+            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            // Lấy giá trị của 'username' từ payload của token
+            var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "username");
+
+            if (usernameClaim != null)
+            {
+                username = usernameClaim.Value;
+            }
+        }
+    }
+
+    private async Task Logout()
+    {
+        // Xóa token khỏi localStorage
+        await js.InvokeVoidAsync("localStorage.removeItem", "authToken");
+
+        // Điều hướng về trang đăng nhập
+        NavigationManager.NavigateTo("/", true);
+    }
+}

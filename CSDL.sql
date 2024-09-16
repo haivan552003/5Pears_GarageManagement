@@ -480,6 +480,10 @@ add foreign key(id_trip_detail) references trip_detail(id_trip_detail)
 alter table guest_driver
 add foreign key(id_driver) references driver(id_driver)
 
+exec sp_rename 'customers.id_role', 'role_id', 'COLUMN'
+exec sp_rename 'customers.pass_word', 'password', 'COLUMN'
+
+
 
 --------------------------------------------------------------------------------------------------------------------------------------
 --PROC
@@ -619,6 +623,21 @@ as
    end
 
    exec sp_view_driver_home
+
+--proc đăng nhập user
+create or alter proc sp_user_login
+	@username varchar(50),
+	@password varchar(50)
+	as
+	begin
+		select *
+			from customers 
+			where customers.is_delete = 0 
+				and @username = username
+				and @password = [customers].[password]
+		end
+
+   exec sp_user_login haivan55, haivan
 
 
 
