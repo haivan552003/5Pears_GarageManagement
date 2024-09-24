@@ -495,10 +495,72 @@ exec sp_rename 'customers.pass_word', 'password', 'COLUMN'
 create or alter proc sp_view_role_task
 as
 	begin
-		select * from role_task
+		select id, name from role_tasks
+		--where isDelete = 'False'
+		order by id desc
 	end
 
 exec sp_view_role_task
+
+--proc xem role_task
+create or alter proc sp_getid_role_task
+	@id int
+as
+	begin
+		select id, name from role_tasks
+		where id = @id
+			--and isDelete = 'False'
+		order by id desc
+	end
+
+exec sp_getid_role_task 18
+
+
+--proc them role_task
+create or alter proc sp_add_role_task
+	@name nvarchar(200)
+as
+	begin
+		insert into role_tasks
+		(
+		name,
+		date_create
+		)
+	values
+		(
+		@name,
+		GETDATE()
+		)
+	end
+
+exec sp_add_role_task 'Van demo role task'
+
+--proc sua role_task 
+create or alter proc sp_update_role_task
+	@name nvarchar(200),
+	@id int
+as
+	begin
+	update role_tasks
+	set
+		name = @name,
+		date_update = GETDATE()
+	where
+		id = @id
+	end
+
+exec sp_update_role_task 'Van demo role task', 18
+
+--proc xem danh sách 3 tin tức mới nhất trang chủ
+create or alter proc sp_view_3_news_1
+as
+	begin
+		select top 3 id, news_img, title 
+		from news
+		order by id DESC
+	end
+
+exec sp_view_3_news_1
 
 --proc xem danh sách 3 tin tức mới nhất trang chủ
 create or alter proc sp_view_3_news_1

@@ -1,39 +1,92 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">FE_Admin</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
+﻿<MudAppBar Elevation="1" Style="@($"background:{Colors.Grey.Lighten5}")">
+    <MudText Typo="Typo.h5" Class="fw-bold" Style="@($"color:{Colors.Orange.Darken4};")">BOXCARS</MudText>
+    <MudSpacer />
+    <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+        <ActivatorContent>
+            <MudChip Style="@($"background:{Colors.Grey.Lighten5}; color:{Colors.Grey.Darken4};")" T="string">
+                <MudText Class="fw-semibold">
+                    Camera
+                </MudText>
+            </MudChip>
+        </ActivatorContent>
+        <ChildContent>
+            <MudMenuItem Href="/getroletask">Xem Camera</MudMenuItem>
+            <MudMenuItem>Thống kê xe ra vào bãi</MudMenuItem>
+        </ChildContent>
+    </MudMenu>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </div>
-    </nav>
-</div>
+    <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+        <ActivatorContent>
+            <MudChip Style="@($"background:{Colors.Grey.Lighten5}; color:{Colors.Grey.Darken4};")" T="string">
+                <MudText Class="fw-semibold">
+                    Nhân Viên
+                </MudText>
+            </MudChip>
+        </ActivatorContent>
+        <ChildContent>
+            <MudMenuItem Href="/getroletask">Danh sách Nhân Viên</MudMenuItem>
+            <MudMenuItem>Thêm Nhân Viên</MudMenuItem>
+        </ChildContent>
+    </MudMenu>
 
-@code {
-    private bool collapseNavMenu = true;
+    <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+        <ActivatorContent>
+            <MudChip Style="@($"background:{Colors.Grey.Lighten5}; color:{Colors.Grey.Darken4};")" T="string">
+                <MudText Class="fw-semibold">
+                    Tài Xế
+                </MudText>
+            </MudChip>
+        </ActivatorContent>
+        <ChildContent>
+            <MudMenuItem Href="/getroletask">Danh sách Tài Xế</MudMenuItem>
+            <MudMenuItem>Thêm Tài Xế</MudMenuItem>
+        </ChildContent>
+    </MudMenu>
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+        <ActivatorContent>
+            <MudChip Style="@($"background:{Colors.Grey.Lighten5}; color:{Colors.Grey.Darken4};")" T="string">
+                <MudText Class="fw-semibold">
+                    Xe
+                </MudText>
+            </MudChip>
+        </ActivatorContent>
+        <ChildContent>
+            <MudMenuItem Href="/getroletask">Danh sách Xe</MudMenuItem>
+            <MudMenuItem>Thêm Xe</MudMenuItem>
+        </ChildContent>
+    </MudMenu>
 
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-}
+    <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+        <ActivatorContent>
+            <MudChip Style="@($"background:{Colors.Grey.Lighten5}; color:{Colors.Grey.Darken4};")" T="string">
+                <MudText Class="fw-semibold">
+                    Tuyến Xe
+                </MudText>
+            </MudChip>
+        </ActivatorContent>
+        <ChildContent>
+            <MudMenuItem Href="/getroletask">Danh sách Tuyến Xe</MudMenuItem>
+            <MudMenuItem>Danh sách Chuyến Xe</MudMenuItem>
+        </ChildContent>
+    </MudMenu>
+
+    <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+        <ActivatorContent>
+            <MudChip Style="@($"background:{Colors.Grey.Lighten5}; color:{Colors.Grey.Darken4};")" T="string">
+                <MudText Class="fw-semibold">
+                    Thống Kê
+                </MudText>
+            </MudChip>
+        </ActivatorContent>
+        <ChildContent>
+            <MudMenuItem Href="/getroletask">Xe và Tài Xế</MudMenuItem>
+            <MudMenuItem Href="/getroletask">Chuyến Xe</MudMenuItem>
+            <MudMenuItem>Khách Hàng</MudMenuItem>
+        </ChildContent>
+    </MudMenu>
+    <MudSpacer />
+    <MudIcon Icon="@Icons.Material.Outlined.Settings" Color="Color.Warning" Class="pr-3" Size="Size.Large" />
+    <MudIcon Icon="@Icons.Material.Outlined.NotificationsActive" Color="Color.Warning" Class="pr-3" Size="Size.Large" />
+    <MudImage ObjectFit="ObjectFit.Cover" Height="30" Width="30" Src="https://www.mudblazor.com/images/castle.jpg" Alt="Örebro Slott" Elevation="0" Class="rounded-circle" />
+</MudAppBar>

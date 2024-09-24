@@ -2,30 +2,59 @@
 @inject HttpClient httpClient
 @inject IJSRuntime js
 
-<MudDataGrid T="role_task" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
-             Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
-    <ToolBarContent>
-        <MudText Typo="Typo.h6">Products</MudText>
-        <MudSpacer />
-        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
-                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-    </ToolBarContent>
-    <Columns>
-        <SelectColumn T="role_task" />
-        <PropertyColumn T="role_task" TProperty="int" Property="x => x.id_role_task" />
-        <PropertyColumn T="role_task" TProperty="string" Property="x => x.name" SortBy="@_sortBy" />
-        <TemplateColumn T="role_task" Title="Actions">
-            <CellTemplate Context="element">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/addproduct" Class="me-2">Thêm</MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Info" Href="@($"/updateproducts/{element.Item.id_role_task}")" Class="me-2">Sửa</MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Error" Href="@($"/deleteproduct/{element.Item.id_role_task}")">Xóa</MudButton>
-            </CellTemplate>
-        </TemplateColumn>
-    </Columns>
-    <PagerContent>
-        <MudDataGridPager T="role_task" />
-    </PagerContent>
-</MudDataGrid>
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid Class="pa-0">
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+            <MudPaper Elevation="0">
+                <MudDataGrid Class="mx-auto pa-2" T="role_task" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                             Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+                    <ToolBarContent>
+                        <MudItem xs="4" Elevation="0" Class="pb-3">
+                            <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        </MudItem>
+
+                        <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
+                            <MudButton Href="/addroletask" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                                Thêm mới
+                            </MudButton>
+
+                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
+                                Nhập file
+                            </MudButton>
+
+                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
+                                Xuất file
+                            </MudButton>
+                        </MudItem>
+                    </ToolBarContent>
+                    <Columns>
+                        <SelectColumn T="role_task" />
+                        @* <PropertyColumn T="role_task" TProperty="int" Property="x => x.id_role_task" /> *@
+                        <PropertyColumn T="role_task" Style="width: 80%;" TProperty="string" Property="x => x.name" SortBy="@_sortBy" Class="fw-bold" Title="Tên công việc" />
+                        <TemplateColumn T="role_task" Class="fw-bold" Title="Chức năng">
+                            <CellTemplate Context="element">
+                                <MudTooltip Text="Chỉnh sửa">
+                                    <MudIconButton Href="@($"/editroletask/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                </MudTooltip>
+                                <MudTooltip Text="Xóa">
+                                    <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
+                                </MudTooltip>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="role_task" />
+                    </PagerContent>
+                </MudDataGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
 
 @code {
     [Parameter] public int Id { get; set; }
@@ -36,12 +65,18 @@
     private List<string> _events = new();
     private string url = "http://localhost:49922/api/RoleTask";
 
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+            {
+            new BreadcrumbItem("Công việc", href: "/getroletask", icon: @Icons.Material.Outlined.WorkOutline),
+            new BreadcrumbItem("Danh sách công việc", href: "/getroletask", icon: @Icons.Material.Outlined.List),
+            };
+
     private Func<role_task, object> _sortBy => x =>
     {
-    if (_sortNameByLength)
-        return x.name.Length;
-    else
-        return x.name;
+        if (_sortNameByLength)
+            return x.name.Length;
+        else
+            return x.name;
     };
 
     private string GenerateEditUrl(int id)
@@ -64,7 +99,7 @@
         if (string.IsNullOrWhiteSpace(_searchString))
             return true;
 
-        if ($"{x.name} {x.id_role_task} {GetRoleTaskName(x.id_role_task)}".Contains(_searchString))
+        if ($"{x.name} {x.id} {GetRoleTaskName(x.id)}".Contains(_searchString))
             return true;
 
         return false;
