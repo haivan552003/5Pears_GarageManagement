@@ -1,0 +1,123 @@
+﻿@page "/lookup"
+@using System.ComponentModel.DataAnnotations
+@inject HttpClient Http
+
+<main class="container">
+    <div class="d-flex justify-content-center align-items-center pt-90">
+        <div class="card p-4 border-0" style="background-color: #C8DAEE; width: 50%;">
+            <div class="card-body">
+                <h5 class="card-title text-center fw-bold fs-4">TRA CỨU THÔNG TIN ĐẶT VÉ</h5>
+                <EditForm Model="@lookupModel" OnValidSubmit="OnSubmit">
+                    <DataAnnotationsValidator />
+                    <div class="mb-4">
+                        <label for="phone" class="form-label fw-bold">Số Điện Thoại</label>
+                        <InputText type="text"  id="phone" placeholder="Vui lòng nhập số điện thoại đăng ký" @bind-Value="lookupModel.PhoneNumber" />
+                        <p class="text-danger">
+                            <ValidationMessage For="@(() => lookupModel.PhoneNumber)" />
+                        </p>
+                    </div>
+                    <div class="mb-4">
+                        <label for="ticketCode" class="form-label fw-bold">Mã Vé Xe</label>
+                        <InputNumber  id="ticketCode" placeholder="Vui lòng nhập mã vé xe đăng ký" @bind-Value="lookupModel.TicketCode" />
+                        <p class="text-danger">
+                            <ValidationMessage For="@(() => lookupModel.TicketCode)" />
+                        </p>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Tra Cứu</button>
+                    </div>
+                </EditForm>
+
+                @if (lookupResult != null)
+                {
+                    <div class="modal fade show" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog" style="display: block;">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Kết Quả Tra Cứu</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="CloseModal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <img src="https://cdn.dribbble.com/users/147386/screenshots/5315437/success-tick-dribbble.gif" class="ms-auto h-100 w-100" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong>Khách hàng:</strong> @lookupResult.CustomerName</p>
+                                            <p><strong>Số điện thoại:</strong> @lookupResult.PhoneNumber</p>
+                                            <p><strong>Ngày khởi hành:</strong> @lookupResult.TripStartDate.ToString("dd/MM/yyyy")</p>
+                                            <p><strong>Ngày kết thúc:</strong> @lookupResult.TripEndDate.ToString("dd/MM/yyyy")</p>
+                                            <p><strong>Loại xe:</strong> @lookupResult.CarType</p>
+                                            <p><strong>Giá vé:</strong> @lookupResult.TripPrice</p>
+                                            <p><strong>Trạng thái chuyến xe:</strong> @lookupResult.TripStatus</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>Số ghế:</strong> @lookupResult.CarSeat</p>
+                                            <p><strong>Biển số xe:</strong> @lookupResult.CarNumber</p>
+                                            <p><strong>Tên tài xế:</strong> @lookupResult.DriverName</p>
+                                            <p><strong>Điểm đón:</strong> @lookupResult.TripFrom</p>
+                                            <p><strong>Điểm đến:</strong> @lookupResult.TripTo</p>
+                                            <p><strong>Quảng đường:</strong> @lookupResult.TripDistance</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @onclick="CloseModal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger mt-4">@errorMessage</div>
+                }
+            </div>
+        </div>
+    </div>
+</main>
+
+@code {
+    private LookupModel lookupModel = new LookupModel();
+    private lookup lookupResult;
+    private string errorMessage;
+
+    private async Task OnSubmit()
+    {
+        errorMessage = null;
+        lookupResult = null;
+        var response = await Http.GetAsync($"http://localhost:49922/api/Lookup/{lookupModel.PhoneNumber}/{lookupModel.TicketCode}");
+        if (response.IsSuccessStatusCode)
+        {
+            var results = await response.Content.ReadFromJsonAsync<IEnumerable<lookup>>();
+            lookupResult = results.FirstOrDefault();
+
+            if (lookupResult == null)
+            {
+                errorMessage = "Không tìm thấy thông tin đặt vé!";
+            }
+        }
+        else
+        {
+            errorMessage = "Đã xảy ra lỗi khi tra cứu thông tin. Vui lòng thử lại sau.";
+        }
+    }
+    private void CloseModal()
+    {
+        lookupResult = null; 
+    }
+
+    public class LookupModel
+    {
+        [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
+        [RegularExpression(@"^(03|05|07|08|09)\d{8}$", ErrorMessage = "Số điện thoại không hợp lệ. Số phải bắt đầu bằng 03, 05, 07, 08, hoặc 09 và có đúng 10 chữ số.")]
+        public string PhoneNumber { get; set; }
+
+        [Required(ErrorMessage = "Vui lòng nhập mã vé xe")]
+        [Range(1, int.MaxValue, ErrorMessage = "Mã vé không hợp lệ")]
+        public int? TicketCode { get; set; }
+    }
+
+}

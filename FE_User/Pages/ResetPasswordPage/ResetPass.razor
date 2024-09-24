@@ -1,0 +1,111 @@
+﻿@page "/reset"
+@using System.Net.Http.Json
+@using System.ComponentModel.DataAnnotations
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<MudContainer MaxWidth="MaxWidth.Small">
+    <MudCard Elevation="3" Class="mt-6">
+        <MudCardContent>
+            <MudText Typo="Typo.h4" Class="mb-4">Đặt lại mật khẩu</MudText>
+            <EditForm Model="@model" OnValidSubmit="HandleValidSubmit">              
+                <MudTextField T="string" Label="Email" @bind-Value="model.Email" For="@(() => model.Email)" />
+
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" OnClick="SendOtp" Disabled="@otpSent">Gửi OTP</MudButton>
+
+                @if (otpSent)
+                {
+                    <!-- OTP field -->
+                    <MudTextField T="string" Label="OTP" @bind-Value="model.Otp" For="@(() => model.Otp)" />
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" OnClick="VerifyOtp" Disabled="@otpVerified">Xác minh OTP</MudButton>
+                }
+
+                @if (otpVerified)
+                {
+                    <!-- New Password field -->
+                    <MudTextField T="string" Label="Mật khẩu mới" @bind-Value="model.NewPassword" For="@(() => model.NewPassword)" InputType="InputType.Password" />
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" ButtonType="ButtonType.Submit">Đặt lại mật khẩu</MudButton>
+                }
+
+                <!-- Error and success messages -->
+                @if (!string.IsNullOrEmpty(formErrorMessage))
+                {
+                    <MudText Class="mt-2" Color="Color.Error">@formErrorMessage</MudText>
+                }
+                else if (!string.IsNullOrEmpty(formSuccessMessage))
+                {
+                    <MudText Class="mt-2" Color="Color.Success">@formSuccessMessage</MudText>
+                }
+            </EditForm>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private reset_pass model = new reset_pass();
+    private bool otpSent = false;
+    private bool otpVerified = false;
+    private string formErrorMessage;
+    private string formSuccessMessage;
+
+    private async Task SendOtp()
+    {
+        if (string.IsNullOrWhiteSpace(model.Email))
+        {
+            formErrorMessage = "Vui lòng nhập email.";
+            return;
+        }
+
+        var response = await Http.PostAsJsonAsync("http://localhost:49922/api/EmailOtpService/send-otp", new { Email = model.Email });
+        if (response.IsSuccessStatusCode)
+        {
+            formSuccessMessage = "OTP đã được gửi đến email của bạn.";
+            otpSent = true;
+        }
+        else
+        {
+            formErrorMessage = "Gửi OTP không thành công. Vui lòng thử lại.";
+        }
+    }
+
+    private async Task VerifyOtp()
+    {
+        if (string.IsNullOrWhiteSpace(model.Otp))
+        {
+            formErrorMessage = "Vui lòng nhập OTP.";
+            return;
+        }
+
+        var response = await Http.PostAsJsonAsync("http://localhost:49922/api/EmailOtpService/verify-otp", new { Email = model.Email, Otp = model.Otp });
+        if (response.IsSuccessStatusCode)
+        {
+            formSuccessMessage = "Xác minh OTP thành công. Bạn có thể đặt lại mật khẩu.";
+            otpVerified = true;
+        }
+        else
+        {
+            formErrorMessage = "OTP không hợp lệ hoặc đã hết hạn.";
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (!otpVerified)
+        {
+            formErrorMessage = "Vui lòng xác minh OTP trước khi đặt lại mật khẩu.";
+            return;
+        }
+
+        var response = await Http.PostAsJsonAsync("http://localhost:49922/api/EmailOtpService/reset-password", new { Email = model.Email, NewPassword = model.NewPassword });
+        if (response.IsSuccessStatusCode)
+        {
+            formSuccessMessage = "Đặt lại mật khẩu thành công.";
+        }
+        else
+        {
+            formErrorMessage = "Đặt lại mật khẩu không thành công. Vui lòng thử lại.";
+        }
+    }
+}
+
+

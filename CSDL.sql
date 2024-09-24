@@ -449,6 +449,19 @@ create table img_car_driver(
 	references guest_car_driver(id_guest_car_driver)
 );
 
+create table seat_guest_trip(
+	id_seat_guest_trip int identity(1, 1) primary key,
+	is_delete bit,
+	status nvarchar(150),
+	date_create datetime,
+	date_update datetime,
+
+	id_guest_trip int foreign key
+		references guest_trip(id_guest_trip),
+	id_car_seat int foreign key
+		references car_seat(id_car_seat)
+);
+
 exec sp_rename 'img_car_driver.id_img_car_driver', 'id', 'COLUMN'
 exec sp_rename 'img_car_driver.id_guest_car_driver', 'guest_car_driver_id', 'COLUMN'
 
@@ -508,6 +521,8 @@ add status bit
 
 --------------------------------------------------------------------------------------------------------------------------------------
 --PROC
+
+
 
 
 --Vân
@@ -747,6 +762,46 @@ create or alter proc sp_admin_login
 
 --------------------------------------------------------------------------------------------------------------------------------------
 --Hiếu
+-- trang tra cứu chuyến đi
+CREATE or alter PROCEDURE sp_lookup_car
+    @PhoneNumber VARCHAR(20),
+    @TicketCode INT
+AS
+BEGIN
+    SELECT 
+        cus.fullname AS CustomerName,
+        cus.phone_number AS PhoneNumber,
+        cus.citizen_identity_number AS CitizenID,
+        gc.date_start AS TripStartDate,
+        gc.date_end AS TripEndDate,
+        gc.price AS TripPrice,
+        gc.status AS TripStatus,
+		cs.name AS CarSeat,
+        cars.car_number AS CarNumber,
+        cars.[type] AS CarType,
+        cars.brand AS CarBrand,
+        drivers.fullname AS DriverName,
+        trips.[from] AS TripFrom,
+        trips.[to] AS TripTo,
+        trips.distance AS TripDistance
+    FROM 
+        customers cus
+    INNER JOIN
+        guest_cars gc ON cus.id = gc.cus_id
+    INNER JOIN 
+        cars ON gc.car_id = cars.id
+    INNER JOIN 
+        trips ON gc.car_id = trips.id
+    INNER JOIN 
+        drivers ON gc.emp_id = drivers.id	    
+	Inner Join 
+		car_seats cs on cars.id = cs.car_id
+    WHERE 
+        cus.phone_number = @PhoneNumber
+    AND 
+        gc.id = @TicketCode; 
+END
+EXEC sp_lookup_car @PhoneNumber = '0934567890', @TicketCode = 1;
 -- proc load drivers
 create or alter proc sp_getall_drivers
 as
@@ -828,6 +883,36 @@ BEGIN
 	);
 END
 
+-- đăng ký
+CREATE or ALTER PROCEDURE sp_register
+    @Username VARCHAR(50),
+    @Password VARCHAR(50),
+    @Fullname NVARCHAR(250),
+    @Birthday DATETIME,
+    @Gender BIT,
+    @PhoneNumber VARCHAR(20),
+    @IDRole INT
+AS
+BEGIN
+    INSERT INTO dbo.customers
+    (
+        username, password, fullname, birthday, gender, 
+        phone_number, is_delete, role_id
+    )
+    VALUES
+    (
+        @Username, @Password, @Fullname, @Birthday, @Gender, 
+        @PhoneNumber, 0, @IDRole
+    );
+END
+EXEC sp_register 
+    @Username = 'Hehe',
+    @Password = '123',
+    @Fullname = 'HEHEHE',
+    @Birthday = '1990-01-01',
+    @Gender = 1,
+    @PhoneNumber = '0934567890',
+    @IDRole = 2;
 exec sp_create_drivers  N'Nguyen Van A', 
     '1990-05-20', 
     N'/images/driver_a.jpg', 
@@ -884,12 +969,16 @@ BEGIN
         status = @status
     WHERE id = @id;
 
+select * from customers
+select * from guest_car
     -- Return the updated record
     SELECT * FROM drivers WHERE id = @id;
 END
 
+UPDATE customers SET password = '123' WHERE username = 'cus_user'
 select * from drivers
 
+select * from car_seat
 EXEC sp_update_driver 
     @id = 11,
     @fullname = N'Nguyen hêheeee',
