@@ -505,6 +505,7 @@ add status bit
 
 
 
+
 --------------------------------------------------------------------------------------------------------------------------------------
 --PROC
 
@@ -746,15 +747,207 @@ create or alter proc sp_admin_login
 
 --------------------------------------------------------------------------------------------------------------------------------------
 --Hiếu
+-- proc load drivers
+create or alter proc sp_getall_drivers
+as
+	begin
+		select
+		fullname,
+		birthday,
+		img_driver,
+		driver_license_img1,
+		driver_license_number,
+		citizen_identity_img1,
+		citizen_identity_number,
+		gender, price, voucher, status ,
+		id , citizen_identity_img2 , driver_license_img2, phonenumber , address
+			from drivers where is_delete = 0 order by id desc
+			
+   end
+execute sp_getall_drivers
+select * from drivers
+-- proc thêm drivers
+go
+CREATE OR ALTER PROC sp_create_drivers
+ @Fullname NVARCHAR(100),
+ @birthday DATETIME,
+ @img_driver NVARCHAR(MAX),
+ @driver_license_img1 NVARCHAR(MAX),
+  @driver_license_img2 NVARCHAR(MAX),
+ @driver_license_number VARCHAR(50),
+ @citizen_identity_img1 NVARCHAR(MAX),
+  @citizen_identity_img2 NVARCHAR(MAX),
+ @citizen_identity_number NVARCHAR(MAX),
+ @gender BIT,
+ @price FLOAT,
+ @voucher FLOAT,
+  @phonenumber Nvarchar(10),
+  @address Nvarchar(max),
+ @status BIT
 
+AS
+BEGIN
+	INSERT INTO drivers (
+		fullname,
+		birthday,
+		img_driver,
+		driver_license_img1,
+		driver_license_img2,
+		driver_license_number,
+		citizen_identity_img1,
+		citizen_identity_img2,
+		citizen_identity_number,
+		gender, 
+		price, 
+		voucher, 
+			phonenumber,
+		address,
+		status,
+		date_create, 
+		is_delete
+	
+	)
+	VALUES (
+		@Fullname,
+		@birthday,
+		@img_driver,
+		@driver_license_img1,
+		@driver_license_img2,
+		@driver_license_number,
+		@citizen_identity_img1,
+		@citizen_identity_img2,
+		@citizen_identity_number,
+		@gender, 
+		@price, 
+		@voucher, 
+		@phonenumber,
+		@address,
+		@status, 
+		GETDATE(),
+		0
+	);
+END
 
+exec sp_create_drivers  N'Nguyen Van A', 
+    '1990-05-20', 
+    N'/images/driver_a.jpg', 
+    N'/images/license_a.jpg', 
+	N'/images/license_a.jpg', 
+    'DL123456789',
+    N'/images/citizen_a.jpg', 
+	N'/images/citizen_a.jpg',
+    'CI123456789',
+    1,           
+    100000,      
+    10000,  
+	'0334567890',
+	'Cần thơ',
+    1    
+go
+--proc sửa thông tin tài xế
+CREATE OR ALTER PROC sp_update_driver
+    @id INT,
+    @fullname NVARCHAR(100),
+    @birthday DATETIME,
+    @img_driver NVARCHAR(MAX),
+    @driver_license_img1 NVARCHAR(MAX),
+    @driver_license_img2 NVARCHAR(MAX),
+    @driver_license_number NVARCHAR(50),
+    @citizen_identity_img1 NVARCHAR(MAX),
+    @citizen_identity_img2 NVARCHAR(MAX),
+    @citizen_identity_number VARCHAR(50),
+    @gender TINYINT,
+    @price FLOAT,
+    @voucher FLOAT,
+    @phonenumber NVARCHAR(50),
+    @address NVARCHAR(MAX),
+    @status TINYINT
+AS
+BEGIN
+    UPDATE drivers
+    SET 
+        fullname = @fullname,
+        birthday = @birthday,
+        img_driver = @img_driver,
+        driver_license_img1 = @driver_license_img1,
+        driver_license_img2 = @driver_license_img2,
+        driver_license_number = @driver_license_number,
+        citizen_identity_img1 = @citizen_identity_img1,
+        citizen_identity_img2 = @citizen_identity_img2,
+        citizen_identity_number = @citizen_identity_number,
+        gender = @gender,
+        price = @price,
+        voucher = @voucher,
+        phonenumber = @phonenumber,
+        address = @address,
+        date_update = GETDATE(),
+        status = @status
+    WHERE id = @id;
 
+    -- Return the updated record
+    SELECT * FROM drivers WHERE id = @id;
+END
 
+select * from drivers
 
+EXEC sp_update_driver 
+    @id = 11,
+    @fullname = N'Nguyen hêheeee',
+    @birthday = '1990-01-01',
+    @img_driver = N'/images/driver_d.jpg',
+    @driver_license_img1 = N'/images/license_d.jpg',
+	    @driver_license_img2 = N'/images/license_d.jpg',
+
+    @driver_license_number = 'DL112233445',
+    @citizen_identity_img1 = N'/images/citizen_d.jpg',
+	    @citizen_identity_img2 = N'/images/citizen_d.jpg',
+    @citizen_identity_number = 'CI112233445',
+    @gender = 1,
+    @price = 130000,
+    @voucher = 10000,
+	@phonenumber = '0334567890',
+	@address = N'Cần thơ',
+    @status = 1
+go
+--proc xóa tài xế
+CREATE OR ALTER PROC sp_delete_driver
+    @id INT
+AS
+BEGIN
+    update drivers
+	set
+		is_delete = 'true'
+    WHERE id = @id and is_delete = 'false'
+END
+
+execute sp_delete_driver  1
+
+select * from drivers
+--proc get drivers by id
+go
+CREATE OR ALTER PROC sp_get_driver_by_id
+    @id INT
+AS
+BEGIN
+    SELECT 
+      fullname,
+		birthday,
+		img_driver,
+		driver_license_img1,
+		driver_license_number,
+		citizen_identity_img1,
+		citizen_identity_number,
+		gender, price, voucher, status ,
+		 citizen_identity_img2 , driver_license_img2, phonenumber , address
+    FROM drivers
+    WHERE id = @id;
+END
+
+exec sp_get_driver_by_id 17
+
+go
 --------------------------------------------------------------------------------------------------------------------------------------
 --Bảo
-
-
 
 
 

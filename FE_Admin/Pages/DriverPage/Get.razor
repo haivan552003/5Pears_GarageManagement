@@ -1,0 +1,184 @@
+﻿@page "/getDriver"
+@inject HttpClient httpClient
+@inject IJSRuntime js
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid Class="pa-0">
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+            <MudPaper Elevation="0">
+                <MudDataGrid Class="mx-auto pa-2" T="driver" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true"
+                             Items="Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                             Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+                    <ToolBarContent>
+                        <MudItem xs="4" Elevation="0" Class="pb-3">
+                            <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        </MudItem>
+
+                        <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
+                            <MudButton Href="/addDriver" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                                Thêm mới
+                            </MudButton>
+
+                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
+                                Nhập file
+                            </MudButton>
+
+                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
+                                Xuất file
+                            </MudButton>
+                        </MudItem>
+                    </ToolBarContent>
+                    <Columns>
+                        <SelectColumn T="driver" />
+                        <PropertyColumn T="driver" Style="width: 80%;" TProperty="string" Property="x => x.fullname" Class="fw-bold" Title="Tên tài xế" />
+                        <PropertyColumn T="driver" Style="width: 80%;" TProperty="string" Property="x => x.phonenumber" Class="fw-bold" Title="Số điện thoại" />
+                        <PropertyColumn T="driver" Style="width: 80%;" TProperty="string" Property="x => x.address" Class="fw-bold" Title="Địa chỉ" />
+                        <PropertyColumn T="driver" Style="width: 80%;" TProperty="DateTime" Property="x => x.birthday" Class="fw-bold" Title="Ngày sinh">
+                            <CellTemplate>
+                                @context.Item.birthday.ToString("dd/MM/yyyy")
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn T="driver" Style="width: 80%;" TProperty="string" Title="Giới tính" Class="fw-bold">
+                            <CellTemplate>
+                                @(context.Item.gender == 0 ? "Nam" : "Nữ")
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <TemplateColumn T="driver" Style="width: 80%;" Class="fw-bold" TProperty="string" Title="Trạng Thái">
+                            <CellTemplate Context="element">
+                                @if (element.Item.status == 0)
+                                {
+                                    <MudChip Color="Color.Success" Size="Size.Small" Variant="Variant.Text">Đang hoạt động</MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Ngưng hoạt động</MudChip>
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
+                        <TemplateColumn T="driver" Class="fw-bold" Title="Chức năng">
+                            <CellTemplate Context="element">
+                                <MudTooltip Text="Chỉnh sửa">
+                                    <MudIconButton Href="@($"/editdriver/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                </MudTooltip>
+                                <MudTooltip Text="Xóa">
+                                    <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small"
+                                                   OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" />
+                                </MudTooltip>
+
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="driver" />
+                    </PagerContent>
+                </MudDataGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private IEnumerable<driver> Elements = new List<driver>();
+    private string _searchString;
+    private List<string> _events = new();
+    private string url = "http://localhost:49922/api/Driver";
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Tài xế", href: "/getDriver", icon: Icons.Material.Outlined.Person),
+        new BreadcrumbItem("Danh sách tài xế", href: null, icon: Icons.Material.Outlined.List),
+    };
+
+    private Func<driver, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        return $"{x.fullname} {x.id} {x.birthday.ToString("dd/MM/yyyy")} {(x.gender == 0 ? "Nam" : "Nữ")}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDrivers();
+    }
+
+    private async Task LoadDrivers()
+    {
+        try
+        {
+            Elements = await httpClient.GetFromJsonAsync<List<driver>>(url);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi tải danh sách tài xế: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task OpenDeleteDialog(driver driver)
+    {
+
+        var parameters = new DialogParameters
+        {
+            { "ContentText", $"Bạn có chắc chắn muốn xóa tài xế { driver.fullname}?" },
+            { "ButtonText", "Xóa" },
+            { "Color", Color.Error }
+        };
+
+        var options = new DialogOptions() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await DialogService.ShowAsync<Delete>("Xác nhận xóa", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            await DeleteDriver(driver);
+        }
+    }
+    private async Task DeleteDriver(driver driver)
+    {
+        try
+        {
+            var response = await httpClient.DeleteAsync($"{url}/{driver.id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add($"Đã xóa tài xế {driver.fullname} thành công", Severity.Success);
+                await LoadDrivers();  // Tải lại danh sách sau khi xóa
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Lỗi khi xóa tài xế: {response.ReasonPhrase}. Chi tiết: {errorContent}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi xóa tài xế: {ex.Message}", Severity.Error);
+        }
+    }
+    private string GenerateEditUrl(int id)
+    {
+        return $"/editdriver/{id}";
+    }
+
+    private void RowClicked(DataGridRowClickEventArgs<driver> args)
+    {
+        // Handle row click event if needed
+    }
+
+    private void RowRightClicked(DataGridRowClickEventArgs<driver> args)
+    {
+        // Handle row right-click event if needed
+    }
+
+    private void SelectedItemsChanged(HashSet<driver> items)
+    {
+        // Handle selected items changed event if needed
+    }
+}
