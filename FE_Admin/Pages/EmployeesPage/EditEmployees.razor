@@ -1,0 +1,161 @@
+﻿@page "/editemp/{Id:int}"
+@inject HttpClient httpClient
+@inject ISnackbar Snackbar
+@inject NavigationManager navigationManager
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid Class="pa-0">
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+        </MudItem>
+
+        <MudGrid xs="10" Class="mx-auto">
+            <!-- Phần chỉnh sửa nhân viên bên trái -->
+            <MudItem xs="7">
+                <MudPaper Class="mud-paper mud-elevation-4 p-8" Style="margin-right: 16px; padding: 30px">
+                    <!-- Tiêu đề -->
+                    <MudText Typo="Typo.h6" Class="mb-5">Chỉnh sửa Nhân Viên</MudText>
+
+                    <MudForm @ref="form" @bind-IsValid="isFormValid">
+                        <MudGrid Gutter="true">
+                            <!-- Dòng 1: Mã nhân viên và Email -->
+                            <MudItem xs="6" Class="mb-4">
+                                <MudTextField Label="Mã nhân viên" @bind-Value="Employee.emp_code" Placeholder="Mã Nhân Viên"
+                                              Variant="Variant.Outlined" Required="true"
+                                              LabelStyle="font-weight: 600; color: #1976d2;" ReadOnly="true" />
+                            </MudItem>
+                            <MudItem xs="6" Class="mb-4">
+                                <MudTextField Label="Email" @bind-Value="Employee.email" Placeholder="Email"
+                                              Variant="Variant.Outlined" Required="true"
+                                              LabelStyle="font-weight: 600; color: #1976d2;" ReadOnly="true" />
+                            </MudItem>
+                            <MudItem xs="6" Class="mb-4">
+                                <MudTextField Label="Số CMND" @bind-Value="Employee.citizen_identity_number"
+                                              Placeholder="Số CMND" Variant="Variant.Outlined"
+                                              LabelStyle="font-weight: 600; color: #1976d2;" />
+                            </MudItem>
+
+                            <!-- Dòng 2: Ngày sinh -->
+                            <MudItem xs="6" Class="mb-4">
+                                <MudDatePicker Label="Ngày sinh" @bind-Value="Employee.birthday" Required="true"
+                                               Variant="Variant.Outlined" Class="mb-4"
+                                               LabelStyle="font-weight: 600; color: #1976d2;" />
+                            </MudItem>
+
+                            <!-- Dòng 3: Mật khẩu và Họ và tên -->
+                            <MudItem xs="6" Class="mb-4">
+                                <MudTextField Label="Mật khẩu" @bind-Value="Employee.password" Placeholder="Mật Khẩu"
+                                              Variant="Variant.Outlined" Required="true" Type="password"
+                                              LabelStyle="font-weight: 600; color: #1976d2;" ReadOnly="true" />
+                            </MudItem>
+                            <MudItem xs="6" Class="mb-4">
+                                <MudTextField Label="Họ và tên" @bind-Value="Employee.fullname" Placeholder="Họ Và Tên"
+                                              Variant="Variant.Outlined" Required="true"
+                                              LabelStyle="font-weight: 600; color: #1976d2;" />
+                            </MudItem>
+
+                            <!-- Dòng 4: Trạng thái và Giới tính -->
+                            <MudItem xs="4" Class="mb-4">
+                                <MudSelect @bind-Value="Employee.status" Label="Trạng thái" Required="true"
+                                           Placeholder="Trạng Thái" Variant="Variant.Outlined"
+                                           LabelStyle="font-weight: 600; color: #1976d2;">
+                                    <MudSelectItem Value="true">Hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="false">Không hoạt động</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="4" Class="mb-4">
+                                <MudSelect Label="Giới tính" @bind-Value="Employee.gender" Placeholder="Giới Tính"
+                                           Variant="Variant.Outlined" Required="true"
+                                           LabelStyle="font-weight: 600; color: #1976d2;">
+                                    <MudSelectItem Value="true">Nam</MudSelectItem>
+                                    <MudSelectItem Value="false">Nữ</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+
+                            <!-- Dòng 5: ID vai trò -->
+                            <MudItem xs="4" Class="mb-4">
+                                <MudTextField Label="ID vai trò" @bind-Value="Employee.id_role" Placeholder="ID Vai Trò"
+                                              Variant="Variant.Outlined" Required="true" Type="number"
+                                              LabelStyle="font-weight: 600; color: #1976d2;" ReadOnly="true" />
+                            </MudItem>
+
+                            <!-- Dòng 6: Nút Lưu -->
+                            <MudItem xs="12" Class="d-flex justify-end">
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save"
+                                           Color="Color.Primary" OnClick="EditEmployee" Class="mt-3">Lưu</MudButton>
+                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.ArrowForward"
+                                           OnClick="Cancel" Style="margin-left: 16px;" Class="mt-3">Trở về</MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudForm>
+                </MudPaper>
+            </MudItem>
+
+            <!-- Phần hình ảnh CMND bên phải -->
+            <MudItem xs="5">
+                <MudPaper Class="mud-paper mud-elevation-8 p-4" Style="margin-left: 16px;">
+                    <MudTextField Label="Hình ảnh CMND" @bind-Value="Employee.citizen_identity_img"
+                                  Placeholder="Hình CMND" Variant="Variant.Outlined"
+                                  Class="mb-4" LabelStyle="font-weight: 600; color: #1976d2;" />
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private employees Employee = new employees();
+    private bool isFormValid = false;
+    private MudForm form;
+    private string url = "http://localhost:49922/api/Employees"; // Cập nhật URL cho API nhân viên
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Nhân viên", href: "/getemployees", icon: @Icons.Material.Outlined.PeopleOutline),
+        new BreadcrumbItem("Danh sách nhân viên", href: "/getemployees", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Chỉnh sửa nhân viên", href: "", icon: @Icons.Material.Filled.Edit),
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await httpClient.GetFromJsonAsync<employees>(url + "/" + Id);
+        if (response != null)
+        {
+            Employee = response; // Gán dữ liệu từ API cho Employee
+            Console.WriteLine($"Mã nhân viên: {Employee.emp_code}, Ngày sinh: {Employee.birthday?.ToString("dd/MM/yyyy")}");
+        }
+        else
+        {
+            Snackbar.Add("Không tìm thấy nhân viên", Severity.Error);
+        }
+    }
+
+    private async Task EditEmployee()
+    {
+        try
+        {
+            var response = await httpClient.PutAsJsonAsync(url + "/" + Id, Employee);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add($"Chỉnh sửa nhân viên {Employee.fullname} thành công", Severity.Success);
+                navigationManager.NavigateTo("/getemployees"); // Điều hướng về danh sách nhân viên
+            }
+            else
+            {
+                Snackbar.Add($"Chỉnh sửa nhân viên thất bại", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Có lỗi xảy ra: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void Cancel()
+    {
+        navigationManager.NavigateTo("/getemployees");
+    }
+}

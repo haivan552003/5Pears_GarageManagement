@@ -483,6 +483,8 @@ add foreign key(id_driver) references driver(id_driver)
 exec sp_rename 'customers.id_role', 'role_id', 'COLUMN'
 exec sp_rename 'customers.pass_word', 'password', 'COLUMN'
 
+alter table drivers
+drop column status
 ALTER TABLE dbo.cars
 ADD car_code VARCHAR(20)
 ALTER TABLE dbo.cars
@@ -491,6 +493,17 @@ ALTER TABLE dbo.cars
 ADD voucher float
 ALTER TABLE dbo.cars
 ADD status BIT
+
+exec sp_rename 'employees.username', 'email', 'COLUMN'
+exec sp_rename 'customers.username', 'email', 'COLUMN'
+
+alter table employees
+add emp_code nvarchar(20)
+
+alter table employees
+add status bit
+
+
 
 --------------------------------------------------------------------------------------------------------------------------------------
 --PROC
@@ -747,3 +760,167 @@ create or alter proc sp_admin_login
 
 --------------------------------------------------------------------------------------------------------------------------------------
 --Thịnh
+--GetEmployees
+create or alter proc sp_view_Employees
+as
+	begin
+		select employees.id,
+		email,
+		emp_code,
+		password,
+		fullname,
+		birthday,
+		citizen_identity_img,
+		citizen_identity_number,
+		status,
+		gender,
+		is_delete,
+		employees.date_create,
+		employees.date_update,
+		id_role,
+		roles.name
+		from employees
+		join roles on roles.id = employees.id_role
+		where is_delete = 'False'
+		order by employees.id desc
+	end
+
+	
+exec sp_view_Employees
+--GetIDEmployess
+create or alter proc sp_view_EmployeesID
+	@id int
+as
+	begin
+		select id,
+		email,
+		password,
+		fullname,
+		birthday,
+		citizen_identity_img,
+		citizen_identity_number,
+		gender,
+		is_delete,
+		date_create,
+		date_update,
+		id_role from employees
+		where id = @id
+			--and isDelete = 'False'
+		order by id desc
+	end
+
+
+exec sp_view_EmployeesID 1;
+
+--them employess
+CREATE OR ALTER PROCEDURE sp_add_employee
+    @user_name varchar(50),
+    @pass_word varchar(50),
+    @full_name nvarchar(250),
+    @birthday datetime,
+    @citizen_identity_img nvarchar(max),
+    @citizen_identity_number varchar(50),
+    @gender bit,
+    @id_role int
+AS
+BEGIN
+    -- Thêm dữ liệu vào bảng employees
+    INSERT INTO employees
+    (
+        email,
+		password,
+		fullname,
+		birthday,
+		citizen_identity_img,
+		citizen_identity_number,
+		gender,
+	
+		date_create,
+		date_update,
+        id_role
+    )
+    VALUES
+    (
+        @user_name,
+        @pass_word,
+        @full_name,
+        @birthday,
+        @citizen_identity_img,
+        @citizen_identity_number,
+        @gender,
+        0,                 -- `is_delete` mặc định là 0 (chưa bị xóa)
+        GETDATE(),         -- `date_create` là thời gian hiện tại 
+       
+        @id_role           -- giá trị của khóa ngoại role
+    );
+END
+GO
+
+EXEC sp_add_employee 
+    @user_name = 'thinh',
+    @pass_word = '09890',
+    @full_name = N'le hoang thinh',
+    @birthday = '1990-01-01',
+    @citizen_identity_img = 'hehee',
+    @citizen_identity_number = '123456789',
+    @gender = False,
+    @id_role = 1;
+
+--sua employees
+CREATE OR ALTER PROCEDURE sp_updateemployee
+    @id_emp INT,
+    @user_name VARCHAR(50),
+    @pass_word VARCHAR(50),
+    @full_name NVARCHAR(250),
+    @birthday DATETIME,
+    @citizen_identity_img NVARCHAR(MAX),
+    @citizen_identity_number VARCHAR(50),
+    @gender BIT,
+    @is_delete BIT,
+    @id_role INT
+AS
+BEGIN
+    UPDATE employees
+    SET
+        email = @user_name,
+        fullname = @full_name,
+        birthday = @birthday,
+        citizen_identity_img = @citizen_identity_img,
+        citizen_identity_number = @citizen_identity_number,
+        gender = @gender,
+     
+        id_role = @id_role,
+        date_update = GETDATE()
+    WHERE
+        id = @id_emp;
+END
+
+EXEC sp_updateemployee 
+    @id_emp = 1,
+    @user_name = 'new_user',
+    @pass_word = 'new_pass',
+    @full_name = 'Updated Name',
+    @birthday = '1990-01-01',
+    @citizen_identity_img = 'new_image_path',
+    @citizen_identity_number = '123456789',
+    @gender = 1,
+    @is_delete = 0,
+    @id_role = 1;
+
+
+--Xoa Employees
+CREATE OR ALTER PROCEDURE sp_delete_employee
+    @id_emp INT
+AS
+BEGIN
+    UPDATE employees
+    SET 
+        is_delete = 'True',
+        date_update = GETDATE()
+    WHERE 
+        id = @id_emp 
+    And is_delete = 'False'
+    END
+
+
+exec sp_delete_employee 2;
