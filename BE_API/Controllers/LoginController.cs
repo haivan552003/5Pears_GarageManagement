@@ -28,13 +28,13 @@ namespace BE_API.Controllers
         }
 
         //tạo token
-        [HttpPost]
-        public async Task<IActionResult> GenerateToken(login user)
+        [HttpPost("gentoken-user")]
+        public async Task<IActionResult> GenerateTokenUser(login user)
         {
-            if (user != null && !string.IsNullOrEmpty(user.username) && !string.IsNullOrEmpty(user.password))
+            if (user != null && !string.IsNullOrEmpty(user.email) && !string.IsNullOrEmpty(user.password))
             {
                 //lấy dữ liệu nhập vào 
-                var userData = await GetUserInfor(user.username, user.password);
+                var userData = await GetUserInfor(user.email, user.password);
 
                 if (userData == null)
                 {
@@ -49,8 +49,52 @@ namespace BE_API.Controllers
             new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-            new Claim("username", userData.username.ToString()),
-            new Claim("pass_word", userData.password.ToString()),
+            new Claim("email", userData.email.ToString()),
+            new Claim("password", userData.password.ToString()),
+            new Claim(ClaimTypes.Role, userData.role_id.ToString()),
+                };
+
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));
+                var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                var token = new JwtSecurityToken(
+                    jwt.Issuer,
+                    jwt.Audience,
+                    claims,
+                    expires: DateTime.Now.AddMinutes(30),
+                    signingCredentials: signIn
+                );
+                return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+            }
+            else
+            {
+                return BadRequest("Invalid request.");
+            }
+        }
+         //tạo token
+        [HttpPost("gentoken-admin")]
+        public async Task<IActionResult> GenerateTokenAdmin(login user)
+        {
+            if (user != null && !string.IsNullOrEmpty(user.email) && !string.IsNullOrEmpty(user.password))
+            {
+                //lấy dữ liệu nhập vào 
+                var userData = await GetAdminInfor(user.email, user.password);
+
+                if (userData == null)
+                {
+                    return Unauthorized("Invalid username or password.");
+                }
+
+                //tạo chuỗi token
+                var jwt = Configuration.GetSection("Jwt").Get<Jwt>();
+
+                var claims = new[]
+                {
+            new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+            new Claim("email", userData.email.ToString()),
+            new Claim("password", userData.password.ToString()),
             new Claim(ClaimTypes.Role, userData.role_id.ToString()),
                 };
 
@@ -73,7 +117,7 @@ namespace BE_API.Controllers
         }
 
         //kiểm tra người dùng 
-        [HttpGet]
+        [HttpGet("user-login")]
         public async Task<login> GetUserInfor(string username, string password)
         {
             using (IDbConnection db = new SqlConnection(Configuration.GetConnectionString("SqlConnection")))
@@ -88,5 +132,21 @@ namespace BE_API.Controllers
             }
         }
 
+
+        //kiểm tra người dùng 
+        [HttpGet("admin-login")]
+        public async Task<login> GetAdminInfor(string email, string password)
+        {
+            using (IDbConnection db = new SqlConnection(Configuration.GetConnectionString("SqlConnection")))
+            {
+                var parameters = new { Email = email, Password = password };
+                var user = await db.QueryFirstOrDefaultAsync<login>(
+                    "sp_admin_login",
+                    parameters,
+                    commandType: CommandType.StoredProcedure);
+
+                return user;
+            }
+        }
     }
 }

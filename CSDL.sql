@@ -483,7 +483,14 @@ add foreign key(id_driver) references driver(id_driver)
 exec sp_rename 'customers.id_role', 'role_id', 'COLUMN'
 exec sp_rename 'customers.pass_word', 'password', 'COLUMN'
 
-
+ALTER TABLE dbo.cars
+ADD car_code VARCHAR(20)
+ALTER TABLE dbo.cars
+ADD price float
+ALTER TABLE dbo.cars
+ADD voucher float
+ALTER TABLE dbo.cars
+ADD status BIT
 
 --------------------------------------------------------------------------------------------------------------------------------------
 --PROC
@@ -701,9 +708,22 @@ create or alter proc sp_user_login
 
    exec sp_user_login haivan55, haivan
 
+ --proc đăng nhập admin
+create or alter proc sp_admin_login
+	@email varchar(50),
+	@password varchar(50)
+	as
+	begin
+		select *
+			from dbo.employees 
+			where is_delete = 0 
+				and @email = email
+				and @password = password
+		end
 
+   exec sp_admin_login 'admin', 'admin123'
 
-
+   SELECT* FROM dbo.cars
 --------------------------------------------------------------------------------------------------------------------------------------
 --Quí
 

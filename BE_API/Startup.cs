@@ -80,7 +80,12 @@ namespace BE_API
                         IssuerSigningKey = new SymmetricSecurityKey(key)
                     };
                 }
-            );
+            ).AddCookie()
+            .AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
+                googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            });
 
             // Cấu hình CORS
             services.AddCors(options =>
@@ -90,10 +95,12 @@ namespace BE_API
                     {
                         builder.AllowAnyOrigin()
                                .AllowAnyMethod()
-                               .AllowAnyHeader();
+                               .AllowAnyHeader();  
                     });
             });
         }
+
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

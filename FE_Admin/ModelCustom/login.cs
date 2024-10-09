@@ -1,4 +1,4 @@
-﻿namespace BE_API.ModelCustom
+﻿namespace FE_Admin.ModelCustom
 {
     public class login
     {

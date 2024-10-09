@@ -2,7 +2,6 @@
 @inject HttpClient httpClient
 @inject IJSRuntime js
 
-
 <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
     <MudGrid Class="pa-0">
         <MudItem xs="12">
@@ -56,6 +55,7 @@
     </MudGrid>
 </MudContainer>
 
+
 @code {
     [Parameter] public int Id { get; set; }
     private IEnumerable<role_task> Elements = new List<role_task>();
@@ -70,6 +70,7 @@
             new BreadcrumbItem("Công việc", href: "/getroletask", icon: @Icons.Material.Outlined.WorkOutline),
             new BreadcrumbItem("Danh sách công việc", href: "/getroletask", icon: @Icons.Material.Outlined.List),
             };
+
 
     private Func<role_task, object> _sortBy => x =>
     {
