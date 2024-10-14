@@ -496,6 +496,14 @@ add foreign key(id_driver) references driver(id_driver)
 exec sp_rename 'customers.id_role', 'role_id', 'COLUMN'
 exec sp_rename 'customers.pass_word', 'password', 'COLUMN'
 
+ALTER TABLE dbo.trips
+ADD trip_code VARCHAR(20)
+ALTER TABLE dbo.trips
+ADD status bit
+ALTER TABLE dbo.trips
+ADD is_return bit
+SELECT * FROM dbo.trips
+
 alter table drivers
 drop column status
 ALTER TABLE dbo.cars
@@ -507,6 +515,52 @@ ADD voucher float
 ALTER TABLE dbo.cars
 ADD status BIT
 
+ALTER TABLE dbo.banners
+ADD is_delete BIT
+
+ALTER TABLE dbo.employees
+ADD img_emp NVARCHAR(MAX)
+
+ALTER TABLE dbo.cars
+DROP COLUMN type
+ALTER TABLE dbo.cars
+DROP COLUMN brand
+ALTER TABLE dbo.cars
+ADD id_type INT
+ALTER TABLE dbo.cars
+ADD id_brand INT
+ALTER TABLE dbo.cars
+ADD year_production DATETIME
+ALTER TABLE dbo.cars
+ADD odo float
+ALTER TABLE dbo.cars
+ADD insurance_fee float
+
+CREATE TABLE car_brands(
+id_brand INT PRIMARY KEY,
+name NVARCHAR(150),
+is_delete BIT,
+date_create DATETIME,
+date_update DATETIME
+);
+
+CREATE TABLE car_types(
+id_type INT PRIMARY KEY,
+name NVARCHAR(150),
+is_delete BIT,
+date_create DATETIME,
+date_update DATETIME
+);
+
+ALTER TABLE dbo.cars
+ADD CONSTRAINT FK_car_brand
+FOREIGN KEY (id_brand) REFERENCES car_brands(id_brand);
+
+ALTER TABLE dbo.cars
+ADD CONSTRAINT FK_car_type
+FOREIGN KEY (id_type) REFERENCES car_types(id_type);
+
+SELECT * FROM dbo.cars
 exec sp_rename 'employees.username', 'email', 'COLUMN'
 exec sp_rename 'customers.username', 'email', 'COLUMN'
 
@@ -752,7 +806,118 @@ create or alter proc sp_admin_login
 
    exec sp_admin_login 'admin', 'admin123'
 
-   SELECT* FROM dbo.cars
+--proc get all banner
+create or alter proc sp_view_banner
+as
+	begin
+		SELECT 
+		b.id,
+		b.img_banner,
+		b.title,
+		b.id_emp, 
+		e.fullname,
+		b.status
+		FROM dbo.banners b
+		JOIN dbo.employees e
+		ON e.id = b.id_emp
+		WHERE b.is_delete = 'False'
+		ORDER BY b.id DESC
+   end
+
+   exec sp_view_banner
+
+--proc them banner
+create or alter proc sp_add_banner
+	@img_banner nvarchar(MAX),
+	@title nvarchar(500),
+	@id_emp int,
+	@status bit
+as
+	begin
+		insert into banners
+		(
+		img_banner,
+		title,
+		date_create,
+		id_emp,
+		status, 
+		is_delete
+		)
+	values
+		(
+		@img_banner,
+		@title,
+		GETDATE(),
+		@id_emp,
+		@status,
+		0
+		)
+	end
+
+exec sp_add_banner '12', '12', '5', '0'
+
+--proc dropdown user
+CREATE OR ALTER PROC sp_dropdown_user
+AS
+BEGIN
+	SELECT 
+	id,
+	emp_code + ' - ' + fullname AS name,
+	img_emp AS img
+	FROM dbo.employees
+	WHERE is_delete = 'false' 
+	ORDER BY id desc
+END 
+
+--proc get id banner
+create or alter proc sp_getid_banner
+	@id int
+as
+	begin
+		select 
+		id, 
+		title,
+		img_banner,
+		status,
+		id_emp
+		FROM dbo.banners
+		where id = @id
+				AND is_delete = 'False'
+		order by id desc
+	end
+
+exec sp_getid_banner 1
+
+--proc sua banner
+create or alter proc sp_update_banner
+	@id int,
+	@title nvarchar(250),
+	@img_banner nvarchar(MAX),
+	@status bit,
+	@id_emp int
+as
+	begin
+	update dbo.banners
+	set
+		title = @title,
+		img_banner = @img_banner,
+		status = @status,
+		id_emp = @id_emp,
+		date_update = GETDATE(),
+		is_delete = 'False'
+	where
+		id = @id
+	end
+
+exec sp_update_banner 1, 'Van demo ', 'a', 0
+
+
+EXEC sp_dropdown_user
+SELECT * FROM dbo.employees
+
+
+
+
 --------------------------------------------------------------------------------------------------------------------------------------
 --Quí
 

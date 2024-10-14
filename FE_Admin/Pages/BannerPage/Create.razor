@@ -1,0 +1,169 @@
+﻿@page "/addbanner"
+@inject HttpClient httpClient
+@inject IJSRuntime js
+@inject ISnackbar Snackbar
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" Class="mx-auto">
+            <MudPaper Elevation="0" Class="pa-3">
+                <MudItem xs="12">
+                    <MudPaper Elevation="4" Class="p-4">
+                        <MudText Typo="Typo.h6" Class="mb-5">Thêm công việc</MudText>
+                        <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
+                            <MudTextField ShrinkLabel @bind-Value="newBanner.title" Label="Tiêu đề"
+                                          Validation="@(new Func<string, IEnumerable<string>>(BannerValidate))"
+                                          Placeholder="Tên công việc" Variant="Variant.Outlined" Required="true" />
+
+                            <InputFile OnChange="HandleFileSelected" accept="image/*" />
+
+                            <!-- Hiển thị hình ảnh xem trước -->
+                            @if (!string.IsNullOrEmpty(imagePreviewUrl))
+                            {
+                                <MudImage Fluid="true" Src="@imagePreviewUrl" Class="rounded-lg" Width="200" Height="100" />
+                            }
+
+                            <MudTextField ShrinkLabel @bind-Value="newBanner.status" Label="Trạng thái"
+                                          Placeholder="Trạng thái" Variant="Variant.Outlined" Required="true" />
+
+                            <MudSelect @bind-Value="newBanner.id_emp" Placeholder="Chọn người tạo" Label="Người tạo" Required="true" Variant="Variant.Outlined">
+                                @foreach (var user in dropdowns)
+                                {
+                                    <MudSelectItem Value="@user.id">
+                                        <img src="@user.img" height="25" class="mr-1" /> @user.name
+                                    </MudSelectItem>
+                                }
+                            </MudSelect>
+                            @*  <MudSelect @bind-Value="newBanner.status" Label="Người tạo" Variant="Variant.Outlined">
+                            <MudSelectItem Value="@("Austria")">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Austria.svg" height="14" class="mr-1" /> Austria
+                            </MudSelectItem>
+                            </MudSelect> *@
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddBanner" Class="mt-3">Lưu</MudButton>
+                        </MudForm>
+                    </MudPaper>
+                </MudItem>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private IBrowserFile selectedFile;
+    private string imagePreviewUrl;
+    private banner newBanner = new banner();
+    private IEnumerable<dropdown> dropdowns = new List<dropdown>();
+    private bool isFormValid = false;
+    private MudForm form;
+    private string url = "http://localhost:49922/api/Banner";
+    private string urlDropdown = "http://localhost:49922/api/dropdown/emp";
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Banner", href: null, icon: @Icons.Material.Outlined.Image),
+        new BreadcrumbItem("Danh sách banner", href: "/getbanner", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Thêm mới", href: "/addbanner", icon: @Icons.Material.Filled.AddCircleOutline),
+    };
+
+    private IEnumerable<string> BannerValidate(string title)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            yield return "Vui lòng điền thông tin";
+        }
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+
+        if (selectedFile != null)
+        {
+            var stream = selectedFile.OpenReadStream();
+            var buffer = new byte[selectedFile.Size];
+            await stream.ReadAsync(buffer, 0, buffer.Length);
+            stream.Close();
+
+            imagePreviewUrl = $"data:image/jpeg;base64,{Convert.ToBase64String(buffer)}";
+        }
+        else
+        {
+            Console.WriteLine("No file selected.");
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            dropdowns = await httpClient.GetFromJsonAsync<List<dropdown>>(urlDropdown);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+
+    private async Task AddBanner()
+    {
+        if (selectedFile != null)
+        {
+            try
+            {
+                var base64Data = await GetBase64Image(selectedFile);
+                var imageUrl = await js.InvokeAsync<string>("uploadImage", selectedFile.Name, base64Data);
+                newBanner.img_banner = imageUrl;
+
+                var response = await httpClient.PostAsJsonAsync(url, newBanner);
+                if (response.IsSuccessStatusCode)
+                {
+                    newBanner = new banner();
+                    imagePreviewUrl = null;
+                    Snackbar.Add("Thêm thành công!", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Lỗi khi thêm", Severity.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add("Thêm thất bại", Severity.Error);
+            }
+        }
+        else
+        {
+            try
+            {
+                var response = await httpClient.PostAsJsonAsync(url, newBanner);
+                if (response.IsSuccessStatusCode)
+                {
+                    newBanner = new banner();
+                    imagePreviewUrl = null;
+                    Snackbar.Add("Thêm thành công!", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Lỗi khi thêm", Severity.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add("Thêm thất bại", Severity.Error);
+            }
+        }
+    }
+
+    private async Task<string> GetBase64Image(IBrowserFile file)
+    {
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream().ReadAsync(buffer);
+        return Convert.ToBase64String(buffer);
+    }
+}

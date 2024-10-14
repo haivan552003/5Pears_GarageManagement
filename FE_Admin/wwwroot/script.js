@@ -1,18 +1,18 @@
 ﻿//FireBase 
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-analytics.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-storage.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyCustmiBJwTBcvDC7Qr--r9ucj4tWkAlss",
-    authDomain: "fivepeargragemangement.firebaseapp.com",
-    projectId: "fivepeargragemangement",
-    storageBucket: "fivepeargragemangement.appspot.com",
-    messagingSenderId: "616799845315",
-    appId: "1:616799845315:web:2acd3b8ae9bb2a38dd5b76",
-    measurementId: "G-GEVQNM3B13"
+    apiKey: "AIzaSyDHguIZkgDiKR6_EtOeQOQij79t8tXZS0w",
+    authDomain: "pear-b8fc3.firebaseapp.com",
+    projectId: "pear-b8fc3",
+    storageBucket: "pear-b8fc3.appspot.com",
+    messagingSenderId: "663990872588",
+    appId: "1:663990872588:web:e4b3b81a82e0bfb4c31c29",
+    measurementId: "G-XFDQG449JZ"
 };
 
 // Initialize Firebase

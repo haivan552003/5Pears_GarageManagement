@@ -71,6 +71,20 @@
         </ChildContent>
     </MudMenu>
 
+     <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+        <ActivatorContent>
+            <MudChip Style="@($"background:{Colors.Grey.Lighten5}; color:{Colors.Grey.Darken4};")" T="string">
+                <MudText Class="fw-semibold">
+                    Banner
+                </MudText>
+            </MudChip>
+        </ActivatorContent>
+        <ChildContent>
+            <MudMenuItem Href="/getbanner">Danh sách Banner</MudMenuItem>
+            <MudMenuItem Href="/addbanner">Thêm Banner</MudMenuItem>
+        </ChildContent>
+    </MudMenu>
+
     <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
         <ActivatorContent>
             <MudChip Style="@($"background:{Colors.Grey.Lighten5}; color:{Colors.Grey.Darken4};")" T="string">
