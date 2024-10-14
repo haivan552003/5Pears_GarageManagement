@@ -528,15 +528,15 @@ add status bit
 --Vân
 
 --proc xem role_task
-create or alter proc sp_view_role_task
+create or alter proc sp_view_role_task1
 as
 	begin
-		select id, name from role_tasks
+		select id, name from roles
 		--where isDelete = 'False'
 		order by id desc
 	end
 
-exec sp_view_role_task
+exec sp_view_role_task1
 
 --proc xem role_task
 create or alter proc sp_getid_role_task
@@ -758,8 +758,288 @@ create or alter proc sp_admin_login
 
 
 
+alter table customers
+add date_create datetime
+alter table customers
+add date_update datetime
+
+exec sp_rename 'drivers.citizen_identity_img', 'citizen_identity_img1', 'COLUMN'
+exec sp_rename 'drivers.driver_license_img', 'driver_license_img1', 'COLUMN'
+
+alter table drivers 
+add citizen_identity_img2 nvarchar(max)
+alter table drivers 
+add driver_license_img2 nvarchar(max)
+alter table drivers 
+add phonenumber nvarchar(max)
+alter table drivers 
+add address nvarchar(max)
+
+exec sp_rename 'customers.citizen_identity_img', 'citizen_identity_img1', 'COLUMN'
+exec sp_rename 'customers.driver_license_img', 'driver_license_img1', 'COLUMN'
+
+alter table customers 
+add citizen_identity_img2 nvarchar(max)
+
+alter table customers 
+add driver_license_img2 nvarchar(max)
+
+CREATE OR ALTER PROCEDURE sp_view_customer
+AS
+BEGIN
+    SELECT 
+        cus.id,
+        cus_code,
+        email,
+        password,
+        fullname,
+        birthday,
+        gender,
+        phone_number,
+        citizen_identity_img1,
+		citizen_identity_img2,
+        citizen_identity_number,
+        driver_license_img1,
+		driver_license_img2,
+        driver_license_number,
+        role_id,
+        r.name,
+        status
+    FROM customers cus
+    INNER JOIN roles r ON r.id = cus.role_id
+	where cus.is_delete = 'False'
+
+END
 
 
+exec sp_view_customer
+
+/*proc xem bằng id*/
+CREATE OR ALTER PROCEDURE sp_view_customer_with_id
+    @id INT
+AS
+BEGIN
+    SELECT 
+        cus.id,
+        cus_code,
+        email,
+        password,
+        fullname,
+        birthday,
+        gender,
+        phone_number,
+        citizen_identity_img1,
+		citizen_identity_img2,
+        citizen_identity_number,
+        driver_license_img1,
+		driver_license_img1,
+        driver_license_number,
+        role_id,
+        r.name,
+        status
+    FROM customers cus
+    INNER JOIN roles r ON r.id = cus.role_id
+	where cus.is_delete = 'False' and cus.id = @id
+END
+
+
+exec sp_view_customer_with_id  1006
+/*proc them customers*/
+
+CREATE OR ALTER PROCEDURE sp_add_customers
+    @cus_code NVARCHAR(50),
+	@email VARCHAR(50),
+    @password NVARCHAR(50),
+    @fullname NVARCHAR(100),
+    @birthday DATE,
+    @gender NVARCHAR(10),
+    @phone_number NVARCHAR(15),
+    @citizen_identity_img1 NVARCHAR(250),
+    @citizen_identity_img2 NVARCHAR(250),
+    @citizen_identity_number NVARCHAR(50),
+    @driver_license_img1 NVARCHAR(250),
+    @driver_license_img2 NVARCHAR(250),
+    @driver_license_number NVARCHAR(50),
+    @role_id INT,	
+    @status NVARCHAR(20)
+AS
+BEGIN
+    INSERT INTO customers (
+			cus_code,
+			email, 
+			password, 
+			fullname, 
+			birthday, 
+			gender, 
+			phone_number,
+			citizen_identity_img1,
+			citizen_identity_img2,
+			citizen_identity_number, 
+			driver_license_img1,
+			driver_license_img2,
+			driver_license_number, 
+			role_id,
+			status,
+			date_create,
+			is_delete
+	)
+    VALUES (
+			@cus_code, 
+			@email,
+			@password, 
+			@fullname, 
+			@birthday, 
+			@gender, 
+			@phone_number,
+            @citizen_identity_img1,
+			@citizen_identity_img2,
+			@citizen_identity_number, 
+			@driver_license_img1,
+			@driver_license_img2,
+            @driver_license_number, 
+			@role_id, 
+			@status,
+			GETDATE(),
+			'False'
+	);
+END
+select*from customers
+/*proc sửa customer*/
+CREATE OR ALTER PROCEDURE sp_update_customers
+    @cus_id INT,
+    @cus_code NVARCHAR(50),
+	@email VARCHAR(50),
+    @password NVARCHAR(50),
+    @fullname NVARCHAR(100),
+    @birthday DATE,
+    @gender NVARCHAR(10),
+    @phone_number NVARCHAR(15),
+    @citizen_identity_img1 NVARCHAR(250),
+    @citizen_identity_img2 NVARCHAR(250),
+    @citizen_identity_number NVARCHAR(50),
+    @driver_license_img1 NVARCHAR(250),
+    @driver_license_img2 NVARCHAR(250),
+    @driver_license_number NVARCHAR(50),
+    @role_id INT,
+    @status NVARCHAR(20)
+AS
+BEGIN
+    UPDATE customers
+    SET cus_code = @cus_code,
+		email = @email,
+        password = @password,
+        fullname = @fullname,
+        birthday = @birthday,
+        gender = @gender,
+        phone_number = @phone_number,
+        citizen_identity_img1 = @citizen_identity_img1,
+        citizen_identity_img2 = @citizen_identity_img2,
+        citizen_identity_number = @citizen_identity_number,
+        driver_license_img2 = @driver_license_img2,
+        driver_license_number = @driver_license_number,
+        role_id = @role_id,
+        status = @status,
+		date_update = GETDATE()
+    WHERE id = @cus_id and is_delete = 'False';
+END
+
+select*from customers
+
+
+/*proc xóa customer*/
+CREATE or alter PROCEDURE sp_delete_customer
+    @Id INT
+AS
+BEGIN
+	UPDATE customers set 
+		is_delete = 'True',
+		date_update = GETDATE()
+	where id = @Id
+END;
+go
+select * from customers
+
+
+/*proc xem cus_address*/
+CREATE OR ALTER PROCEDURE sp_view_customer_address
+AS
+BEGIN
+    SELECT 
+        id,
+        address,
+        id_cus,
+        type,
+        status
+    FROM customer_addresses
+	where is_delete = 'False'
+END
+go
+exec sp_view_customer_address
+select * from customer_addresses
+
+
+/*proc xem cus_address bằng id*/
+CREATE OR ALTER PROCEDURE sp_view_customer_address_with_id
+@id int
+AS
+BEGIN
+    SELECT 
+        id,
+        address,
+        id_cus,
+        type,
+        status
+    FROM customer_addresses
+	WHERE id_cus = @id and is_delete = 'False'
+END
+exec sp_view_customer_address_with_id 1006
+
+
+/*proc them cus_address*/
+CREATE OR ALTER PROCEDURE sp_add_cus_address
+    @address NVARCHAR(500),
+    @id_cus INT,
+    @type bit,
+    @status BIT
+AS
+BEGIN
+    INSERT INTO customer_addresses (address, id_cus, type, status, date_create,is_delete)
+    VALUES (@address, @id_cus, @type, @status,GETDATE(),'False');
+END
+
+/*proc sửa cus_address*/
+CREATE OR ALTER PROCEDURE sp_update_cus_address
+    @id INT,
+    @address NVARCHAR(500),
+    @id_cus INT,
+    @type BIT,
+    @status BIT
+AS
+BEGIN
+    UPDATE customer_addresses
+    SET 
+        address = @address,
+        id_cus = @id_cus,
+        type = @type,
+        status = @status,
+		date_update = GETDATE()
+    WHERE id = @id and is_delete = 'False';
+END
+
+/*proc xóa cus_address*/
+CREATE or alter PROCEDURE sp_delete_cus_address
+    @Id INT
+AS
+BEGIN
+	UPDATE customer_addresses set 
+		is_delete = 'True',
+		date_update = GETDATE()
+	where id = @Id
+END;
+go
+
+select * from customers
+select * from customer_addresses
 --------------------------------------------------------------------------------------------------------------------------------------
 --Hiếu
 -- trang tra cứu chuyến đi

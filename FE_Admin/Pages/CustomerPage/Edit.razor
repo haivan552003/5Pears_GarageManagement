@@ -1,0 +1,113 @@
+﻿@page "/editcus/{Id:int}"
+@inject HttpClient httpClient
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    @if (showSuccess)
+    {
+        <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
+            Cập nhật thành công
+        </MudAlert>
+    }
+    else if (showError)
+    {
+        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
+            Cập nhật thất bại
+        </MudAlert>
+    }
+
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="pa-3 mb-3">
+                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" Class="mx-auto">
+            <MudPaper Elevation="0" Class="pa-3">
+                <MudItem xs="12">
+                    <MudPaper Elevation="4" Class="p-4">
+                        <MudText Typo="Typo.h6" Class="mb-5">Cập nhật địa chỉ khách hàng</MudText>
+                        <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
+                            <MudTextField ShrinkLabel @bind-Value="newAddress.Id" Label="Địa chỉ" Placeholder="Địa chỉ" Variant="Variant.Outlined" Required="true" />
+                            <MudTextField ShrinkLabel @bind-Value="newAddress.name" Label="ID Khách Hàng" Placeholder="ID Khách Hàng" Variant="Variant.Outlined" Required="true" />
+                            <MudTextField ShrinkLabel @bind-Value="newAddress.cus_code" Label="Loại" Placeholder="Loại" Variant="Variant.Outlined" Required="true" />
+                            <MudSelect @bind-Value="newAddress.status" Label="Trạng thái" Required="true">
+                                <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
+                                <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
+                            </MudSelect>
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateAddress" Class="mt-3" Disabled="!isFormValid">Cập nhật</MudButton>
+                        </MudForm>
+                    </MudPaper>
+                </MudItem>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private customers newAddress = new customers();
+    private bool isFormValid = false;
+    private bool showSuccess = false;
+    private bool showError = false;
+    private MudForm form;
+    private string url = "http://localhost:49922/api/Customer";
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Địa chỉ", href: "/getaddress", icon: @Icons.Material.Outlined.LocationOn),
+        new BreadcrumbItem("Danh sách địa chỉ", href: "/getaddress", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Cập nhật", href: "/editaddress", icon: @Icons.Material.Filled.Edit),
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<customers>($"{url}/{Id}");
+            if (response != null)
+            {
+                newAddress = response;
+                Console.WriteLine($"Địa chỉ nạp thành công: {newAddress.Id}"); // Thêm log
+            }
+            else
+            {
+                Snackbar.Add("Không tìm thấy địa chỉ.", Severity.Warning);
+                Navigation.NavigateTo("/getaddress");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi tải địa chỉ: {ex.Message}", Severity.Error);
+        }
+
+    }
+
+
+    private async Task UpdateAddress()
+    {
+        try
+        {
+            if (form.IsValid)
+            {
+                var response = await httpClient.PutAsJsonAsync($"{url}/{Id}", newAddress);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add($"Cập nhật thành công", Severity.Success);
+                    showSuccess = true;
+                }
+                else
+                {
+                    Snackbar.Add($"Cập nhật thất bại: {response.ReasonPhrase}", Severity.Warning);
+                    showError = true;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Cập nhật thất bại: {ex.Message}", Severity.Warning);
+        }
+    }
+}

@@ -1,0 +1,81 @@
+﻿@page "/deletecustomer_address/{Id:int}"
+@inject HttpClient httpClient
+@inject NavigationManager Navigation
+@inject IJSRuntime js
+@inject ISnackbar Snackbar // Thêm dịch vụ Snackbar để thông báo
+
+<MudContainer MaxWidth="MaxWidth.Medium">
+    <MudPaper Class="pa-4">
+        <MudText Typo="Typo.h5">Xóa khách hàng</MudText>
+
+        @if (customer != null)
+        {
+            <MudText Typo="Typo.subtitle1">Bạn có chắc chắn muốn xóa khách hàng này?</MudText>
+
+            <MudButton OnClick="DeleteCustomer" Color="Color.Error" Variant="Variant.Filled" Class="mt-4">
+                Xóa
+            </MudButton>
+            <MudButton OnClick="Cancel" Color="Color.Primary" Variant="Variant.Outlined" Class="mt-4 ml-2">
+                Hủy
+            </MudButton>
+        }
+        else
+        {
+            <MudText Typo="Typo.subtitle1">Đang tải thông tin khách hàng...</MudText>
+        }
+    </MudPaper>
+</MudContainer>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private cus_address customer;
+
+    private async Task LoadCustomerAsync()
+    {
+        try
+        {
+            customer = await httpClient.GetFromJsonAsync<cus_address>($"http://localhost:49922/api/Cus_Address/{Id}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading customer: {ex.Message}");
+            Snackbar.Add("Lỗi khi tải thông tin khách hàng!", Severity.Error);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCustomerAsync();
+    }
+
+    private async Task DeleteCustomer()
+    {
+        // Xác nhận xóa
+        bool isConfirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa khách hàng này không?");
+        if (isConfirmed)
+        {
+            try
+            {
+                var response = await httpClient.DeleteAsync($"http://localhost:49922/api/Cus_Address/{Id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Đã xóa khách hàng thành công!", Severity.Success);
+                    Navigation.NavigateTo("/getcustomertask"); // Chuyển hướng về danh sách khách hàng sau khi xóa
+                }
+                else
+                {
+                    Snackbar.Add("Xóa khách hàng thất bại!", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Lỗi khi xóa khách hàng: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/getcustomertask");
+    }
+}

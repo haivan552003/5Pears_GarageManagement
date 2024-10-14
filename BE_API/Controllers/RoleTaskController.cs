@@ -23,7 +23,7 @@ namespace BE_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<role_task>>> GetRoleTask()
         {
-            var procedureName = "sp_view_role_task";
+            var procedureName = "sp_view_role_task1";
 
             using (var connection = new SqlConnection(_connectionString))
             {
