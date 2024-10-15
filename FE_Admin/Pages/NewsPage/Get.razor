@@ -1,0 +1,193 @@
+﻿@page "/getnews"
+@inject HttpClient httpClient
+@inject IJSRuntime js
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid Class="pa-0">
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+            <MudPaper Elevation="0">
+                <MudDataGrid Class="mx-auto pa-2" T="news" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                             Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+                    <ToolBarContent>
+                        <MudItem xs="4" Elevation="0" Class="pb-3">
+                            <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        </MudItem>
+
+                        <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
+                            <MudButton Href="/addnews" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                                Thêm mới
+                            </MudButton>
+
+                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
+                                Nhập file
+                            </MudButton>
+
+                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
+                                Xuất file
+                            </MudButton>
+                        </MudItem>
+                    </ToolBarContent>
+                    <Columns>
+                        <SelectColumn T="news" />
+                        @* <PropertyColumn T="role_task" TProperty="int" Property="x => x.id_role_task" /> *@
+                        <PropertyColumn T="news" Style="width: 80%;" TProperty="string" Property="x => x.news_img" SortBy="@_sortBy" Class="fw-bold" Title="Hình Ảnh Mới" />
+                        <PropertyColumn T="news" Style="width: 80%;" TProperty="string" Property="x => x.title" SortBy="@_sortBy" Class="fw-bold" Title="Tiêu Đề" />
+                        <PropertyColumn T="news" Style="width: 80%;" TProperty="string" Property="x => x.content" SortBy="@_sortBy" Class="fw-bold" Title="Nội Dung" />
+                        <PropertyColumn T="news" Style="width: 80%;" TProperty="string" Property="x => x.fullname" SortBy="@_sortBy" Class="fw-bold" Title="Tên Người Tạo" />
+                        <TemplateColumn T="news" Style="width: 80%;" Class="fw-bold" Title="Trạng Thái">
+                            <CellTemplate Context="element">
+                                @if (element.Item.status)
+                                {
+                                    <MudChip Color="Color.Success" Size="Size.Small" Variant="Variant.Text">Đang hoạt động</MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Ngưng hoạt động</MudChip>
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
+
+                        <TemplateColumn T="news" Class="fw-bold" Title="Chức năng">
+                            <CellTemplate Context="element">
+                                <MudTooltip Text="Chỉnh sửa">
+                                    <MudIconButton Href="@($"/editnews/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                </MudTooltip>
+                                <MudTooltip Text="Xóa">
+                                    <MudIconButton OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
+                                </MudTooltip>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="news" />
+                    </PagerContent>
+                </MudDataGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private IEnumerable<news> Elements = new List<news>();
+    private Dictionary<int, string> CategoryDict = new Dictionary<int, string>();
+    private string _searchString;
+    private bool _sortNameByLength;
+    private List<string> _events = new();
+    private string url = "http://localhost:49922/api/News";
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+            {
+            new BreadcrumbItem("Bài Viết", href: "/getnews", icon: @Icons.Material.Outlined.WorkOutline),
+            new BreadcrumbItem("Danh sách bài viết", href: "/getnews", icon: @Icons.Material.Outlined.List),
+            };
+
+    private Func<news, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.title.Length;
+        else
+            return x.title;
+    };
+
+    private string GenerateEditUrl(int id)
+    {
+        return $"/updatenews/{id}";
+    }
+
+    private string GenerateDeleteUrl(int id)
+    {
+        return $"/deletenews/{id}";
+    }
+
+    private string GetNewsName(int id)
+    {
+        return CategoryDict.TryGetValue(id, out var name) ? name : "Unknown";
+    }
+
+    private Func<news, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if ($"{x.title} {x.id} {GetNewsName(x.id)}".Contains(_searchString))
+            return true;
+
+        return false;
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Elements = await httpClient.GetFromJsonAsync<List<news>>(url);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+    private async Task OpenDeleteDialog(news news)
+    {
+
+        var parameters = new DialogParameters
+    {
+        { "ContentText", $"Bạn có chắc chắn muốn xóa bài viết { news.title}?" },
+        { "ButtonText", "Xóa" },
+        { "Color", Color.Error }
+    };
+
+        var options = new DialogOptions() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await DialogService.ShowAsync<Delete>("Xác nhận xóa", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            await DeleteDriver(news);
+        }
+    }
+    private async Task DeleteDriver(news news)
+    {
+        try
+        {
+            var response = await httpClient.DeleteAsync($"{url}/{news.id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add($"Đã xóa bài viết {news.title} thành công", Severity.Success);
+                await OnInitializedAsync();  // Tải lại danh sách sau khi xóa
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Lỗi khi xóa bài viết: {response.ReasonPhrase}. Chi tiết: {errorContent}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi xóa bài viết: {ex.Message}", Severity.Error);
+        }
+    }
+
+
+    void RowClicked(DataGridRowClickEventArgs<news> args)
+    {
+        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void RowRightClicked(DataGridRowClickEventArgs<news> args)
+    {
+        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void SelectedItemsChanged(HashSet<news> items)
+    {
+        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+}

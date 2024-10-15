@@ -145,9 +145,8 @@ create table news(
 	content nvarchar(max),
 	date_create datetime,
 	date_update datetime,
-
 	id_emp int foreign key
-		references employees(id_emp)
+	references employees(id_emp)
 );
 
 alter table news
@@ -495,6 +494,8 @@ add foreign key(id_driver) references driver(id_driver)
 
 exec sp_rename 'customers.id_role', 'role_id', 'COLUMN'
 exec sp_rename 'customers.pass_word', 'password', 'COLUMN'
+alter table news
+add status bit
 
 ALTER TABLE dbo.trips
 ADD trip_code VARCHAR(20)
@@ -603,7 +604,7 @@ as
 		order by id desc
 	end
 
-exec sp_getid_role_task 18
+exec sp_getid_role_task 1
 
 
 --proc them role_task
@@ -1797,7 +1798,106 @@ exec sp_get_driver_by_id 17
 go
 --------------------------------------------------------------------------------------------------------------------------------------
 --Bảo
+--PROC SELECT NEWS
+CREATE OR ALTER PROC sp_view_news1
+AS
+	BEGIN
+		SELECT n.id, n.news_img, n.title, n.content, e.fullname, n.status
+		FROM news n
+		JOIN employees e
+		ON e.id = n.id_emp
+		WHERE n.is_delete = 'False'
+		ORDER BY n.id DESC
+	END
+GO
 
+EXEC select_News
+
+--PROC SELECT NEWS ID
+CREATE OR ALTER PROC sp_getid_news1
+	@id int
+AS
+	BEGIN
+		SELECT n.id, n.news_img, n.title, n.content, n.id_emp, e.fullname, n.status
+		FROM news n
+		JOIN employees e
+		ON e.id = n.id_emp
+		WHERE n.id = @id
+		AND n.is_delete = 'False'
+		ORDER BY n.id DESC
+	END
+GO
+
+EXEC sp_getid_news1 5
+
+--PROC CREATE NEWS
+CREATE OR ALTER PROC sp_add_news1
+	@news_img nvarchar(max),
+	@title nvarchar(500),
+	@content nvarchar(max),
+	@id_emp int,
+	@status bit
+AS
+	BEGIN
+		INSERT INTO news(news_img, title, content, date_create, is_delete, id_emp, status)
+		VALUES(@news_img, @title, @content, GETDATE(), 0, @id_emp, @status)
+	END
+GO
+
+EXEC create_News N'TestNewsImg10', 'TestTitle10', 'TestContent10', 1, 1
+
+--PROC UPDATE ROLE
+CREATE OR ALTER PROC sp_update_news1
+	@news_img nvarchar(max),
+	@title nvarchar(500),
+	@content nvarchar(max),
+	@id_emp int,
+	@status bit,
+	@id int
+AS
+	BEGIN
+		UPDATE news SET
+		news_img = @news_img,
+		title = @title,
+		content = @content,
+		date_update = GETDATE(),
+		id_emp = @id_emp,
+		status = @status
+		WHERE id = @id
+		AND is_delete = 'False'
+	END
+GO
+
+EXEC update_News N'TestNewsImg9', 'TestTitle9', 'TestContent9', 1, 0, 5
+
+--PROC DELETE ROLE
+CREATE OR ALTER PROC sp_delete_news1
+	@id int
+AS
+	BEGIN
+		UPDATE news
+		SET
+			is_delete = 1,
+			date_update = GETDATE()
+		WHERE id = @id
+			AND is_delete = 0
+	END
+GO
+
+EXEC sp_delete_news1 8
+--------------------------LOCATION-------------------------------
+
+--SELECT LOCATION
+CREATE OR ALTER PROC sp_view_location
+AS
+	BEGIN
+		SELECT id, name, address, phone_number, location_code, status
+		FROM locations
+		WHERE is_delete = 'False'
+		ORDER BY id DESC
+	END
+GO
+exec sp_view_location
 
 
 --------------------------------------------------------------------------------------------------------------------------------------
@@ -1937,6 +2037,18 @@ BEGIN
         id = @id_emp;
 END
 
+--SELECT LOCATION ID
+CREATE OR ALTER PROC sp_getid_location
+	@id int
+AS
+	BEGIN
+		SELECT id, name, address, phone_number, location_code, status
+		FROM locations
+		WHERE id = @id
+		AND is_delete = 'False'
+		ORDER BY id DESC
+	END
+GO
 EXEC sp_updateemployee 
     @id_emp = 1,
     @user_name = 'new_user',
@@ -1949,7 +2061,21 @@ EXEC sp_updateemployee
     @is_delete = 0,
     @id_role = 1;
 
+exec sp_getid_location 6
 
+--CREATE LOCATION
+CREATE OR ALTER PROC sp_add_location
+	@name nvarchar(500),
+	@address nvarchar(500),
+	@phone_number nvarchar(20),
+	@location_code VARCHAR(20),
+	@status bit
+AS
+	BEGIN
+		INSERT INTO locations(name, address, phone_number, date_create, is_delete, location_code, status)
+		VALUES(@name, @address, @phone_number, GETDATE(), 0, @location_code, @status)
+	END
+GO
 --Xoa Employees
 CREATE OR ALTER PROCEDURE sp_delete_employee
     @id_emp INT
@@ -1964,5 +2090,51 @@ BEGIN
     And is_delete = 'False'
     END
 
+
+exec sp_add_location 'testname', 'Cà Mau', '0916778799', 10, 1
+--EDIT LOCATION
+CREATE OR ALTER PROC sp_update_location
+	@name nvarchar(500),
+	@address nvarchar(500),
+	@phone_number nvarchar(20),
+	@location_code VARCHAR(20),
+	@status bit,
+	@id int
+AS
+	BEGIN
+		UPDATE locations SET
+		name = @name,
+		address = @address,
+		phone_number = @phone_number,
+		date_update = GETDATE(),
+		location_code = @location_code,
+		status = @status
+		WHERE id = @id
+		AND is_delete = 'False'
+	END
+GO
+
+exec sp_update_location '1', '1', '1', '1', 1, 6
+
+--DELETE LOCATION
+CREATE OR ALTER PROC sp_delete_location
+	@id int
+AS
+	BEGIN
+		UPDATE locations
+		SET
+			is_delete = 1,
+			date_update = GETDATE()
+		WHERE id = @id
+			AND is_delete = 0
+	END
+GO
+
+EXEC sp_delete_location 8
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+--Thịnh
 
 exec sp_delete_employee 2;

@@ -1,0 +1,126 @@
+﻿@page "/editlocation/{id:int}"
+@inject HttpClient httpClient
+@inject IJSRuntime js
+@inject NavigationManager navigationManager
+@inject IJSRuntime js
+@inject ISnackbar Snackbar
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" Class="mx-auto">
+            <MudPaper Elevation="0" Class="pa-3">
+                <MudItem xs="12">
+                    <MudPaper Elevation="4" Class="p-4">
+                        <MudText Typo="Typo.h6" Class="mb-5">Thông tin công việc</MudText>
+                        <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
+                            <MudTextField ShrinkLabel @bind-Value="Location.name" Label="Địa Chỉ"
+                                          Validation="@(new Func<string, IEnumerable<string>>(LocationValidate))"
+                                          Placeholder="Địa Chỉ" Variant="Variant.Outlined" Required="true" />
+
+                            <MudTextField ShrinkLabel @bind-Value="Location.address" Label="Thành Phố"
+                                          Validation="@(new Func<string, IEnumerable<string>>(LocationValidate))"
+                                          Placeholder="Thành Phố" Variant="Variant.Outlined" Required="true" />
+
+                            <MudTextField ShrinkLabel @bind-Value="Location.phone_number" Label="Số Điện Thoại"
+                                          Validation="@(new Func<string, IEnumerable<string>>(LocationValidate))"
+                                          Placeholder="Số Điện Thoại" Variant="Variant.Outlined" Required="true" />
+
+                            <MudTextField ShrinkLabel @bind-Value="Location.location_code" Label="Vị Trí"
+                                          Validation="@(new Func<string, IEnumerable<string>>(LocationValidate))"
+                                          Placeholder="Vị Trí" Variant="Variant.Filled" Disabled="true" Required="true" />
+
+                            <MudSelect @bind-Value="Location.status" Label="Trạng Thái" Variant="Variant.Outlined" Required="true">
+                                <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
+                                <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
+                            </MudSelect>
+
+                            <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Variant="Variant.Filled" OnClick="SubmitForm">Lưu</MudButton>
+                            <MudButton Class="mt-3 pl-3" StartIcon="@Icons.Material.Outlined.ArrowForward" Variant="Variant.Outlined" OnClick="Cancel">Trở về</MudButton>
+                        </MudForm>
+                    </MudPaper>
+                </MudItem>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private location Location = new location();
+    private bool isFormValid = false;
+    private bool showSuccess = false;
+    private bool showError = false;
+    private bool showWarning = false;
+    private MudForm form;
+    private string url = "http://localhost:49922/api/Location";
+    private string alertAnimationClass = "animate__bounceInRight";
+
+    // Thêm thông tin BreadcrumbItem
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Địa Chỉ", href: "/getlocation", icon: @Icons.Material.Outlined.WorkOutline),
+        new BreadcrumbItem("Danh sách địa chỉ", href: "/getlocation", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Chỉnh sửa địa chỉ", href: "", icon: @Icons.Material.Filled.Edit),
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await httpClient.GetFromJsonAsync<location>(url + "/" + Id);
+        Location = response;
+    }
+
+    private IEnumerable<string> LocationValidate(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            yield return "Vui lòng điền thông tin";
+            yield break;
+        }
+    }
+
+    private async Task EditLocation()
+    {
+        try
+        {
+            if (form.IsValid)
+            {
+                var response = await httpClient.PutAsJsonAsync(url + "/" + Id, Location);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add($"Chỉnh sửa {Id} thành công", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add($"Chỉnh sửa {Id} thất bại {response.ReasonPhrase}", Severity.Warning);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+
+            Snackbar.Add($"Thêm thất bại", Severity.Warning, options =>
+              {
+                  options.SnackbarVariant = Variant.Filled;
+              });
+        }
+    }
+
+    private async Task SubmitForm()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            await EditLocation();
+        }
+    }
+
+    private void Cancel()
+    {
+        navigationManager.NavigateTo("/getlocation");
+    }
+}

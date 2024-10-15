@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using System;
 
-namespace BE_API.Models
+namespace FE_Admin.Models
 {
     public class news
     {
@@ -13,7 +13,6 @@ namespace BE_API.Models
         public DateTime date_update { get; set; }
         public int id_emp { get; set; }
         public Boolean status { get; set; }
-        public string fullname { get; set;}
-
+        public string fullname { get; set; }
     }
 }

@@ -61,6 +61,19 @@
         <ActivatorContent>
             <MudChip Style="@($"background:{Colors.Grey.Lighten5}; color:{Colors.Grey.Darken4};")" T="string">
                 <MudText Class="fw-semibold">
+                    Bài Viết
+                </MudText>
+            </MudChip>
+        </ActivatorContent>
+        <ChildContent>
+            <MudMenuItem Href="/getnews">Xem Bài Viết</MudMenuItem>
+        </ChildContent>
+    </MudMenu>
+
+    <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+        <ActivatorContent>
+            <MudChip Style="@($"background:{Colors.Grey.Lighten5}; color:{Colors.Grey.Darken4};")" T="string">
+                <MudText Class="fw-semibold">
                     Tuyến Xe
                 </MudText>
             </MudChip>
