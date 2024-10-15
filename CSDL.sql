@@ -464,6 +464,8 @@ create table seat_guest_trip(
 exec sp_rename 'img_car_driver.id_img_car_driver', 'id', 'COLUMN'
 exec sp_rename 'img_car_driver.id_guest_car_driver', 'guest_car_driver_id', 'COLUMN'
 
+
+
 alter table guest_trip
 drop constraint FK__guest_tri__id_gu__6D0D32F4
 alter table guest_driver
@@ -515,62 +517,6 @@ ALTER TABLE dbo.cars
 ADD voucher float
 ALTER TABLE dbo.cars
 ADD status BIT
-
-ALTER TABLE dbo.banners
-ADD is_delete BIT
-
-ALTER TABLE dbo.employees
-ADD img_emp NVARCHAR(MAX)
-
-ALTER TABLE dbo.cars
-DROP COLUMN type
-ALTER TABLE dbo.cars
-DROP COLUMN brand
-ALTER TABLE dbo.cars
-ADD id_type INT
-ALTER TABLE dbo.cars
-ADD id_brand INT
-ALTER TABLE dbo.cars
-ADD year_production DATETIME
-ALTER TABLE dbo.cars
-ADD odo float
-ALTER TABLE dbo.cars
-ADD insurance_fee float
-
-CREATE TABLE car_brands(
-id_brand INT PRIMARY KEY,
-name NVARCHAR(150),
-is_delete BIT,
-date_create DATETIME,
-date_update DATETIME
-);
-
-CREATE TABLE car_types(
-id_type INT PRIMARY KEY,
-name NVARCHAR(150),
-is_delete BIT,
-date_create DATETIME,
-date_update DATETIME
-);
-
-ALTER TABLE dbo.cars
-ADD CONSTRAINT FK_car_brand
-FOREIGN KEY (id_brand) REFERENCES car_brands(id_brand);
-
-ALTER TABLE dbo.cars
-ADD CONSTRAINT FK_car_type
-FOREIGN KEY (id_type) REFERENCES car_types(id_type);
-
-SELECT * FROM dbo.cars
-exec sp_rename 'employees.username', 'email', 'COLUMN'
-exec sp_rename 'customers.username', 'email', 'COLUMN'
-
-alter table employees
-add emp_code nvarchar(20)
-
-alter table employees
-add status bit
-
 
 
 
@@ -2118,3 +2064,200 @@ BEGIN
     WHERE
         id = @id_emp;
 END
+--Thịnh
+create or alter proc sp_Get_Trips
+as
+begin
+    select 
+        id,
+        img_trip,
+        [from],
+        [to],
+      
+        date_create,
+        date_update,
+        is_delete,
+        emp_create,
+		trip_code,
+		status,
+		is_return
+    from trips
+    where is_delete = 0  -- Lọc các chuyến đi chưa bị xóa
+    order by date_create desc;
+end
+
+exec sp_Get_Trips;
+
+
+-- get id 
+create or alter proc sp_GetTripsID
+	@id int
+as
+	begin
+		select 
+		id,
+		img_trip,
+        [from],
+        [to],
+      
+        date_create,
+        date_update,
+        is_delete,
+        emp_create,
+		trip_code,
+		status,
+		is_return
+		id_role from trips
+		where id = @id
+			--and isDelete = 'False'
+		order by id desc
+	end
+
+
+exec sp_GetTripsID 2;
+
+--them trip
+CREATE OR ALTER PROCEDURE sp_add_trip
+    @img_trip nvarchar(max),
+    @from nvarchar(500),
+    @to nvarchar(500),
+ 
+    @date_create datetime,
+    @date_update datetime,
+    @is_delete bit,
+    @emp_create int,
+    @trip_code varchar(20),
+    @status bit,
+    @is_return bit
+AS
+BEGIN
+    -- Thêm dữ liệu vào bảng trips
+    INSERT INTO trips
+    (
+        img_trip,
+        [from],
+        [to],
+      
+        date_create,
+        date_update,
+        is_delete,
+        emp_create,
+        trip_code,
+        status,
+        is_return
+    )
+    VALUES
+    (
+        @img_trip,
+        @from,
+        @to,
+        
+        @date_create,
+        @date_update,
+        @is_delete,
+        @emp_create,
+        @trip_code,
+        @status,
+        @is_return
+    );
+END
+GO
+
+exec sp_add_trip 
+    @img_trip = 'buông ba nơi xa', 
+    @from = N'Cần Thơ',                           
+    @to = N'Vũng Tàu',                                               
+    @date_create = '',                     
+    @date_update = '',                     
+    @is_delete = 0,                             
+    @emp_create = 1,                              
+    @trip_code = 'bababa',                      
+    @status = 1,                                  
+    @is_return = 0;                               
+
+-- sửa Trips
+CREATE OR ALTER PROCEDURE sp_update_trip
+    @id_trip INT,
+    @img_trip NVARCHAR(MAX),
+    @from NVARCHAR(500),
+    @to NVARCHAR(500),
+   
+    @date_update DATETIME,
+    @is_delete BIT,
+    @emp_create INT,
+    @trip_code VARCHAR(20),
+    @status BIT,
+    @is_return BIT
+AS
+BEGIN
+    UPDATE trips
+    SET
+        img_trip = @img_trip,
+        [from] = @from,
+        [to] = @to,       
+        date_update = @date_update,  
+        is_delete = @is_delete,      
+        emp_create = @emp_create,    
+        trip_code = @trip_code,      
+        status = @status,            
+        is_return = @is_return       
+    WHERE
+        id = @id_trip;
+END
+
+EXEC sp_update_trip 
+    @id_trip = 3, 
+    @img_trip = N'COn Cu', 
+    @from = N'Hà Nội', 
+    @to = N'Hồ Chí Minh',  
+    @date_update = '', 
+    @is_delete = 0, 
+    @emp_create = 1, 
+    @trip_code = 'TRIP123', 
+    @status = 1, 
+    @is_return = 0;
+
+
+--xoa trips
+CREATE OR ALTER PROCEDURE sp_delete_trips
+    @id INT
+AS
+BEGIN
+    UPDATE trips
+    SET 
+        is_delete = 'True',
+        date_update = GETDATE()
+    WHERE 
+        id = @id 
+    And is_delete = 'False'
+    END
+
+
+exec sp_delete_trips 2;
+
+--lấy dữ liệu mới nhất 
+CREATE OR ALTER PROCEDURE sp_get_latest_trips_top5
+AS
+BEGIN
+    SELECT TOP 5
+        id, 
+        img_trip, 
+        [from], 
+        [to], 
+        date_create, 
+        date_update, 
+        is_delete, 
+        emp_create, 
+        trip_code, 
+        status, 
+        is_return
+    FROM 
+        trips
+    WHERE 
+        is_delete = 0  -- Chỉ lấy các chuyến đi chưa bị xóa
+    ORDER BY 
+        date_create DESC;  -- Dữ liệu mới nhất đứng đầu
+END
+
+EXEC sp_get_latest_trips_top5;
+

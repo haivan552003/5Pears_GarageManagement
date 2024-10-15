@@ -1,0 +1,107 @@
+﻿@page "/addtrip"
+@inject HttpClient httpClient
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid Class="pa-0">
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudText Typo="Typo.h6" Class="mb-5">Thêm Chuyến Đi</MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudGrid xs="10" Class="mx-auto">
+            <MudItem xs="12">
+                <MudPaper Class="mud-paper mud-elevation-4 p-8">
+                    <MudForm @ref="form" @bind-IsValid="isFormValid">
+                        <MudGrid Gutter="true">
+
+                            <MudItem xs="6" Class="mb-4">
+                                <MudTextField Label="Mã chuyến" @bind-Value="newTrip.trip_code" Placeholder="Mã Chuyến"
+                                              Variant="Variant.Outlined" Required="true" />
+                            </MudItem>
+                            <MudItem xs="6" Class="mb-4">
+                                <MudTextField Label="Điểm khởi hành" @bind-Value="newTrip.from" Placeholder="Từ"
+                                              Variant="Variant.Outlined" Required="true" />
+                            </MudItem>
+                            <MudItem xs="6" Class="mb-4">
+                                <MudTextField Label="Điểm đến" @bind-Value="newTrip.to" Placeholder="Đến"
+                                              Variant="Variant.Outlined" Required="true" />
+                            </MudItem>
+                            <MudItem xs="6" Class="mb-4">
+                                <MudTextField Label="Hình ảnh chuyến đi" @bind-Value="newTrip.img_trip" Placeholder="URL Hình Ảnh"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="6" Class="mb-4">
+                                <MudDatePicker @bind-Date="newTrip.date_create" Label="Ngày tạo" Required="true" />
+                            </MudItem>
+                            <MudItem xs="6" Class="mb-4">
+                                <MudDatePicker @bind-Date="newTrip.date_update" Label="Ngày cập nhật" Required="true" />
+                            </MudItem>
+
+                            <MudItem xs="4" Class="mb-4">
+                                <MudSelect @bind-Value="newTrip.status" Label="Trạng thái" Required="true">
+                                    <MudSelectItem Value="true">Hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="false">Không hoạt động</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="4" Class="mb-4">
+                                <MudSelect @bind-Value="newTrip.is_return" Label="Trở về" Required="true">
+                                    <MudSelectItem Value="true">Có</MudSelectItem>
+                                    <MudSelectItem Value="false">Không</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" Class="d-flex justify-end">
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save"
+                                           Color="Color.Primary" OnClick="Addtrip">Lưu</MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudForm>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private trip newTrip = new trip();
+    private bool isFormValid = false;
+    private MudForm form;
+    private string url = "http://localhost:49922/api/Trips"; // Đảm bảo URL đúng
+
+    private async Task Addtrip()
+    {
+        if (form.IsValid)
+        {
+            // Thay đổi giá trị cho các trường cần thiết
+            newTrip.date_create = DateTime.Now; // Gán ngày hiện tại cho ngày tạo
+            newTrip.date_update = DateTime.Now; // Gán ngày hiện tại cho ngày cập nhật
+            newTrip.is_delete = 0; // Mặc định là không xóa
+            newTrip.emp_create = 1; // Gán ID nhân viên tạo chuyến đi, bạn có thể thay đổi theo yêu cầu
+
+            try
+            {
+                var response = await httpClient.PostAsJsonAsync(url, newTrip);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Thêm chuyến đi thành công!", Severity.Success);
+                    Navigation.NavigateTo("/gettrips");
+                }
+                else
+                {
+                    var errorMsg = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Lỗi: {errorMsg}", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+            }
+        }
+        else
+        {
+            Snackbar.Add("Vui lòng kiểm tra lại các trường.", Severity.Warning);
+        }
+    }
+}

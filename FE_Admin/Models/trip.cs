@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BE_API.Models
+﻿namespace FE_Admin.Models
 {
     public class trip
     {
@@ -13,7 +11,7 @@ namespace BE_API.Models
         public byte is_delete { get; set; }
         public int emp_create { get; set; }
         public string trip_code { get; set; }
-        public bool status {  get; set; }
+        public bool status { get; set; }
         public bool is_return { get; set; }
     }
 }
