@@ -1,0 +1,123 @@
+﻿@page "/getcars"
+@inject HttpClient httpClient
+@inject IJSRuntime js
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid Class="pa-0">
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+            <MudPaper Elevation="0">
+                <MudDataGrid Class="mx-auto pa-2" T="car" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                             Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+                    <ToolBarContent>
+                        <MudItem xs="4" Elevation="0" Class="pb-3">
+                            <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        </MudItem>
+
+                        <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
+                            <MudButton Href="/addcar" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                                Thêm mới
+                            </MudButton>
+
+                            <MudButton Href="/importcars" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
+                                Nhập file
+                            </MudButton>
+
+                            <MudButton Href="/exportcars" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
+                                Xuất file
+                            </MudButton>
+                        </MudItem>
+                    </ToolBarContent>
+                    <Columns>
+                        <SelectColumn T="car" />
+                        <PropertyColumn T="car" TProperty="string" Property="x => x.car_number" Title="Biển số xe" />
+                        <PropertyColumn T="car" TProperty="string" Property="x => x.color" Title="Màu sắc" />
+                        <PropertyColumn T="car" TProperty="DateTime" Property="x => x.vehicle_registration_start" Title="Đăng ký bắt đầu" Format="dd/MM/yyyy" />
+                        <PropertyColumn T="car" TProperty="DateTime" Property="x => x.vehicle_registration_end" Title="Đăng ký kết thúc" Format="dd/MM/yyyy" />
+                        <PropertyColumn T="car" TProperty="string" Property="x => x.status" Title="Trạng thái" />
+                        <PropertyColumn T="car" TProperty="float" Property="x => x.price" Title="Giá" />
+                        <PropertyColumn T="car" TProperty="float" Property="x => x.odo" Title="ODO" />
+                        <TemplateColumn T="car" Title="Chức năng">
+                            <CellTemplate Context="car">
+                                <MudTooltip Text="Chỉnh sửa">
+                                    <MudIconButton Href="@($"/editcar/{car.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                </MudTooltip>
+                                <MudTooltip Text="Xóa">
+                                    <MudIconButton OnClick="@(() => DeleteCar(car.Item.id))" Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
+                                </MudTooltip>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="car" />
+                    </PagerContent>
+                </MudDataGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private IEnumerable<car> Elements = new List<car>();
+    private string _searchString;
+    private List<string> _events = new();
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Quản lý xe", href: "/getcars", icon: @Icons.Material.Outlined.DirectionsCar),
+        new BreadcrumbItem("Danh sách xe", href: "/getcars", icon: @Icons.Material.Outlined.List),
+    };
+
+    private Func<car, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if ($"{x.car_number} {x.color} {x.status}".Contains(_searchString))
+            return true;
+
+        return false;
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Elements = await httpClient.GetFromJsonAsync<List<car>>("http://localhost:49922/api/Cars/getAllCars");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    void RowClicked(DataGridRowClickEventArgs<car> args)
+    {
+        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void RowRightClicked(DataGridRowClickEventArgs<car> args)
+    {
+        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void SelectedItemsChanged(HashSet<car> items)
+    {
+        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+
+    async Task DeleteCar(int id)
+    {
+        bool confirmed = await js.InvokeAsync<bool>("confirm", "Are you sure you want to delete this car?");
+        if (confirmed)
+        {
+            // Implement delete logic here
+            // await httpClient.DeleteAsync($"api/Car/deleteCar/{id}");
+            // Refresh the list after deletion
+            // await OnInitializedAsync();
+        }
+    }
+}

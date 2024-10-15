@@ -840,6 +840,321 @@ CREATE OR ALTER PROC sp_create_drivers
   @address Nvarchar(max),
  @status BIT
 
+-- proc get all cars
+CREATE OR ALTER PROC sp_getall_cars
+AS
+BEGIN
+    SELECT
+        c.car_number, 
+        c.color, 
+        c.vehicle_registration_start, 
+        c.vehicle_registration_end,
+        c.status, 
+        c.price, 
+        c.isAuto, 
+        c.id_brand,
+        c.id_type,
+        c.year_production,
+        c.odo,
+        c.insurance_fee,
+        COUNT(cs.car_id) AS seat_count
+    FROM 
+        cars c 
+    JOIN 
+        car_seats cs 
+    ON 
+        c.id = cs.car_id 
+    WHERE 
+        c.is_delete = 0 
+    GROUP BY 
+        c.car_number, 
+        c.color, 
+        c.vehicle_registration_start, 
+        c.vehicle_registration_end,
+        c.status, 
+        c.price, 
+        c.isAuto, 
+        c.id_brand,
+        c.id_type,
+        c.year_production,
+        c.odo,
+        c.insurance_fee,
+        c.id
+    ORDER BY 
+        c.car_number, 
+        c.color, 
+        c.vehicle_registration_start, 
+        c.vehicle_registration_end,
+        c.status, 
+        c.price, 
+        c.isAuto, 
+        c.id DESC;
+END;
+
+go
+execute sp_getall_cars
+select * from cars
+select * from car_seats
+-- proc get by id cars
+CREATE OR ALTER PROC sp_get_by_id_cars
+@id int
+AS
+BEGIN
+    SELECT
+       c.car_number, 
+        c.color, 
+        c.vehicle_registration_start, 
+        c.vehicle_registration_end,
+        c.status, 
+        c.price, 
+        c.isAuto, 
+        c.id_brand,
+        c.id_type,
+        c.year_production,
+        c.odo,
+        c.insurance_fee,
+        COUNT(cs.car_id) AS seat_count
+    FROM 
+        cars c 
+    JOIN 
+        car_seats cs 
+    ON 
+        c.id = cs.car_id 
+    WHERE 
+         c.id =@id
+    GROUP BY 
+       c.car_number, 
+        c.color, 
+        c.vehicle_registration_start, 
+        c.vehicle_registration_end,
+        c.status, 
+        c.price, 
+        c.isAuto, 
+        c.id_brand,
+        c.id_type,
+        c.year_production,
+        c.odo,
+        c.insurance_fee,
+        cs.name,
+		c.id
+    ORDER BY 
+	 c.car_number, 
+        c.color, 
+        c.vehicle_registration_start, 
+        c.vehicle_registration_end,
+        c.status, 
+        c.price, 
+        c.isAuto, 
+        c.id_brand,
+        c.id_type,
+        c.year_production,
+        c.odo,
+        c.insurance_fee,
+        cs.name,
+		c.id
+END;
+exec sp_get_by_id_cars 1
+go
+-- proc get all car_seats
+create or alter proc sp_getall_car_seat
+as
+	begin
+	select name, row , col, status  from car_seats 
+	end
+go
+execute sp_getall_cars
+execute sp_getall_car_seat
+select * from cars
+-- proc get by id car_seats
+go
+create or alter proc sp_get_by_id_car_seat
+@id int
+as
+	begin
+	select name, row , col, status  from car_seats 
+	where id = @id
+	end
+go
+exec sp_get_by_id_car_seat 1
+go
+CREATE OR ALTER PROC sp_create_cars
+ @car_number VARCHAR(20),   
+ @color NVARCHAR(100),
+ @vehical_registration_start datetime,
+  @vehical_registration_end datetime,
+ @price float,
+ @isAuto bit,
+  @status nvarchar(150),
+ @id_type int,
+ @id_brand int,
+ @year_production datetime,
+ @odo float,
+ @insurance_fee float
+
+AS
+BEGIN
+	INSERT INTO cars(
+		car_number,
+		color,
+		vehicle_registration_start,
+		vehicle_registration_end,
+		price,
+		isAuto,
+		status,
+		id_type,
+		id_brand,
+		year_production,
+		odo,
+		insurance_fee,
+		date_create, 
+		is_delete
+	
+	)
+	VALUES (
+		@car_number,
+		@color,
+		@vehical_registration_start,
+		@vehical_registration_end,
+		@price,
+		@isAuto,
+		@status,
+		@id_type,
+		@id_brand,
+		@year_production,
+		@odo,
+		@insurance_fee,
+		GETDATE(),
+		0
+	);
+END
+exec sp_create_cars '72-C1-99999', 'Blue','11/11/2001', '11/11/2006', 43000,1,'đang hoạt động', 1,1,'10/14/2009', 20000,6540
+go
+-- proc create car seat
+create or alter proc sp_create_car_seats
+@name nvarchar(50),
+@car_id int,
+@row tinyint,
+@col tinyint,
+@status tinyint
+as
+	begin
+		Insert into car_seats (
+		name,
+			car_id,
+			row,
+			col,
+			status,
+			date_create,
+			is_delete
+		) values
+		(
+			@name,
+			@car_id,
+			@row,
+			@col,
+			@status,
+			GETDATE(),
+			0
+		);
+			
+	end
+	go
+--proc get all 
+--------------------------------------------Vân kiu giữ
+ALTER TABLE dbo.cars
+drop COLUMN status_vehicle_registration
+-------------------------------------------------
+select * from cars
+select * from trips
+
+
+--proc update car
+go
+create or alter proc sp_update_car
+@id int,
+ @car_number VARCHAR(20),   
+ @color NVARCHAR(100),
+ @vehical_registration_start datetime,
+  @vehical_registration_end datetime,
+ @price float,
+ @isAuto bit,
+  @status BIT,
+ @id_type int,
+ @id_brand int,
+ @year_production datetime,
+ @odo float,
+ @insurance_fee float
+as
+begin
+	update cars 
+	set 
+	car_number =@car_number,
+	color =@color,
+	vehicle_registration_start =@vehical_registration_start,
+	vehicle_registration_end = @vehical_registration_end,
+	price =@price,
+	status = @status,
+	isAuto = @isAuto,
+	id_type = @id_type ,
+	id_brand= @id_brand,
+	year_production = @year_production,
+	odo =@odo,
+	insurance_fee = @insurance_fee,
+	date_update = GETDATE() where id = @id
+end
+execute sp_update_car 1, '72-C2- 88888', 'Toyota', 'Red', '10-10-2009','10-10-2011', 55000, 0,0,1
+
+go
+--proc update car_seat
+create or alter proc sp_update_car_seats
+@id int,
+@name nvarchar(50),
+@car_id int,
+@row tinyint,
+@col tinyint,
+@status tinyint
+as 
+	begin 
+		update car_seats 
+		set
+			name = @name,
+			car_id = @car_id,
+			row = @row,
+			col = @col,
+			status = @status,
+			date_update = GETDATE() where id = @id
+	end
+exec sp_update_car_seats 2, '2B', 1, 2,2,1
+
+	go
+-- proc delete car
+create or alter proc sp_delete_car
+@id int
+as
+	begin
+		  update cars
+			set
+				is_delete = 'true'
+			WHERE id = @id and is_delete = 'false'
+	end
+exec sp_delete_car 1
+go
+-- proc delete car_ seat
+create or alter proc sp_delete_car_seat
+@id int
+as
+	begin
+		  update cars
+			set
+				is_delete = 'true'
+			WHERE id = @id and is_delete = 'false'
+	end
+exec sp_delete_car 1
+go
+
+select* from cars
+select * from car_seats
+
 AS
 BEGIN
 	INSERT INTO drivers (
