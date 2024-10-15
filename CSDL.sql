@@ -583,7 +583,7 @@ add status bit
 --Vân
 
 --proc xem role_task
-create or alter proc sp_view_role_task1
+create or alter proc sp_view_role_task
 as
 	begin
 		select id, name from roles
@@ -591,7 +591,7 @@ as
 		order by id desc
 	end
 
-exec sp_view_role_task1
+--exec sp_view_role_task
 
 --proc xem role_task
 create or alter proc sp_getid_role_task
@@ -604,7 +604,7 @@ as
 		order by id desc
 	end
 
-exec sp_getid_role_task 1
+--exec sp_getid_role_task 1
 
 
 --proc them role_task
@@ -624,7 +624,7 @@ as
 		)
 	end
 
-exec sp_add_role_task 'Van demo role task'
+--exec sp_add_role_task 'Van demo role task'
 
 --proc sua role_task 
 create or alter proc sp_update_role_task
@@ -640,7 +640,7 @@ as
 		id = @id
 	end
 
-exec sp_update_role_task 'Van demo role task', 18
+--exec sp_update_role_task 'Van demo role task', 18
 
 --proc xem danh sách 3 tin tức mới nhất trang chủ
 create or alter proc sp_view_3_news_1
@@ -662,7 +662,7 @@ as
 		order by id DESC
 	end
 
-exec sp_view_3_news_1
+--exec sp_view_3_news_1
 
 --
 create or alter proc sp_view_3_news_2
@@ -674,7 +674,7 @@ as
 			order by id DESC 
    end
 
-   exec sp_view_3_news_2
+   --exec sp_view_3_news_2
 
 --
 create or alter proc sp_view_3_news_3
@@ -686,7 +686,7 @@ as
 			order by id DESC 
    end
 
-   exec sp_view_3_news_3
+   --exec sp_view_3_news_3
 
 --proc chuyến xe phổ biến trang chủ
 create or alter proc sp_view_trip_hot_1
@@ -701,7 +701,7 @@ as
 			order by td.trip_id DESC
    end
 
-   exec sp_view_trip_hot_1
+   --exec sp_view_trip_hot_1
    
 --
 create or alter proc sp_view_trip_hot_2
@@ -716,7 +716,7 @@ as
 			order by td.trip_id DESC
    end
 
-   exec sp_view_trip_hot_2
+   --exec sp_view_trip_hot_2
 
 --
 create or alter proc sp_view_trip_hot_3
@@ -731,7 +731,7 @@ as
 			order by td.trip_id DESC
    end
 
-   exec sp_view_trip_hot_3
+   --exec sp_view_trip_hot_3
 
 --proc khuyến mãi nổi bật trang chủ
 create or alter proc sp_view_voucher_home
@@ -744,7 +744,7 @@ as
 			order by id DESC
    end
 
-   exec sp_view_voucher_home
+   --exec sp_view_voucher_home
 
 --proc tài xế nổi bật trong tháng trang trang chủ
 create or alter proc sp_view_driver_home
@@ -775,7 +775,7 @@ as
 			order by count(td.driver_id) DESC
    end
 
-   exec sp_view_driver_home
+   --exec sp_view_driver_home
 
 --proc đăng nhập user
 create or alter proc sp_user_login
@@ -790,7 +790,7 @@ create or alter proc sp_user_login
 				and @password = [customers].[password]
 		end
 
-   exec sp_user_login haivan55, haivan
+   --exec sp_user_login haivan55, haivan
 
  --proc đăng nhập admin
 create or alter proc sp_admin_login
@@ -805,7 +805,7 @@ create or alter proc sp_admin_login
 				and @password = password
 		end
 
-   exec sp_admin_login 'admin', 'admin123'
+   --exec sp_admin_login 'admin', 'admin123'
 
 --proc get all banner
 create or alter proc sp_view_banner
@@ -825,7 +825,7 @@ as
 		ORDER BY b.id DESC
    end
 
-   exec sp_view_banner
+   --exec sp_view_banner
 
 --proc them banner
 create or alter proc sp_add_banner
@@ -855,7 +855,7 @@ as
 		)
 	end
 
-exec sp_add_banner '12', '12', '5', '0'
+--exec sp_add_banner '12', '12', '5', '0'
 
 --proc dropdown user
 CREATE OR ALTER PROC sp_dropdown_user
@@ -887,7 +887,7 @@ as
 		order by id desc
 	end
 
-exec sp_getid_banner 1
+--exec sp_getid_banner 1
 
 --proc sua banner
 create or alter proc sp_update_banner
@@ -910,46 +910,16 @@ as
 		id = @id
 	end
 
-exec sp_update_banner 1, 'Van demo ', 'a', 0
+--exec sp_update_banner 1, 'Van demo ', 'a', 0
 
 
-EXEC sp_dropdown_user
-SELECT * FROM dbo.employees
+--EXEC sp_dropdown_user
 
 
 
 
 --------------------------------------------------------------------------------------------------------------------------------------
 --Quí
-
-
-
-alter table customers
-add date_create datetime
-alter table customers
-add date_update datetime
-
-exec sp_rename 'drivers.citizen_identity_img', 'citizen_identity_img1', 'COLUMN'
-exec sp_rename 'drivers.driver_license_img', 'driver_license_img1', 'COLUMN'
-
-alter table drivers 
-add citizen_identity_img2 nvarchar(max)
-alter table drivers 
-add driver_license_img2 nvarchar(max)
-alter table drivers 
-add phonenumber nvarchar(max)
-alter table drivers 
-add address nvarchar(max)
-
-exec sp_rename 'customers.citizen_identity_img', 'citizen_identity_img1', 'COLUMN'
-exec sp_rename 'customers.driver_license_img', 'driver_license_img1', 'COLUMN'
-
-alter table customers 
-add citizen_identity_img2 nvarchar(max)
-
-alter table customers 
-add driver_license_img2 nvarchar(max)
-
 CREATE OR ALTER PROCEDURE sp_view_customer
 AS
 BEGIN
@@ -976,9 +946,7 @@ BEGIN
 	where cus.is_delete = 'False'
 
 END
-
-
-exec sp_view_customer
+--exec sp_view_customer
 
 /*proc xem bằng id*/
 CREATE OR ALTER PROCEDURE sp_view_customer_with_id
@@ -1009,9 +977,9 @@ BEGIN
 END
 
 
-exec sp_view_customer_with_id  1006
-/*proc them customers*/
+--exec sp_view_customer_with_id  1006
 
+--proc them customers
 CREATE OR ALTER PROCEDURE sp_add_customers
     @cus_code NVARCHAR(50),
 	@email VARCHAR(50),
@@ -1069,8 +1037,8 @@ BEGIN
 			'False'
 	);
 END
-select*from customers
-/*proc sửa customer*/
+
+--proc sửa customer
 CREATE OR ALTER PROCEDURE sp_update_customers
     @cus_id INT,
     @cus_code NVARCHAR(50),
@@ -1109,10 +1077,7 @@ BEGIN
     WHERE id = @cus_id and is_delete = 'False';
 END
 
-select*from customers
-
-
-/*proc xóa customer*/
+--proc xóa customer
 CREATE or alter PROCEDURE sp_delete_customer
     @Id INT
 AS
@@ -1123,10 +1088,8 @@ BEGIN
 	where id = @Id
 END;
 go
-select * from customers
 
-
-/*proc xem cus_address*/
+--proc xem cus_address
 CREATE OR ALTER PROCEDURE sp_view_customer_address
 AS
 BEGIN
@@ -1140,11 +1103,9 @@ BEGIN
 	where is_delete = 'False'
 END
 go
-exec sp_view_customer_address
-select * from customer_addresses
+--exec sp_view_customer_address
 
-
-/*proc xem cus_address bằng id*/
+--proc xem cus_address bằng id
 CREATE OR ALTER PROCEDURE sp_view_customer_address_with_id
 @id int
 AS
@@ -1158,10 +1119,10 @@ BEGIN
     FROM customer_addresses
 	WHERE id_cus = @id and is_delete = 'False'
 END
-exec sp_view_customer_address_with_id 1006
+--exec sp_view_customer_address_with_id 1006
 
 
-/*proc them cus_address*/
+--proc them cus_address
 CREATE OR ALTER PROCEDURE sp_add_cus_address
     @address NVARCHAR(500),
     @id_cus INT,
@@ -1173,7 +1134,7 @@ BEGIN
     VALUES (@address, @id_cus, @type, @status,GETDATE(),'False');
 END
 
-/*proc sửa cus_address*/
+--proc sửa cus_address
 CREATE OR ALTER PROCEDURE sp_update_cus_address
     @id INT,
     @address NVARCHAR(500),
@@ -1204,8 +1165,10 @@ BEGIN
 END;
 go
 
-select * from customers
-select * from customer_addresses
+
+
+
+
 --------------------------------------------------------------------------------------------------------------------------------------
 --Hiếu
 -- trang tra cứu chuyến đi
@@ -1247,7 +1210,8 @@ BEGIN
     AND 
         gc.id = @TicketCode; 
 END
-EXEC sp_lookup_car @PhoneNumber = '0934567890', @TicketCode = 1;
+--EXEC sp_lookup_car @PhoneNumber = '0934567890', @TicketCode = 1;
+
 -- proc load drivers
 create or alter proc sp_getall_drivers
 as
@@ -1265,26 +1229,69 @@ as
 			from drivers where is_delete = 0 order by id desc
 			
    end
-execute sp_getall_drivers
-select * from drivers
+--execute sp_getall_drivers
+
 -- proc thêm drivers
 go
 CREATE OR ALTER PROC sp_create_drivers
- @Fullname NVARCHAR(100),
- @birthday DATETIME,
- @img_driver NVARCHAR(MAX),
- @driver_license_img1 NVARCHAR(MAX),
-  @driver_license_img2 NVARCHAR(MAX),
- @driver_license_number VARCHAR(50),
- @citizen_identity_img1 NVARCHAR(MAX),
-  @citizen_identity_img2 NVARCHAR(MAX),
- @citizen_identity_number NVARCHAR(MAX),
- @gender BIT,
- @price FLOAT,
- @voucher FLOAT,
-  @phonenumber Nvarchar(10),
-  @address Nvarchar(max),
- @status BIT
+	 @Fullname NVARCHAR(100),
+	 @birthday DATETIME,
+	 @img_driver NVARCHAR(MAX),
+	 @driver_license_img1 NVARCHAR(MAX),
+	 @driver_license_img2 NVARCHAR(MAX),
+	 @driver_license_number VARCHAR(50),
+	 @citizen_identity_img1 NVARCHAR(MAX),
+	 @citizen_identity_img2 NVARCHAR(MAX),
+	 @citizen_identity_number NVARCHAR(MAX),
+	 @gender BIT,
+	 @price FLOAT,
+	 @voucher FLOAT,
+	 @phonenumber Nvarchar(10),
+	 @address Nvarchar(max),
+	 @status BIT
+ 
+AS
+BEGIN
+	INSERT INTO drivers (
+		fullname,
+		birthday,
+		img_driver,
+		driver_license_img1,
+		driver_license_img2,
+		driver_license_number,
+		citizen_identity_img1,
+		citizen_identity_img2,
+		citizen_identity_number,
+		gender, 
+		price, 
+		voucher, 
+			phonenumber,
+		address,
+		status,
+		date_create, 
+		is_delete
+	
+	)
+	VALUES (
+		@Fullname,
+		@birthday,
+		@img_driver,
+		@driver_license_img1,
+		@driver_license_img2,
+		@driver_license_number,
+		@citizen_identity_img1,
+		@citizen_identity_img2,
+		@citizen_identity_number,
+		@gender, 
+		@price, 
+		@voucher, 
+		@phonenumber,
+		@address,
+		@status, 
+		GETDATE(),
+		0
+	);
+END
 
 -- proc get all cars
 CREATE OR ALTER PROC sp_getall_cars
@@ -1338,9 +1345,8 @@ BEGIN
 END;
 
 go
-execute sp_getall_cars
-select * from cars
-select * from car_seats
+--execute sp_getall_cars
+
 -- proc get by id cars
 CREATE OR ALTER PROC sp_get_by_id_cars
 @id int
@@ -1399,8 +1405,9 @@ BEGIN
         cs.name,
 		c.id
 END;
-exec sp_get_by_id_cars 1
-go
+--exec sp_get_by_id_cars 1
+GO
+
 -- proc get all car_seats
 create or alter proc sp_getall_car_seat
 as
@@ -1408,9 +1415,7 @@ as
 	select name, row , col, status  from car_seats 
 	end
 go
-execute sp_getall_cars
-execute sp_getall_car_seat
-select * from cars
+
 -- proc get by id car_seats
 go
 create or alter proc sp_get_by_id_car_seat
@@ -1420,8 +1425,6 @@ as
 	select name, row , col, status  from car_seats 
 	where id = @id
 	end
-go
-exec sp_get_by_id_car_seat 1
 go
 CREATE OR ALTER PROC sp_create_cars
  @car_number VARCHAR(20),   
@@ -1473,7 +1476,7 @@ BEGIN
 		0
 	);
 END
-exec sp_create_cars '72-C1-99999', 'Blue','11/11/2001', '11/11/2006', 43000,1,'đang hoạt động', 1,1,'10/14/2009', 20000,6540
+--exec sp_create_cars '72-C1-99999', 'Blue','11/11/2001', '11/11/2006', 43000,1,'đang hoạt động', 1,1,'10/14/2009', 20000,6540
 go
 -- proc create car seat
 create or alter proc sp_create_car_seats
@@ -1504,51 +1507,44 @@ as
 		);
 			
 	end
-	go
---proc get all 
---------------------------------------------Vân kiu giữ
-ALTER TABLE dbo.cars
-drop COLUMN status_vehicle_registration
--------------------------------------------------
-select * from cars
-select * from trips
-
-
+	GO
+    
 --proc update car
 go
 create or alter proc sp_update_car
-@id int,
- @car_number VARCHAR(20),   
- @color NVARCHAR(100),
- @vehical_registration_start datetime,
-  @vehical_registration_end datetime,
- @price float,
- @isAuto bit,
-  @status BIT,
- @id_type int,
- @id_brand int,
- @year_production datetime,
- @odo float,
- @insurance_fee float
+		@id int,
+		@car_number VARCHAR(20),   
+		@color NVARCHAR(100),
+		@vehical_registration_start datetime,
+		@vehical_registration_end datetime,
+		@price float,
+		@isAuto bit,
+		@status BIT,
+		@id_type int,
+		@id_brand int,
+		@year_production datetime,
+		@odo float,
+		@insurance_fee float
 as
 begin
 	update cars 
 	set 
-	car_number =@car_number,
-	color =@color,
-	vehicle_registration_start =@vehical_registration_start,
-	vehicle_registration_end = @vehical_registration_end,
-	price =@price,
-	status = @status,
-	isAuto = @isAuto,
-	id_type = @id_type ,
-	id_brand= @id_brand,
-	year_production = @year_production,
-	odo =@odo,
-	insurance_fee = @insurance_fee,
-	date_update = GETDATE() where id = @id
-end
-execute sp_update_car 1, '72-C2- 88888', 'Toyota', 'Red', '10-10-2009','10-10-2011', 55000, 0,0,1
+		car_number =@car_number,
+		color =@color,
+		vehicle_registration_start =@vehical_registration_start,
+		vehicle_registration_end = @vehical_registration_end,
+		price =@price,
+		status = @status,
+		isAuto = @isAuto,
+		id_type = @id_type ,
+		id_brand= @id_brand,
+		year_production = @year_production,
+		odo =@odo,
+		insurance_fee = @insurance_fee,
+		date_update = GETDATE() 
+	WHERE id = @id;
+end;
+--execute sp_update_car 1, '72-C2- 88888', 'Toyota', 'Red', '10-10-2009','10-10-2011', 55000, 0,0,1;
 
 go
 --proc update car_seat
@@ -1570,7 +1566,7 @@ as
 			status = @status,
 			date_update = GETDATE() where id = @id
 	end
-exec sp_update_car_seats 2, '2B', 1, 2,2,1
+--exec sp_update_car_seats 2, '2B', 1, 2,2,1
 
 	go
 -- proc delete car
@@ -1595,11 +1591,9 @@ as
 				is_delete = 'true'
 			WHERE id = @id and is_delete = 'false'
 	end
-exec sp_delete_car 1
+--exec sp_delete_car 1
 go
 
-select* from cars
-select * from car_seats
 
 AS
 BEGIN
@@ -1666,30 +1660,31 @@ BEGIN
         @PhoneNumber, 0, @IDRole
     );
 END
-EXEC sp_register 
-    @Username = 'Hehe',
-    @Password = '123',
-    @Fullname = 'HEHEHE',
-    @Birthday = '1990-01-01',
-    @Gender = 1,
-    @PhoneNumber = '0934567890',
-    @IDRole = 2;
-exec sp_create_drivers  N'Nguyen Van A', 
-    '1990-05-20', 
-    N'/images/driver_a.jpg', 
-    N'/images/license_a.jpg', 
-	N'/images/license_a.jpg', 
-    'DL123456789',
-    N'/images/citizen_a.jpg', 
-	N'/images/citizen_a.jpg',
-    'CI123456789',
-    1,           
-    100000,      
-    10000,  
-	'0334567890',
-	'Cần thơ',
-    1    
-go
+--EXEC sp_register 
+--    @Username = 'Hehe',
+--    @Password = '123',
+--    @Fullname = 'HEHEHE',
+--    @Birthday = '1990-01-01',
+--    @Gender = 1,
+--    @PhoneNumber = '0934567890',
+--    @IDRole = 2;
+--exec sp_create_drivers  N'Nguyen Van A', 
+--    '1990-05-20', 
+--    N'/images/driver_a.jpg', 
+--    N'/images/license_a.jpg', 
+--	N'/images/license_a.jpg', 
+--    'DL123456789',
+--    N'/images/citizen_a.jpg', 
+--	N'/images/citizen_a.jpg',
+--    'CI123456789',
+--    1,           
+--    100000,      
+--    10000,  
+--	'0334567890',
+--	'Cần thơ',
+--    1    
+--go
+
 --proc sửa thông tin tài xế
 CREATE OR ALTER PROC sp_update_driver
     @id INT,
@@ -1730,35 +1725,31 @@ BEGIN
         status = @status
     WHERE id = @id;
 
-select * from customers
-select * from guest_car
-    -- Return the updated record
     SELECT * FROM drivers WHERE id = @id;
 END
 
-UPDATE customers SET password = '123' WHERE username = 'cus_user'
-select * from drivers
+--UPDATE customers SET password = '123' WHERE username = 'cus_user'
 
-select * from car_seat
-EXEC sp_update_driver 
-    @id = 11,
-    @fullname = N'Nguyen hêheeee',
-    @birthday = '1990-01-01',
-    @img_driver = N'/images/driver_d.jpg',
-    @driver_license_img1 = N'/images/license_d.jpg',
-	    @driver_license_img2 = N'/images/license_d.jpg',
+--EXEC sp_update_driver 
+--    @id = 11,
+--    @fullname = N'Nguyen hêheeee',
+--    @birthday = '1990-01-01',
+--    @img_driver = N'/images/driver_d.jpg',
+--    @driver_license_img1 = N'/images/license_d.jpg',
+--	    @driver_license_img2 = N'/images/license_d.jpg',
 
-    @driver_license_number = 'DL112233445',
-    @citizen_identity_img1 = N'/images/citizen_d.jpg',
-	    @citizen_identity_img2 = N'/images/citizen_d.jpg',
-    @citizen_identity_number = 'CI112233445',
-    @gender = 1,
-    @price = 130000,
-    @voucher = 10000,
-	@phonenumber = '0334567890',
-	@address = N'Cần thơ',
-    @status = 1
-go
+--    @driver_license_number = 'DL112233445',
+--    @citizen_identity_img1 = N'/images/citizen_d.jpg',
+--	    @citizen_identity_img2 = N'/images/citizen_d.jpg',
+--    @citizen_identity_number = 'CI112233445',
+--    @gender = 1,
+--    @price = 130000,
+--    @voucher = 10000,
+--	@phonenumber = '0334567890',
+--	@address = N'Cần thơ',
+--    @status = 1
+--go
+
 --proc xóa tài xế
 CREATE OR ALTER PROC sp_delete_driver
     @id INT
@@ -1770,9 +1761,8 @@ BEGIN
     WHERE id = @id and is_delete = 'false'
 END
 
-execute sp_delete_driver  1
+--execute sp_delete_driver  1
 
-select * from drivers
 --proc get drivers by id
 go
 CREATE OR ALTER PROC sp_get_driver_by_id
@@ -1793,7 +1783,7 @@ BEGIN
     WHERE id = @id;
 END
 
-exec sp_get_driver_by_id 17
+--exec sp_get_driver_by_id 17
 
 go
 --------------------------------------------------------------------------------------------------------------------------------------
@@ -1811,7 +1801,7 @@ AS
 	END
 GO
 
-EXEC select_News
+--EXEC select_News
 
 --PROC SELECT NEWS ID
 CREATE OR ALTER PROC sp_getid_news1
@@ -1828,7 +1818,7 @@ AS
 	END
 GO
 
-EXEC sp_getid_news1 5
+--EXEC sp_getid_news 5
 
 --PROC CREATE NEWS
 CREATE OR ALTER PROC sp_add_news1
@@ -1844,9 +1834,9 @@ AS
 	END
 GO
 
-EXEC create_News N'TestNewsImg10', 'TestTitle10', 'TestContent10', 1, 1
+--EXEC create_News N'TestNewsImg10', 'TestTitle10', 'TestContent10', 1, 1
 
---PROC UPDATE ROLE
+--PROC UPDATE news1
 CREATE OR ALTER PROC sp_update_news1
 	@news_img nvarchar(max),
 	@title nvarchar(500),
@@ -1868,7 +1858,7 @@ AS
 	END
 GO
 
-EXEC update_News N'TestNewsImg9', 'TestTitle9', 'TestContent9', 1, 0, 5
+--EXEC update_News N'TestNewsImg9', 'TestTitle9', 'TestContent9', 1, 0, 5
 
 --PROC DELETE ROLE
 CREATE OR ALTER PROC sp_delete_news1
@@ -1884,7 +1874,7 @@ AS
 	END
 GO
 
-EXEC sp_delete_news1 8
+--EXEC sp_delete_news1 8
 --------------------------LOCATION-------------------------------
 
 --SELECT LOCATION
@@ -1897,7 +1887,102 @@ AS
 		ORDER BY id DESC
 	END
 GO
-exec sp_view_location
+--exec sp_view_location
+
+--SELECT LOCATION ID
+CREATE OR ALTER PROC sp_getid_location
+	@id int
+AS
+	BEGIN
+		SELECT id, name, address, phone_number, location_code, status
+		FROM locations
+		WHERE id = @id
+		AND is_delete = 'False'
+		ORDER BY id DESC
+	END
+GO
+--EXEC sp_updateemployee 
+--    @id_emp = 1,
+--    @user_name = 'new_user',
+--    @pass_word = 'new_pass',
+--    @full_name = 'Updated Name',
+--    @birthday = '1990-01-01',
+--    @citizen_identity_img = 'new_image_path',
+--    @citizen_identity_number = '123456789',
+--    @gender = 1,
+--    @is_delete = 0,
+--    @id_role = 1;
+
+--exec sp_getid_location 6
+
+--CREATE LOCATION
+CREATE OR ALTER PROC sp_add_location
+	@name nvarchar(500),
+	@address nvarchar(500),
+	@phone_number nvarchar(20),
+	@location_code VARCHAR(20),
+	@status bit
+AS
+	BEGIN
+		INSERT INTO locations(name, address, phone_number, date_create, is_delete, location_code, status)
+		VALUES(@name, @address, @phone_number, GETDATE(), 0, @location_code, @status)
+	END
+GO
+
+--Xoa Employees
+CREATE OR ALTER PROCEDURE sp_delete_employee
+    @id_emp INT
+AS
+BEGIN
+    UPDATE employees
+    SET 
+        is_delete = 'True',
+        date_update = GETDATE()
+    WHERE 
+        id = @id_emp 
+    And is_delete = 'False'
+    END
+--exec sp_add_location 'testname', 'Cà Mau', '0916778799', 10, 1
+
+--EDIT LOCATION
+CREATE OR ALTER PROC sp_update_location
+	@name nvarchar(500),
+	@address nvarchar(500),
+	@phone_number nvarchar(20),
+	@location_code VARCHAR(20),
+	@status bit,
+	@id int
+AS
+	BEGIN
+		UPDATE locations SET
+		name = @name,
+		address = @address,
+		phone_number = @phone_number,
+		date_update = GETDATE(),
+		location_code = @location_code,
+		status = @status
+		WHERE id = @id
+		AND is_delete = 'False'
+	END
+GO
+
+--exec sp_update_location '1', '1', '1', '1', 1, 6
+
+--DELETE LOCATION
+CREATE OR ALTER PROC sp_delete_location
+	@id int
+AS
+	BEGIN
+		UPDATE locations
+		SET
+			is_delete = 1,
+			date_update = GETDATE()
+		WHERE id = @id
+			AND is_delete = 0
+	END
+GO
+
+--EXEC sp_delete_location 8
 
 
 --------------------------------------------------------------------------------------------------------------------------------------
@@ -1926,9 +2011,8 @@ as
 		where is_delete = 'False'
 		order by employees.id desc
 	end
+--exec sp_view_Employees
 
-	
-exec sp_view_Employees
 --GetIDEmployess
 create or alter proc sp_view_EmployeesID
 	@id int
@@ -1950,9 +2034,7 @@ as
 			--and isDelete = 'False'
 		order by id desc
 	end
-
-
-exec sp_view_EmployeesID 1;
+--exec sp_view_EmployeesID 1;
 
 --them employess
 CREATE OR ALTER PROCEDURE sp_add_employee
@@ -1998,15 +2080,15 @@ BEGIN
 END
 GO
 
-EXEC sp_add_employee 
-    @user_name = 'thinh',
-    @pass_word = '09890',
-    @full_name = N'le hoang thinh',
-    @birthday = '1990-01-01',
-    @citizen_identity_img = 'hehee',
-    @citizen_identity_number = '123456789',
-    @gender = False,
-    @id_role = 1;
+--EXEC sp_add_employee 
+--    @user_name = 'thinh',
+--    @pass_word = '09890',
+--    @full_name = N'le hoang thinh',
+--    @birthday = '1990-01-01',
+--    @citizen_identity_img = 'hehee',
+--    @citizen_identity_number = '123456789',
+--    @gender = False,
+--    @id_role = 1;
 
 --sua employees
 CREATE OR ALTER PROCEDURE sp_updateemployee
@@ -2036,105 +2118,3 @@ BEGIN
     WHERE
         id = @id_emp;
 END
-
---SELECT LOCATION ID
-CREATE OR ALTER PROC sp_getid_location
-	@id int
-AS
-	BEGIN
-		SELECT id, name, address, phone_number, location_code, status
-		FROM locations
-		WHERE id = @id
-		AND is_delete = 'False'
-		ORDER BY id DESC
-	END
-GO
-EXEC sp_updateemployee 
-    @id_emp = 1,
-    @user_name = 'new_user',
-    @pass_word = 'new_pass',
-    @full_name = 'Updated Name',
-    @birthday = '1990-01-01',
-    @citizen_identity_img = 'new_image_path',
-    @citizen_identity_number = '123456789',
-    @gender = 1,
-    @is_delete = 0,
-    @id_role = 1;
-
-exec sp_getid_location 6
-
---CREATE LOCATION
-CREATE OR ALTER PROC sp_add_location
-	@name nvarchar(500),
-	@address nvarchar(500),
-	@phone_number nvarchar(20),
-	@location_code VARCHAR(20),
-	@status bit
-AS
-	BEGIN
-		INSERT INTO locations(name, address, phone_number, date_create, is_delete, location_code, status)
-		VALUES(@name, @address, @phone_number, GETDATE(), 0, @location_code, @status)
-	END
-GO
---Xoa Employees
-CREATE OR ALTER PROCEDURE sp_delete_employee
-    @id_emp INT
-AS
-BEGIN
-    UPDATE employees
-    SET 
-        is_delete = 'True',
-        date_update = GETDATE()
-    WHERE 
-        id = @id_emp 
-    And is_delete = 'False'
-    END
-
-
-exec sp_add_location 'testname', 'Cà Mau', '0916778799', 10, 1
---EDIT LOCATION
-CREATE OR ALTER PROC sp_update_location
-	@name nvarchar(500),
-	@address nvarchar(500),
-	@phone_number nvarchar(20),
-	@location_code VARCHAR(20),
-	@status bit,
-	@id int
-AS
-	BEGIN
-		UPDATE locations SET
-		name = @name,
-		address = @address,
-		phone_number = @phone_number,
-		date_update = GETDATE(),
-		location_code = @location_code,
-		status = @status
-		WHERE id = @id
-		AND is_delete = 'False'
-	END
-GO
-
-exec sp_update_location '1', '1', '1', '1', 1, 6
-
---DELETE LOCATION
-CREATE OR ALTER PROC sp_delete_location
-	@id int
-AS
-	BEGIN
-		UPDATE locations
-		SET
-			is_delete = 1,
-			date_update = GETDATE()
-		WHERE id = @id
-			AND is_delete = 0
-	END
-GO
-
-EXEC sp_delete_location 8
-
-
-
---------------------------------------------------------------------------------------------------------------------------------------
---Thịnh
-
-exec sp_delete_employee 2;
