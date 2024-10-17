@@ -1,0 +1,178 @@
+﻿@page "/getcarbrands"
+@inject HttpClient httpClient
+@inject IJSRuntime js
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid Class="pa-0">
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+            <MudPaper Elevation="0">
+                <MudDataGrid Class="mx-auto pa-2" T="car_brands" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                             Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+                    <ToolBarContent>
+                        <MudItem xs="4" Elevation="0" Class="pb-3">
+                            <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        </MudItem>
+
+                        <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
+                            <MudButton Href="/addcarbrands" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                                Thêm mới
+                            </MudButton>
+
+                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
+                                Nhập file
+                            </MudButton>
+
+                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
+                                Xuất file
+                            </MudButton>
+                        </MudItem>
+                    </ToolBarContent>
+                    <Columns>
+                        <SelectColumn T="car_brands" />
+                        @* <PropertyColumn T="role_task" TProperty="int" Property="x => x.id_role_task" /> *@
+                        <PropertyColumn T="car_brands" Style="width: 80%;" TProperty="string" Property="x => x.name" SortBy="@_sortBy" Class="fw-bold" Title="Tên Hãng Xe" />
+
+                        <TemplateColumn T="car_brands" Class="fw-bold" Title="Chức năng">
+                            <CellTemplate Context="element">
+                                <MudTooltip Text="Chỉnh sửa">
+                                    <MudIconButton Href="@($"/editcarbrands/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                </MudTooltip>
+                                <MudTooltip Text="Xóa">
+                                    <MudIconButton OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
+                                </MudTooltip>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="car_brands" />
+                    </PagerContent>
+                </MudDataGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private IEnumerable<car_brands> Elements = new List<car_brands>();
+    private Dictionary<int, string> CategoryDict = new Dictionary<int, string>();
+    private string _searchString;
+    private bool _sortNameByLength;
+    private List<string> _events = new();
+    private string url = "http://localhost:49922/api/CarBrands";
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+            {
+            new BreadcrumbItem("Bài Viết", href: "/getcarbrands", icon: @Icons.Material.Outlined.WorkOutline),
+            new BreadcrumbItem("Danh sách bài viết", href: "/getcarbrands", icon: @Icons.Material.Outlined.List),
+            };
+
+    private Func<car_brands, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.name.Length;
+        else
+            return x.name;
+    };
+
+    private string GenerateEditUrl(int id)
+    {
+        return $"/updatecarbrands/{id}";
+    }
+
+    private string GenerateDeleteUrl(int id)
+    {
+        return $"/deletecarbrands/{id}";
+    }
+
+    private string GetCarBrandsName(int id)
+    {
+        return CategoryDict.TryGetValue(id, out var name) ? name : "Unknown";
+    }
+
+    private Func<car_brands, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if ($"{x.name} {x.id} {GetCarBrandsName(x.id)}".Contains(_searchString))
+            return true;
+
+        return false;
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Elements = await httpClient.GetFromJsonAsync<List<car_brands>>(url);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+    private async Task OpenDeleteDialog(car_brands car_brands)
+    {
+
+        var parameters = new DialogParameters
+    {
+        { "ContentText", $"Bạn có chắc chắn muốn xóa tên hãng xe { car_brands.name}?" },
+        { "ButtonText", "Xóa" },
+        { "Color", Color.Error }
+    };
+
+        var options = new DialogOptions() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await DialogService.ShowAsync<Delete>("Xác nhận xóa", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            await DeleteCarBrands(car_brands);
+        }
+    }
+    private async Task DeleteCarBrands(car_brands car_brands)
+    {
+        try
+        {
+            var response = await httpClient.DeleteAsync($"{url}/{car_brands.id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add($"Đã xóa tên hãng xe {car_brands.name} thành công", Severity.Success);
+                await OnInitializedAsync();  // Tải lại danh sách sau khi xóa
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Lỗi khi xóa vị trí: {response.ReasonPhrase}. Chi tiết: {errorContent}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi xóa vị trí: {ex.Message}", Severity.Error);
+        }
+    }
+
+
+    void RowClicked(DataGridRowClickEventArgs<car_brands> args)
+    {
+        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void RowRightClicked(DataGridRowClickEventArgs<car_brands> args)
+    {
+        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void SelectedItemsChanged(HashSet<car_brands> items)
+    {
+        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+}

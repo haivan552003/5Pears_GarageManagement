@@ -1835,21 +1835,6 @@ AS
 	END
 GO
 
---Xoa Employees
-CREATE OR ALTER PROCEDURE sp_delete_employee
-    @id_emp INT
-AS
-BEGIN
-    UPDATE employees
-    SET 
-        is_delete = 'True',
-        date_update = GETDATE()
-    WHERE 
-        id = @id_emp 
-    And is_delete = 'False'
-    END
---exec sp_add_location 'testname', 'Cà Mau', '0916778799', 10, 1
-
 --EDIT LOCATION
 CREATE OR ALTER PROC sp_update_location
 	@name nvarchar(500),
@@ -1889,6 +1874,152 @@ AS
 GO
 
 --EXEC sp_delete_location 8
+
+--------------------------CarBrands-------------------------------
+
+--SELECT CarBrands
+CREATE OR ALTER PROC sp_view_car_brands
+AS
+	BEGIN
+		SELECT id, name
+		FROM car_brands
+		WHERE is_delete = 'False'
+		ORDER BY id DESC
+	END
+GO
+exec sp_view_car_brands
+
+--SELECT CarBrands ID
+CREATE OR ALTER PROC sp_getid_car_brands
+	@id int
+AS
+	BEGIN
+		SELECT id, name
+		FROM car_brands
+		WHERE id = @id
+		AND is_delete = 'False'
+		ORDER BY id DESC
+	END
+GO
+
+exec sp_getid_car_brands 1
+
+--CREATE CarBrands
+CREATE OR ALTER PROC sp_add_car_brands
+	@name nvarchar(150)
+AS
+	BEGIN
+		INSERT INTO car_brands(name, is_delete, date_create)
+		VALUES(@name, 0, GETDATE())
+	END
+GO
+
+exec sp_add_car_brands 'test_add'
+
+--EDIT CarBrands
+CREATE OR ALTER PROC sp_update_car_brands
+	@name nvarchar(150),
+	@id int
+AS
+	BEGIN
+		UPDATE car_brands SET
+		name = @name,
+		date_update = GETDATE()
+		WHERE id = @id
+		AND is_delete = 'False'
+	END
+GO
+
+exec sp_update_car_brands 'update', 2
+
+--DELETE CarBrands
+CREATE OR ALTER PROC sp_delete_car_brands
+	@id int
+AS
+	BEGIN
+		UPDATE car_brands
+		SET
+			is_delete = 1,
+			date_update = GETDATE()
+		WHERE id = @id
+			AND is_delete = 0
+	END
+GO
+
+exec sp_delete_car_brands 1
+
+--------------------------CarTypes-------------------------------
+
+--SELECT CarTypes
+CREATE OR ALTER PROC sp_view_car_types
+AS
+	BEGIN
+		SELECT id, name
+		FROM car_types
+		WHERE is_delete = 'False'
+		ORDER BY id DESC
+	END
+GO
+exec sp_view_car_types
+
+--SELECT CarTypes ID
+CREATE OR ALTER PROC sp_getid_car_types
+	@id int
+AS
+	BEGIN
+		SELECT id, name
+		FROM car_types
+		WHERE id = @id
+		AND is_delete = 'False'
+		ORDER BY id DESC
+	END
+GO
+
+exec sp_getid_car_types 1
+
+--CREATE CarTypes
+CREATE OR ALTER PROC sp_add_car_types
+	@name nvarchar(150)
+AS
+	BEGIN
+		INSERT INTO car_types(name, is_delete, date_create)
+		VALUES(@name, 0, GETDATE())
+	END
+GO
+
+exec sp_add_car_types 'test_add'
+
+--EDIT CarTypes
+CREATE OR ALTER PROC sp_update_car_types
+	@name nvarchar(150),
+	@id int
+AS
+	BEGIN
+		UPDATE car_types SET
+		name = @name,
+		date_update = GETDATE()
+		WHERE id = @id
+		AND is_delete = 'False'
+	END
+GO
+
+exec sp_update_car_types 'update', 1
+
+--DELETE CarTypes
+CREATE OR ALTER PROC sp_delete_car_types
+	@id int
+AS
+	BEGIN
+		UPDATE car_types
+		SET
+			is_delete = 1,
+			date_update = GETDATE()
+		WHERE id = @id
+			AND is_delete = 0
+	END
+GO
+
+exec sp_delete_car_types 1
 
 
 --------------------------------------------------------------------------------------------------------------------------------------

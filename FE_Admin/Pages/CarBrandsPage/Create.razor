@@ -1,0 +1,94 @@
+﻿@page "/addcarbrands"
+@inject HttpClient httpClient
+@inject IJSRuntime js
+@inject ISnackbar Snackbar
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    @if (showSuccess)
+    {
+        <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
+            Thêm thành công
+        </MudAlert>
+    }
+    else if (showError)
+    {
+        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
+            Thêm thất bại
+        </MudAlert>
+    }
+
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" Class="mx-auto">
+            <MudPaper Elevation="0" Class="pa-3">
+                <MudItem xs="12">
+                    <MudPaper Elevation="4" Class="p-4">
+                        <MudText Typo="Typo.h6" Class="mb-5">Thêm Hãng Xe</MudText>
+                        <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
+
+                            <MudTextField ShrinkLabel @bind-Value="CarBrands.name" Label="Tên Hãng Xe"
+                                          Validation="@(new Func<string, IEnumerable<string>>(CarBrandsValidate))"
+                                          Placeholder="Địa Chỉ" Variant="Variant.Outlined" Required="true" />
+
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddCarBrands" Class="mt-3">Lưu</MudButton>
+                        </MudForm>
+                    </MudPaper>
+                </MudItem>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private car_brands CarBrands = new car_brands();
+    private bool isFormValid = false;
+    private bool showSuccess = false;
+    private bool showError = false;
+    private MudForm form;
+    private string url = "http://localhost:49922/api/CarBrands";
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Địa Chỉ", href: "/getcarbrands", icon: @Icons.Material.Outlined.WorkOutline),
+        new BreadcrumbItem("Danh sách địa chỉ", href: "/getcarbrands", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Thêm mới", href: "/addcarbrands", icon: @Icons.Material.Filled.AddCircleOutline),
+    };
+
+    private IEnumerable<string> CarBrandsValidate(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            yield return "Vui lòng điền thông tin";
+            yield break;
+        }
+    }
+
+    private async Task AddCarBrands()
+    {
+        try
+        {
+            if (form.IsValid)
+            {
+                var response = await httpClient.PostAsJsonAsync(url, CarBrands);
+                if (response.IsSuccessStatusCode)
+                {
+                    CarBrands.name = null;
+
+                    Snackbar.Add($"Thêm thành công", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add($"Thêm thất bại", Severity.Warning);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Thêm thất bại", Severity.Warning);
+        }
+    }
+}
