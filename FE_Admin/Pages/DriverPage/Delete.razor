@@ -1,6 +1,4 @@
-﻿@inject MudBlazor.ISnackbar Snackbar
-
-<MudDialog>
+﻿<MudDialog>
     <DialogContent>
         <MudText>@ContentText</MudText>
     </DialogContent>
@@ -11,11 +9,13 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
     [Parameter] public string ContentText { get; set; }
     [Parameter] public string ButtonText { get; set; } = "Xóa";
     [Parameter] public Color Color { get; set; } = Color.Error;
 
-    void Submit() => MudDialog.Close(DialogResult.Ok(true));
-    void Cancel() => MudDialog.Close(DialogResult.Cancel());
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Close(DialogResult.Cancel());
 }

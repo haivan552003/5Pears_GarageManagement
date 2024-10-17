@@ -68,10 +68,9 @@
                                     <MudIconButton Href="@($"/editdriver/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
                                 </MudTooltip>
                                 <MudTooltip Text="Xóa">
-                                    <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small"
+                                    <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small"                    
                                                    OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" />
                                 </MudTooltip>
-
                             </CellTemplate>
                         </TemplateColumn>
                     </Columns>
@@ -92,7 +91,7 @@
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Tài xế", href: "/getDriver", icon: Icons.Material.Outlined.Person),
+        new BreadcrumbItem("Tài xế", "/", icon: Icons.Material.Outlined.SupervisedUserCircle),
         new BreadcrumbItem("Danh sách tài xế", href: null, icon: Icons.Material.Outlined.List),
     };
 
@@ -120,16 +119,15 @@
             Snackbar.Add($"Lỗi khi tải danh sách tài xế: {ex.Message}", Severity.Error);
         }
     }
-
     private async Task OpenDeleteDialog(driver driver)
     {
 
         var parameters = new DialogParameters
-        {
-            { "ContentText", $"Bạn có chắc chắn muốn xóa tài xế { driver.fullname}?" },
-            { "ButtonText", "Xóa" },
-            { "Color", Color.Error }
-        };
+    {
+        { "ContentText", $"Bạn có chắc chắn muốn xóa tài xế { driver.fullname}?" },
+        { "ButtonText", "Xóa" },
+        { "Color", Color.Error }
+    };
 
         var options = new DialogOptions() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall };
 
@@ -149,7 +147,7 @@
             if (response.IsSuccessStatusCode)
             {
                 Snackbar.Add($"Đã xóa tài xế {driver.fullname} thành công", Severity.Success);
-                await LoadDrivers();  // Tải lại danh sách sau khi xóa
+                await LoadDrivers(); 
             }
             else
             {
