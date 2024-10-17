@@ -42,8 +42,7 @@ namespace BE_API.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@img_banner", banner.img_banner);
                 cmd.Parameters.AddWithValue("@title", banner.title);
-                cmd.Parameters.AddWithValue("@id_emp", banner.id_emp);
-                cmd.Parameters.AddWithValue("@status", banner.status);
+                cmd.Parameters.AddWithValue("@emp_id", banner.emp_id);
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
@@ -84,8 +83,28 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.Parameters.AddWithValue("@title", banner.title);
                 cmd.Parameters.AddWithValue("@img_banner", banner.img_banner);
-                cmd.Parameters.AddWithValue("@status", banner.status);
-                cmd.Parameters.AddWithValue("@id_emp", banner.id_emp);
+
+                await conn.OpenAsync();
+
+                int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                if (rowsAffected == 0)
+                {
+                    return NotFound();
+                }
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBanner(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                SqlCommand cmd = new SqlCommand("sp_delete_banner", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Id", id);
                 await conn.OpenAsync();
 
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();

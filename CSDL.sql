@@ -761,33 +761,30 @@ as
 		b.id,
 		b.img_banner,
 		b.title,
-		b.id_emp, 
-		e.fullname,
-		b.status
+		b.emp_id, 
+		e.fullname
 		FROM dbo.banners b
 		JOIN dbo.employees e
-		ON e.id = b.id_emp
+		ON e.id = b.emp_id
 		WHERE b.is_delete = 'False'
 		ORDER BY b.id DESC
    end
 
    --exec sp_view_banner
-
+   
 --proc them banner
 create or alter proc sp_add_banner
 	@img_banner nvarchar(MAX),
 	@title nvarchar(500),
-	@id_emp int,
-	@status bit
-as
+	@emp_id int
+	as
 	begin
 		insert into banners
 		(
 		img_banner,
 		title,
 		date_create,
-		id_emp,
-		status, 
+		emp_id,
 		is_delete
 		)
 	values
@@ -795,8 +792,7 @@ as
 		@img_banner,
 		@title,
 		GETDATE(),
-		@id_emp,
-		@status,
+		@emp_id,
 		0
 		)
 	end
@@ -822,14 +818,16 @@ create or alter proc sp_getid_banner
 as
 	begin
 		select 
-		id, 
-		title,
-		img_banner,
-		status,
-		id_emp
-		FROM dbo.banners
-		where id = @id
-				AND is_delete = 'False'
+		b.id, 
+		b.title,
+		b.img_banner,
+		b.emp_id,
+		e.fullname
+		FROM dbo.banners b
+		JOIN dbo.employees e
+		ON b.emp_id = e.id
+		where b.id = @id
+				AND b.is_delete = 'False'
 		order by id desc
 	end
 
@@ -839,17 +837,13 @@ as
 create or alter proc sp_update_banner
 	@id int,
 	@title nvarchar(250),
-	@img_banner nvarchar(MAX),
-	@status bit,
-	@id_emp int
+	@img_banner nvarchar(MAX)
 as
 	begin
 	update dbo.banners
 	set
 		title = @title,
 		img_banner = @img_banner,
-		status = @status,
-		id_emp = @id_emp,
 		date_update = GETDATE(),
 		is_delete = 'False'
 	where
@@ -861,7 +855,16 @@ as
 
 --EXEC sp_dropdown_user
 
-
+--sp xóa banner
+CREATE OR ALTER PROC sp_delete_banner
+    @id INT
+AS
+BEGIN
+    update dbo.banners
+	set
+		is_delete = 'true'
+    WHERE id = @id and is_delete = 'false'
+END
 
 
 --------------------------------------------------------------------------------------------------------------------------------------
@@ -1541,49 +1544,6 @@ as
 go
 
 
-AS
-BEGIN
-	INSERT INTO drivers (
-		fullname,
-		birthday,
-		img_driver,
-		driver_license_img1,
-		driver_license_img2,
-		driver_license_number,
-		citizen_identity_img1,
-		citizen_identity_img2,
-		citizen_identity_number,
-		gender, 
-		price, 
-		voucher, 
-			phonenumber,
-		address,
-		status,
-		date_create, 
-		is_delete
-	
-	)
-	VALUES (
-		@Fullname,
-		@birthday,
-		@img_driver,
-		@driver_license_img1,
-		@driver_license_img2,
-		@driver_license_number,
-		@citizen_identity_img1,
-		@citizen_identity_img2,
-		@citizen_identity_number,
-		@gender, 
-		@price, 
-		@voucher, 
-		@phonenumber,
-		@address,
-		@status, 
-		GETDATE(),
-		0
-	);
-END
-
 -- đăng ký
 CREATE or ALTER PROCEDURE sp_register
     @Username VARCHAR(50),
@@ -2064,200 +2024,3 @@ BEGIN
     WHERE
         id = @id_emp;
 END
---Thịnh
-create or alter proc sp_Get_Trips
-as
-begin
-    select 
-        id,
-        img_trip,
-        [from],
-        [to],
-      
-        date_create,
-        date_update,
-        is_delete,
-        emp_create,
-		trip_code,
-		status,
-		is_return
-    from trips
-    where is_delete = 0  -- Lọc các chuyến đi chưa bị xóa
-    order by date_create desc;
-end
-
-exec sp_Get_Trips;
-
-
--- get id 
-create or alter proc sp_GetTripsID
-	@id int
-as
-	begin
-		select 
-		id,
-		img_trip,
-        [from],
-        [to],
-      
-        date_create,
-        date_update,
-        is_delete,
-        emp_create,
-		trip_code,
-		status,
-		is_return
-		id_role from trips
-		where id = @id
-			--and isDelete = 'False'
-		order by id desc
-	end
-
-
-exec sp_GetTripsID 2;
-
---them trip
-CREATE OR ALTER PROCEDURE sp_add_trip
-    @img_trip nvarchar(max),
-    @from nvarchar(500),
-    @to nvarchar(500),
- 
-    @date_create datetime,
-    @date_update datetime,
-    @is_delete bit,
-    @emp_create int,
-    @trip_code varchar(20),
-    @status bit,
-    @is_return bit
-AS
-BEGIN
-    -- Thêm dữ liệu vào bảng trips
-    INSERT INTO trips
-    (
-        img_trip,
-        [from],
-        [to],
-      
-        date_create,
-        date_update,
-        is_delete,
-        emp_create,
-        trip_code,
-        status,
-        is_return
-    )
-    VALUES
-    (
-        @img_trip,
-        @from,
-        @to,
-        
-        @date_create,
-        @date_update,
-        @is_delete,
-        @emp_create,
-        @trip_code,
-        @status,
-        @is_return
-    );
-END
-GO
-
-exec sp_add_trip 
-    @img_trip = 'buông ba nơi xa', 
-    @from = N'Cần Thơ',                           
-    @to = N'Vũng Tàu',                                               
-    @date_create = '',                     
-    @date_update = '',                     
-    @is_delete = 0,                             
-    @emp_create = 1,                              
-    @trip_code = 'bababa',                      
-    @status = 1,                                  
-    @is_return = 0;                               
-
--- sửa Trips
-CREATE OR ALTER PROCEDURE sp_update_trip
-    @id_trip INT,
-    @img_trip NVARCHAR(MAX),
-    @from NVARCHAR(500),
-    @to NVARCHAR(500),
-   
-    @date_update DATETIME,
-    @is_delete BIT,
-    @emp_create INT,
-    @trip_code VARCHAR(20),
-    @status BIT,
-    @is_return BIT
-AS
-BEGIN
-    UPDATE trips
-    SET
-        img_trip = @img_trip,
-        [from] = @from,
-        [to] = @to,       
-        date_update = @date_update,  
-        is_delete = @is_delete,      
-        emp_create = @emp_create,    
-        trip_code = @trip_code,      
-        status = @status,            
-        is_return = @is_return       
-    WHERE
-        id = @id_trip;
-END
-
-EXEC sp_update_trip 
-    @id_trip = 3, 
-    @img_trip = N'COn Cu', 
-    @from = N'Hà Nội', 
-    @to = N'Hồ Chí Minh',  
-    @date_update = '', 
-    @is_delete = 0, 
-    @emp_create = 1, 
-    @trip_code = 'TRIP123', 
-    @status = 1, 
-    @is_return = 0;
-
-
---xoa trips
-CREATE OR ALTER PROCEDURE sp_delete_trips
-    @id INT
-AS
-BEGIN
-    UPDATE trips
-    SET 
-        is_delete = 'True',
-        date_update = GETDATE()
-    WHERE 
-        id = @id 
-    And is_delete = 'False'
-    END
-
-
-exec sp_delete_trips 2;
-
---lấy dữ liệu mới nhất 
-CREATE OR ALTER PROCEDURE sp_get_latest_trips_top5
-AS
-BEGIN
-    SELECT TOP 5
-        id, 
-        img_trip, 
-        [from], 
-        [to], 
-        date_create, 
-        date_update, 
-        is_delete, 
-        emp_create, 
-        trip_code, 
-        status, 
-        is_return
-    FROM 
-        trips
-    WHERE 
-        is_delete = 0  -- Chỉ lấy các chuyến đi chưa bị xóa
-    ORDER BY 
-        date_create DESC;  -- Dữ liệu mới nhất đứng đầu
-END
-
-EXEC sp_get_latest_trips_top5;
-

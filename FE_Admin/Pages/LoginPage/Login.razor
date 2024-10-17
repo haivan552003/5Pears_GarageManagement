@@ -1,31 +1,42 @@
 ﻿@page "/login"
-@using FE_Admin.ModelCustom
 @inject HttpClient Http
 @inject IJSRuntime js
 @inject NavigationManager NavigationManager
+@layout EmptyLayout
 
-<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
-    <MudGrid>
-        <MudItem xs="12" sm="7">
-            <MudCard>
-                <MudCardContent>
-                    <MudTextField Label="Email" Class="mt-3"
-                                  @bind-Value="model.email" For="@(() => model.email)" />
-                    <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
-                                  @bind-Value="model.password" For="@(() => model.password)" InputType="InputType.Password" />
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Đăng nhập</MudButton>
-                </MudCardActions>
-                @if (LoginFailed)
-                {
-                    <MudAlert Severity="Severity.Error" Class="mt-2">Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.</MudAlert>
-                }
-            </MudCard>
+<MudContainer Class="mt-16 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid Class="pa-0">
+        <MudItem xs="3" Class="mx-auto">
+            <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudCard>
+                            <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center pt-5">BOXCARS</MudText>
+                            <MudCardContent>
+                                <MudTextField Label="Email" Class="mt-3"
+                                              Variant="Variant.Outlined"
+                                              Placeholder="Email"
+                                              @bind-Value="model.email" For="@(() => model.email)" />
+                                <MudTextField Label="Password" Class="mt-3"
+                                              Variant="Variant.Outlined"
+                                              Placeholder="Password"
+                                              @bind-Value="model.password" For="@(() => model.password)" InputType="InputType.Password" />
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Đăng nhập</MudButton>
+                            </MudCardActions>
+                            @if (LoginFailed)
+                            {
+                                <MudAlert Severity="Severity.Error" Class="mt-2">Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.</MudAlert>
+                            }
+                        </MudCard>
+                    </MudItem>
+                </MudGrid>
+            </EditForm>
         </MudItem>
     </MudGrid>
-</EditForm>
+</MudContainer>
 
 
 @code {

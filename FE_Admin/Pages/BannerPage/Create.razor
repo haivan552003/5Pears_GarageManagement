@@ -11,48 +11,44 @@
                 <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
             </MudPaper>
         </MudItem>
-        <MudItem xs="6" Class="mx-auto">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudItem xs="12">
-                    <MudPaper Elevation="4" Class="p-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Thêm công việc</MudText>
-                        <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
-                            <MudTextField ShrinkLabel @bind-Value="newBanner.title" Label="Tiêu đề"
-                                          Validation="@(new Func<string, IEnumerable<string>>(BannerValidate))"
-                                          Placeholder="Tên công việc" Variant="Variant.Outlined" Required="true" />
+        <MudItem xs="4" Class="mx-auto">
+            <MudPaper Elevation="4" Class="pa-3">
+                <MudText Typo="Typo.h6" Class="mb-3">Thêm banner</MudText>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudPaper Elevation="0">
+                            <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto" Class="mud-width-full">
 
-                            <InputFile OnChange="HandleFileSelected" accept="image/*" />
-
-                            <!-- Hiển thị hình ảnh xem trước -->
-                            @if (!string.IsNullOrEmpty(imagePreviewUrl))
-                            {
-                                <MudImage Fluid="true" Src="@imagePreviewUrl" Class="rounded-lg" Width="200" Height="100" />
-                            }
-
-                            <MudTextField ShrinkLabel @bind-Value="newBanner.status" Label="Trạng thái"
-                                          Placeholder="Trạng thái" Variant="Variant.Outlined" Required="true" />
-
-                            <MudSelect @bind-Value="newBanner.id_emp" Placeholder="Chọn người tạo" Label="Người tạo" Required="true" Variant="Variant.Outlined">
-                                @foreach (var user in dropdowns)
+                                <InputFile id="licenseInput2" OnChange="HandleFileSelected" accept="image/*" style="display: none;" />
+                                @if (!string.IsNullOrEmpty(imagePreviewUrl))
                                 {
-                                    <MudSelectItem Value="@user.id">
-                                        <img src="@user.img" height="25" class="mr-1" /> @user.name
-                                    </MudSelectItem>
+                                    <MudImage Fluid="false" Src="@imagePreviewUrl" Class="rounded-lg mb-2 w-100 mx-auto d-block" Height="280" />
                                 }
-                            </MudSelect>
-                            @*  <MudSelect @bind-Value="newBanner.status" Label="Người tạo" Variant="Variant.Outlined">
-                            <MudSelectItem Value="@("Austria")">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Austria.svg" height="14" class="mr-1" /> Austria
-                            </MudSelectItem>
-                            </MudSelect> *@
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddBanner" Class="mt-3">Lưu</MudButton>
-                        </MudForm>
-                    </MudPaper>
-                </MudItem>
+                                <MudButton HtmlTag="label" For="licenseInput2" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary"
+                                           StartIcon="@Icons.Material.Outlined.CloudUpload"
+                                           FullWidth="true" Class="mud-button-small-text">
+                                    Hình ảnh
+                                </MudButton>
+                                <MudTextField ShrinkLabel @bind-Value="newBanner.title" Label="Tiêu đề"
+                                              Class="py-3"
+                                              Validation="@(new Func<string, IEnumerable<string>>(BannerValidate))"
+                                              Placeholder="Tên công việc" Variant="Variant.Outlined" Required="true" />
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddBanner" Class="mt-3">Lưu</MudButton>
+                            </MudForm>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
             </MudPaper>
         </MudItem>
     </MudGrid>
 </MudContainer>
+
+<script>
+    // Lấy token từ localStorage
+    function getAuthToken() {
+        return localStorage.getItem("authToken");
+    }
+</script>
 
 @code {
     private IBrowserFile selectedFile;
@@ -63,6 +59,7 @@
     private MudForm form;
     private string url = "http://localhost:49922/api/Banner";
     private string urlDropdown = "http://localhost:49922/api/dropdown/emp";
+    private int empId;
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -97,11 +94,13 @@
             Console.WriteLine("No file selected.");
         }
     }
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
             dropdowns = await httpClient.GetFromJsonAsync<List<dropdown>>(urlDropdown);
+            var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
         }
         catch (Exception ex)
         {
@@ -109,9 +108,24 @@
         }
     }
 
-
     private async Task AddBanner()
     {
+        var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            // Giải mã token
+            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "emp_id");
+
+            if (usernameClaim != null)
+            {
+                empId = int.Parse(usernameClaim.Value);
+            }
+        }
+
         if (selectedFile != null)
         {
             try
@@ -119,6 +133,7 @@
                 var base64Data = await GetBase64Image(selectedFile);
                 var imageUrl = await js.InvokeAsync<string>("uploadImage", selectedFile.Name, base64Data);
                 newBanner.img_banner = imageUrl;
+                newBanner.emp_id = empId;
 
                 var response = await httpClient.PostAsJsonAsync(url, newBanner);
                 if (response.IsSuccessStatusCode)
@@ -129,18 +144,19 @@
                 }
                 else
                 {
-                    Snackbar.Add("Lỗi khi thêm", Severity.Warning);
+                    Snackbar.Add("Lỗi khi thêm: " + response, Severity.Warning);
                 }
             }
             catch (Exception ex)
             {
-                Snackbar.Add("Thêm thất bại", Severity.Error);
+                Snackbar.Add("Thêm thất bại: " + ex.Message, Severity.Error);
             }
         }
         else
         {
             try
             {
+                newBanner.emp_id = empId;
                 var response = await httpClient.PostAsJsonAsync(url, newBanner);
                 if (response.IsSuccessStatusCode)
                 {
@@ -155,7 +171,7 @@
             }
             catch (Exception ex)
             {
-                Snackbar.Add("Thêm thất bại", Severity.Error);
+                Snackbar.Add("Thêm thất bại: " + ex.Message, Severity.Error);
             }
         }
     }

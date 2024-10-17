@@ -7,8 +7,7 @@
         public string title { get; set; }
         public DateTime date_create { get; set; }
         public DateTime date_update { get; set; }
-        public int id_emp { get; set; }
+        public int? emp_id { get; set; }
         public string fullname { get; set; }
-        public bool status { get; set; }
     }
 }

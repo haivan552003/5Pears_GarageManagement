@@ -71,7 +71,7 @@ namespace BE_API.Controllers
                 return BadRequest("Invalid request.");
             }
         }
-         //tạo token
+        //tạo token
         [HttpPost("gentoken-admin")]
         public async Task<IActionResult> GenerateTokenAdmin(login user)
         {
@@ -90,12 +90,14 @@ namespace BE_API.Controllers
 
                 var claims = new[]
                 {
-            new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-            new Claim("email", userData.email.ToString()),
-            new Claim("password", userData.password.ToString()),
-            new Claim(ClaimTypes.Role, userData.role_id.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                    new Claim("email", userData.email.ToString()),
+                    new Claim("password", userData.password.ToString()),
+                    new Claim("emp_id", userData.id.ToString()),
+                    new Claim("fullname", userData.fullname.ToString()),
+                    new Claim(ClaimTypes.Role, userData.role_id.ToString()),
                 };
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));

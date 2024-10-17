@@ -1,6 +1,8 @@
 ﻿@page "/getbanner"
 @inject HttpClient httpClient
 @inject IJSRuntime js
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
     <MudGrid Class="pa-0">
@@ -25,36 +27,22 @@
                     </ToolBarContent>
                     <Columns>
                         <SelectColumn T="banner" />
-                        @* <PropertyColumn T="banner" TProperty="int" Property="x => x.id_banner" /> *@
-                        <PropertyColumn T="banner" TProperty="string" Property="x => x.title" SortBy="@_sortBy" Class="fw-bold" Title="Tiêu đề" />
-                        <TemplateColumn T="banner" Class="fw-bold" Title="Hình ảnh">
+                        <PropertyColumn T="banner" TProperty="string" Property="x => x.title" SortBy="@_sortBy" Class="fw-bold text-center" Title="Tiêu đề" />
+                        <PropertyColumn T="banner" TProperty="string" Property="x => x.fullname" SortBy="@_sortBy" Class="fw-bold text-center" Title="Người tạo" />
+                        <TemplateColumn T="banner" Class="fw-bold text-center" Style="width: 10px" Title="Chức năng">
                             <CellTemplate Context="element">
-                                <MudImage Fluid="true" Src="@element.Item.img_banner" Alt="@element.Item.title" Class="rounded-lg" Width="200" Height="100" />
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <MudTooltip Text="Chỉnh sửa">
+                                        <MudIconButton Href="@($"/editbanner/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                    </MudTooltip>
+                                    <MudTooltip Text="Xóa">
+                                        <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small"
+                                                       OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" />
+                                    </MudTooltip>
+                                </div>
                             </CellTemplate>
                         </TemplateColumn>
-                        <PropertyColumn T="banner" TProperty="string" Property="x => x.fullname" SortBy="@_sortBy" Class="fw-bold" Title="Người tạo" />
-                        <TemplateColumn T="banner" Class="fw-bold" Title="Trạng Thái">
-                            <CellTemplate Context="element">
-                                @if (element.Item.status)
-                                {
-                                    <MudChip Color="Color.Success" Size="Size.Small" Variant="Variant.Text">Đang hoạt động</MudChip>
-                                }
-                                else
-                                {
-                                    <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Ngưng hoạt động</MudChip>
-                                }
-                            </CellTemplate>
-                        </TemplateColumn>
-                        <TemplateColumn T="banner" Class="fw-bold" Title="Chức năng">
-                            <CellTemplate Context="element">
-                                <MudTooltip Text="Chỉnh sửa">
-                                    <MudIconButton Href="@($"/editbanner/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
-                                </MudTooltip>
-                                <MudTooltip Text="Xóa">
-                                    <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
-                                </MudTooltip>
-                            </CellTemplate>
-                        </TemplateColumn>
+
                     </Columns>
                     <PagerContent>
                         <MudDataGridPager T="banner" />
@@ -113,13 +101,18 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadBanners();
+    }
+
+    private async Task LoadBanners()
+    {
         try
         {
             Elements = await httpClient.GetFromJsonAsync<List<banner>>(url);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            Snackbar.Add($"Lỗi khi tải danh sách banner: {ex.Message}", Severity.Error);
         }
     }
 
@@ -136,5 +129,54 @@
     void SelectedItemsChanged(HashSet<banner> items)
     {
         _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+
+    private async Task OpenDeleteDialog(banner banner)
+    {
+        var parameters = new DialogParameters
+    {
+        { "ContentText", $"Bạn có chắc chắn muốn xóa banner {banner.title}?" },
+        { "ButtonText", "Xóa" },
+        { "Color", Color.Error }
+    };
+
+        var options = new DialogOptions() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await DialogService.ShowAsync<Delete>("Xác nhận xóa", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            Snackbar.Add("Dialog đóng thành công", Severity.Success);
+            await DeleteBanner(banner);
+        }
+        else
+        {
+            Snackbar.Add("Dialog đã bị hủy", Severity.Info);
+        }
+
+    }
+
+
+    private async Task DeleteBanner(banner banner)
+    {
+        try
+        {
+            var response = await httpClient.DeleteAsync($"{url}/{banner.id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add($"Đã xóa banner {banner.title} thành công", Severity.Success);
+                await LoadBanners();
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Lỗi khi xóa tài xế: {response.ReasonPhrase}. Chi tiết: {errorContent}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi xóa tài xế: {ex.Message}", Severity.Error);
+        }
     }
 }
