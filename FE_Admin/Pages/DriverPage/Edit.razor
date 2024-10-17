@@ -1,4 +1,5 @@
 ﻿@page "/editdriver/{id:int}"
+@using System.Text.Json
 @inject HttpClient httpClient
 @inject IJSRuntime js
 @inject NavigationManager navigationManager
@@ -8,11 +9,11 @@
 <MudContainer MaxWidth="MaxWidth.False" Class="mt-14 pa-0">
     <MudGrid>
         <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+            <MudPaper Elevation="0" Class="pa-3 mb-1" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
                 <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
             </MudPaper>
         </MudItem>
-        <EditForm Model="@Driver" OnValidSubmit="SubmitForm">
+        <EditForm Model="@Driver" Class="pa-3" OnValidSubmit="SubmitForm">
             <MudGrid>
                 <MudItem xs="12" md="8">
                     <DataAnnotationsValidator />
@@ -21,19 +22,14 @@
 
                         <MudGrid>
                             <MudItem xs="12" sm="6">
-                                <MudTextField @bind-Value="Driver.fullname" For="@(() => Driver.fullname)"
+                                <MudTextField ShrinkLabel @bind-Value="Driver.fullname" For="@(() => Driver.fullname)"
                                               Label="Họ và tên" Required="true" RequiredError="Vui lòng nhập họ và tên"
                                               Validation="@(new Func<string, IEnumerable<string>>(ValidateFullName))"
                                               Variant="Variant.Outlined" />
                             </MudItem>
                             <MudItem xs="12" sm="6">
-                                <MudTextField @bind-Value="Driver.phonenumber" For="@(() => Driver.phonenumber)"
+                                <MudTextField ShrinkLabel @bind-Value="Driver.phonenumber" For="@(() => Driver.phonenumber)"
                                               Label="Số điện thoại" Required="true" RequiredError="Vui lòng nhập số điện thoại"
-                                              Variant="Variant.Outlined" />
-                            </MudItem>
-                            <MudItem xs="12">
-                                <MudTextField @bind-Value="Driver.address" For="@(() => Driver.address)"
-                                              Label="Địa chỉ" Required="true" RequiredError="Vui lòng nhập địa chỉ"
                                               Variant="Variant.Outlined" />
                             </MudItem>
                             <MudItem xs="12" sm="6">
@@ -51,12 +47,12 @@
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="12" sm="6">
-                                <MudTextField @bind-Value="Driver.citizen_identity_number" For="@(() => Driver.citizen_identity_number)"
+                                <MudTextField ShrinkLabel @bind-Value="Driver.citizen_identity_number" For="@(() => Driver.citizen_identity_number)"
                                               Label="Số CCCD" Required="true" RequiredError="Vui lòng nhập số CCCD"
                                               Variant="Variant.Outlined" />
                             </MudItem>
                             <MudItem xs="12" sm="6">
-                                <MudTextField @bind-Value="Driver.driver_license_number" For="@(() => Driver.driver_license_number)"
+                                <MudTextField ShrinkLabel @bind-Value="Driver.driver_license_number" For="@(() => Driver.driver_license_number)"
                                               Label="Số bằng lái" Required="true" RequiredError="Vui lòng nhập số bằng lái"
                                               Variant="Variant.Outlined" />
                             </MudItem>
@@ -76,6 +72,13 @@
                                     <MudSelectItem Value="@((byte)0)">Hoạt động</MudSelectItem>
                                     <MudSelectItem Value="@((byte)1)">Không hoạt động</MudSelectItem>
                                 </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudTextField ShrinkLabel @bind-Value="Driver.address" For="@(() => Driver.address)"
+                                              Label="Địa chỉ" Required="true" RequiredError="Vui lòng nhập địa chỉ"
+                                              @ref="multilineReference" T="string" Lines="3" MaxLines="5"
+                                              Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Api" OnAdornmentClick="@(() => multilineReference.SelectAsync())"
+                                              Variant="Variant.Outlined" />
                             </MudItem>
                         </MudGrid>
                         <MudItem xs="12" Class="d-flex justify-end mt-6">
@@ -163,7 +166,7 @@
                         </MudGrid>
                     </MudPaper>
                 </MudItem>
-            </MudGrid>          
+            </MudGrid>
         </EditForm>
     </MudGrid>
 </MudContainer>
@@ -174,6 +177,7 @@
     private DateTime? birthdayDate;
     private bool isFormValid = true;
     private string url = "http://localhost:49922/api/Driver";
+    private MudTextField<string> multilineReference;
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Tài xế", "/", icon: Icons.Material.Outlined.SupervisedUserCircle),
@@ -348,4 +352,4 @@
     {
         navigationManager.NavigateTo("/getDriver");
     }
-    }
+}

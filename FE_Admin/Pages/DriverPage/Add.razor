@@ -3,15 +3,15 @@
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @inject IWebHostEnvironment Environment
-
+@inject IJSRuntime js
 <MudContainer MaxWidth="MaxWidth.False" Class="mt-14 pa-0">
     <MudGrid>
         <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+            <MudPaper Elevation="0" Class="pa-3 mb-1" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
                 <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
             </MudPaper>
         </MudItem>
-        <EditForm Model="@newDriver" OnValidSubmit="AddDriver">
+        <EditForm Model="@newDriver" Class="pa-3" OnValidSubmit="AddDriver">
             <MudGrid>
                 <MudItem xs="12" md="8">
                     <DataAnnotationsValidator />
@@ -19,19 +19,14 @@
                         <MudText Typo="Typo.h6" Class="mb-5">Thêm tài xế</MudText>
                         <MudGrid>
                             <MudItem xs="12" sm="6">
-                                <MudTextField @bind-Value="newDriver.fullname" For="@(() => newDriver.fullname)"
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.fullname" For="@(() => newDriver.fullname)"
                                               Label="Họ và tên" Required="true" RequiredError="Vui lòng nhập họ và tên"
                                               Validation="@(new Func<string, IEnumerable<string>>(ValidateFullName))"
                                               Variant="Variant.Outlined" />
                             </MudItem>
                             <MudItem xs="12" sm="6">
-                                <MudTextField @bind-Value="newDriver.phonenumber" For="@(() => newDriver.phonenumber)"
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.phonenumber" For="@(() => newDriver.phonenumber)"
                                               Label="Số điện thoại" Required="true" RequiredError="Vui lòng nhập số điện thoại"
-                                              Variant="Variant.Outlined" />
-                            </MudItem>
-                            <MudItem xs="12">
-                                <MudTextField @bind-Value="newDriver.address" For="@(() => newDriver.address)"
-                                              Label="Địa chỉ" Required="true" RequiredError="Vui lòng nhập địa chỉ"
                                               Variant="Variant.Outlined" />
                             </MudItem>
                             <MudItem xs="12" sm="6">
@@ -49,12 +44,12 @@
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="12" sm="6">
-                                <MudTextField @bind-Value="newDriver.citizen_identity_number" For="@(() => newDriver.citizen_identity_number)"
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.citizen_identity_number" For="@(() => newDriver.citizen_identity_number)"
                                               Label="Số CCCD" Required="true" RequiredError="Vui lòng nhập số CCCD"
                                               Variant="Variant.Outlined" />
                             </MudItem>
                             <MudItem xs="12" sm="6">
-                                <MudTextField @bind-Value="newDriver.driver_license_number" For="@(() => newDriver.driver_license_number)"
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.driver_license_number" For="@(() => newDriver.driver_license_number)"
                                               Label="Số bằng lái" Required="true" RequiredError="Vui lòng nhập số bằng lái"
                                               Variant="Variant.Outlined" />
                             </MudItem>
@@ -74,6 +69,13 @@
                                     <MudSelectItem Value="@((byte)0)">Hoạt động</MudSelectItem>
                                     <MudSelectItem Value="@((byte)1)">Không hoạt động</MudSelectItem>
                                 </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.address" For="@(() => newDriver.address)"
+                                              Label="Địa chỉ" Required="true" RequiredError="Vui lòng nhập địa chỉ"
+                                              @ref="multilineReference" T="string" Lines="3" MaxLines="5"
+                                              Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Api" OnAdornmentClick="@(() => multilineReference.SelectAsync())"
+                                              Variant="Variant.Outlined" />
                             </MudItem>
                         </MudGrid>
                         <MudItem xs="12" Class="d-flex justify-end mt-6">
@@ -96,14 +98,11 @@
                                            FullWidth="true" Class="mud-button-small-text">
                                     Ảnh tài xế
                                 </MudButton>
+                                <ValidationMessage For="@(() => newDriver.img_driver)" />
                                 @if (!string.IsNullOrEmpty(newDriver.img_driver))
                                 {
                                     <MudImage Src="@newDriver.img_driver" Alt="Hình ảnh tài xế" Width="100"
                                               Height="100" ObjectFit="ObjectFit.Cover" Class="mt-2" />
-                                }
-                                else
-                                {
-                                    <MudText Color="Color.Error" Class="mt-2">Vui lòng tải lên ảnh tài xế</MudText>
                                 }
                             </MudItem>
                             <MudItem xs="6">
@@ -114,32 +113,28 @@
                                            FullWidth="true" Class="mud-button-small-text">
                                     CCCD (Trước)
                                 </MudButton>
+                                <ValidationMessage For="@(() => newDriver.citizen_identity_img1)" />
                                 @if (!string.IsNullOrEmpty(newDriver.citizen_identity_img1))
                                 {
                                     <MudImage Src="@newDriver.citizen_identity_img1" Alt="CCCD (Mặt trước)"
                                               Width="100" Height="100" ObjectFit="ObjectFit.Cover" Class="mt-2" />
-                                }
-                                else
-                                {
-                                    <MudText Color="Color.Error" Class="mt-2">Vui lòng tải lên ảnh CCCD (Mặt trước)</MudText>
                                 }
                             </MudItem>
                             <MudItem xs="6">
                                 <InputFile id="citizenIdInput2" OnChange="@((e) => LoadCitizenIdImage(e, 2))"
                                            hidden accept=".jpg,.jpeg,.png" />
                                 <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary"
+                                           Required="true" RequiredError="Vui lòng nhập địa chỉ"
                                            StartIcon="@Icons.Material.Filled.CloudUpload" for="citizenIdInput2"
                                            FullWidth="true" Class="mud-button-small-text">
                                     CCCD (Sau)
                                 </MudButton>
+                                <ValidationMessage For="@(() => newDriver.citizen_identity_img2)" />
+
                                 @if (!string.IsNullOrEmpty(newDriver.citizen_identity_img2))
                                 {
                                     <MudImage Src="@newDriver.citizen_identity_img2" Alt="CCCD (Mặt sau)"
                                               Width="100" Height="100" ObjectFit="ObjectFit.Cover" Class="mt-2" />
-                                }
-                                else
-                                {
-                                    <MudText Color="Color.Error" Class="mt-2">Vui lòng tải lên ảnh CCCD (Mặt sau)</MudText>
                                 }
                             </MudItem>
                             <MudItem xs="6">
@@ -150,14 +145,12 @@
                                            FullWidth="true" Class="mud-button-small-text">
                                     GPLX (Trước)
                                 </MudButton>
+                                <ValidationMessage For="@(() => newDriver.driver_license_img1)" />
+
                                 @if (!string.IsNullOrEmpty(newDriver.driver_license_img1))
                                 {
                                     <MudImage Src="@newDriver.driver_license_img1" Alt="Bằng lái (Mặt trước)"
                                               Width="100" Height="100" ObjectFit="ObjectFit.Cover" Class="mt-2" />
-                                }
-                                else
-                                {
-                                    <MudText Color="Color.Error" Class="mt-2">Vui lòng tải lên ảnh GPLX (Mặt trước)</MudText>
                                 }
                             </MudItem>
                             <MudItem xs="6">
@@ -168,14 +161,12 @@
                                            FullWidth="true" Class="mud-button-small-text">
                                     GPLX (Sau)
                                 </MudButton>
+                                <ValidationMessage For="@(() => newDriver.driver_license_img2)" />
+
                                 @if (!string.IsNullOrEmpty(newDriver.driver_license_img2))
                                 {
                                     <MudImage Src="@newDriver.driver_license_img2" Alt="Bằng lái (Mặt sau)"
                                               Width="100" Height="100" ObjectFit="ObjectFit.Cover" Class="mt-2" />
-                                }
-                                else
-                                {
-                                    <MudText Color="Color.Error" Class="mt-2">Vui lòng tải lên ảnh GPLX (Mặt sau)</MudText>
                                 }
                             </MudItem>
                         </MudGrid>
@@ -183,15 +174,16 @@
                 </MudItem>
             </MudGrid>
 
-           
+
         </EditForm>
     </MudGrid>
 </MudContainer>
 @code {
     private driver newDriver = new driver();
-    private bool isFormValid;
     private MudForm form;
     private DateTime? birthdayDate;
+    private MudTextField<string> multilineReference;
+    private bool isLoading = false;
 
     protected override void OnInitialized()
     {
@@ -202,82 +194,12 @@
             };
         birthdayDate = DateTime.Now.AddYears(-18);
     }
-
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
-    {
-        new BreadcrumbItem("Tài xế", href: null, icon: @Icons.Material.Outlined.SupervisedUserCircle),
-        new BreadcrumbItem("Danh sách tài xế", href: "/getDriver", icon: @Icons.Material.Outlined.List),
-        new BreadcrumbItem("Thêm mới", href: "/addDriver", icon: @Icons.Material.Outlined.AddCircleOutline),
-    };
-
-    private async Task LoadDriverImage(InputFileChangeEventArgs e)
-    {
-        await LoadImage(e, "driver_images", (url) => newDriver.img_driver = url);
-    }
-
-    private async Task LoadCitizenIdImage(InputFileChangeEventArgs e, int imageNumber)
-    {
-        await LoadImage(e, "citizen_id_images", (url) =>
-        {
-            if (imageNumber == 1)
-                newDriver.citizen_identity_img1 = url;
-            else
-                newDriver.citizen_identity_img2 = url;
-        });
-    }
-
-    private async Task LoadLicenseImage(InputFileChangeEventArgs e, int imageNumber)
-    {
-        await LoadImage(e, "license_images", (url) =>
-        {
-            if (imageNumber == 1)
-                newDriver.driver_license_img1 = url;
-            else
-                newDriver.driver_license_img2 = url;
-        });
-    }
-
-    private async Task LoadImage(InputFileChangeEventArgs e, string folder, Action<string> setUrl)
-    {
-        var file = e.File;
-        if (file != null)
-        {
-            var fileExtension = Path.GetExtension(file.Name);
-            var fileName = $"{Guid.NewGuid()}{fileExtension}";
-            var relativePath = Path.Combine("uploads", folder, fileName);
-            var absolutePath = Path.Combine(Environment.WebRootPath, relativePath);
-
-            Directory.CreateDirectory(Path.GetDirectoryName(absolutePath));
-
-            using (var stream = new FileStream(absolutePath, FileMode.Create))
-            {
-                await file.OpenReadStream().CopyToAsync(stream);
-            }
-
-            var url = $"/{relativePath.Replace("\\", "/")}";
-            setUrl(url);
-        }
-    }
-    private bool IsFormValid()
-    {
-        return !string.IsNullOrEmpty(newDriver.fullname) &&
-               !string.IsNullOrEmpty(newDriver.phonenumber) &&
-               !string.IsNullOrEmpty(newDriver.address) &&
-               birthdayDate.HasValue &&
-               !string.IsNullOrEmpty(newDriver.citizen_identity_number) &&
-               !string.IsNullOrEmpty(newDriver.driver_license_number) &&
-               newDriver.price > 0 &&
-               IsImagesValid();
-    }
-
-    private bool IsImagesValid()
-    {
-        return !string.IsNullOrEmpty(newDriver.img_driver) &&
-               !string.IsNullOrEmpty(newDriver.citizen_identity_img1) &&
-               !string.IsNullOrEmpty(newDriver.citizen_identity_img2) &&
-               !string.IsNullOrEmpty(newDriver.driver_license_img1) &&
-               !string.IsNullOrEmpty(newDriver.driver_license_img2);
-    }
+  {
+      new BreadcrumbItem("Tài xế", href: null, icon: @Icons.Material.Outlined.SupervisedUserCircle),
+      new BreadcrumbItem("Danh sách tài xế", href: "/getDriver", icon: @Icons.Material.Outlined.List),
+      new BreadcrumbItem("Thêm mới", href: "/addDriver", icon: @Icons.Material.Outlined.AddCircleOutline),
+  };
     private string ValidateVoucher(float voucher)
     {
         if (voucher > newDriver.price)
@@ -295,15 +217,140 @@
         else if (fullname.Length > 100)
             yield return "Họ và tên không được vượt quá 100 ký tự";
     }
+    private async Task<string> GetBase64Image(IBrowserFile file)
+    {
+        try
+        {
+            using var memoryStream = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(memoryStream);
+            var bytes = memoryStream.ToArray();
+            return Convert.ToBase64String(bytes);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error processing image: {ex.Message}", Severity.Error);
+            return null;
+        }
+    }
+
+    private async Task LoadDriverImage(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            isLoading = true;
+            var file = e.File;
+            if (file != null)
+            {
+                var base64Data = await GetBase64Image(file);
+                if (base64Data != null)
+                {
+                    var fileName = $"driver_images/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                    var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
+                    newDriver.img_driver = imageUrl;
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error uploading driver image: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadCitizenIdImage(InputFileChangeEventArgs e, int side)
+    {
+        try
+        {
+            isLoading = true;
+            var file = e.File;
+            if (file != null)
+            {
+                var base64Data = await GetBase64Image(file);
+                if (base64Data != null)
+                {
+                    var fileName = $"citizen_id_images/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                    var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
+
+                    if (side == 1)
+                        newDriver.citizen_identity_img1 = imageUrl;
+                    else
+                        newDriver.citizen_identity_img2 = imageUrl;
+
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error uploading citizen ID image: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+    private bool ValidateImages()
+    {
+        return !string.IsNullOrEmpty(newDriver.img_driver) &&
+               !string.IsNullOrEmpty(newDriver.citizen_identity_img1) &&
+               !string.IsNullOrEmpty(newDriver.citizen_identity_img2) &&
+               !string.IsNullOrEmpty(newDriver.driver_license_img1) &&
+               !string.IsNullOrEmpty(newDriver.driver_license_img2);
+    }
+
+    private async Task LoadLicenseImage(InputFileChangeEventArgs e, int side)
+    {
+        try
+        {
+            isLoading = true;
+            var file = e.File;
+            if (file != null)
+            {
+                var base64Data = await GetBase64Image(file);
+                if (base64Data != null)
+                {
+                    var fileName = $"license_images/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                    var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
+
+                    if (side == 1)
+                        newDriver.driver_license_img1 = imageUrl;
+                    else
+                        newDriver.driver_license_img2 = imageUrl;
+
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error uploading license image: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
 
     private async Task AddDriver()
     {
         try
         {
+            if (!ValidateImages())
+            {
+                Snackbar.Add("Vui lòng tải lên đầy đủ các ảnh yêu cầu", Severity.Warning);
+                return;
+            }
+
             if (birthdayDate.HasValue)
             {
                 newDriver.birthday = birthdayDate.Value;
             }
+
+            isLoading = true;
             var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Driver", newDriver);
 
             if (response.IsSuccessStatusCode)
@@ -325,16 +372,17 @@
                 Snackbar.Add($"Lỗi: {response.StatusCode} - {errorContent}", Severity.Error);
             }
         }
-        catch (HttpRequestException ex)
-        {
-            Snackbar.Add($"Lỗi kết nối: {ex.Message}", Severity.Error);
-        }
         catch (Exception ex)
         {
             Snackbar.Add($"Đã xảy ra lỗi: {ex.Message}", Severity.Error);
         }
+        finally
+        {
+            isLoading = false;
+        }
     }
-}
 
+   
+}
 
 
