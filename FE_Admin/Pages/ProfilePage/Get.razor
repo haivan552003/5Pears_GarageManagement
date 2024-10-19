@@ -1,0 +1,89 @@
+﻿@page "/profile/{Id:int}"
+@inject HttpClient httpClient
+@inject ISnackbar Snackbar
+@inject NavigationManager navigationManager
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid Class="pa-0">
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+        </MudItem>
+
+        <MudGrid xs="10" Class="mx-auto">
+            <!-- Giao diện hiển thị thông tin cá nhân -->
+            <MudItem xs="12">
+                <MudPaper Class="mud-elevation-1 p-6" Style="max-width: 800px; margin: auto;">
+                    <MudGrid>
+                        <!-- Ảnh đại diện và thông tin điểm -->
+                        <MudItem xs="12" sm="4" Class="text-center">
+                            <MudAvatar Size="Size.Large" Class="@Employee.citizen_identity_img" Style="margin: auto;" />
+                            <p class="mt-2">Tham Gia: @Employee..ToString("dd/MM/yyyy")</p>
+                            <MudChip Color="Color.Warning" Icon="@Icons.Material.Filled.Stars" Style="font-size: 16px;">
+                                @Employee. Điểm
+                            </MudChip>
+                        </MudItem>
+
+                        <!-- Bảng thông tin cá nhân -->
+                        <MudItem xs="12" sm="8">
+                            <MudGrid Class="mb-4" Style="background-color: #f0f0f0; border-radius: 8px; padding: 16px;">
+                                <MudItem xs="6"><strong>Ngày Sinh</strong></MudItem>
+                                <MudItem xs="6">@Employee.birthday?.ToString("dd/MM/yyyy") ?? </MudItem>
+                                <MudItem xs="6"><strong>Giới Tính</strong></MudItem>
+                                <MudItem xs="6">@((Employee.gender == true) ? "Nam" : "Nữ")</MudItem>
+                            </MudGrid>
+
+                            <!-- Thông tin liên lạc -->
+                            <MudGrid>
+                                <MudItem xs="6"><strong>Họ Và Tên</strong></MudItem>
+                                <MudItem xs="6">@Employee.fullname</MudItem>
+                                <MudItem xs="6"><strong>Email</strong></MudItem>
+                                <MudItem xs="6">@Employee.email</MudItem>
+                                <MudItem xs="6"><strong>Password</strong></MudItem>
+                                <MudItem xs="6">@Employee.password</MudItem>
+                                <MudItem xs="6"><strong>Số CMNN</strong></MudItem>
+                                <MudItem xs="6">@Employee.citizen_identity_number</MudItem> 
+                              
+                                
+                            </MudGrid>
+                        </MudItem>
+                    </MudGrid>
+
+                    <!-- Nút chỉnh sửa -->
+                    <MudGrid>
+                        
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudGrid>
+</MudContainer>
+
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private employees Employee = new employees();
+    private string url = "http://localhost:49922/api/Employees";
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Nhân viên", href: "/getemployees", icon: @Icons.Material.Outlined.PeopleOutline),
+        new BreadcrumbItem("Danh sách nhân viên", href: "/getemployees", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Chỉnh sửa nhân viên", href: "", icon: @Icons.Material.Filled.Edit),
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await httpClient.GetFromJsonAsync<employees>(url + "/" + Id);
+        if (response != null)
+        {
+            Employee = response;
+            StateHasChanged(); // Đảm bảo giao diện được cập nhật
+        }
+        else
+        {
+            Snackbar.Add("Không tìm thấy nhân viên", Severity.Error);
+        }
+    }
+}
