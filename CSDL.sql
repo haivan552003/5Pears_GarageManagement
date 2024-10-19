@@ -812,6 +812,9 @@ BEGIN
 	WHERE is_delete = 'false' 
 	ORDER BY id desc
 END 
+select * from employees
+select * from banners
+
 
 --proc get id banner
 create or alter proc sp_getid_banner
@@ -1018,6 +1021,8 @@ BEGIN
 	where cus.is_delete = 'False'
 
 END
+
+select * from customers
 --exec sp_view_customer
 
 /*proc xem bằng id*/
@@ -1370,6 +1375,7 @@ CREATE OR ALTER PROC sp_getall_cars
 AS
 BEGIN
     SELECT
+		c.id,
         c.car_number, 
         c.color, 
         c.vehicle_registration_start, 
@@ -1377,34 +1383,15 @@ BEGIN
         c.status, 
         c.price, 
         c.isAuto, 
-        c.id_brand,
-        c.id_type,
+        c.brand_id,
+        c.type_id,
         c.year_production,
         c.odo,
-        c.insurance_fee,
-        COUNT(cs.car_id) AS seat_count
+        c.insurance_fee
     FROM 
         cars c 
-    JOIN 
-        car_seats cs 
-    ON 
-        c.id = cs.car_id 
     WHERE 
         c.is_delete = 0 
-    GROUP BY 
-        c.car_number, 
-        c.color, 
-        c.vehicle_registration_start, 
-        c.vehicle_registration_end,
-        c.status, 
-        c.price, 
-        c.isAuto, 
-        c.id_brand,
-        c.id_type,
-        c.year_production,
-        c.odo,
-        c.insurance_fee,
-        c.id
     ORDER BY 
         c.car_number, 
         c.color, 
@@ -1415,7 +1402,7 @@ BEGIN
         c.isAuto, 
         c.id DESC;
 END;
-
+select * from cars
 go
 --execute sp_getall_cars
 
@@ -1425,79 +1412,62 @@ CREATE OR ALTER PROC sp_get_by_id_cars
 AS
 BEGIN
     SELECT
-       c.car_number, 
+        c.id,
+        c.car_number, 
         c.color, 
         c.vehicle_registration_start, 
         c.vehicle_registration_end,
         c.status, 
         c.price, 
         c.isAuto, 
-        c.id_brand,
-        c.id_type,
+        c.brand_id,
+        c.type_id,
         c.year_production,
         c.odo,
-        c.insurance_fee,
-        COUNT(cs.car_id) AS seat_count
+        c.insurance_fee
     FROM 
         cars c 
-    JOIN 
-        car_seats cs 
-    ON 
-        c.id = cs.car_id 
     WHERE 
-         c.id =@id
-    GROUP BY 
-       c.car_number, 
-        c.color, 
-        c.vehicle_registration_start, 
-        c.vehicle_registration_end,
-        c.status, 
-        c.price, 
-        c.isAuto, 
-        c.id_brand,
-        c.id_type,
-        c.year_production,
-        c.odo,
-        c.insurance_fee,
-        cs.name,
-		c.id
-    ORDER BY 
-	 c.car_number, 
-        c.color, 
-        c.vehicle_registration_start, 
-        c.vehicle_registration_end,
-        c.status, 
-        c.price, 
-        c.isAuto, 
-        c.id_brand,
-        c.id_type,
-        c.year_production,
-        c.odo,
-        c.insurance_fee,
-        cs.name,
-		c.id
+        c.id = @id 
+		--AND c.is_delete = 0;
 END;
---exec sp_get_by_id_cars 1
+
+exec sp_get_by_id_cars 1
 GO
 
 -- proc get all car_seats
 create or alter proc sp_getall_car_seat
 as
 	begin
-	select name, row , col, status  from car_seats 
+	select name, row , col, status,id  from car_seats 
 	end
 go
-
+select * from car_seats
 -- proc get by id car_seats
 go
-create or alter proc sp_get_by_id_car_seat
-@id int
-as
-	begin
-	select name, row , col, status  from car_seats 
-	where id = @id
-	end
-go
+--create or alter proc sp_get_by_id_car_seat
+--@id int
+--as
+--	begin
+--	select name, row , col, status,id  from car_seats 
+--	where id = @id
+--	end
+--go
+CREATE OR ALTER PROC sp_get_by_id_car_seat
+@car_id int
+AS
+BEGIN
+    SELECT 
+        id,
+        name, 
+        row, 
+        col, 
+        status
+    FROM 
+        car_seats
+    WHERE 
+        car_id = @car_id;
+END;
 CREATE OR ALTER PROC sp_create_cars
  @car_number VARCHAR(20),   
  @color NVARCHAR(100),
@@ -1522,8 +1492,8 @@ BEGIN
 		price,
 		isAuto,
 		status,
-		id_type,
-		id_brand,
+		type_id,
+		brand_id,
 		year_production,
 		odo,
 		insurance_fee,
@@ -1608,8 +1578,8 @@ begin
 		price =@price,
 		status = @status,
 		isAuto = @isAuto,
-		id_type = @id_type ,
-		id_brand= @id_brand,
+		type_id = @id_type ,
+		brand_id= @id_brand,
 		year_production = @year_production,
 		odo =@odo,
 		insurance_fee = @insurance_fee,
@@ -1617,27 +1587,47 @@ begin
 	WHERE id = @id;
 end;
 --execute sp_update_car 1, '72-C2- 88888', 'Toyota', 'Red', '10-10-2009','10-10-2011', 55000, 0,0,1;
-
+select * from cars
+select * from car_seats
 go
+
 --proc update car_seat
-create or alter proc sp_update_car_seats
-@id int,
-@name nvarchar(50),
-@car_id int,
-@row tinyint,
-@col tinyint,
-@status tinyint
-as 
-	begin 
-		update car_seats 
-		set
-			name = @name,
-			car_id = @car_id,
-			row = @row,
-			col = @col,
-			status = @status,
-			date_update = GETDATE() where id = @id
-	end
+--create or alter proc sp_update_car_seats
+--@id int,
+--@name nvarchar(50),
+--@car_id int,
+--@row tinyint,
+--@col tinyint,
+--@status tinyint
+--as 
+--	begin 
+--		update car_seats 
+--		set
+--			name = @name,
+--			car_id = @car_id,
+--			row = @row,
+--			col = @col,
+--			status = @status,
+--			date_update = GETDATE() where id = @id
+--	end
+CREATE OR ALTER PROC sp_update_car_seats
+    @id int,
+    @name nvarchar(50),
+    @row int,
+    @col int,
+    @status tinyint
+AS
+BEGIN
+    UPDATE car_seats
+    SET
+        name = @name,
+        row = @row,
+        col = @col,
+        status = @status,
+					date_update = GETDATE()
+
+    WHERE id = @id;
+END;
 --exec sp_update_car_seats 2, '2B', 1, 2,2,1
 
 	go
@@ -1756,7 +1746,7 @@ BEGIN
 
     SELECT * FROM drivers WHERE id = @id;
 END
-
+select * from cars
 --UPDATE customers SET password = '123' WHERE username = 'cus_user'
 
 --EXEC sp_update_driver 

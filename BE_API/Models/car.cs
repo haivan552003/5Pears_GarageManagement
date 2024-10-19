@@ -19,9 +19,5 @@ namespace BE_API.Models
         public DateTime year_production {  get; set; }
         public float odo {  get; set; }
         public float insurance_fee { get; set; }
-        public byte is_delete { get; set; }
-
-        public DateTime date_create { get; set; }
-        public DateTime date_update { get; set; }
     }
 }
