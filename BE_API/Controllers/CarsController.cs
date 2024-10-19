@@ -3,8 +3,10 @@ using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BE_API.Controllers
@@ -46,47 +48,58 @@ namespace BE_API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<car>> Get_cars_by_id(int id)
         {
-            var procedureName = "sp_get_by_id_cars";
-            var parameters = new DynamicParameters();
-            parameters.Add("id", id, DbType.Int32, ParameterDirection.Input);
-
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                await connection.OpenAsync();
-                var cars = await connection.QueryFirstOrDefaultAsync<car>(
-                    procedureName, parameters, commandType: CommandType.StoredProcedure);
+                var procedureName = "sp_get_by_id_cars";
+                var parameters = new DynamicParameters();
+                parameters.Add("id", id, DbType.Int32, ParameterDirection.Input);
 
-                if (cars == null)
+                using (var connection = new SqlConnection(_connectionString))
                 {
-                    return NotFound();
-                }
+                    await connection.OpenAsync();
+                    var cars = await connection.QueryFirstOrDefaultAsync<car>(
+                        procedureName, parameters, commandType: CommandType.StoredProcedure);
 
-                return Ok(cars);
+                    if (cars == null)
+                    {
+                        return NotFound();
+                    }
+                    return Ok(cars);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while processing your request.");
             }
         }
-        [HttpGet("getCarSeats/{id}")]
-        public async Task<ActionResult<car_seat>> Get_car_seats_by_id(int id)
+        [HttpGet("getCarSeats/{carId}")]
+        public async Task<ActionResult<IEnumerable<car_seat>>> GetCarSeatsByCarId(int carId)
         {
-            var procedureName = "sp_get_by_id_car_seat";
-            var parameters = new DynamicParameters();
-            parameters.Add("id", id, DbType.Int32, ParameterDirection.Input);
-
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                await connection.OpenAsync();
-                var car_seats= await connection.QueryFirstOrDefaultAsync<car_seat>(
-                    procedureName, parameters, commandType: CommandType.StoredProcedure);
+                var procedureName = "sp_get_by_id_car_seat";
+                var parameters = new DynamicParameters();
+                parameters.Add("car_id", carId, DbType.Int32, ParameterDirection.Input);
 
-                if (car_seats == null)
+                using (var connection = new SqlConnection(_connectionString))
                 {
-                    return NotFound();
-                }
+                    await connection.OpenAsync();
+                    var carSeats = await connection.QueryAsync<car_seat>(
+                        procedureName, parameters, commandType: CommandType.StoredProcedure);
 
-                return Ok(car_seats);
+                    if (!carSeats.Any())
+                    {
+                        return NotFound();
+                    }
+                    return Ok(carSeats);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while processing your request.");
             }
         }
         [HttpPost("PostCars")]
-
         public async Task<ActionResult<car>> PostCars(car cars)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -95,8 +108,8 @@ namespace BE_API.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@car_number", cars.car_number);
                 cmd.Parameters.AddWithValue("@color", cars.color);
-                cmd.Parameters.AddWithValue("@vehicle_registration_start", cars.vehicle_registration_start);
-                cmd.Parameters.AddWithValue("@vehicle_registration_end", cars.vehicle_registration_end);
+                cmd.Parameters.AddWithValue("@vehical_registration_start", cars.vehicle_registration_start);
+                cmd.Parameters.AddWithValue("@vehical_registration_end", cars.vehicle_registration_end);
                 cmd.Parameters.AddWithValue("@price", cars.price);
                 cmd.Parameters.AddWithValue("@isAuto", cars.is_auto);
                 cmd.Parameters.AddWithValue("@status", cars.status);
@@ -105,10 +118,10 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@year_production", cars.year_production);
                 cmd.Parameters.AddWithValue("@odo", cars.odo);
                 cmd.Parameters.AddWithValue("@insurance_fee", cars.insurance_fee);
+
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
-
             return CreatedAtAction(nameof(GetAllCars), new { id = cars.id }, cars);
         }
         [HttpPost("PostCarSeat")]
@@ -119,7 +132,7 @@ namespace BE_API.Controllers
                 SqlCommand cmd = new SqlCommand("sp_create_car_seats", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@name", cs.name);
-                cmd.Parameters.AddWithValue("@car_id", cs.id_car);
+                cmd.Parameters.AddWithValue("@car_id", cs.car_id);
                 cmd.Parameters.AddWithValue("@row", cs.row);
                 cmd.Parameters.AddWithValue("@col", cs.col);
                 cmd.Parameters.AddWithValue("@status", cs.status);             
@@ -170,7 +183,6 @@ namespace BE_API.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.Parameters.AddWithValue("@name", cs.name);
-                cmd.Parameters.AddWithValue("@car_id", cs.id_car);
                 cmd.Parameters.AddWithValue("@row", cs.row);
                 cmd.Parameters.AddWithValue("@col", cs.col);
                 cmd.Parameters.AddWithValue("@status", cs.status);
@@ -191,7 +203,7 @@ namespace BE_API.Controllers
             {
                 SqlCommand cmd = new SqlCommand("sp_delete_car", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@id", id);
                 await conn.OpenAsync();
 
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
@@ -211,7 +223,7 @@ namespace BE_API.Controllers
             {
                 SqlCommand cmd = new SqlCommand("sp_delete_car_seat", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@id", id);
                 await conn.OpenAsync();
 
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();

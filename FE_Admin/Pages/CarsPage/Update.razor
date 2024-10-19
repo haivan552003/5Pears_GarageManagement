@@ -1,5 +1,290 @@
-﻿<h3>Update</h3>
+﻿@page "/editcar/{id:int}"
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-14 pa-0">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+        </MudItem>
+        <EditForm Model="@Car" OnValidSubmit="SubmitForm">
+            <MudGrid>
+                <MudItem xs="12" md="8">
+                    <DataAnnotationsValidator />
+                    <MudPaper Elevation="3" Class="pa-4">
+                        <MudText Typo="Typo.h6" Class="mb-5">Thông tin xe</MudText>
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="Car.car_number"
+                                              Label="Biển số xe"
+                                              Required="true"
+                                              RequiredError="Vui lòng nhập biển số xe"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="Car.color"
+                                              Label="Màu sắc"
+                                              Required="true"
+                                              RequiredError="Vui lòng nhập màu sắc"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudDatePicker @bind-Date="registrationStartDate"
+                                               Label="Ngày đăng kiểm"
+                                               Required="true"
+                                               RequiredError="Vui lòng chọn ngày đăng kiểm"
+                                               DateFormat="dd/MM/yyyy"
+                                               Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudDatePicker @bind-Date="registrationEndDate"
+                                               Label="Ngày hết hạn đăng kiểm"
+                                               Required="true"
+                                               RequiredError="Vui lòng chọn ngày hết hạn đăng kiểm"
+                                               DateFormat="dd/MM/yyyy"
+                                               Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudNumericField @bind-Value="Car.price"
+                                                 Label="Giá thuê"
+                                                 Required="true"
+                                                 RequiredError="Vui lòng nhập giá thuê"
+                                                 Min="0"
+                                                 Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudNumericField @bind-Value="Car.insurance_fee"
+                                                 Label="Phí bảo hiểm"
+                                                 Required="true"
+                                                 RequiredError="Vui lòng nhập phí bảo hiểm"
+                                                 Min="0"
+                                                 Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudSelect @bind-Value="Car.is_auto"
+                                           Label="Loại hộp số"
+                                           Required="true"
+                                           RequiredError="Vui lòng chọn loại hộp số"
+                                           Variant="Variant.Outlined">
+                                    <MudSelectItem Value="@((byte)0)">Số sàn</MudSelectItem>
+                                    <MudSelectItem Value="@((byte)1)">Số tự động</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudSelect @bind-Value="Car.status"
+                                           Label="Trạng thái"
+                                           Required="true"
+                                           Variant="Variant.Outlined">
+                                    <MudSelectItem Value="@("active")">Hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="@("inactive")">Không hoạt động</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudNumericField @bind-Value="Car.odo"
+                                                 Label="Số KM đã đi"
+                                                 Required="true"
+                                                 RequiredError="Vui lòng nhập số KM"
+                                                 Min="0"
+                                                 Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudDatePicker @bind-Date="productionDate"
+                                               Label="Năm sản xuất"
+                                               Required="true"
+                                               RequiredError="Vui lòng chọn năm sản xuất"
+                                               DateFormat="dd/MM/yyyy"
+                                               Variant="Variant.Outlined" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudPaper Elevation="3" Class="pa-4">
+                        <MudText Typo="Typo.h6" Class="mb-4">Cấu hình ghế</MudText>
+                        <MudButton OnClick="OpenAddSeatDialog"
+                                   Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Add"
+                                   Class="mb-3">
+                            Thêm ghế
+                        </MudButton>
+                        <MudGrid>
+                            @foreach (var seat in CarSeats)
+                            {
+                                <MudItem xs="12">
+                                    <MudCard>
+                                        <MudCardContent>
+                                            <MudGrid>
+                                                <MudItem xs="9">
+                                                    <MudText>@seat.name (Hàng: @seat.row, Cột: @seat.col)</MudText>
+                                                    <MudText>Trạng thái: @(seat.status == 0 ? "Trống" : "Đã đặt")</MudText>
+                                                </MudItem>
+                                                <MudItem xs="3" Class="d-flex justify-end">
+                                                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                                   Color="Color.Primary"
+                                                                   OnClick="@(() => OpenEditSeatDialog(seat))" />
+                                                </MudItem>
+                                            </MudGrid>
+                                        </MudCardContent>
+                                    </MudCard>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+
+                <MudItem xs="12" Class="d-flex justify-end mt-4">
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Secondary"
+                               OnClick="Cancel"
+                               Class="mx-2">Hủy</MudButton>
+                    <MudButton ButtonType="ButtonType.Submit"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Save">Lưu</MudButton>
+                </MudItem>
+            </MudGrid>
+        </EditForm>
+    </MudGrid>
+</MudContainer>
 
 @code {
+    [Parameter] public int id { get; set; }
 
+    private car Car = new car();
+    private List<car_seat> CarSeats = new List<car_seat>();
+    private string apiUrl = "http://localhost:49922/api";
+
+    // Thêm các biến DateTime? để xử lý ngày tháng
+    private DateTime? registrationStartDate;
+    private DateTime? registrationEndDate;
+    private DateTime? productionDate;
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Xe", "/", icon: Icons.Material.Outlined.DirectionsCar),
+        new BreadcrumbItem("Danh sách xe", "/getcars", icon: Icons.Material.Outlined.List),
+        new BreadcrumbItem("Chỉnh sửa xe", null, icon: Icons.Material.Outlined.Edit)
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCarAndSeats();
+    }
+    private async Task OpenAddSeatDialog()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("CarId", id);
+        var dialog = DialogService.Show<EditSeat>("Thêm ghế mới", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            var newSeat = (car_seat)result.Data;
+            var response = await httpClient.PostAsJsonAsync($"{apiUrl}/Cars/PostCarSeat", newSeat);
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadCarAndSeats();
+                Snackbar.Add("Thêm ghế mới thành công", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Lỗi khi thêm ghế mới", Severity.Error);
+            }
+        }
+    }
+
+    private async Task OpenEditSeatDialog(car_seat seat)
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("Seat", seat);
+        parameters.Add("CarId", id);
+        var dialog = DialogService.Show<EditSeat>("Chỉnh sửa thông tin ghế", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            var updatedSeat = (car_seat)result.Data;
+            var response = await httpClient.PutAsJsonAsync($"{apiUrl}/Cars/putCarSeat/{seat.id}", updatedSeat);
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadCarAndSeats();
+                Snackbar.Add("Cập nhật thông tin ghế thành công", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Lỗi khi cập nhật thông tin ghế", Severity.Error);
+            }
+        }
+    }
+
+    private async Task LoadCarAndSeats()
+    {
+        try
+        {
+            // Load car information
+            var carResponse = await httpClient.GetFromJsonAsync<car>($"{apiUrl}/Cars/{id}");
+            if (carResponse != null)
+            {
+                Car = carResponse;
+                registrationStartDate = Car.vehicle_registration_start;
+                registrationEndDate = Car.vehicle_registration_end;
+                productionDate = Car.year_production;
+            }
+
+            // Load car seats
+            var seatsResponse = await httpClient.GetFromJsonAsync<List<car_seat>>($"{apiUrl}/Cars/getCarSeats/{id}");
+            if (seatsResponse != null)
+            {
+                CarSeats = seatsResponse;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Xe chưa có ghế, vui lòng thêm ghế", Severity.Warning);
+        }
+    }
+
+    private async Task SubmitForm()
+    {
+        try
+        {
+            if (registrationStartDate.HasValue)
+                Car.vehicle_registration_start = registrationStartDate.Value;
+            if (registrationEndDate.HasValue)
+                Car.vehicle_registration_end = registrationEndDate.Value;
+            if (productionDate.HasValue)
+                Car.year_production = productionDate.Value;
+            var carResponse = await httpClient.PutAsJsonAsync($"{apiUrl}/Cars/putCars/{id}", Car);
+            if (!carResponse.IsSuccessStatusCode)
+            {
+                throw new Exception($"Lỗi cập nhật thông tin xe: {await carResponse.Content.ReadAsStringAsync()}");
+            }
+            foreach (var seat in CarSeats)
+            {
+                var seatResponse = await httpClient.PutAsJsonAsync($"{apiUrl}/Cars/putCarSeat/{seat.id}", seat);
+                if (!seatResponse.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Lỗi cập nhật thông tin ghế: {await seatResponse.Content.ReadAsStringAsync()}");
+                }
+            }
+
+            Snackbar.Add("Cập nhật thành công", Severity.Success);
+            navigationManager.NavigateTo("/cars");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void Cancel()
+    {
+        navigationManager.NavigateTo("/cars");
+    }
 }
