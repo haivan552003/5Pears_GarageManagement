@@ -1,4 +1,4 @@
-﻿@page "/gettrips"
+﻿@page "/gettrip"
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 @inject IJSRuntime js
@@ -15,38 +15,44 @@
                              Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
                              Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
 
-                    <!-- Toolbar -->
                     <ToolBarContent>
                         <MudItem xs="4">
                             <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..."
                                           Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
                                           Immediate="true" IconSize="Size.Medium" Class="mt-0" />
                         </MudItem>
-                        <MudItem xs="8" Class="d-flex justify-end gap-4">
+                        <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
                             <MudButton Href="/addtrip" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
-                                Thêm chuyến đi
+                                Thêm mới
+                            </MudButton>
+
+                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
+                                Nhập file
+                            </MudButton>
+
+                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
+                                Xuất file
                             </MudButton>
                         </MudItem>
                     </ToolBarContent>
 
-                    <!-- DataGrid Columns -->
                     <Columns>
                         <SelectColumn T="trip" />
-                        <PropertyColumn T="trip" TProperty="string" Property="x => x.trip_code" Title="Mã chuyến đi"
-                                        Style="width: 15%; white-space: nowrap;" />
-                        <PropertyColumn T="trip" TProperty="string" Property="x => x.from" Title="Điểm khởi hành"
+                        <PropertyColumn T="trip" Class="fw-bold" TProperty="string" Property="x => x.trip_code" Title="Mã chuyến đi"
                                         Style="width: 15%;" />
-                        <PropertyColumn T="trip" TProperty="string" Property="x => x.to" Title="Điểm đến"
+                        <PropertyColumn T="trip" Class="fw-bold" TProperty="string" Property="x => x.from" Title="Điểm khởi hành"
+                                        Style="width: 15%;" />
+                        <PropertyColumn T="trip" Class="fw-bold"  TProperty="string" Property="x => x.to" Title="Điểm đến"
                                         Style="width: 15%;" />
                         <TemplateColumn T="trip" Title="Trạng thái" Style="white-space: nowrap;">
                             <CellTemplate Context="element">
                                 @if (element.Item.status)
                                 {
-                                    <MudChip Color="Color.Success" Size="Size.Small" Variant="Variant.Text">Hoàn thành</MudChip>
+                                    <MudChip Color="Color.Success" Size="Size.Small" Variant="Variant.Text">Đang hoạt động</MudChip>
                                 }
                                 else
                                 {
-                                    <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Đang thực hiện</MudChip>
+                                    <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Ngưng hoạt động</MudChip>
                                 }
                             </CellTemplate>
                         </TemplateColumn>
@@ -62,8 +68,6 @@
                             </CellTemplate>
                         </TemplateColumn>
                     </Columns>
-
-                    <!-- Pagination -->
                     <PagerContent>
                         <MudDataGridPager T="trip" />
                     </PagerContent>
@@ -77,7 +81,7 @@
 @code {
     private IEnumerable<trip> Elements = new List<trip>();
     private string _searchString;
-    private string tripsUrl = "http://localhost:49922/api/Trips";
+    private string tripsUrl = "http://localhost:49922/api/Trips/trip";
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -135,12 +139,12 @@
         var response = await httpClient.DeleteAsync($"{tripsUrl}/{id}");
         if (response.IsSuccessStatusCode)
         {
-            Snackbar.Add("Xóa chuyến đi thành công!", Severity.Success);
+            Snackbar.Add($"Xóa chuyến đi thành công", Severity.Success);
             await LoadTrips();
         }
         else
         {
-            Snackbar.Add("Xóa chuyến đi thất bại!", Severity.Error);
+            Snackbar.Add("Xóa chuyến đi thất bại", Severity.Error);
         }
     }
 

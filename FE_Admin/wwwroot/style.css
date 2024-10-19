@@ -94,3 +94,10 @@ img {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.fixed-pager {
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+    z-index: 10; /* Ensure it appears above the grid content */
+}

@@ -1,0 +1,46 @@
+﻿@inject MudBlazor.ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">@ContentText</MudText>
+        <MudForm @ref="form">
+            <MudTextField Label="Mã CT chuyến đi" @bind-Value="SelectedTrip.trip_detail_code" Required="true"></MudTextField>
+            <MudNumericField T="float" Label="Khoảng cách" @bind-Value="SelectedTrip.distance" Required="true"></MudNumericField>
+            <MudTextField Label="Giá" @bind-Value="SelectedTrip.price" Required="true"></MudTextField>
+            <MudTextField Label="TX" @bind-Value="SelectedTrip.driver_id" Required="true"></MudTextField>
+            <MudTextField Label="Đến" @bind-Value="SelectedTrip.location_to_id" Required="true"></MudTextField>
+            <MudTextField Label="xe" @bind-Value="SelectedTrip.car_id" Required="true"></MudTextField>
+            <MudTextField Label="từ" @bind-Value="SelectedTrip.location_from_id" Required="true"></MudTextField>
+            <MudTextField Label="tt" @bind-Value="SelectedTrip.status" Required="true"></MudTextField>
+            <MudTextField Label="start" @bind-Value="SelectedTrip.time_start" Required="true"></MudTextField>
+            <MudTextField Label="end" @bind-Value="SelectedTrip.time_end" Required="true"></MudTextField>
+            <MudTextField Label="Voucher" @bind-Value="SelectedTrip.voucher" Required="true"></MudTextField>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Hủy</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">Lưu</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string ContentText { get; set; }
+    [Parameter]
+    public trip_detail SelectedTrip { get; set; } = new trip_detail();
+
+    private MudForm form;
+
+    void Submit()
+    {
+        if (form.IsValid)
+        {
+            MudDialog.Close(DialogResult.Ok(SelectedTrip));
+        }
+    }
+
+    void Cancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+    }
+}
