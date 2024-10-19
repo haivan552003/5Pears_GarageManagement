@@ -519,7 +519,8 @@ ALTER TABLE dbo.cars
 ADD status BIT
 
 
-
+select * from car_brands
+select * from cars
 --------------------------------------------------------------------------------------------------------------------------------------
 --PROC
 
@@ -866,7 +867,129 @@ BEGIN
     WHERE id = @id and is_delete = 'false'
 END
 
+--proc get id trip detail
+create or alter proc sp_getid_tripdetail
+	@id int
+as
+	begin
+		select 
+		time_start,
+		time_end,
+		price,
+		voucher,
+		is_delete,
+		trip_id,
+		car_id,
+		location_from_id,
+		driver_id, location_to_id
+		FROM dbo.trip_details 
+		where id = @id
+				AND is_delete = 'False'
+		order by id desc
+	end
 
+	select * from trip_details
+
+	--proc them trip detail
+create or alter proc sp_add_trip_detail
+	@time_start datetime,
+	@time_end datetime,
+	@price float,
+	@voucher float,
+	@trip_id int,
+	@car_id int,
+	@location_from_id int,
+	@driver_id int,
+	@location_to_id int,
+	@trip_detail_code varchar(20),
+	@distance float,
+	@status bit
+	as
+	begin
+		insert into trip_details
+		(
+		time_start,
+		time_end, 
+		price,
+		voucher,
+		is_delete,
+		date_create,
+		trip_id,
+		car_id,
+		location_from_id,
+		driver_id,
+		location_to_id,
+		trip_detail_code,
+		distance,
+		status
+		)
+	values
+		(
+		@time_start,
+		@time_end,
+		@price,
+		@voucher,
+		0,
+		GETDATE(),
+		@trip_id,
+		@car_id,
+		@location_from_id,
+		@driver_id,
+		@location_to_id,
+		@trip_detail_code,
+		@distance,
+		@status
+		)
+	end
+
+--proc sua trip detail
+create or alter proc sp_update_trip_detail
+	@id int,
+	@time_start datetime,
+	@time_end datetime,
+	@price float,
+	@voucher float,
+	@car_id int,
+	@location_from_id int,
+	@driver_id int,
+	@location_to_id int,
+	@trip_detail_code varchar(20),
+	@distance float,
+	@status bit
+	as
+	begin
+		update trip_details
+		set
+		time_start = @time_start,
+		time_end = @time_end, 
+		price = @price,
+		voucher = @voucher,
+		date_update = GETDATE(),
+		car_id = @car_id,
+		location_from_id = @location_from_id,
+		driver_id = @driver_id,
+		location_to_id = @location_to_id,
+		trip_detail_code = @trip_detail_code,
+		distance = @distance,
+		status = @status
+		where id = @id
+				and is_delete = 'false'
+	end
+
+	--proc xoa trip detail
+create or alter proc sp_delete_trip_detail
+	@id int
+	as
+	begin
+		update trip_details
+		set
+		date_update = GETDATE(),
+		is_delete = 'true'
+		where id = @id
+				and is_delete = 'false'
+	end
+
+	select * from cars
 --------------------------------------------------------------------------------------------------------------------------------------
 --Quí
 CREATE OR ALTER PROCEDURE sp_view_customer
@@ -2095,7 +2218,6 @@ BEGIN
 		citizen_identity_img,
 		citizen_identity_number,
 		gender,
-	
 		date_create,
 		date_update,
         id_role
@@ -2109,10 +2231,9 @@ BEGIN
         @citizen_identity_img,
         @citizen_identity_number,
         @gender,
-        0,                 -- `is_delete` mặc định là 0 (chưa bị xóa)
-        GETDATE(),         -- `date_create` là thời gian hiện tại 
-       
-        @id_role           -- giá trị của khóa ngoại role
+        0,                
+        GETDATE(),        
+        @id_role          
     );
 END
 GO
@@ -2149,9 +2270,161 @@ BEGIN
         citizen_identity_img = @citizen_identity_img,
         citizen_identity_number = @citizen_identity_number,
         gender = @gender,
-     
         id_role = @id_role,
         date_update = GETDATE()
     WHERE
         id = @id_emp;
 END
+
+        id = @id 
+    And is_delete = 'False'
+    END
+
+	--sp_Get_Trip
+create or alter proc sp_get_trip
+as
+begin
+    select 
+        id,
+        img_trip,
+        [from],
+        [to],
+        emp_create,
+		trip_code,
+		status,
+		is_return
+    from trips
+    where is_delete = 0 
+    order by id desc;
+end
+
+--sp_getid_trip
+create or alter proc sp_getid_trip	
+	@id int
+as
+	begin
+		select 
+		id,
+		img_trip,
+        [from],
+        [to],
+        emp_create,
+		trip_code,
+		status,
+		is_return
+	from trips
+		where id = @id
+			--and isDelete = 'False'
+		order by id desc
+
+		select 
+		td.time_start,
+		td.time_end,
+		td.price,
+		td.voucher,
+		td.trip_id,
+		td.car_id,
+		td.location_from_id,
+		td.driver_id,
+		td.location_to_id,
+		td.trip_detail_code,
+		td.distance,
+		td.status,
+		c.car_number,
+		c.car_code,
+		c.car_name,
+		d.fullname,
+		lf.name as location_from,
+		lt.name as location_to
+		from trip_details td
+			left join cars c 
+			on td.car_id = c.id
+			left join drivers d
+			on td.driver_id = d.id
+			left join locations lt
+			on td.location_to_id = lt.id
+			left join locations lf
+			on td.location_from_id = lf.id
+		where td.trip_id = @id
+			and td.is_delete = 'False'
+		order by td.id desc
+	end
+
+	select * from trip_details
+
+--them trip
+CREATE OR ALTER PROCEDURE sp_add_trip
+    @img_trip nvarchar(max),
+    @from nvarchar(500),
+    @to nvarchar(500),
+    @emp_create int,
+    @trip_code varchar(20),
+    @status bit,
+    @is_return bit
+AS
+BEGIN
+    -- Thêm dữ liệu vào bảng trips
+    INSERT INTO trips
+    (
+        img_trip,
+        [from],
+        [to],
+        date_create,
+        is_delete,
+        emp_create,
+        trip_code,
+        status,
+        is_return
+    )
+    VALUES
+    (
+        @img_trip,
+        @from,
+        @to,
+		 GETDATE(),
+       0,
+        @emp_create,
+        @trip_code,
+        @status,
+        @is_return
+    );
+END
+GO
+
+-- sửa Trips
+CREATE OR ALTER PROCEDURE sp_update_trip
+    @id INT,
+    @img_trip NVARCHAR(MAX),
+    @from NVARCHAR(500),
+    @to NVARCHAR(500),
+    @trip_code VARCHAR(20),
+    @status BIT,
+    @is_return BIT
+AS
+BEGIN
+    UPDATE trips
+    SET
+        img_trip = @img_trip,
+        [from] = @from,
+        [to] = @to,       
+		date_update = GETDATE(),
+        trip_code = @trip_code,      
+        status = @status,            
+        is_return = @is_return       
+    WHERE
+        id = @id;
+END
+
+--xoa trips
+CREATE OR ALTER PROCEDURE sp_delete_trips
+    @id INT
+AS
+BEGIN
+    UPDATE trips
+    SET 
+        is_delete = 'True',
+        date_update = GETDATE()
+    WHERE 
+        id = @id 
+    And is_delete = 'False'
+    END

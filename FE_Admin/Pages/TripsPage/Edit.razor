@@ -1,146 +1,249 @@
 ﻿@page "/edittrip/{Id:int}"
 @inject HttpClient httpClient
 @inject ISnackbar Snackbar
-@inject NavigationManager navigationManager
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
 
 <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid Class="pa-0">
+    <MudGrid>
         <MudItem xs="12">
-            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+            <MudPaper Elevation="0" Class="pa-3 mb-3">
+                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
             </MudPaper>
         </MudItem>
+        <MudItem xs="6" Class="mx-auto">
+            <MudPaper Elevation="0" Class="pa-3">
+                <MudItem xs="12">
+                    <MudPaper Elevation="4" Class="p-4">
+                        <MudText Typo="Typo.h6" Class="mb-5">Cập nhật thông tin chuyến đi</MudText>
+                        <MudForm @ref="form" Style="height:auto">
+                            <MudTextField ShrinkLabel @bind-Value="tripInfo.trip_code" Label="Mã chuyến đi" Variant="Variant.Outlined" Required="true" />
+                            <MudTextField ShrinkLabel @bind-Value="tripInfo.from" Label="Điểm khởi hành" Variant="Variant.Outlined" Required="true" />
+                            <MudTextField ShrinkLabel @bind-Value="tripInfo.to" Label="Điểm đến" Variant="Variant.Outlined" Required="true" />
+                            <MudSelect @bind-Value="tripInfo.status" Label="Trạng thái" Required="true">
+                                <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
+                                <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
+                            </MudSelect>
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateTrip" Class="mt-3">Cập nhật</MudButton>
+                        </MudForm>
+                    </MudPaper>
+                </MudItem>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
 
-        <MudGrid xs="10" Class="mx-auto">
-            <!-- Phần chỉnh sửa chuyến đi bên trái -->
-            <MudItem xs="7">
-                <MudPaper Class="mud-paper mud-elevation-4 p-8" Style="margin-right: 16px; padding: 30px">
-                    <MudText Typo="Typo.h6" Class="mb-5">Chỉnh sửa Chuyến Đi</MudText>
+    <MudGrid Class="pa-0">
+        <MudItem xs="12">
+            <MudPaper Elevation="4" Class="p-4">
+                <MudText Typo="Typo.h6" Class="mb-5">Chi tiết chuyến đi</MudText>
+                <MudDataGrid Class="mx-auto pa-2" T="trip_detail" Dense="true" Hover="true" Bordered="true" Striped="true"
+                             MultiSelection="true" Items="@tripDetails" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                             Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+                    <ToolBarContent>
+                        <MudItem xs="4" Elevation="0" Class="pb-3">
+                            <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        </MudItem>
 
-                    <MudForm @ref="form" @bind-IsValid="isFormValid">
-                        <MudGrid Gutter="true">
-                            <!-- Mã chuyến đi và Từ -->
-                            <MudItem xs="6" Class="mb-4">
-                                <MudTextField Label="Mã Chuyến Đi" @bind-Value="Trip.trip_code"
-                                              Placeholder="Mã Chuyến Đi" Variant="Variant.Outlined"
-                                              Required="true" LabelStyle="font-weight: 600; color: #1976d2;" ReadOnly="true" />
-                            </MudItem>
+                        <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
+                            <MudButton OnClick="@(async () => await OpenDetailCreateDialog(null))" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                                Thêm mới
+                            </MudButton>
 
-                            <MudItem xs="6" Class="mb-4">
-                                <MudTextField Label="Điểm Khởi Hành" @bind-Value="Trip.from"
-                                              Placeholder="Điểm Khởi Hành" Variant="Variant.Outlined"
-                                              LabelStyle="font-weight: 600; color: #1976d2;" />
-                            </MudItem>
+                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
+                                Nhập file
+                            </MudButton>
 
-                            <!-- Đến và Khoảng cách -->
-                            <MudItem xs="6" Class="mb-4">
-                                <MudTextField Label="Điểm Đến" @bind-Value="Trip.to"
-                                              Placeholder="Điểm Đến" Variant="Variant.Outlined"
-                                              LabelStyle="font-weight: 600; color: #1976d2;" />
-                            </MudItem>
+                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
+                                Xuất file
+                            </MudButton>
+                        </MudItem>
+                    </ToolBarContent>
+                    <Columns>
+                        <SelectColumn T="trip_detail" />
+                        <PropertyColumn T="trip_detail" TProperty="string" Property="x => x.trip_detail_code" Class="fw-bold" Title="Mã CT Chuyến" Width="150px" />
+                        <PropertyColumn T="trip_detail" TProperty="string" Property="x => x.location_from" Class="fw-bold" Title="Điểm Đi" Width="150px" />
+                        <PropertyColumn T="trip_detail" TProperty="string" Property="x => x.location_to" Class="fw-bold" Title="Điểm Đến" Width="200px" />
+                        <PropertyColumn T="trip_detail" TProperty="string" Property="x => x.car_code" Class="fw-bold" Title="Mã Xe" Width="150px" />
+                        <PropertyColumn T="trip_detail" TProperty="DateTime" Property="x => x.time_start" Class="fw-bold" Title="Bắt Đầu" Width="150px" />
+                        <PropertyColumn T="trip_detail" TProperty="DateTime" Property="x => x.time_end" Class="fw-bold" Title="Kết Thúc" Width="150px" />
+                        <TemplateColumn T="trip_detail" Class="fw-bold" Title="Trạng Thái" Width="150px">
+                            <CellTemplate Context="element">
+                                @if (element.Item.status)
+                                {
+                                    <MudChip Color="Color.Success" Size="Size.Small" Variant="Variant.Text">Đang hoạt động</MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Ngưng hoạt động</MudChip>
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
+                        <TemplateColumn T="trip_detail" Class="fw-bold" Title="Chức năng" Width="150px">
+                            <CellTemplate Context="element">
+                                <MudTooltip Text="Chỉnh sửa">
+                                    <MudIconButton OnClick="@(async () => await OpenDetailCreateDialog(element.Item))" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                </MudTooltip>
+                                <MudTooltip Text="Xóa">
+                                    <MudIconButton Href="@($"/deletecustomer/{element.Item.id}")" Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
+                                </MudTooltip>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="trip_detail" />
+                    </PagerContent>
+                </MudDataGrid>
 
-                            <MudItem xs="6" Class="mb-4">
-                                <MudTextField Label="Trạng Thái" @bind-Value="Trip.status"
-                                              Placeholder="Trạng Thái" Variant="Variant.Outlined"
-                                              Required="true" LabelStyle="font-weight: 600; color: #1976d2;" />
-                            </MudItem>
-
-                            <!-- Trạng thái quay về -->
-                            <MudItem xs="6" Class="mb-4">
-                                <MudSelect Label="Chuyến Đi Có Quay Về" @bind-Value="Trip.is_return"
-                                           Placeholder="Quay Về" Variant="Variant.Outlined"
-                                           LabelStyle="font-weight: 600; color: #1976d2;">
-                                    <MudSelectItem Value="true">Có</MudSelectItem>
-                                    <MudSelectItem Value="false">Không</MudSelectItem>
-                                </MudSelect>
-                            </MudItem>
-
-                            <!-- Ngày tạo và ngày cập nhật -->
-                            <MudItem xs="6" Class="mb-4">
-                                <MudDatePicker Label="Ngày Tạo" @bind-Value="Trip.date_create"
-                                               Variant="Variant.Outlined" LabelStyle="font-weight: 600; color: #1976d2;" />
-                            </MudItem>
-
-                            <MudItem xs="6" Class="mb-4">
-                                <MudDatePicker Label="Ngày Cập Nhật" @bind-Value="Trip.date_update"
-                                               Variant="Variant.Outlined" LabelStyle="font-weight: 600; color: #1976d2;" />
-                            </MudItem>
-
-                            <!-- Nút Lưu -->
-                            <MudItem xs="12" Class="d-flex justify-end">
-                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save"
-                                           Color="Color.Primary" OnClick="EditTrip" Class="mt-3">Lưu</MudButton>
-                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.ArrowForward"
-                                           OnClick="Cancel" Style="margin-left: 16px;" Class="mt-3">Trở về</MudButton>
-                            </MudItem>
-                        </MudGrid>
-                    </MudForm>
-                </MudPaper>
-            </MudItem>
-
-            <!-- Phần hình ảnh bên phải -->
-            <MudItem xs="5">
-                <MudPaper Class="mud-paper mud-elevation-8 p-4" Style="margin-left: 16px;">
-                    <MudTextField Label="Hình Ảnh Chuyến Đi" @bind-Value="Trip.img_trip"
-                                  Placeholder="Hình Ảnh" Variant="Variant.Outlined"
-                                  Class="mb-4" LabelStyle="font-weight: 600; color: #1976d2;" />
-                </MudPaper>
-            </MudItem>
-        </MudGrid>
+            </MudPaper>
+        </MudItem>
     </MudGrid>
 </MudContainer>
 
 @code {
     [Parameter] public int Id { get; set; }
-    private trip Trip = new trip();
-    private bool isFormValid = false;
+
+    private trip tripInfo = new trip();
+    private List<trip_detail> tripDetails = new List<trip_detail>();
+    private trip_detail newTripDetail = new trip_detail();
+    private bool showSuccess = false;
+    private bool showError = false;
     private MudForm form;
-    private string url = "http://localhost:49922/api/Trips"; // Cập nhật URL cho API chuyến đi
+    private string url = "http://localhost:49922/api/Trips/trip";
+    private string tripdetailUrl = "http://localhost:49922/api/Trips/tripdetail";
+    private string _searchString;
+    private string LastSegment;
+
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Chuyến đi", href: "/gettrips", icon: @Icons.Material.Outlined.TravelExplore),
-        new BreadcrumbItem("Danh sách chuyến đi", href: "/gettrips", icon: @Icons.Material.Outlined.List),
-        new BreadcrumbItem("Chỉnh sửa chuyến đi", href: "", icon: @Icons.Material.Filled.Edit),
+        new BreadcrumbItem("Chuyến đi", href: null, icon: @Icons.Material.Outlined.LocationOn),
+        new BreadcrumbItem("Danh sách chuyến đi", href: "/gettrip", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Cập nhật", href: null, icon: @Icons.Material.Filled.Edit),
     };
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await httpClient.GetFromJsonAsync<trip>(url + "/" + Id);
-        if (response != null)
+        try
         {
-            Trip = response; // Gán dữ liệu từ API cho Trip
-            Console.WriteLine($"Mã chuyến đi: {Trip.trip_code}, Ngày tạo: {Trip.date_create?.ToString("dd/MM/yyyy")}");
+            var response = await httpClient.GetFromJsonAsync<trip>($"{url}/{Id}");
+            tripInfo = response;
+            tripDetails = response.TripDetails.ToList();
+            var uri = Navigation.Uri;
+            LastSegment = GetLastSegment(uri);
         }
-        else
+        catch (Exception ex)
         {
-            Snackbar.Add("Không tìm thấy chuyến đi", Severity.Error);
+            Snackbar.Add($"Lỗi khi tải chuyến đi: {ex.Message}", Severity.Error);
         }
     }
 
-    private async Task EditTrip()
+    private string GetLastSegment(string url)
+    {
+        var segments = url.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+        return segments.Length > 0 ? segments.Last() : string.Empty;
+    }
+
+
+    private async Task UpdateTrip()
     {
         try
         {
-            var response = await httpClient.PutAsJsonAsync(url + "/" + Id, Trip);
-            if (response.IsSuccessStatusCode)
+            if (form.IsValid)
             {
-                Snackbar.Add($"Chỉnh sửa chuyến đi {Trip.trip_code} thành công", Severity.Success);
-                navigationManager.NavigateTo("/gettrips"); // Điều hướng về danh sách chuyến đi
-            }
-            else
-            {
-                Snackbar.Add("Chỉnh sửa chuyến đi thất bại", Severity.Warning);
+
+                var response = await httpClient.PutAsJsonAsync($"{url}/{Id}", tripInfo);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add($"Cập nhật chuyến đi từ {tripInfo.from} đến {tripInfo.to} thành công", Severity.Success);
+                    showSuccess = true;
+                }
+                else
+                {
+                    Snackbar.Add($"Cập nhật thất bại: {response}", Severity.Warning);
+                    showError = true;
+                }
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Có lỗi xảy ra: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Cập nhật thất bại: {ex.Message}", Severity.Warning);
         }
     }
 
-    private void Cancel()
+    private Func<trip_detail, bool> _quickFilter => x =>
+       {
+           if (string.IsNullOrWhiteSpace(_searchString))
+               return true;
+
+           return $"{x.trip_detail_code} {x.car_code} {x.car_name} {x.car_number} {x.fullname} {x.fullname} {x.location_from} {x.location_to} {x.time_start} {x.time_end}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
+       };
+
+    private async Task OpenDetailCreateDialog(trip_detail selectedTrip = null)
     {
-        navigationManager.NavigateTo("/gettrips");
+        var parameters = new DialogParameters
+        {
+            { "SelectedTrip", selectedTrip ?? new trip_detail()}
+        };
+
+        var dialog = DialogService.Show<Detail>("Thêm chi tiết chuyến xe", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled && result.Data is trip_detail newTripDetail)
+        {
+            this.newTripDetail = newTripDetail;
+            await AddTripDetail();
+        }
+    }
+
+    private async Task AddTripDetail()
+    {
+        try
+        {
+            newTripDetail.trip_id = int.Parse(LastSegment);
+            var response = await httpClient.PostAsJsonAsync(tripdetailUrl, newTripDetail);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Thêm thành công", Severity.Success);
+                await OnInitializedAsync();
+            }
+            else
+            {
+                Snackbar.Add($"Thêm thất bại" + response, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task DeleteTrip(int id)
+    {
+        var response = await httpClient.DeleteAsync($"{tripdetailUrl}/{id}");
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add($"Xóa chuyến đi thành công", Severity.Success);
+            await OnInitializedAsync();
+        }
+        else
+        {
+            Snackbar.Add("Xóa chuyến đi thất bại", Severity.Error);
+        }
+    }
+
+    void RowClicked(DataGridRowClickEventArgs<trip_detail> args)
+    {
+        Console.WriteLine($"Row clicked: {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void RowRightClicked(DataGridRowClickEventArgs<trip_detail> args)
+    {
+        Console.WriteLine($"Row right clicked: {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void SelectedItemsChanged(HashSet<trip_detail> items)
+    {
+        Console.WriteLine($"Selected items changed: {System.Text.Json.JsonSerializer.Serialize(items)}");
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BE_API.Controllers
@@ -19,10 +20,10 @@ namespace BE_API.Controllers
         {
             _connectionString = configuration.GetConnectionString("SqlConnection");
         }
-        [HttpGet]
+        [HttpGet("trip")]
         public async Task<ActionResult<IEnumerable<trip>>> sp_Get_Trips()
         {
-            var procedureName = "sp_Get_Trips";
+            var procedureName = "sp_get_trip";
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -32,34 +33,40 @@ namespace BE_API.Controllers
         }
         // GET: api/Products/5
 
-        [HttpGet("{id}")]
+        [HttpGet("trip/{id}")]
         public async Task<ActionResult<trip>> sp_GetTripsID(int id)
         {
-            //return Ok(product);
-            var procedureName = "sp_GetTripsID";
+            var procedureName = "sp_getid_trip";
             var parameters = new DynamicParameters();
             parameters.Add("Id", id, DbType.Int32, ParameterDirection.Input);
 
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                var product = await connection.QueryFirstOrDefaultAsync<trip>(
-                    procedureName, parameters, commandType: CommandType.StoredProcedure);
 
-                if (product == null)
+                using (var multi = await connection.QueryMultipleAsync(procedureName, parameters, commandType: CommandType.StoredProcedure))
                 {
-                    return NotFound();
+                    var trip = multi.ReadFirstOrDefault<trip>();
+
+                    if (trip == null)
+                    {
+                        return NotFound();
+                    }
+
+                    var tripDetails = multi.Read<trip_detail>().ToList();
+
+                    trip.TripDetails = tripDetails;
+
+                    return Ok(trip);
                 }
-
-                return Ok(product);
             }
-
         }
+
+
         // POST: api/trips
-        [HttpPost]
+        [HttpPost("trip")]
         public async Task<ActionResult> AddTrip([FromBody] trip newTrip)
         {
-            // Kiểm tra xem đối tượng có hợp lệ không
             if (newTrip == null || string.IsNullOrEmpty(newTrip.img_trip) ||
                 string.IsNullOrEmpty(newTrip.from) || string.IsNullOrEmpty(newTrip.to) ||
                 string.IsNullOrEmpty(newTrip.trip_code))
@@ -67,14 +74,10 @@ namespace BE_API.Controllers
                 return BadRequest("Dữ liệu không hợp lệ.");
             }
 
-            // Sử dụng DynamicParameters để truyền tham số
             var parameters = new DynamicParameters();
             parameters.Add("@img_trip", newTrip.img_trip);
             parameters.Add("@from", newTrip.from);
             parameters.Add("@to", newTrip.to);
-            parameters.Add("@date_create", DateTime.Now); // Thời gian hiện tại
-            parameters.Add("@date_update", DateTime.Now); // Thời gian hiện tại
-            parameters.Add("@is_delete", 0); // Mặc định là 0 (chưa bị xóa)
             parameters.Add("@emp_create", newTrip.emp_create);
             parameters.Add("@trip_code", newTrip.trip_code);
             parameters.Add("@status", newTrip.status);
@@ -95,52 +98,34 @@ namespace BE_API.Controllers
         }
 
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTrip(int id, [FromBody] trip trip)
+        [HttpPut("trip/{id}")]
+        public async Task<IActionResult> UpdateTrip(int id, trip_create trip)
         {
-            using (var conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(_connectionString))
             {
+                SqlCommand cmd = new SqlCommand("sp_update_trip", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@img_trip", trip.img_trip);
+                cmd.Parameters.AddWithValue("@from", trip.from);
+                cmd.Parameters.AddWithValue("@to", trip.to);
+                cmd.Parameters.AddWithValue("@trip_code", trip.trip_code);
+                cmd.Parameters.AddWithValue("@status", trip.status);
+                cmd.Parameters.AddWithValue("@is_return", trip.is_return);
+
                 await conn.OpenAsync();
 
-                // Kiểm tra xem nhân viên có tồn tại không
-                var empExists = await conn.ExecuteScalarAsync<int>(
-                    "SELECT COUNT(1) FROM employees WHERE id = @emp_create",
-                    new { emp_create = trip.emp_create });
+                int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
-                if (empExists == 0)
+                if (rowsAffected == 0)
                 {
-                    return BadRequest("Nhân viên không tồn tại.");
-                }
-
-                // Tiến hành cập nhật nếu nhân viên hợp lệ
-                using (var cmd = new SqlCommand("sp_update_trip", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-
-                    // Thêm các tham số
-                    cmd.Parameters.AddWithValue("@id_trip", id);
-                    cmd.Parameters.AddWithValue("@img_trip", trip.img_trip ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@from", trip.from ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@to", trip.to ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@date_update", DateTime.Now);
-                    cmd.Parameters.AddWithValue("@is_delete", trip.is_delete);
-                    cmd.Parameters.AddWithValue("@emp_create", trip.emp_create);
-                    cmd.Parameters.AddWithValue("@trip_code", trip.trip_code ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@status", trip.status);
-                    cmd.Parameters.AddWithValue("@is_return", trip.is_return);
-
-                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
-
-                    if (rowsAffected == 0)
-                    {
-                        return NotFound("Không tìm thấy chuyến đi để cập nhật.");
-                    }
+                    return NotFound();
                 }
             }
 
-            return NoContent(); // Trả về NoContent nếu cập nhật thành công
+            return NoContent();
         }
-        [HttpDelete("{id}")]
+        [HttpDelete("trip/{id}")]
         public async Task<IActionResult> DeleteTrip(int id)
         {
             try
@@ -160,11 +145,11 @@ namespace BE_API.Controllers
 
                     if (result > 0)
                     {
-                        return Ok(new { message = "Trip deleted successfully." });
+                        return Ok();
                     }
                     else
                     {
-                        return NotFound(new { message = "Trip not found or already deleted." });
+                        return NotFound();
                     }
                 }
             }
@@ -174,6 +159,127 @@ namespace BE_API.Controllers
             }
         }
 
+        // GET: api/Products/5
 
+        [HttpGet("tripdetail/{id}")]
+        public async Task<ActionResult<trip_detail>> GetTripDetailID(int id)
+        {
+            var procedureName = "sp_getid_tripdetail";
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Int32, ParameterDirection.Input);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                var product = await connection.QueryFirstOrDefaultAsync<trip_detail>(
+                    procedureName, parameters, commandType: CommandType.StoredProcedure);
+
+                if (product == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(product);
+            }
+        }
+
+
+        // POST: api/trips
+        [HttpPost("tripdetail")]
+        public async Task<ActionResult> AddTripDetail([FromBody] trip_detail newTrip)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@time_start", newTrip.time_start);
+            parameters.Add("@time_end", newTrip.time_end);
+            parameters.Add("@price", newTrip.price);
+            parameters.Add("@voucher", newTrip.voucher);
+            parameters.Add("@trip_id", newTrip.trip_id);
+            parameters.Add("@car_id", newTrip.car_id);
+            parameters.Add("@location_from_id", newTrip.location_from_id);
+            parameters.Add("@driver_id", newTrip.driver_id);
+            parameters.Add("@location_to_id", newTrip.location_to_id);
+            parameters.Add("@trip_detail_code", newTrip.trip_detail_code);
+            parameters.Add("@distance", newTrip.distance);
+            parameters.Add("@status", newTrip.status);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                var result = await connection.ExecuteAsync("sp_add_trip_detail", parameters, commandType: CommandType.StoredProcedure);
+
+                if (result > 0)
+                {
+                    return Ok();
+                }
+
+                return BadRequest();
+            }
+        }
+
+
+        [HttpPut("tripdetail/{id}")]
+        public async Task<IActionResult> UpdateTripDetail(int id, trip_detail trip)
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                SqlCommand cmd = new SqlCommand("sp_update_trip_detail", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@time_start", trip.time_start);
+                cmd.Parameters.AddWithValue("@time_end", trip.time_end);
+                cmd.Parameters.AddWithValue("@price", trip.price);
+                cmd.Parameters.AddWithValue("@voucher", trip.voucher);
+                cmd.Parameters.AddWithValue("@car_id", trip.car_id);
+                cmd.Parameters.AddWithValue("@location_from_id", trip.location_from_id);
+                cmd.Parameters.AddWithValue("@driver_id", trip.driver_id);
+                cmd.Parameters.AddWithValue("@location_to_id", trip.location_to_id);
+                cmd.Parameters.AddWithValue("@trip_detail_code", trip.trip_detail_code);
+                cmd.Parameters.AddWithValue("@distance", trip.distance);
+                cmd.Parameters.AddWithValue("@status", trip.status);
+
+                await conn.OpenAsync();
+
+                int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                if (rowsAffected == 0)
+                {
+                    return NotFound();
+                }
+            }
+
+            return NoContent();
+        }
+        [HttpDelete("tripdetail/{id}")]
+        public async Task<IActionResult> DeleteTripDetail(int id)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@id", id, DbType.Int32, ParameterDirection.Input);
+
+                    var result = await connection.ExecuteAsync(
+                        "sp_delete_trip_detail",
+                        parameters,
+                        commandType: CommandType.StoredProcedure
+                    );
+
+                    if (result > 0)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error occurred: {ex.Message}" });
+            }
+        }
     }
 }

@@ -33,13 +33,6 @@
                                 <MudTextField Label="Hình ảnh chuyến đi" @bind-Value="newTrip.img_trip" Placeholder="URL Hình Ảnh"
                                               Variant="Variant.Outlined" />
                             </MudItem>
-                            <MudItem xs="6" Class="mb-4">
-                                <MudDatePicker @bind-Date="newTrip.date_create" Label="Ngày tạo" Required="true" />
-                            </MudItem>
-                            <MudItem xs="6" Class="mb-4">
-                                <MudDatePicker @bind-Date="newTrip.date_update" Label="Ngày cập nhật" Required="true" />
-                            </MudItem>
-
                             <MudItem xs="4" Class="mb-4">
                                 <MudSelect @bind-Value="newTrip.status" Label="Trạng thái" Required="true">
                                     <MudSelectItem Value="true">Hoạt động</MudSelectItem>
@@ -65,28 +58,24 @@
 </MudContainer>
 
 @code {
-    private trip newTrip = new trip();
+    private trip_create newTrip = new trip_create();
     private bool isFormValid = false;
     private MudForm form;
-    private string url = "http://localhost:49922/api/Trips"; // Đảm bảo URL đúng
+    private string url = "http://localhost:49922/api/Trips/trip";
 
     private async Task Addtrip()
     {
         if (form.IsValid)
         {
-            // Thay đổi giá trị cho các trường cần thiết
-            newTrip.date_create = DateTime.Now; // Gán ngày hiện tại cho ngày tạo
-            newTrip.date_update = DateTime.Now; // Gán ngày hiện tại cho ngày cập nhật
-            newTrip.is_delete = 0; // Mặc định là không xóa
-            newTrip.emp_create = 1; // Gán ID nhân viên tạo chuyến đi, bạn có thể thay đổi theo yêu cầu
+            newTrip.emp_create = 5;
 
             try
             {
                 var response = await httpClient.PostAsJsonAsync(url, newTrip);
                 if (response.IsSuccessStatusCode)
                 {
-                    Snackbar.Add("Thêm chuyến đi thành công!", Severity.Success);
-                    Navigation.NavigateTo("/gettrips");
+                    Snackbar.Add("Thêm thành công!", Severity.Success);
+                    Navigation.NavigateTo("/gettrip");
                 }
                 else
                 {
