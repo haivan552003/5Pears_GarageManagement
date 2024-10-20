@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/"
 @inject HttpClient Http
 @inject IJSRuntime js
 @inject NavigationManager NavigationManager
@@ -57,7 +57,7 @@
                 await js.InvokeVoidAsync("localStorage.setItem", "authToken", token);
 
                 // Điều hướng sau khi đăng nhập thành công
-                NavigationManager.NavigateTo("/", true);
+                NavigationManager.NavigateTo("/index", true);
             }
             else
             {
