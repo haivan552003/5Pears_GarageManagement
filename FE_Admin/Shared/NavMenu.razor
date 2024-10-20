@@ -34,8 +34,12 @@
             </MudChip>
         </ActivatorContent>
         <ChildContent>
-            <MudMenuItem Href="/getroletask">Danh sách Nhân Viên</MudMenuItem>
-            <MudMenuItem>Thêm Nhân Viên</MudMenuItem>
+            <MudMenuItem Href="/getemp">Danh sách Nhân Viên</MudMenuItem>
+            <MudMenuItem Href="/getdriver">Danh sách Tài Xế</MudMenuItem>
+            <MudMenuItem Href="/getcar">Danh sách Xe</MudMenuItem>
+            <MudMenuItem Href="/getcustomer">Danh sách Khách Hàng</MudMenuItem>
+            <MudMenuItem Href="/getcartype">Danh sách Loại Xe</MudMenuItem>
+            <MudMenuItem Href="/getcarbrand">Danh sách Hãng Xe</MudMenuItem>
         </ChildContent>
     </MudMenu>
 
@@ -50,24 +54,10 @@
             </MudChip>
         </ActivatorContent>
         <ChildContent>
-            <MudMenuItem Href="/getroletask">Danh sách Tài Xế</MudMenuItem>
-            <MudMenuItem>Thêm Tài Xế</MudMenuItem>
-        </ChildContent>
-    </MudMenu>
-
-    <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
-        <ActivatorContent>
-            <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
-                <MudText Class="text-uppercase">
-                    <MudIcon Icon="@Icons.Material.Outlined.PostAdd" Size="Size.Medium" Class="mb-1" />
-                    bài viết
-                    <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
-                </MudText>
-            </MudChip>
-        </ActivatorContent>
-        <ChildContent>
-            <MudMenuItem Href="/getroletask">Danh sách Xe</MudMenuItem>
-            <MudMenuItem>Thêm Xe</MudMenuItem>
+            <MudMenuItem Href="@($"/getDriver")">Hóa đơn Đặt vé</MudMenuItem>
+            <MudMenuItem Href="@($"/getDriver")">Hóa đơn Thuê Xe</MudMenuItem>
+            <MudMenuItem Href="@($"/getDriver")">Hóa đơn Thuê Tài</MudMenuItem>
+            <MudMenuItem Href="@($"/getDriver")">Hóa đơn Thuê Tài & Xe</MudMenuItem>
         </ChildContent>
     </MudMenu>
 
@@ -82,7 +72,8 @@
             </MudChip>
         </ActivatorContent>
         <ChildContent>
-            <MudMenuItem Href="/getnews">Xem Bài Viết</MudMenuItem>
+            <MudMenuItem Href="/gettrip">Danh sách Chuyến Xe</MudMenuItem>
+            <MudMenuItem Href="/getlocation">Danh sách Bến Xe</MudMenuItem>
         </ChildContent>
     </MudMenu>
 
@@ -99,6 +90,22 @@
         <ChildContent>
             <MudMenuItem Href="/getroletask">Danh sách Tuyến Xe</MudMenuItem>
             <MudMenuItem>Danh sách Chuyến Xe</MudMenuItem>
+        </ChildContent>
+    </MudMenu>
+    <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+        <ActivatorContent>
+            <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
+                <MudText Class="text-uppercase">
+                    <MudIcon Icon="@Icons.Material.Outlined.PostAdd" Size="Size.Medium" Class="mb-1" />
+                    khác
+                    <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
+                </MudText>
+            </MudChip>
+        </ActivatorContent>
+        <ChildContent>
+            <MudMenuItem Href="/getnews">Danh sách Tin Tức</MudMenuItem>
+            <MudMenuItem Href="/getbanner">Danh sách Banner</MudMenuItem>
+            <MudMenuItem>Thêm Xe</MudMenuItem>
         </ChildContent>
     </MudMenu>
     <MudSpacer />

@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using System;
 
 namespace BE_API.Models
 {
-    public class roles
+    public class car_brands
     {
         public int id { get; set; }
         public string name { get; set; }

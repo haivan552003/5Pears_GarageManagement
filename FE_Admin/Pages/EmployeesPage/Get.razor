@@ -1,4 +1,4 @@
-﻿@page "/getemployees"
+﻿@page "/getemp"
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 @inject IJSRuntime js
@@ -16,7 +16,6 @@
                              Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
                              Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
 
-                    <!-- Toolbar for Search and Actions -->
                     <ToolBarContent>
                         <MudItem xs="4" Elevation="0" Class="pb-3">
                             <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
@@ -48,28 +47,11 @@
                                 @(element.Item.gender ? "Nam" : "Nữ")
                             </CellTemplate>
                         </TemplateColumn>
-                        @* <PropertyColumn T="employees" TProperty="string" Property="x => x.email" Title="Email"
-                                        Style="width: 15%; white-space: nowrap;" /> *@
-                        @* <PropertyColumn T="employees" TProperty="string" Property="x => x.password" Title="Mật khẩu"
-                                        Style="width: 15%; white-space: nowrap;" /> *@
-                       @*  <PropertyColumn T="employees" TProperty="DateTime?" Property="x => x.birthday" Title="Ngày sinh"
-                                        Style="width: 15%; white-space: nowrap;" /> *@
                         <PropertyColumn T="employees" TProperty="string" Property="x => x.citizen_identity_number" Title="Số CMND/CCCD"
                                         Style="width: 15%; white-space: nowrap;" />
 
-                        <!-- Role Name Column -->
-                        <TemplateColumn T="employees" Class="fw-bold" Title="Vai trò" Style="white-space: nowrap;">
-                            <CellTemplate Context="element">
-                                @if (role_task.Any(role => role.id == element.Item.id_role))
-                                {
-                                    @role_task.First(role => role.id == element.Item.id_role).name
-                                }
-                                else
-                                {
-                                    <span>Không xác định</span>
-                                }
-                            </CellTemplate>
-                        </TemplateColumn>
+                        <PropertyColumn T="employees" TProperty="string" Property="x => x.role_name" Title="Họ và Tên"
+                                        Style="width: 20%; white-space: nowrap;" />
 
                         <TemplateColumn T="employees" Style="width: 80%; white-space: nowrap;" Class="fw-bold" Title="Trạng Thái">
                             <CellTemplate Context="element">
@@ -129,18 +111,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadRoles(); // Tải vai trò trước
-        await LoadEmployees(); // Sau đó tải danh sách nhân viên
+        await LoadRoles(); 
+        await LoadEmployees();
     }
 
-    // Hàm này sẽ tải danh sách nhân viên từ API
     private async Task LoadEmployees()
     {
         try
         {
             Elements = await httpClient.GetFromJsonAsync<List<employees>>(employeesUrl);
             Console.WriteLine($"Loaded employees: {System.Text.Json.JsonSerializer.Serialize(Elements)}");
-            StateHasChanged(); // Yêu cầu Blazor cập nhật lại giao diện
+            StateHasChanged();
         }
         catch (Exception ex)
         {
@@ -148,7 +129,6 @@
         }
     }
 
-    // Hàm này sẽ tải danh sách vai trò từ API
     private async Task LoadRoles()
     {
         try
@@ -163,13 +143,12 @@
         }
     }
 
-    // Gọi API sau khi trang được render lại, ví dụ sau khi điều hướng từ trang chỉnh sửa
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await LoadRoles(); // Tải lại danh sách vai trò
-            await LoadEmployees(); // Tải lại danh sách nhân viên
+            await LoadRoles();
+            await LoadEmployees();
         }
     }
 
@@ -212,7 +191,7 @@
         if (response.IsSuccessStatusCode)
         {
             Snackbar.Add("Xóa nhân viên thành công!", Severity.Success);
-            await LoadEmployees(); // Tải lại danh sách nhân viên
+            await LoadEmployees(); 
         }
         else
         {

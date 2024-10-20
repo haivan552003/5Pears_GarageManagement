@@ -12,13 +12,8 @@
         public float price { get; set; }
         public int id_type { get; set; }
         public int id_brand { get; set; }
-
         public DateTime year_production { get; set; }
         public float odo { get; set; }
         public float insurance_fee { get; set; }
-        public byte is_delete { get; set; }
-
-        public DateTime date_create { get; set; }
-        public DateTime date_update { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class employees
     {
-        public int id { get; set; }  // Đảm bảo tên thuộc tính giống với tên cột trong SQL
+        public int id { get; set; }
         public string email { get; set; }
         public string emp_code { get; set; }
         public bool status { get; set; }
@@ -14,6 +14,7 @@
         public string citizen_identity_number { get; set; }
         public bool gender { get; set; }
 
-        public int id_role { get; set; }
+        public int role_id { get; set; }
+        public string role_name { get; set; }
     }
 }

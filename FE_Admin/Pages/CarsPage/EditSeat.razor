@@ -1,0 +1,81 @@
+﻿@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success">
+            <MudTextField @bind-Value="seat.name"
+                          Label="Tên ghế"
+                          Required="true"
+                          RequiredError="Vui lòng nhập tên ghế" />
+            <MudNumericField @bind-Value="seat.row"
+                             Label="Hàng"
+                             Required="true"
+                             Min="1"
+                             Class="mt-3" />
+            <MudNumericField @bind-Value="seat.col"
+                             Label="Cột"
+                             Required="true"
+                             Min="1"
+                             Class="mt-3" />
+            <MudSelect @bind-Value="seat.status"
+                       Label="Trạng thái"
+                       Required="true"
+                       Class="mt-3">
+                <MudSelectItem Value="0">Trống</MudSelectItem>
+                <MudSelectItem Value="1">Đã đặt</MudSelectItem>
+            </MudSelect>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Hủy</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">@(seat.id == 0 ? "Thêm" : "Cập nhật")</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public car_seat Seat { get; set; } = new car_seat();
+    [Parameter] public int CarId { get; set; }
+
+    private MudForm form;
+    private bool success;
+    private car_seat seat = new car_seat();
+
+    protected override void OnInitialized()
+    {
+        if (Seat != null && Seat.id != 0)
+        {
+            seat = new car_seat
+                {
+                    id = Seat.id,
+                    name = Seat.name,
+                    row = Seat.row,
+                    col = Seat.col,
+                    status = Seat.status,
+                    car_id = Seat.car_id
+                };
+        }
+        else
+        {
+            seat.car_id = CarId;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            MudDialog.Close(DialogResult.Ok(seat));
+        }
+        else
+        {
+            Snackbar.Add("Vui lòng điền đầy đủ thông tin", Severity.Warning);
+        }
+    }
+}

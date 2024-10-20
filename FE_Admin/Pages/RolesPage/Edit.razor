@@ -1,0 +1,107 @@
+﻿@page "/editroles/{id:int}"
+@inject HttpClient httpClient
+@inject IJSRuntime js
+@inject NavigationManager navigationManager
+@inject ISnackbar Snackbar
+@using Microsoft.AspNetCore.Components;
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" Class="mx-auto">
+            <MudPaper Elevation="0" Class="pa-3">
+                <MudItem xs="12">
+                    <MudPaper Elevation="4" Class="p-4">
+                        <MudText Typo="Typo.h6" Class="mb-5">Thông tin công việc</MudText>
+                        <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
+                            <MudTextField ShrinkLabel @bind-Value="RoleTask.name" Label="Name"
+                                          Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
+                                          Placeholder="Name" Variant="Variant.Outlined" Required="true" />
+                            <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Variant="Variant.Filled" OnClick="SubmitForm">Lưu</MudButton>
+                            <MudButton Class="mt-3 pl-3" StartIcon="@Icons.Material.Outlined.ArrowForward" Variant="Variant.Outlined" OnClick="Cancel">Trở về</MudButton>
+                        </MudForm>
+                    </MudPaper>
+                </MudItem>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private roles RoleTask = new roles();
+    private bool isFormValid = false;
+    private MudForm form;
+    private string url = "http://localhost:49922/api/Roles";
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Công việc", href: "/getroles", icon: @Icons.Material.Outlined.WorkOutline),
+        new BreadcrumbItem("Danh sách công việc", href: "/getroles", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Chỉnh sửa công việc", href: "", icon: @Icons.Material.Filled.Edit),
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await httpClient.GetFromJsonAsync<role_task>(url + "/" + Id);
+        RoleTask = new roles
+            {
+                id = response.id,
+                name = response.name,
+            };
+    }
+
+    private IEnumerable<string> RoleTaskValidate(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            yield return "Vui lòng điền thông tin";
+            yield break;
+        }
+    }
+
+    private async Task EditRoles()
+    {
+        try
+        {
+            if (form.IsValid)
+            {
+                var response = await httpClient.PutAsJsonAsync(url + "/" + Id, RoleTask);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add($"Chỉnh sửa {Id} thành công", Severity.Success);
+              
+                }
+                else
+                {
+                    Snackbar.Add($"Chỉnh sửa {Id} thất bại {response.ReasonPhrase}", Severity.Warning);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Chỉnh sửa thất bại", Severity.Warning, options =>
+            {
+                options.SnackbarVariant = Variant.Filled;
+            });
+        }
+    }
+
+    private async Task SubmitForm()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            await EditRoles();
+        }
+    }
+
+    private void Cancel()
+    {
+        navigationManager.NavigateTo("/getroles");
+    }
+}

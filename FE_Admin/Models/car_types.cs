@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace BE_API.Models
+﻿namespace FE_Admin.Models
 {
-    public class roles
+    public class car_types
     {
         public int id { get; set; }
         public string name { get; set; }

@@ -1,4 +1,4 @@
-﻿@page "/getcustomertask"
+﻿@page "/getcustomer"
 @inject HttpClient httpClient
 @inject IJSRuntime js
 @inject IDialogService DialogService
@@ -36,7 +36,6 @@
                     </ToolBarContent>
                     <Columns>
                         <SelectColumn T="customers" />
-                        @* <PropertyColumn T="role_task" TProperty="int" Property="x => x.id_role_task" /> *@
                         <PropertyColumn T="customers" Style="width: 80%;" TProperty="string" Property="x => x.cus_code" Class="fw-bold" Title="Mã" />
                         <PropertyColumn T="customers" Style="width: 80%;" TProperty="string" Property="x => x.fullname" SortBy="@_sortBy" Class="fw-bold" Title="Tên" />
                         <PropertyColumn T="customers" Style="width: 80%;" TProperty="string" Property="x => x.email" Class="fw-bold" Title="Email" />

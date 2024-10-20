@@ -33,10 +33,7 @@ async function uploadImage(fileName, base64String) {
         console.error("Error uploading image:", error);
         throw error;
     }
-}
-
-
-// Expose function to global window object
+}// Expose function to global window object
 window.uploadImage = uploadImage;
 
 async function getImageUrl(fileName) {

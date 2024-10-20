@@ -12,16 +12,12 @@
         </MudItem>
 
         <MudGrid xs="10" Class="mx-auto">
-            <!-- Phần thêm nhân viên bên trái -->
             <MudItem xs="7">
                 <MudPaper Class="mud-paper mud-elevation-4 p-8" Style="margin-right: 16px; padding: 30px">
-                    <!-- Thêm margin phải -->
-                    <!-- Tiêu đề -->
                     <MudText Typo="Typo.h6" Class="mb-5">Thêm Nhân Viên</MudText>
 
                     <MudForm @ref="form" @bind-IsValid="isFormValid">
                         <MudGrid Gutter="true">
-                            <!-- Dòng 1: Mã nhân viên và Email -->
                             <MudItem xs="6" Class="mb-4">
                                 <MudTextField Label="Mã nhân viên" @bind-Value="newEmployee.emp_code" Placeholder="Mã Nhân Viên"
                                               Variant="Variant.Outlined" Required="true"
@@ -40,14 +36,12 @@
                                               LabelStyle="font-weight: 600; color: #1976d2;" />
                             </MudItem>
 
-                            <!-- Dòng 2: Ngày sinh -->
                             <MudItem xs="6" Class="mb-4">
                                 <MudDatePicker @bind-Date="birthdayDate" Label="Ngày sinh" Required="true"
                                                Placeholder="Ngày Sinh" Variant="Variant.Outlined"
                                                LabelStyle="font-weight: 600; color: #1976d2;" />
                             </MudItem>
 
-                            <!-- Dòng 3: Mật khẩu và Họ và tên -->
                             <MudItem xs="6" Class="mb-4">
                                 <MudTextField Label="Mật khẩu" @bind-Value="newEmployee.password" Placeholder="Mật Khẩu"
                                               Variant="Variant.Outlined" Required="true" Type="password"
@@ -61,7 +55,6 @@
                                               LabelStyle="font-weight: 600; color: #1976d2;" />
                             </MudItem>
 
-                            <!-- Dòng 4: Trạng thái và Giới tính -->
                             <MudItem xs="4" Class="mb-4">
                                 <MudSelect @bind-Value="newEmployee.status" Label="Trạng thái" Required="true"
                                            Placeholder="Trạng Thái" Variant="Variant.Outlined"
@@ -80,15 +73,13 @@
                                 </MudSelect>
                             </MudItem>
 
-                            <!-- Dòng 5: ID vai trò -->
                             <MudItem xs="4" Class="mb-4">
-                                <MudTextField Label="ID vai trò" @bind-Value="newEmployee.id_role" Placeholder="ID Vai Trò"
+                                <MudTextField Label="ID vai trò" @bind-Value="newEmployee.role_id" Placeholder="ID Vai Trò"
                                               Variant="Variant.Outlined" Required="true" Type="number"
                                               Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidateRoleID))"
                                               LabelStyle="font-weight: 600; color: #1976d2;" />
                             </MudItem>
 
-                            <!-- Dòng 6: Nút Lưu -->
                             <MudItem xs="12" Class="d-flex justify-end">
                                 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save"
                                            Color="Color.Primary" OnClick="AddEmployee" Class="mt-3">Lưu</MudButton>
@@ -98,10 +89,8 @@
                 </MudPaper>
             </MudItem>
 
-            <!-- Phần hình ảnh CMND bên phải -->
             <MudItem xs="5">
                 <MudPaper Class="mud-paper mud-elevation-8 p-4" Style="margin-left: 16px;">
-                    <!-- Thêm margin trái -->
                     <MudTextField Label="Hình ảnh CMND" @bind-Value="newEmployee.citizen_identity_img"
                                   Placeholder="Hình CMND" Variant="Variant.Outlined"
                                   Class="mb-4" LabelStyle="font-weight: 600; color: #1976d2;" />
@@ -121,11 +110,11 @@
 
 
 @code {
-    private employees newEmployee = new employees(); // Mô hình employees
+    private employees newEmployee = new employees();
     private bool isFormValid = false;
     private MudForm form;
     private DateTime? birthdayDate;
-    private string url = "http://localhost:49922/api/Employees"; // Đảm bảo URL đúng
+    private string url = "http://localhost:49922/api/Employees";
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -136,14 +125,13 @@
 
     private async Task<bool> IsEmailExists(string email)
     {
-        // Thực hiện kiểm tra email có tồn tại trong cơ sở dữ liệu
         var response = await httpClient.GetAsync($"{url}/exists?email={email}");
         return response.IsSuccessStatusCode && bool.Parse(await response.Content.ReadAsStringAsync());
     }
 
     private async Task<IEnumerable<string>> EmployeeValidateEmail(string email)
     {
-        var errors = new List<string>(); // Danh sách chứa thông báo lỗi
+        var errors = new List<string>(); 
 
         if (string.IsNullOrWhiteSpace(email))
         {
@@ -155,14 +143,13 @@
         }
         else
         {
-            // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu hay không
             if (await IsEmailExists(email))
             {
                 errors.Add("Email đã tồn tại trong cơ sở dữ liệu.");
             }
         }
 
-        return errors; // Trả về danh sách lỗi
+        return errors; 
     }
 
 
@@ -231,7 +218,6 @@
 
     private IEnumerable<string> EmployeeValidateCitizenIdentity(string citizenIdentityNumber, string citizenIdentityImg)
     {
-        // Kiểm tra số CMND và hình ảnh CMND
         if (!string.IsNullOrWhiteSpace(citizenIdentityNumber) && string.IsNullOrWhiteSpace(citizenIdentityImg))
         {
             yield return "Nếu có số CMND thì hình ảnh CMND không được bỏ trống.";
@@ -250,7 +236,6 @@
     {
         try
         {
-            // Kiểm tra tính hợp lệ cho số CMND và hình ảnh CMND
             var citizenIdentityValidation = EmployeeValidateCitizenIdentity(newEmployee.citizen_identity_number, newEmployee.citizen_identity_img);
             if (citizenIdentityValidation.Any())
             {
@@ -263,25 +248,23 @@
 
             if (form.IsValid)
             {
-                // Kiểm tra và gán ngày sinh
                 if (birthdayDate.HasValue)
                 {
-                    newEmployee.birthday = birthdayDate.Value; // Gán ngày sinh
+                    newEmployee.birthday = birthdayDate.Value; 
                 }
                 else
                 {
                     Snackbar.Add("Vui lòng chọn ngày sinh", Severity.Warning);
-                    return; // Ngăn không cho gửi yêu cầu nếu không có ngày sinh
+                    return; 
                 }
 
-                // Ghi log thông tin nhân viên
-                Console.WriteLine($"Adding Employee: {newEmployee.fullname}, {newEmployee.email}, {newEmployee.id_role}, Birthday: {newEmployee.birthday}");
+                Console.WriteLine($"Adding Employee: {newEmployee.fullname}, {newEmployee.email}, {newEmployee.role_id}, Birthday: {newEmployee.birthday}");
 
                 var response = await httpClient.PostAsJsonAsync(url, newEmployee);
                 if (response.IsSuccessStatusCode)
                 {
                     Snackbar.Add("Thêm nhân viên thành công!", Severity.Success);
-                    Navigation.NavigateTo("/getemployees");
+                    Navigation.NavigateTo("/getemp");
                 }
                 else
                 {

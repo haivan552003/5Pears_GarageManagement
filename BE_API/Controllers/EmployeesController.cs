@@ -82,7 +82,7 @@ namespace BE_API.Controllers
             parameters.Add("@citizen_identity_number", newEmployee.citizen_identity_number, DbType.String);
             parameters.Add("@status", newEmployee.status, DbType.String);
             parameters.Add("@gender", newEmployee.gender, DbType.String);
-            parameters.Add("@id_role", newEmployee.id_role, DbType.Int32);
+            parameters.Add("@id_role", newEmployee.role_id, DbType.Int32);
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -107,29 +107,26 @@ namespace BE_API.Controllers
                 SqlCommand cmd = new SqlCommand("sp_updateemployee", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                // Thêm tham số cho stored procedure
-                cmd.Parameters.AddWithValue("@id_emp", id); // Tham số id_emp từ URL
+                cmd.Parameters.AddWithValue("@id_emp", id); 
                 cmd.Parameters.AddWithValue("@full_name", employees.fullname);
                 cmd.Parameters.AddWithValue("@birthday", employees.birthday);
                 cmd.Parameters.AddWithValue("@citizen_identity_img", employees.citizen_identity_img);
                 cmd.Parameters.AddWithValue("@citizen_identity_number", employees.citizen_identity_number);
-                cmd.Parameters.AddWithValue("@status", employees.status); // Thêm tham số status
+                cmd.Parameters.AddWithValue("@status", employees.status); 
                 cmd.Parameters.AddWithValue("@gender", employees.gender);
-                cmd.Parameters.AddWithValue("@id_role", employees.id_role);
+                cmd.Parameters.AddWithValue("@id_role", employees.role_id);
 
                 await conn.OpenAsync();
 
-                // Thực thi stored procedure
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
-                // Kiểm tra số hàng đã được cập nhật
                 if (rowsAffected == 0)
                 {
-                    return NotFound(); // Không tìm thấy bản ghi để cập nhật
+                    return NotFound();
                 }
             }
 
-            return NoContent(); // Trả về NoContent nếu thành công
+            return NoContent();
         }
 
 
@@ -138,28 +135,28 @@ namespace BE_API.Controllers
         {
             try
             {
-                using (var connection = new SqlConnection(_connectionString)) // Sử dụng _connectionString thay vì _configuration
+                using (var connection = new SqlConnection(_connectionString)) 
                 {
                     await connection.OpenAsync();
 
                     var parameters = new DynamicParameters();
-                    parameters.Add("@id_emp", id, DbType.Int32, ParameterDirection.Input); // Xác định kiểu dữ liệu là Int32
+                    parameters.Add("@id_emp", id, DbType.Int32, ParameterDirection.Input);
 
                     var result = await connection.ExecuteAsync("sp_delete_employee", parameters, commandType: CommandType.StoredProcedure);
 
                     if (result > 0)
                     {
-                        return Ok(new { message = "Employee deleted successfully" });
+                        return Ok();
                     }
                     else
                     {
-                        return NotFound(new { message = "Employee not found or already deleted" });
+                        return NotFound();
                     }
                 }
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error occurred: {ex.Message}" });
+                return StatusCode(500);
             }
         }
 

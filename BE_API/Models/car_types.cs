@@ -2,7 +2,7 @@
 
 namespace BE_API.Models
 {
-    public class roles
+    public class car_types
     {
         public int id { get; set; }
         public string name { get; set; }
