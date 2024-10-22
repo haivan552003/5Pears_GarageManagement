@@ -74,7 +74,6 @@
                                               LabelStyle="font-weight: 600; color: #1976d2;" ReadOnly="true" />
                             </MudItem>
 
-                            <!-- Dòng 6: Nút Lưu -->
                             <MudItem xs="12" Class="d-flex justify-end">
                                 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save"
                                            Color="Color.Primary" OnClick="EditEmployee" Class="mt-3">Lưu</MudButton>
@@ -102,7 +101,7 @@
     private employees Employee = new employees();
     private bool isFormValid = false;
     private MudForm form;
-    private string url = "http://localhost:49922/api/Employees"; 
+    private string url = "http://localhost:49922/api/Employees";
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -128,7 +127,7 @@
             }
             else
             {
-                Snackbar.Add($"Chỉnh sửa nhân viên thất bại", Severity.Warning);
+                Snackbar.Add($"Chỉnh sửa {Employee.fullname} thất bại" + response, Severity.Warning);
             }
         }
         catch (Exception ex)

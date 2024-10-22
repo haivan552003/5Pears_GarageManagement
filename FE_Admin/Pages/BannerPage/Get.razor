@@ -78,10 +78,6 @@
             return x.title;
     };
 
-    private string GenerateDeleteUrl(int id)
-    {
-        return $"/deleteproduct/{id}";
-    }
 
     private string GetRoleTaskName(int cateId)
     {
@@ -147,7 +143,6 @@
 
         if (!result.Cancelled)
         {
-            Snackbar.Add("Dialog đóng thành công", Severity.Success);
             await DeleteBanner(banner);
         }
         else
