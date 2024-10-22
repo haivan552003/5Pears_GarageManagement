@@ -101,10 +101,8 @@ namespace BE_API.Controllers
             parameters.Add("@gender", newCustomer.gender, DbType.String);
             parameters.Add("@phone_number", newCustomer.phone_number, DbType.String);
             parameters.Add("@citizen_identity_img1", newCustomer.citizen_identity_img1, DbType.String);
-            parameters.Add("@citizen_identity_img2", newCustomer.citizen_identity_img2, DbType.String);
             parameters.Add("@citizen_identity_number", newCustomer.citizen_identity_number, DbType.String);
             parameters.Add("@driver_license_img1", newCustomer.driver_license_img1, DbType.String);
-            parameters.Add("@driver_license_img2", newCustomer.driver_license_img2, DbType.String);
             parameters.Add("@driver_license_number", newCustomer.driver_license_number, DbType.String);
             parameters.Add("@role_id", newCustomer.id_role, DbType.Int32);
             parameters.Add("@status", newCustomer.status, DbType.String);
@@ -140,10 +138,8 @@ namespace BE_API.Controllers
             parameters.Add("@gender", updatedCustomer.gender, DbType.String);
             parameters.Add("@phone_number", updatedCustomer.phone_number, DbType.String);
             parameters.Add("@citizen_identity_img1", updatedCustomer.citizen_identity_img1, DbType.String);
-            parameters.Add("@citizen_identity_img2", updatedCustomer.citizen_identity_img2, DbType.String);
             parameters.Add("@citizen_identity_number", updatedCustomer.citizen_identity_number, DbType.String);
             parameters.Add("@driver_license_img1", updatedCustomer.driver_license_img1, DbType.String);
-            parameters.Add("@driver_license_img2", updatedCustomer.driver_license_img2, DbType.String);
             parameters.Add("@driver_license_number", updatedCustomer.driver_license_number, DbType.String);
             parameters.Add("@role_id", updatedCustomer.id_role, DbType.Int32);
             parameters.Add("@status", updatedCustomer.status, DbType.String);

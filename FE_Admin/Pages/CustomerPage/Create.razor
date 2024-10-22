@@ -27,11 +27,11 @@
             <MudPaper Elevation="0" Class="pa-3">
                 <MudForm @ref="form" @bind-IsValid="isFormValid">
 
-                    <MudGrid>
-                        <!-- Form for Adding Customer -->
-                        <MudItem xs="6">
-                            <MudPaper Elevation="4" Class="p-4">
-                                <MudText Typo="Typo.h6" Class="mb-3">Thêm khách hàng</MudText>
+                    <MudPaper Elevation="4" Class="p-4">
+                        <MudText Typo="Typo.h6" Class="mb-3" Align="Align.Center">Thêm khách hàng</MudText>
+
+                        <MudGrid>
+                            <MudItem xs="4">
 
                                 <MudTextField ShrinkLabel @bind-Value="newRoleTask.cus_code" Label="Mã"
                                               Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
@@ -50,12 +50,9 @@
                                               Placeholder="Tên" Variant="Variant.Outlined" Required="true" />
 
                                 <MudDatePicker @bind-Date="birthdayDate" Label="Ngày sinh" Required="true" Variant="Variant.Outlined" />
+                            </MudItem>
 
-                                <MudSelect @bind-Value="newRoleTask.gender" Label="Giới tính" Required="true" Variant="Variant.Outlined">
-                                    <MudSelectItem Value="(byte)1">Nam</MudSelectItem>
-                                    <MudSelectItem Value="(byte)0">Nữ</MudSelectItem>
-                                </MudSelect>
-
+                            <MudItem xs="4">
                                 <MudTextField ShrinkLabel @bind-Value="newRoleTask.phone_number" Label="SĐT"
                                               Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
                                               Placeholder="SĐT" Variant="Variant.Outlined" Required="true" />
@@ -63,10 +60,6 @@
                                 <MudTextField ShrinkLabel @bind-Value="newRoleTask.citizen_identity_img1" Label="citizen_identity_img1"
                                               Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
                                               Placeholder="citizen_identity_img1" Variant="Variant.Outlined" Required="true" />
-
-                                <MudTextField ShrinkLabel @bind-Value="newRoleTask.citizen_identity_img2" Label="citizen_identity_img2"
-                                              Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
-                                              Placeholder="citizen_identity_img2" Variant="Variant.Outlined" Required="true" />
 
                                 <MudTextField ShrinkLabel @bind-Value="newRoleTask.citizen_identity_number" Label="citizen_identity_number"
                                               Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
@@ -76,13 +69,16 @@
                                               Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
                                               Placeholder="driver_license_img1" Variant="Variant.Outlined" Required="true" />
 
-                                <MudTextField ShrinkLabel @bind-Value="newRoleTask.driver_license_img2" Label="driver_license_img2"
-                                              Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
-                                              Placeholder="driver_license_img2" Variant="Variant.Outlined" Required="true" />
-
                                 <MudTextField ShrinkLabel @bind-Value="newRoleTask.driver_license_number" Label="driver_license_number"
                                               Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
                                               Placeholder="driver_license_number" Variant="Variant.Outlined" Required="true" />
+                            </MudItem>
+
+                            <MudItem xs="4">
+                                <MudSelect @bind-Value="newRoleTask.gender" Label="Giới tính" Required="true" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="(byte)1">Nam</MudSelectItem>
+                                    <MudSelectItem Value="(byte)0">Nữ</MudSelectItem>
+                                </MudSelect>
 
                                 <MudSelect @bind-Value="newCustomer.status" Label="Status" Required="true" Variant="Variant.Outlined">
                                     <MudSelectItem Value="true">Đang hoạt động </MudSelectItem>
@@ -98,20 +94,18 @@
                                         }
                                     }
                                 </MudSelect>
+
                                 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddCustomer" Class="mt-3">Lưu khách hàng</MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
 
-                            </MudPaper>
-                        </MudItem>
-
-                        <!-- Form for Adding Address -->
-                    </MudGrid>
-
-@*                     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddCustomerAndAddress" Class="mt-3">Lưu</MudButton>
- *@                </MudForm>
+                </MudForm>
             </MudPaper>
         </MudItem>
     </MudGrid>
 </MudContainer>
+
 
 @code {
     private customers newRoleTask = new customers();
