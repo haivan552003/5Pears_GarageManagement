@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -218,31 +219,22 @@ namespace BE_API.Controllers
 
 
         [HttpPut("tripdetail/{id}")]
-        public async Task<IActionResult> UpdateTripDetail(int id, trip_detail trip)
+        public async Task<IActionResult> UpdateTripDetail(int id, trip_detail_update trip)
         {
+            var parameters = new DynamicParameters(trip);
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand("sp_update_trip_detail", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@time_start", trip.time_start);
-                cmd.Parameters.AddWithValue("@time_end", trip.time_end);
-                cmd.Parameters.AddWithValue("@price", trip.price);
-                cmd.Parameters.AddWithValue("@voucher", trip.voucher);
-                cmd.Parameters.AddWithValue("@car_id", trip.car_id);
-                cmd.Parameters.AddWithValue("@location_from_id", trip.location_from_id);
-                cmd.Parameters.AddWithValue("@driver_id", trip.driver_id);
-                cmd.Parameters.AddWithValue("@location_to_id", trip.location_to_id);
-                cmd.Parameters.AddWithValue("@trip_detail_code", trip.trip_detail_code);
-                cmd.Parameters.AddWithValue("@distance", trip.distance);
-                cmd.Parameters.AddWithValue("@status", trip.status);
-
                 await conn.OpenAsync();
 
-                int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                var result = await conn.ExecuteAsync("sp_update_trip_detail", parameters, commandType: CommandType.StoredProcedure);
 
-                if (rowsAffected == 0)
+                if (result > 0)
                 {
-                    return NotFound();
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
                 }
             }
 

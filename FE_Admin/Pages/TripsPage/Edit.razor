@@ -82,10 +82,11 @@
                         <TemplateColumn T="trip_detail" Class="fw-bold" Title="Chức năng" Width="150px">
                             <CellTemplate Context="element">
                                 <MudTooltip Text="Chỉnh sửa">
-                                    <MudIconButton OnClick="@(async () => await OpenDetailCreateDialog(element.Item))" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                    <MudIconButton OnClick="@(async () => await OpenDetailUpdateDialog(element.Item))" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
                                 </MudTooltip>
                                 <MudTooltip Text="Xóa">
-                                    <MudIconButton Href="@($"/deletecustomer/{element.Item.id}")" Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
+                                    <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small"
+                                                   OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" />
                                 </MudTooltip>
                             </CellTemplate>
                         </TemplateColumn>
@@ -106,8 +107,6 @@
     private trip tripInfo = new trip();
     private List<trip_detail> tripDetails = new List<trip_detail>();
     private trip_detail newTripDetail = new trip_detail();
-    private bool showSuccess = false;
-    private bool showError = false;
     private MudForm form;
     private string url = "http://localhost:49922/api/Trips/trip";
     private string tripdetailUrl = "http://localhost:49922/api/Trips/tripdetail";
@@ -155,13 +154,11 @@
                 var response = await httpClient.PutAsJsonAsync($"{url}/{Id}", tripInfo);
                 if (response.IsSuccessStatusCode)
                 {
-                    Snackbar.Add($"Cập nhật chuyến đi từ {tripInfo.from} đến {tripInfo.to} thành công", Severity.Success);
-                    showSuccess = true;
+                    Snackbar.Add($"Cập nhật chuyến đi {Id} thành công", Severity.Success);
                 }
                 else
                 {
                     Snackbar.Add($"Cập nhật thất bại: {response}", Severity.Warning);
-                    showError = true;
                 }
             }
         }
@@ -186,13 +183,29 @@
             { "SelectedTrip", selectedTrip ?? new trip_detail()}
         };
 
-        var dialog = DialogService.Show<Detail>("Thêm chi tiết chuyến xe", parameters);
+        var dialog = DialogService.Show<Add_Detail>("Thêm chi tiết chuyến xe", parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled && result.Data is trip_detail newTripDetail)
         {
             this.newTripDetail = newTripDetail;
             await AddTripDetail();
+        }
+    }
+    private async Task OpenDetailUpdateDialog(trip_detail selectedTrip = null)
+    {
+        var parameters = new DialogParameters
+        {
+            { "SelectedTrip", selectedTrip ?? new trip_detail()}
+        };
+
+        var dialog = DialogService.Show<Update_Detail>("Chi tiết chuyến xe", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled && result.Data is trip_detail newTripDetail)
+        {
+            this.newTripDetail = newTripDetail;
+            await UpdateTripDetail();
         }
     }
 
@@ -218,6 +231,28 @@
         }
     }
 
+    private async Task UpdateTripDetail()
+    {
+        try
+        {
+            var response = await httpClient.PutAsJsonAsync($"{tripdetailUrl}/{newTripDetail.id}", newTripDetail);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add($"Cập nhật chi tiết chuyến đi {newTripDetail.id} thành công", Severity.Success);
+                await OnInitializedAsync();
+            }
+            else
+            {
+                Snackbar.Add($"Cập nhật thất bại: {response}", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Cập nhật thất bại: {ex.Message}", Severity.Warning);
+        }
+    }
+
+
     private async Task DeleteTrip(int id)
     {
         var response = await httpClient.DeleteAsync($"{tripdetailUrl}/{id}");
@@ -229,6 +264,49 @@
         else
         {
             Snackbar.Add("Xóa chuyến đi thất bại", Severity.Error);
+        }
+    }
+
+    private async Task OpenDeleteDialog(trip_detail trip_detail)
+    {
+        var parameters = new DialogParameters
+    {
+        { "ContentText", $"Bạn có chắc chắn muốn xóa chi tiết chuyến đi {trip_detail.id}?" },
+        { "ButtonText", "Xóa" },
+        { "Color", Color.Error }
+    };
+
+        var options = new DialogOptions() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await DialogService.ShowAsync<Delete_Detail>("Xác nhận xóa", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            await DeleteTripDetail(trip_detail);
+        }
+    }
+
+
+    private async Task DeleteTripDetail(trip_detail trip_detail)
+    {
+        try
+        {
+            var response = await httpClient.DeleteAsync($"{tripdetailUrl}/{trip_detail.id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add($"Đã xóa chi tiết chuyến đi {trip_detail.id} thành công", Severity.Success);
+                await OnInitializedAsync();
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Lỗi khi xóa tài xế: {response.ReasonPhrase}. Chi tiết: {errorContent}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi xóa tài xế: {ex.Message}", Severity.Error);
         }
     }
 
