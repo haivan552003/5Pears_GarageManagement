@@ -2,7 +2,6 @@
 @inject HttpClient httpClient
 @inject IJSRuntime js
 @inject NavigationManager navigationManager
-@inject IJSRuntime js
 @inject ISnackbar Snackbar
 
 <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
@@ -17,30 +16,42 @@
                 <MudItem xs="12">
                     <MudPaper Elevation="4" Class="p-4">
                         <MudText Typo="Typo.h6" Class="mb-5">Thông tin công việc</MudText>
-                        <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
-                            <MudTextField ShrinkLabel @bind-Value="News.news_img" Label="Hình Ảnh Mới"
-                                          Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
-                                          Placeholder="Hình Ảnh Mới" Variant="Variant.Outlined" Required="true" />
+                        <MudForm @ref="form" @bind-IsValid="@isFormValid" Style="height:auto">
+                            <InputFile id="newsImageInput" OnChange="@LoadNewsImage" hidden accept=".jpg,.jpeg,.png" />
+                            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.CloudUpload" for="newsImageInput"
+                                       FullWidth="true" Class="mb-3">
+                                Chọn hình ảnh mới
+                            </MudButton>
+                            @if (!string.IsNullOrEmpty(News.news_img))
+                            {
+                                <MudImage Src="@News.news_img" Alt="Hình ảnh mới" Width="100"
+                                          Height="100" ObjectFit="ObjectFit.Cover" Class="mb-3" />
+                            }
 
-                            <MudTextField ShrinkLabel @bind-Value="News.title" Label="Tiêu Đề"
+                            <MudTextField @bind-Value="News.title" Label="Tiêu Đề"
                                           Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
                                           Placeholder="Tiêu Đề" Variant="Variant.Outlined" Required="true" />
 
-                            <MudTextField ShrinkLabel @bind-Value="News.content" Label="Nội Dung"
-                                          Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
-                                          Placeholder="Nội Dung" Variant="Variant.Outlined" Required="true" Lines="3" />
+                            <CKeditor Id="newsContent" @bind-Value="News.content" />
 
-                            <MudTextField ShrinkLabel @bind-Value="News.id_emp" Label="Người Tạo"
+                            <MudTextField @bind-Value="News.id_emp" Label="Người Tạo"
                                           Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
                                           Placeholder="Người Tạo" Variant="Variant.Outlined" Required="true" />
 
                             <MudSelect @bind-Value="News.status" Label="Trạng Thái" Variant="Variant.Outlined" Required="true">
-                                <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
-                                <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
+                                <MudSelectItem Value="@true">Đang hoạt động</MudSelectItem>
+                                <MudSelectItem Value="@false">Ngưng hoạt động</MudSelectItem>
                             </MudSelect>
 
-                            <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Variant="Variant.Filled" OnClick="SubmitForm">Lưu</MudButton>
-                            <MudButton Class="mt-3 pl-3" StartIcon="@Icons.Material.Outlined.ArrowForward" Variant="Variant.Outlined" OnClick="Cancel">Trở về</MudButton>
+                            <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" 
+                                       Variant="Variant.Filled" OnClick="SubmitForm" Disabled="@(!isFormValid || isLoading)">
+                                @(isLoading ? "Đang lưu..." : "Lưu")
+                            </MudButton>
+                            <MudButton Class="mt-3 ml-3" StartIcon="@Icons.Material.Outlined.ArrowBack" 
+                                       Variant="Variant.Outlined" OnClick="Cancel" Disabled="@isLoading">
+                                Trở về
+                            </MudButton>
                         </MudForm>
                     </MudPaper>
                 </MudItem>
@@ -52,26 +63,29 @@
 @code {
     [Parameter] public int Id { get; set; }
     private news News = new news();
-    private bool isFormValid = false;
-    private bool showSuccess = false;
-    private bool showError = false;
-    private bool showWarning = false;
+    private bool isFormValid;
     private MudForm form;
-    private string url = "http://localhost:49922/api/News";
-    private string alertAnimationClass = "animate__bounceInRight";
+    private readonly string url = "http://localhost:49922/api/News";
+    private bool isLoading;
 
-    // Thêm thông tin BreadcrumbItem
-    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    private readonly List<BreadcrumbItem> _items = new()
     {
-        new BreadcrumbItem("Công việc", href: "/getnews", icon: @Icons.Material.Outlined.WorkOutline),
-        new BreadcrumbItem("Danh sách công việc", href: "/getroletask", icon: @Icons.Material.Outlined.List),
-        new BreadcrumbItem("Chỉnh sửa công việc", href: "", icon: @Icons.Material.Filled.Edit),
+        new BreadcrumbItem("Công việc", href: "/getnews", icon: Icons.Material.Outlined.WorkOutline),
+        new BreadcrumbItem("Danh sách công việc", href: "/getroletask", icon: Icons.Material.Outlined.List),
+        new BreadcrumbItem("Chỉnh sửa công việc", href: "", icon: Icons.Material.Filled.Edit),
     };
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await httpClient.GetFromJsonAsync<news>(url + "/" + Id);
-        News = response;
+        try
+        {
+            News = await httpClient.GetFromJsonAsync<news>($"{url}/{Id}");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi tải dữ liệu: {ex.Message}", Severity.Error);
+            navigationManager.NavigateTo("/getnews");
+        }
     }
 
     private IEnumerable<string> NewsValidate(string name)
@@ -79,7 +93,49 @@
         if (string.IsNullOrWhiteSpace(name))
         {
             yield return "Vui lòng điền thông tin";
-            yield break;
+        }
+    }
+
+    private async Task<string> GetBase64Image(IBrowserFile file)
+    {
+        try
+        {
+            using var memoryStream = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(memoryStream);
+            return Convert.ToBase64String(memoryStream.ToArray());
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi xử lý hình ảnh: {ex.Message}", Severity.Error);
+            return null;
+        }
+    }
+
+    private async Task LoadNewsImage(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            isLoading = true;
+            var file = e.File;
+            if (file != null)
+            {
+                var base64Data = await GetBase64Image(file);
+                if (base64Data != null)
+                {
+                    var fileName = $"news_images/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                    var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
+                    News.news_img = imageUrl;
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi tải lên hình ảnh: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
@@ -87,26 +143,25 @@
     {
         try
         {
-            if (form.IsValid)
+            isLoading = true;
+            var response = await httpClient.PutAsJsonAsync($"{url}/{Id}", News);
+            if (response.IsSuccessStatusCode)
             {
-                var response = await httpClient.PutAsJsonAsync(url + "/" + Id, News);
-                if (response.IsSuccessStatusCode)
-                {
-                    Snackbar.Add($"Chỉnh sửa {Id} thành công", Severity.Success);
-                }
-                else
-                {
-                    Snackbar.Add($"Chỉnh sửa {Id} thất bại {response.ReasonPhrase}", Severity.Warning);
-                }
+                Snackbar.Add($"Chỉnh sửa tin tức ID {Id} thành công", Severity.Success);
+                navigationManager.NavigateTo("/getnews");
+            }
+            else
+            {
+                Snackbar.Add($"Chỉnh sửa tin tức ID {Id} thất bại: {response.ReasonPhrase}", Severity.Warning);
             }
         }
         catch (Exception ex)
         {
-
-            Snackbar.Add($"Thêm thất bại", Severity.Warning, options =>
-              {
-                  options.SnackbarVariant = Variant.Filled;
-              });
+            Snackbar.Add($"Lỗi khi chỉnh sửa tin tức: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 

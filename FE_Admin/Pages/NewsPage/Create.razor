@@ -28,30 +28,38 @@
                 <MudItem xs="12">
                     <MudPaper Elevation="4" Class="p-4">
                         <MudText Typo="Typo.h6" Class="mb-5">Thêm công việc</MudText>
-                        <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
-                            <MudTextField ShrinkLabel @bind-Value="News.news_img" Label="Hình Ảnh Mới"
-                                          Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
-                                          Placeholder="Hình Ảnh Mới" Variant="Variant.Outlined" Required="true" />
+                        <MudForm @ref="form" @bind-IsValid="@isFormValid" Style="height:auto">
+                            <InputFile id="newsImageInput" OnChange="@LoadNewsImage" hidden accept=".jpg,.jpeg,.png" />
+                            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.CloudUpload" for="newsImageInput"
+                                       FullWidth="true" Class="mb-3">
+                                Chọn hình ảnh
+                            </MudButton>
+                            @if (!string.IsNullOrEmpty(News.news_img))
+                            {
+                                <MudImage Src="@News.news_img" Alt="Hình ảnh mới" Width="100"
+                                          Height="100" ObjectFit="ObjectFit.Cover" Class="mb-3" />
+                            }
 
-                            <MudTextField ShrinkLabel @bind-Value="News.title" Label="Tiêu Đề"
+                            <MudTextField @bind-Value="News.title" Label="Tiêu Đề"
                                           Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
                                           Placeholder="Tiêu Đề" Variant="Variant.Outlined" Required="true" />
 
-                            <MudTextField ShrinkLabel @bind-Value="News.content" Label="Nội Dung"
-                                          Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
-                                          Placeholder="Nội Dung" Variant="Variant.Outlined" Required="true" Lines="3" />
+                            <CKeditor Id="newsContent" @bind-Value="News.content" />
 
-                            <MudTextField ShrinkLabel @bind-Value="News.id_emp" Label="Người Tạo"
+                            <MudTextField @bind-Value="News.id_emp" Label="Người Tạo"
                                           Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
                                           Placeholder="Tên công việc" Variant="Variant.Outlined" Required="true" />
 
                             <MudSelect @bind-Value="News.status" Label="Trạng Thái" Variant="Variant.Outlined" Required="true">
-                                <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
-                                <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
+                                <MudSelectItem Value="@true">Đang hoạt động</MudSelectItem>
+                                <MudSelectItem Value="@false">Ngưng hoạt động</MudSelectItem>
                             </MudSelect>
 
-
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddNews" Class="mt-3">Lưu</MudButton>
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" 
+                                       Color="Color.Primary" OnClick="AddNews" Class="mt-3" Disabled="@(!isFormValid || isLoading)">
+                                @(isLoading ? "Đang lưu..." : "Lưu")
+                            </MudButton>
                         </MudForm>
                     </MudPaper>
                 </MudItem>
@@ -62,17 +70,18 @@
 
 @code {
     private news News = new news();
-    private bool isFormValid = false;
-    private bool showSuccess = false;
-    private bool showError = false;
+    private bool isFormValid;
+    private bool showSuccess;
+    private bool showError;
     private MudForm form;
-    private string url = "http://localhost:49922/api/News";
+    private readonly string url = "http://localhost:49922/api/News";
+    private bool isLoading;
 
-    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    private readonly List<BreadcrumbItem> _items = new()
     {
-        new BreadcrumbItem("Công việc", href: "/getnews", icon: @Icons.Material.Outlined.WorkOutline),
-        new BreadcrumbItem("Danh sách công việc", href: "/getnews", icon: @Icons.Material.Outlined.List),
-        new BreadcrumbItem("Thêm mới", href: "/addnews", icon: @Icons.Material.Filled.AddCircleOutline),
+        new BreadcrumbItem("Công việc", href: "/getnews", icon: Icons.Material.Outlined.WorkOutline),
+        new BreadcrumbItem("Danh sách công việc", href: "/getnews", icon: Icons.Material.Outlined.List),
+        new BreadcrumbItem("Thêm mới", href: "/addnews", icon: Icons.Material.Filled.AddCircleOutline),
     };
 
     private IEnumerable<string> NewsValidate(string name)
@@ -80,32 +89,83 @@
         if (string.IsNullOrWhiteSpace(name))
         {
             yield return "Vui lòng điền thông tin";
-            yield break;
         }
     }
 
-    private async Task AddNews()
+    private async Task<string> GetBase64Image(IBrowserFile file)
     {
         try
         {
-            if (form.IsValid)
-            {
-                var response = await httpClient.PostAsJsonAsync(url, News);
-                if (response.IsSuccessStatusCode)
-                {
-                    News.news_img = null;
+            using var memoryStream = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(memoryStream);
+            return Convert.ToBase64String(memoryStream.ToArray());
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi xử lý hình ảnh: {ex.Message}", Severity.Error);
+            return null;
+        }
+    }
 
-                    Snackbar.Add($"Thêm thành công", Severity.Success);
-                }
-                else
+    private async Task LoadNewsImage(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            isLoading = true;
+            var file = e.File;
+            if (file != null)
+            {
+                var base64Data = await GetBase64Image(file);
+                if (base64Data != null)
                 {
-                    Snackbar.Add($"Thêm thất bại", Severity.Warning);
+                    var fileName = $"news_images/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                    var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
+                    News.news_img = imageUrl;
+                    StateHasChanged();
                 }
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Thêm thất bại", Severity.Warning);
+            Snackbar.Add($"Lỗi tải lên hình ảnh: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task AddNews()
+    {
+        if (!isFormValid) return;
+
+        try
+        {
+            isLoading = true;
+            var response = await httpClient.PostAsJsonAsync(url, News);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Thêm thành công", Severity.Success);
+                News = new news(); // Reset the form
+                showSuccess = true;
+                showError = false;
+            }
+            else
+            {
+                Snackbar.Add("Thêm thất bại", Severity.Warning);
+                showSuccess = false;
+                showError = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Đã xảy ra lỗi: {ex.Message}", Severity.Error);
+            showSuccess = false;
+            showError = true;
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 }
