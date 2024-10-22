@@ -1,89 +1,168 @@
-﻿@page "/profile/{Id:int}"
+﻿@page "/profile"
 @inject HttpClient httpClient
 @inject ISnackbar Snackbar
+@inject IJSRuntime js
 @inject NavigationManager navigationManager
 
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+<MudContainer Class="mt-14 pa-0 fs-18" MaxWidth="MaxWidth.False">
     <MudGrid Class="pa-0">
         <MudItem xs="12">
             <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
                 <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
             </MudPaper>
         </MudItem>
+    </MudGrid>
 
-        <MudGrid xs="10" Class="mx-auto">
-            <!-- Giao diện hiển thị thông tin cá nhân -->
-            <MudItem xs="12">
-                <MudPaper Class="mud-elevation-1 p-6" Style="max-width: 800px; margin: auto;">
-                    <MudGrid>
-                        <!-- Ảnh đại diện và thông tin điểm -->
-                        <MudItem xs="12" sm="4" Class="text-center">
-                            <MudAvatar Size="Size.Large" Class="@Employee.citizen_identity_img" Style="margin: auto;" />
-                            <p class="mt-2">Tham Gia: @Employee..ToString("dd/MM/yyyy")</p>
-                            <MudChip Color="Color.Warning" Icon="@Icons.Material.Filled.Stars" Style="font-size: 16px;">
-                                @Employee. Điểm
-                            </MudChip>
-                        </MudItem>
+    <MudGrid Class="pa-0">
+        <MudItem xs="8" Class="mx-auto">
+            <MudPaper Elevation="2">
+                <MudText Class="pa-5 fw-bold text-uppercase" Typo="Typo.subtitle1">Thông tin tài khoản</MudText>
 
-                        <!-- Bảng thông tin cá nhân -->
-                        <MudItem xs="12" sm="8">
-                            <MudGrid Class="mb-4" Style="background-color: #f0f0f0; border-radius: 8px; padding: 16px;">
-                                <MudItem xs="6"><strong>Ngày Sinh</strong></MudItem>
-                                <MudItem xs="6">@Employee.birthday?.ToString("dd/MM/yyyy") ?? </MudItem>
-                                <MudItem xs="6"><strong>Giới Tính</strong></MudItem>
-                                <MudItem xs="6">@((Employee.gender == true) ? "Nam" : "Nữ")</MudItem>
-                            </MudGrid>
+                <MudGrid>
+                    <MudItem xs="4" Class="text-center">
+                        <MudImage Src="@Employee.img_emp" Width="200" Height="200" Alt="Swedish Farm House" Elevation="3" Class="rounded-circle mb-5" />
+                        <MudText Typo="Typo.h6">@Employee.fullname</MudText>
 
-                            <!-- Thông tin liên lạc -->
-                            <MudGrid>
-                                <MudItem xs="6"><strong>Họ Và Tên</strong></MudItem>
-                                <MudItem xs="6">@Employee.fullname</MudItem>
-                                <MudItem xs="6"><strong>Email</strong></MudItem>
-                                <MudItem xs="6">@Employee.email</MudItem>
-                                <MudItem xs="6"><strong>Password</strong></MudItem>
-                                <MudItem xs="6">@Employee.password</MudItem>
-                                <MudItem xs="6"><strong>Số CMNN</strong></MudItem>
-                                <MudItem xs="6">@Employee.citizen_identity_number</MudItem> 
-                              
-                                
-                            </MudGrid>
-                        </MudItem>
-                    </MudGrid>
+                        <MudText Typo="Typo.subtitle1" Style="@($"color:{Colors.Grey.Darken3};")">Ngày tạo: @Employee.date_create.ToShortDateString()</MudText>
+                    </MudItem>
+                    <MudItem xs="8">
+                        <MudGrid>
+                            <MudPaper Elevation="0" Style="@($"background:{Colors.DeepPurple.Lighten5};")" Class="rounded-2 ma-4 mr-10 w-100">
+                                <MudGrid>
+                                    <MudItem xs="6" Class="pa-10">
+                                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Class="pb-3" Typo="Typo.subtitle1">Mã nhân viên</MudText>
+                                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Email</MudText>
 
-                    <!-- Nút chỉnh sửa -->
-                    <MudGrid>
-                        
-                    </MudGrid>
-                </MudPaper>
-            </MudItem>
-        </MudGrid>
+                                    </MudItem>
+                                    <MudItem xs="6" Class="text-end pa-10">
+                                        <MudText Class="pb-3 fw-bold" Typo="Typo.subtitle1">@Employee.emp_code</MudText>
+                                        <MudText Class="fw-bold" Typo="Typo.subtitle1">@Employee.email</MudText>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudPaper>
+
+                        </MudGrid>
+                        <MudGrid>
+                            <MudItem xs="6" Class="pa-5">
+                                <MudText Style="@($"color:{Colors.Grey.Darken1};")" Class="pb-3" Typo="Typo.subtitle1">Số điện thoại</MudText>
+                                <MudText Style="@($"color:{Colors.Grey.Darken1};")" Class="pb-3" Typo="Typo.subtitle1">Ngày sinh</MudText>
+                                <MudText Style="@($"color:{Colors.Grey.Darken1};")" Class="pb-3" Typo="Typo.subtitle1">Giới tính</MudText>
+                                <MudText Style="@($"color:{Colors.Grey.Darken1};")" Class="pb-3" Typo="Typo.subtitle1">Chức vụ</MudText>
+                            </MudItem>
+                            <MudItem xs="6" Class="text-end pa-5 pe-10">
+                                <MudText Class="pb-3 fw-bold" Typo="Typo.subtitle1">@Employee.phone_number</MudText>
+                                <MudText Class="pb-3 fw-bold" Typo="Typo.subtitle1">@Employee.birthday.ToShortDateString()</MudText>
+
+                                @if (Employee.gender)
+                                {
+                                    <MudText Class="pb-3 fw-bold" Typo="Typo.subtitle1">Nam</MudText>
+                                }
+                                else
+                                {
+                                    <MudText Class="pb-3 fw-bold" Typo="Typo.subtitle1">Nữ</MudText>
+                                }
+
+                                <MudText Class="pb-3 fw-bold" Typo="Typo.subtitle1">@Employee.role_name</MudText>
+                            </MudItem>
+                        </MudGrid>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+
+            <MudPaper Elevation="2" Class="mt-10">
+                <MudText Class="pa-5 fw-bold text-uppercase" Typo="Typo.subtitle1">căn cước công dân</MudText>
+
+                <MudGrid Class="mx-auto">
+                    <MudItem xs="6">
+                        <MudText Class="pb-5 pt-5 fw-bold" Typo="Typo.subtitle1">Hình ảnh</MudText>
+                        <MudImage Fluid="true" Src="@Employee.citizen_identity_img" Alt="@Employee.citizen_identity_number" Elevation="3" Class="mb-5" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudText Class="pb-5 pt-15 fw-bold" Typo="Typo.subtitle1">Thông tin chung</MudText>
+
+                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Số CCCD</MudText>
+                        <MudTextField @bind-Value="@Employee.citizen_identity_number" Class="mb-3 me-10" Variant="Variant.Outlined" ReadOnly="true" />
+
+                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Họ và tên</MudText>
+                        <MudTextField @bind-Value="@Employee.fullname" Class="mb-3 me-10" Variant="Variant.Outlined" ReadOnly="true" />
+
+                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Ngày sinh</MudText>
+                        <MudTextField @bind-Value="@Employee.birthday" Class="mb-3 me-10" Variant="Variant.Outlined" ReadOnly="true" />
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+
+        </MudItem>
     </MudGrid>
 </MudContainer>
 
+<script>
+    // Lấy token từ localStorage
+    function getAuthToken() {
+        return localStorage.getItem("authToken");
+    }
+</script>
 
 @code {
-    [Parameter] public int Id { get; set; }
     private employees Employee = new employees();
     private string url = "http://localhost:49922/api/Employees";
+    private int empId;
+
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Nhân viên", href: "/getemployees", icon: @Icons.Material.Outlined.PeopleOutline),
-        new BreadcrumbItem("Danh sách nhân viên", href: "/getemployees", icon: @Icons.Material.Outlined.List),
-        new BreadcrumbItem("Chỉnh sửa nhân viên", href: "", icon: @Icons.Material.Filled.Edit),
+        new BreadcrumbItem("Thông tin tài khoản", href: null, icon: @Icons.Material.Outlined.PeopleOutline),
     };
 
-    protected override async Task OnInitializedAsync()
+    private bool isFirstRender = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var response = await httpClient.GetFromJsonAsync<employees>(url + "/" + Id);
-        if (response != null)
+        if (firstRender)
         {
-            Employee = response;
-            StateHasChanged(); // Đảm bảo giao diện được cập nhật
-        }
-        else
-        {
-            Snackbar.Add("Không tìm thấy nhân viên", Severity.Error);
+            try
+            {
+                var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+                if (!string.IsNullOrEmpty(token))
+                {
+                    // Giải mã token
+                    var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+                    var jwtToken = handler.ReadJwtToken(token);
+
+                    var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "emp_id");
+
+                    if (usernameClaim != null)
+                    {
+                        empId = int.Parse(usernameClaim.Value);
+
+                        var response = await httpClient.GetFromJsonAsync<employees>($"{url}/{empId}");
+
+                        if (response != null)
+                        {
+                            Employee = response;
+                            StateHasChanged();
+                        }
+                        else
+                        {
+                            navigationManager.NavigateTo("/login");
+                        }
+                    }
+                    else
+                    {
+                        navigationManager.NavigateTo("/login");
+                    }
+                }
+                else
+                {
+                    navigationManager.NavigateTo("/login");
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Đã xảy ra lỗi: {ex.Message}", Severity.Error);
+            }
         }
     }
+
 }
