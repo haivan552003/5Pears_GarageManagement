@@ -127,5 +127,17 @@ namespace BE_API.Controllers
             }
 
         }
+
+        [HttpGet("role")]
+        public async Task<ActionResult<IEnumerable<dropdown>>> DropdownRole()
+        {
+            var procedureName = "sp_dropdown_role";
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var dropdown = await connection.QueryAsync<dropdown>(procedureName, commandType: CommandType.StoredProcedure);
+                return Ok(dropdown);
+            }
+        }
     }
 }
