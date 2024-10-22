@@ -1,0 +1,24 @@
+﻿@inject IJSRuntime JSRuntime
+<textarea @ref="TextArea" id="@Id">@Value</textarea>
+
+@code {
+    [Parameter] public string Id { get; set; } = "editor";
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    private ElementReference TextArea;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("initCKEditor", Id, DotNetObjectReference.Create(this));
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnChange(string newValue)
+    {
+        Value = newValue;
+        await ValueChanged.InvokeAsync(Value);
+    }
+}
