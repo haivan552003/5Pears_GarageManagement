@@ -30,8 +30,8 @@
                         <MudText Typo="Typo.h6" Class="mb-5">Cập nhật địa chỉ khách hàng</MudText>
                         <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
                             <MudTextField ShrinkLabel @bind-Value="newAddress.Id" Label="Địa chỉ" Placeholder="Địa chỉ" Variant="Variant.Outlined" Required="true" />
-                            <MudTextField ShrinkLabel @bind-Value="newAddress.name" Label="ID Khách Hàng" Placeholder="ID Khách Hàng" Variant="Variant.Outlined" Required="true" />
-                            <MudTextField ShrinkLabel @bind-Value="newAddress.cus_code" Label="Loại" Placeholder="Loại" Variant="Variant.Outlined" Required="true" />
+@*                             <MudTextField ShrinkLabel @bind-Value="newAddress.name" Label="ID Khách Hàng" Placeholder="ID Khách Hàng" Variant="Variant.Outlined" Required="true" />
+ *@                            <MudTextField ShrinkLabel @bind-Value="newAddress.cus_code" Label="Loại" Placeholder="Loại" Variant="Variant.Outlined" Required="true" />
                             <MudSelect @bind-Value="newAddress.status" Label="Trạng thái" Required="true">
                                 <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
                                 <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>

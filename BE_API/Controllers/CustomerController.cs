@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -86,9 +87,35 @@ namespace BE_API.Controllers
             }
         }
 
+        //[HttpPost]
+        //public async Task<ActionResult> AddCustomer([FromBody] customers newCustomer)
+        //{
+        //    try
+        //    {
+        //        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newCustomer.password);
+        //        var parameters = new DynamicParameters(newCustomer);
+        //        using (var connection = new SqlConnection(_connectionString))
+        //        {
+        //            await connection.OpenAsync();
+        //            var result = await connection.ExecuteAsync("sp_add_customers", parameters, commandType: CommandType.StoredProcedure);
+        //            if (result > 0)
+        //            {
+        //                return Ok();
+        //            }
+        //            else
+        //            {
+        //                return BadRequest();
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Lỗi: {ex.Message}");
+        //    }
+        //}
 
-        // POST: api/Customer
-        [HttpPost]
+        //POST: api/Customer
+       [HttpPost]
         public async Task<ActionResult> AddCustomer([FromBody] customers newCustomer)
         {
             var procedureName = "sp_add_customers";
@@ -101,10 +128,8 @@ namespace BE_API.Controllers
             parameters.Add("@gender", newCustomer.gender, DbType.String);
             parameters.Add("@phone_number", newCustomer.phone_number, DbType.String);
             parameters.Add("@citizen_identity_img1", newCustomer.citizen_identity_img1, DbType.String);
-            parameters.Add("@citizen_identity_img2", newCustomer.citizen_identity_img2, DbType.String);
             parameters.Add("@citizen_identity_number", newCustomer.citizen_identity_number, DbType.String);
             parameters.Add("@driver_license_img1", newCustomer.driver_license_img1, DbType.String);
-            parameters.Add("@driver_license_img2", newCustomer.driver_license_img2, DbType.String);
             parameters.Add("@driver_license_number", newCustomer.driver_license_number, DbType.String);
             parameters.Add("@role_id", newCustomer.id_role, DbType.Int32);
             parameters.Add("@status", newCustomer.status, DbType.String);
@@ -117,10 +142,10 @@ namespace BE_API.Controllers
 
                 if (result > 0)
                 {
-                    return Ok(new { message = "Customer added successfully" });
+                    return Ok();
                 }
 
-                return BadRequest(new { message = "Failed to add customer" });
+                return BadRequest();
             }
         }
 
@@ -140,10 +165,8 @@ namespace BE_API.Controllers
             parameters.Add("@gender", updatedCustomer.gender, DbType.String);
             parameters.Add("@phone_number", updatedCustomer.phone_number, DbType.String);
             parameters.Add("@citizen_identity_img1", updatedCustomer.citizen_identity_img1, DbType.String);
-            parameters.Add("@citizen_identity_img2", updatedCustomer.citizen_identity_img2, DbType.String);
             parameters.Add("@citizen_identity_number", updatedCustomer.citizen_identity_number, DbType.String);
             parameters.Add("@driver_license_img1", updatedCustomer.driver_license_img1, DbType.String);
-            parameters.Add("@driver_license_img2", updatedCustomer.driver_license_img2, DbType.String);
             parameters.Add("@driver_license_number", updatedCustomer.driver_license_number, DbType.String);
             parameters.Add("@role_id", updatedCustomer.id_role, DbType.Int32);
             parameters.Add("@status", updatedCustomer.status, DbType.String);
