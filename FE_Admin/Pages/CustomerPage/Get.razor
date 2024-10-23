@@ -1,9 +1,9 @@
 ﻿@page "/getcustomer"
 @inject HttpClient httpClient
+@inject NavigationManager navigationManager
 @inject IJSRuntime js
 @inject IDialogService DialogService
-
-
+@inject ISnackbar Snackbar
 
 <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
     <MudGrid Class="pa-0">
@@ -12,38 +12,45 @@
                 <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
             </MudPaper>
             <MudPaper Elevation="0">
-                <MudDataGrid Class="mx-auto pa-2" T="customers" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                <MudDataGrid Class="mx-auto pa-2" T="customers" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true"
+                             Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
                              Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+
                     <ToolBarContent>
                         <MudItem xs="4" Elevation="0" Class="pb-3">
                             <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
                                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                         </MudItem>
-
                         <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
-                            <MudButton Href="/addroletask" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                            <MudButton Href="/addcustomer" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
                                 Thêm mới
                             </MudButton>
-
-                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
+                            <MudButton Href="/importcustomers" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
                                 Nhập file
                             </MudButton>
-
-                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
+                            <MudButton Href="/exportcustomers" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
                                 Xuất file
                             </MudButton>
                         </MudItem>
                     </ToolBarContent>
+
+                    <!-- DataGrid Columns -->
                     <Columns>
                         <SelectColumn T="customers" />
-                        <PropertyColumn T="customers" Style="width: 80%;" TProperty="string" Property="x => x.cus_code" Class="fw-bold" Title="Mã" />
-                        <PropertyColumn T="customers" Style="width: 80%;" TProperty="string" Property="x => x.fullname" SortBy="@_sortBy" Class="fw-bold" Title="Tên" />
-                        <PropertyColumn T="customers" Style="width: 80%;" TProperty="string" Property="x => x.email" Class="fw-bold" Title="Email" />
-                        <PropertyColumn T="customers" Style="width: 80%;" TProperty="string" Property="x => x.password" Class="fw-bold" Title="Mật khẩu" />
-                        <PropertyColumn T="customers" Style="width: 80%;" TProperty="byte" Property="x => x.gender" Class="fw-bold" Title="Giới tính" />
-                        <PropertyColumn T="customers" Style="width: 80%;" TProperty="string" Property="x => x.phone_number" Class="fw-bold" Title="Số điện thoại" />
-                        <PropertyColumn T="customers" Style="width: 80%;" TProperty="string" Property="x => x.name" Class="fw-bold" Title="Vai trò" />
-                        <TemplateColumn T="customers" Style="width: 80%;" Class="fw-bold" Title="Trạng Thái">
+                        <PropertyColumn T="customers" TProperty="string" Property="x => x.cus_code" Title="Mã khách hàng"
+                                        Style="width: 15%; white-space: nowrap;" />
+                        <PropertyColumn T="customers" TProperty="string" Property="x => x.fullname" Title="Họ và Tên"
+                                        Style="width: 20%; white-space: nowrap;" />
+                        <PropertyColumn T="customers" TProperty="string" Property="x => x.phone_number" Title="Số điện thoại"
+                                        Style="width: 15%; white-space: nowrap;" />
+@*                         <TemplateColumn T="customers" Class="fw-bold" Title="Giới tính" Style="white-space: nowrap;">
+                            <CellTemplate Context="element">
+                                @(element.Item.gender ? "Nam" : "Nữ")
+                            </CellTemplate>
+                        </TemplateColumn> *@
+                        <PropertyColumn T="customers" TProperty="string" Property="x => x.email" Title="Email"
+                                        Style="width: 20%; white-space: nowrap;" />
+                        <TemplateColumn T="customers" Style="width: 80%; white-space: nowrap;" Class="fw-bold" Title="Trạng Thái">
                             <CellTemplate Context="element">
                                 @if (element.Item.status)
                                 {
@@ -55,19 +62,21 @@
                                 }
                             </CellTemplate>
                         </TemplateColumn>
-                        <TemplateColumn T="customers" Class="fw-bold" Title="Chức năng">
+                        <TemplateColumn T="customers" Class="fw-bold" Title="Chức năng" Style="white-space: nowrap;">
                             <CellTemplate Context="element">
                                 <MudTooltip Text="Chỉnh sửa">
                                     <MudIconButton Href="@($"/edit_customertask/{element.Item.Id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
                                 </MudTooltip>
                                 <MudTooltip Text="Xóa">
-                                    <MudIconButton Href="@($"/deletecustomer/{element.Item.Id}")" Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
+                                    <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" />
                                 </MudTooltip>
                             </CellTemplate>
                         </TemplateColumn>
                     </Columns>
+
+                    <!-- Pagination -->
                     <PagerContent>
-                        <MudDataGridPager T="role_task" />
+                        <MudDataGridPager T="customers" />
                     </PagerContent>
                 </MudDataGrid>
             </MudPaper>
@@ -76,62 +85,36 @@
 </MudContainer>
 
 @code {
-    [Parameter] public int Id { get; set; }
     private IEnumerable<customers> Elements = new List<customers>();
-    private Dictionary<int, string> CategoryDict = new Dictionary<int, string>();
     private string _searchString;
-    private bool _sortNameByLength;
-    private List<string> _events = new();
-    private string url = "http://localhost:49922/api/Customer";
-
-
+    private string customersUrl = "http://localhost:49922/api/Customer";
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
-            {
-            new BreadcrumbItem("Công việc", href: "/getroletask", icon: @Icons.Material.Outlined.WorkOutline),
-            new BreadcrumbItem("Danh sách công việc", href: "/getroletask", icon: @Icons.Material.Outlined.List),
-            };
-
-    private Func<customers, object> _sortBy => x =>
     {
-        if (_sortNameByLength)
-            return x.fullname.Length;
-        else
-            return x.fullname;
+        new BreadcrumbItem("Khách Hàng", href: "/getcustomer", icon: @Icons.Material.Outlined.PersonOutline),
+        new BreadcrumbItem("Danh sách khách hàng", href: "/getcustomer", icon: @Icons.Material.Outlined.List),
     };
-
-
-    private string GenerateEditUrl(int id)
-    {
-        return $"/updateproducts/{id}";
-    }
-
-    private string GenerateDeleteUrl(int id)
-    {
-        return $"/deleteproduct/{id}";
-    }
-
-    private string GetRoleTaskName(int cateId)
-    {
-        return CategoryDict.TryGetValue(cateId, out var name) ? name : "Unknown";
-    }
 
     private Func<customers, bool> _quickFilter => x =>
     {
         if (string.IsNullOrWhiteSpace(_searchString))
             return true;
 
-        if ($"{x.fullname} {x.Id} {GetRoleTaskName(x.Id)}".Contains(_searchString))
-            return true;
-
-        return false;
+        return $"{x.email} {x.cus_code} {x.fullname}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
     };
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadCustomers();
+    }
+
+    private async Task LoadCustomers()
+    {
         try
         {
-            Elements = await httpClient.GetFromJsonAsync<List<customers>>(url);
+            Elements = await httpClient.GetFromJsonAsync<List<customers>>(customersUrl);
+            Console.WriteLine($"Loaded customers: {System.Text.Json.JsonSerializer.Serialize(Elements)}");
+            StateHasChanged();
         }
         catch (Exception ex)
         {
@@ -141,16 +124,48 @@
 
     void RowClicked(DataGridRowClickEventArgs<customers> args)
     {
-        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+        Console.WriteLine($"Row clicked: {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
     }
 
     void RowRightClicked(DataGridRowClickEventArgs<customers> args)
     {
-        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+        Console.WriteLine($"Row right clicked: {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
     }
 
     void SelectedItemsChanged(HashSet<customers> items)
     {
-        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+        Console.WriteLine($"Selected items changed: {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+
+    private async Task OpenDeleteDialog(customers customer)
+    {
+        var parameters = new DialogParameters
+        {
+            { "ContentText", $"Bạn có chắc chắn muốn xóa khách hàng {customer.fullname}?" },
+            { "ButtonText", "Xóa" },
+            { "Color", Color.Error }
+        };
+
+        var dialog = DialogService.Show<DeleteDialog>("Xác nhận xóa", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            await DeleteCustomer(customer.Id);
+        }
+    }
+
+    private async Task DeleteCustomer(int id)
+    {
+        var response = await httpClient.DeleteAsync($"{customersUrl}/{id}");
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Xóa khách hàng thành công!", Severity.Success);
+            await LoadCustomers();
+        }
+        else
+        {
+            Snackbar.Add("Xóa khách hàng thất bại!", Severity.Error);
+        }
     }
 }

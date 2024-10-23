@@ -1,95 +1,62 @@
-﻿@page "/addcustomertask"
+﻿@page "/addcustomer"
 @inject HttpClient httpClient
+@inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
+@inject IWebHostEnvironment Environment
+@inject IJSRuntime js
 
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    @if (showSuccess)
-    {
-        <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
-            Thêm thành công
-        </MudAlert>
-    }
-    else if (showError)
-    {
-        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
-            Thêm thất bại
-        </MudAlert>
-    }
-
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-14 pa-0">
     <MudGrid>
         <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+            <MudPaper Elevation="0" Class="pa-3 mb-1" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
                 <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
             </MudPaper>
         </MudItem>
-
-        <MudItem xs="10" Class="mx-auto">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudForm @ref="form" @bind-IsValid="isFormValid">
-
-                    <MudGrid>
-                        <!-- Form for Adding Customer -->
-                        <MudItem xs="6">
-                            <MudPaper Elevation="4" Class="p-4">
-                                <MudText Typo="Typo.h6" Class="mb-3">Thêm khách hàng</MudText>
-
-                                <MudTextField ShrinkLabel @bind-Value="newRoleTask.cus_code" Label="Mã"
-                                              Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
-                                              Placeholder="Mã" Variant="Variant.Outlined" Required="true" />
-
-                                <MudTextField ShrinkLabel @bind-Value="newRoleTask.email" Label="Email"
-                                              Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
-                                              Placeholder="Email" Variant="Variant.Outlined" Required="true" />
-
-                                <MudTextField ShrinkLabel @bind-Value="newRoleTask.password" Label="Mật khẩu"
-                                              Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
-                                              Placeholder="Mật khẩu" Variant="Variant.Outlined" Required="true" />
-
-                                <MudTextField ShrinkLabel @bind-Value="newRoleTask.fullname" Label="Tên"
-                                              Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
-                                              Placeholder="Tên" Variant="Variant.Outlined" Required="true" />
-
-                                <MudDatePicker @bind-Date="birthdayDate" Label="Ngày sinh" Required="true" Variant="Variant.Outlined" />
-
-                                <MudSelect @bind-Value="newRoleTask.gender" Label="Giới tính" Required="true" Variant="Variant.Outlined">
-                                    <MudSelectItem Value="(byte)1">Nam</MudSelectItem>
-                                    <MudSelectItem Value="(byte)0">Nữ</MudSelectItem>
+        <EditForm Model="@newDriver" Class="pa-3" OnValidSubmit="AddDriver">
+            <MudGrid>
+                <MudItem xs="12" md="8">
+                    <DataAnnotationsValidator />
+                    <MudPaper Elevation="3" Class="pa-4">
+                        <MudText Typo="Typo.h6" Class="mb-5">Thêm tài xế</MudText>
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.cus_code" For="@(() => newDriver.cus_code)" Label="Mã khách hàng" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.email" For="@(() => newDriver.email)" Label="Email" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.password" For="@(() => newDriver.password)" Label="Mật khẩu" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.fullname" For="@(() => newDriver.fullname)" Label="Họ và tên" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.phone_number" For="@(() => newDriver.phone_number)" Label="Số điện thoại" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudDatePicker @bind-Date="birthdayDate" For="@(() => newDriver.birthday)" Label="Ngày sinh" Required="true" RequiredError="Vui lòng chọn ngày sinh" Variant="Variant.Outlined" DateFormat="dd/MM/yyyy" MaxDate="@DateTime.Now.AddYears(-18)" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudSelect @bind-Value="newDriver.gender" For="@(() => newDriver.gender)" Label="Giới tính" Required="true" RequiredError="Vui lòng chọn giới tính" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="@((byte)0)">Nam</MudSelectItem>
+                                    <MudSelectItem Value="@((byte)1)">Nữ</MudSelectItem>
                                 </MudSelect>
-
-                                <MudTextField ShrinkLabel @bind-Value="newRoleTask.phone_number" Label="SĐT"
-                                              Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
-                                              Placeholder="SĐT" Variant="Variant.Outlined" Required="true" />
-
-                                <MudTextField ShrinkLabel @bind-Value="newRoleTask.citizen_identity_img1" Label="citizen_identity_img1"
-                                              Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
-                                              Placeholder="citizen_identity_img1" Variant="Variant.Outlined" Required="true" />
-
-                                <MudTextField ShrinkLabel @bind-Value="newRoleTask.citizen_identity_img2" Label="citizen_identity_img2"
-                                              Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
-                                              Placeholder="citizen_identity_img2" Variant="Variant.Outlined" Required="true" />
-
-                                <MudTextField ShrinkLabel @bind-Value="newRoleTask.citizen_identity_number" Label="citizen_identity_number"
-                                              Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
-                                              Placeholder="citizen_identity_number" Variant="Variant.Outlined" Required="true" />
-
-                                <MudTextField ShrinkLabel @bind-Value="newRoleTask.driver_license_img1" Label="driver_license_img1"
-                                              Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
-                                              Placeholder="driver_license_img1" Variant="Variant.Outlined" Required="true" />
-
-                                <MudTextField ShrinkLabel @bind-Value="newRoleTask.driver_license_img2" Label="driver_license_img2"
-                                              Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
-                                              Placeholder="driver_license_img2" Variant="Variant.Outlined" Required="true" />
-
-                                <MudTextField ShrinkLabel @bind-Value="newRoleTask.driver_license_number" Label="driver_license_number"
-                                              Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
-                                              Placeholder="driver_license_number" Variant="Variant.Outlined" Required="true" />
-
-                                <MudSelect @bind-Value="newCustomer.status" Label="Status" Required="true" Variant="Variant.Outlined">
-                                    <MudSelectItem Value="true">Đang hoạt động </MudSelectItem>
-                                    <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.citizen_identity_number" For="@(() => newDriver.citizen_identity_number)" Label="Số CCCD" Required="true" RequiredError="Vui lòng nhập số CCCD" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.driver_license_number" For="@(() => newDriver.driver_license_number)" Label="Số bằng lái" Required="true" RequiredError="Vui lòng nhập số bằng lái" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudSelect @bind-Value="newDriver.status" For="@(() => newDriver.status)" Label="Trạng thái" Required="true" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="true">Hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="false">Không hoạt động</MudSelectItem>
                                 </MudSelect>
-
-                                <MudSelect @bind-Value="newRoleTask.id_role" Label="Vai trò" Required="true" Variant="Variant.Outlined">
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudSelect @bind-Value="newDriver.id_role" Label="Vai trò" Required="true" Variant="Variant.Outlined">
                                     @if (roles != null)
                                     {
                                         @foreach (var role in roles)
@@ -98,53 +65,75 @@
                                         }
                                     }
                                 </MudSelect>
-                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddCustomer" Class="mt-3">Lưu khách hàng</MudButton>
-
-                            </MudPaper>
+                            </MudItem>
+                        </MudGrid>
+                        <MudItem xs="12" Class="d-flex justify-end mt-6">
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mr-2" OnClick="@(() => NavigationManager.NavigateTo("/getDriver"))">Hủy</MudButton>
+                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary">Lưu</MudButton>
                         </MudItem>
+                    </MudPaper>
+                </MudItem>
 
-                        <!-- Form for Adding Address -->
-                    </MudGrid>
-
-@*                     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddCustomerAndAddress" Class="mt-3">Lưu</MudButton>
- *@                </MudForm>
-            </MudPaper>
-        </MudItem>
+                <MudItem xs="12" md="4">
+                    <MudPaper Elevation="3" Class="pa-4">
+                        <MudText Typo="Typo.h6" Class="mb-4">Hình ảnh</MudText>
+                        <MudGrid>
+                            <MudItem xs="6">
+                                <InputFile id="citizenIdInput1" OnChange="@((e) => LoadCitizenIdImage(e, 1))" hidden accept=".jpg,.jpeg,.png" />
+                                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.CloudUpload" for="citizenIdInput1" FullWidth="true" Class="mud-button-small-text">CCCD (Trước)</MudButton>
+                                <ValidationMessage For="@(() => newDriver.citizen_identity_img1)" />
+                                @if (!string.IsNullOrEmpty(newDriver.citizen_identity_img1))
+                                {
+                                    <MudImage Src="@newDriver.citizen_identity_img1" Alt="CCCD (Mặt trước)" Width="100" Height="100" ObjectFit="ObjectFit.Cover" Class="mt-2" />
+                                }
+                            </MudItem>
+                            <MudItem xs="6">
+                                <InputFile id="licenseInput1" OnChange="@((e) => LoadLicenseImage(e, 1))" hidden accept=".jpg,.jpeg,.png" />
+                                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.CloudUpload" for="licenseInput1" FullWidth="true" Class="mud-button-small-text">GPLX (Trước)</MudButton>
+                                <ValidationMessage For="@(() => newDriver.driver_license_img1)" />
+                                @if (!string.IsNullOrEmpty(newDriver.driver_license_img1))
+                                {
+                                    <MudImage Src="@newDriver.driver_license_img1" Alt="Bằng lái (Mặt trước)" Width="100" Height="100" ObjectFit="ObjectFit.Cover" Class="mt-2" />
+                                }
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </EditForm>
     </MudGrid>
 </MudContainer>
 
 @code {
-    private customers newRoleTask = new customers();
-    private cus_address newCustomer = new cus_address();
-    private bool isFormValid = false;
-    private bool showSuccess = false;
-    private bool showError = false;
-    private DateTime? birthdayDate;
+    private customers newDriver = new customers();
     private MudForm form;
-    private string urlCustomer = "http://localhost:49922/api/Customer";
-    private string urlAddress = "http://localhost:49922/api/Cus_Address";
-    private string roleUrl = "http://localhost:49922/api/RoleTask";
-    private List<role_task> roles = new List<role_task>();
-    private List<customers> cus = new List<customers>();
+    private DateTime? birthdayDate;
+    private List<roles> roles = new List<roles>();
+    private string roleUrl = "http://localhost:49922/api/Roles";
 
     protected override async Task OnInitializedAsync()
     {
         await LoadRoles();
-        await LoadCus();
+        newDriver = new customers
+            {
+                status = true,
+                gender = 0,
+            };
+        birthdayDate = DateTime.Now.AddYears(-18);
     }
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Khách hàng", href: "/getcustomer", icon: @Icons.Material.Outlined.People),
+        new BreadcrumbItem("Khách hàng", href: null, icon: @Icons.Material.Outlined.SupervisedUserCircle),
         new BreadcrumbItem("Danh sách khách hàng", href: "/getcustomer", icon: @Icons.Material.Outlined.List),
-        new BreadcrumbItem("Thêm mới", href: "/addcustomertask", icon: @Icons.Material.Filled.AddCircleOutline),
+        new BreadcrumbItem("Thêm mới", href: "/addcustomer", icon: @Icons.Material.Outlined.AddCircleOutline),
     };
 
     private async Task LoadRoles()
     {
         try
         {
-            var response = await httpClient.GetFromJsonAsync<List<role_task>>(roleUrl);
+            var response = await httpClient.GetFromJsonAsync<List<roles>>(roleUrl);
             if (response != null)
             {
                 roles = response;
@@ -156,93 +145,88 @@
         }
     }
 
-    private async Task LoadCus()
+    private async Task<string> GetBase64Image(IBrowserFile file)
     {
         try
         {
-            var response = await httpClient.GetFromJsonAsync<List<customers>>(urlCustomer);
-            if (response != null)
-            {
-                cus = response;
-            }
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            return Convert.ToBase64String(buffer);
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Lỗi khi tải danh sách vai trò: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Lỗi khi chuyển đổi hình ảnh: {ex.Message}", Severity.Error);
+            return null;
         }
     }
 
-    // Hàm xử lý lưu khách hàng
-    private async Task AddCustomer()
+    private async Task LoadCitizenIdImage(InputFileChangeEventArgs e, int index)
+    {
+        if (e.File != null)
+        {
+            var base64Image = await GetBase64Image(e.File);
+            if (!string.IsNullOrEmpty(base64Image))
+            {
+                if (index == 1)
+                {
+                    newDriver.citizen_identity_img1 = await UploadImageToFirebase($"citizen_id_front_{newDriver.cus_code}", base64Image);
+                }
+            }
+        }
+    }
+
+    private async Task LoadLicenseImage(InputFileChangeEventArgs e, int index)
+    {
+        if (e.File != null)
+        {
+            var base64Image = await GetBase64Image(e.File);
+            if (!string.IsNullOrEmpty(base64Image))
+            {
+                if (index == 1)
+                {
+                    newDriver.driver_license_img1 = await UploadImageToFirebase($"driver_license_front_{newDriver.cus_code}", base64Image);
+                }
+            }
+        }
+    }
+
+    private async Task<string> UploadImageToFirebase(string fileName, string base64String)
+    {
+        try
+        {
+            var response = await js.InvokeAsync<string>("uploadImage", fileName, base64String);
+            return response; // Trả về URL tải xuống
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi tải ảnh lên: {ex.Message}", Severity.Error);
+            return null;
+        }
+    }
+
+    private async Task AddDriver()
     {
         try
         {
             if (birthdayDate.HasValue)
             {
-                newRoleTask.birthday = birthdayDate.Value;
+                newDriver.birthday = birthdayDate.Value;
+            }
+            var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Customer", newDriver);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Thêm khách hàng thành công!", Severity.Success);
+                NavigationManager.NavigateTo("/getcustomer");
             }
             else
             {
-                Snackbar.Add("Vui lòng chọn ngày sinh", Severity.Warning);
-                return;
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Thêm khách hàng không thành công: {errorMessage}", Severity.Error);
             }
-
-            var customerResponse = await httpClient.PostAsJsonAsync(urlCustomer, newRoleTask);
-            if (!customerResponse.IsSuccessStatusCode)
-            {
-                Snackbar.Add("Thêm khách hàng thất bại", Severity.Warning);
-                showError = true;
-                return;
-            }
-            else{
-
-                Snackbar.Add("Thêm khách hàng thành công", Severity.Success);
-                showSuccess = true;
-            }
-
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Thêm khách hàng thất bại: {ex.Message}", Severity.Warning);
-        }
-    }
-
-    // Hàm xử lý lưu địa chỉ
-    private async Task AddAddress()
-    {
-        try
-        {
-            var addressResponse = await httpClient.PostAsJsonAsync(urlAddress, newCustomer);
-            if (!addressResponse.IsSuccessStatusCode)
-            {
-                Snackbar.Add("Thêm địa chỉ thất bại", Severity.Warning);
-                showError = true;
-                return;
-            }
-
-            newCustomer = new cus_address(); // Reset form địa chỉ sau khi lưu thành công
-            Snackbar.Add("Thêm địa chỉ thành công", Severity.Success);
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Thêm địa chỉ thất bại: {ex.Message}", Severity.Warning);
-        }
-    }
-
-    private IEnumerable<string> RoleTaskValidate(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            yield return "Vui lòng điền thông tin";
-        }
-    }
-
-    private IEnumerable<string> AddressValidate(string field)
-    {
-        if (string.IsNullOrWhiteSpace(field))
-        {
-            yield return "Vui lòng điền thông tin";
+            Snackbar.Add($"Lỗi khi thêm khách hàng: {ex.Message}", Severity.Error);
         }
     }
 }
-
