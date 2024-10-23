@@ -8,18 +8,7 @@
 
 
 <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    @if (showSuccess)
-    {
-        <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
-            Cập nhật thành công
-        </MudAlert>
-    }
-    else if (showError)
-    {
-        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
-            Cập nhật thất bại
-        </MudAlert>
-    }
+
 
     <!-- Form Cập nhật công việc -->
     <MudGrid>
@@ -214,20 +203,18 @@
 
 
 @code {
-    [Parameter] public int customerId { get; set; } // Lấy ID từ URL
-    private bool isDialogVisible = false; // Hiển thị dialog
+    [Parameter] public int customerId { get; set; } 
+    private bool isDialogVisible = false; 
     private cus_address newAddress = new cus_address();
     private customers newRoleTask = new customers();
-    private List<cus_address> customerAddresses = new List<cus_address>(); // List to hold multiple addresses
+    private List<cus_address> customerAddresses = new List<cus_address>(); 
     private bool isFormValid = false;
-    private bool showSuccess = false;
-    private bool showError = false;
     private DateTime? birthdayDate;
     private MudForm form;
     private MudForm formAddress; // Form for customer address
     private string url = "http://localhost:49922/api/Customer";
     private string roleUrl = "http://localhost:49922/api/Roles";
-    private string addressUrl = "http://localhost:49922/api/Cus_Address"; // API for addresses
+    private string addressUrl = "http://localhost:49922/api/Cus_Address";
     private List<roles> roles = new List<roles>(); // List of roles
     private string roleName;
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
@@ -249,14 +236,11 @@
             var file = e.File;
             if (file != null)
             {
-                // Convert file to base64
                 var base64String = await ConvertFileToBase64(file);
 
-                // Generate unique filename
                 var fileExtension = Path.GetExtension(file.Name);
                 var fileName = $"{folder}/{Guid.NewGuid()}{fileExtension}";
 
-                // Call Firebase upload function through JS interop
                 var downloadUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64String);
 
                 if (!string.IsNullOrEmpty(downloadUrl))
@@ -333,7 +317,7 @@
     }
 
         // ... các biến khác
-        private string selectedRoleName; // Biến để lưu tên vai trò đã chọn
+        private string selectedRoleName;
 
         protected override async Task OnInitializedAsync()
         {
@@ -342,8 +326,8 @@
             if (response != null)
             {
                 newRoleTask = response;
-                birthdayDate = newRoleTask.birthday; // Gán ngày sinh
-                await LoadExistingImages(); // Tải ảnh từ Firebase
+                birthdayDate = newRoleTask.birthday;
+                await LoadExistingImages(); 
 
             }
 
@@ -354,8 +338,8 @@
             var selectedRole = roles.FirstOrDefault(role => role.id == newRoleTask.id_role);
             if (selectedRole != null)
             {
-                selectedRoleName = selectedRole.name; // Gán tên vai trò vào biến
-                newRoleTask.id_role = selectedRole.id; // Gán id_role để hiển thị trên MudSelect
+                selectedRoleName = selectedRole.name;
+                newRoleTask.id_role = selectedRole.id; 
             }
 
             // Tải địa chỉ khách hàng
@@ -368,7 +352,6 @@
             var selectedRole = roles.FirstOrDefault(role => role.id == selectedRoleId);
             selectedRoleName = selectedRole?.name ?? "Không tìm thấy vai trò"; // Gán tên vai trò đã chọn
 
-            // Gán lại id_role
             newRoleTask.id_role = selectedRoleId;
         }
 
@@ -396,7 +379,7 @@
             var response = await httpClient.GetFromJsonAsync<List<cus_address>>($"{addressUrl}/{customerId}");
             if (response != null)
             {
-                customerAddresses = response; // Store multiple addresses
+                customerAddresses = response;
             }
         }
         catch (Exception ex)
@@ -408,15 +391,15 @@
     {
         try
         {
-            newRoleTask.birthday = birthdayDate.Value; // Set birthday before sending data
+            newRoleTask.birthday = birthdayDate.Value;
             var response = await httpClient.PutAsJsonAsync($"{url}/{newRoleTask.Id}", newRoleTask);
             if (response.IsSuccessStatusCode)
             {
-                showSuccess = true;
+                Snackbar.Add($"update thành công", Severity.Error);
             }
             else
             {
-                showError = true;
+                Snackbar.Add($"Lỗi khi cập nhật thông tin: ", Severity.Error);
             }
         }
         catch (Exception ex)
@@ -427,26 +410,27 @@
 
     private async Task UpdateAddress(cus_address address)
     {
-        address.id_cus = customerId; // Ensure the id_cus is correctly assigned
+        address.id_cus = customerId; 
 
         var response = await httpClient.PutAsJsonAsync($"{addressUrl}/{address.id}", address);
         if (response.IsSuccessStatusCode)
         {
-            showSuccess = true;
+            Snackbar.Add($"cập nhật thông tin thành công", Severity.Error);
+
         }
         else
         {
-            showError = true;
+            Snackbar.Add($"Lỗi khi cập nhật thông tin:", Severity.Error);
+
         }
     }
     private async Task AddNewAddress()
     {
-        newAddress.id_cus = customerId; // Gán ID khách hàng
+        newAddress.id_cus = customerId; 
         var response = await httpClient.PostAsJsonAsync($"{addressUrl}", newAddress);
         if (response.IsSuccessStatusCode)
         {
             Snackbar.Add("Địa chỉ mới đã được thêm.", Severity.Success);
-            // Điều hướng đến trang getcus_addresstask với tham số thông báo
             NavigationManager.NavigateTo("/getcus_addresstask");
         }
         else
@@ -454,8 +438,8 @@
             Snackbar.Add("Lỗi khi thêm địa chỉ mới.", Severity.Error);
         }
 
-        newAddress = new cus_address(); // Reset form
-        CloseDialog(); // Đóng modal
+        newAddress = new cus_address(); 
+        CloseDialog();
     }
 
     private async Task OpenDeleteDialog(cus_address address)
@@ -478,7 +462,6 @@
         }
     }
 
-    // Hàm thực hiện việc xóa địa chỉ
     private async Task DeleteAddress(int id)
     {
         var response = await httpClient.DeleteAsync($"{addressUrl}/{id}");
