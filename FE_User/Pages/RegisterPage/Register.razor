@@ -9,7 +9,7 @@
             <MudCardContent>
                 <MudText Typo="Typo.h4" Class="mb-4">Đăng ký tài khoản</MudText>
 
-                <MudTextField T="string" Label="Email" @bind-Value="model.user_name" Required="true" />
+                <MudTextField T="string" Label="Email" @bind-Value="model.email" Required="true" />
 
                 <MudTextField T="string" Label="Password" @bind-Value="model.pass_word" Required="true"
                               RequiredError="Password is required!"
@@ -44,7 +44,7 @@
     {
         [Required(ErrorMessage = "Email chưa được nhập")]
         [EmailAddress(ErrorMessage = "Email định dạng chưa đúng")]
-        public string user_name { get; set; }
+        public string email { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]
         [StringLength(30, MinimumLength = 5, ErrorMessage = "Mật khẩu không hợp lệ")]

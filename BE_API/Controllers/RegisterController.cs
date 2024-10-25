@@ -23,7 +23,7 @@ namespace BE_API.Controllers
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.pass_word);
 
             var parameters = new DynamicParameters();
-            parameters.Add("@Username", model.user_name, DbType.String);
+            parameters.Add("@Username", model.email, DbType.String);
             parameters.Add("@Password", hashedPassword, DbType.String);
             parameters.Add("@Fullname", model.full_name, DbType.String);
             parameters.Add("@Birthday", model.birthday, DbType.DateTime);
