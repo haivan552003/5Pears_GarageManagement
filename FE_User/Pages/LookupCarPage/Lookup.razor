@@ -18,7 +18,7 @@
                     </div>
                     <div class="mb-4">
                         <label for="ticketCode" class="form-label fw-bold">Mã Vé Xe</label>
-                        <InputNumber  id="ticketCode" placeholder="Vui lòng nhập mã vé xe đăng ký" @bind-Value="lookupModel.TicketCode" />
+                        <InputText  id="ticketCode" placeholder="Vui lòng nhập mã vé xe đăng ký" @bind-Value="lookupModel.TicketCode" />
                         <p class="text-danger">
                             <ValidationMessage For="@(() => lookupModel.TicketCode)" />
                         </p>
@@ -28,7 +28,7 @@
                     </div>
                 </EditForm>
 
-                @if (lookupResult != null)
+                @if (lookupResults != null && lookupResults.Count > 0)
                 {
                     <div class="modal fade show" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog" style="display: block;">
                         <div class="modal-dialog">
@@ -38,38 +38,43 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="CloseModal"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <img src="https://cdn.dribbble.com/users/147386/screenshots/5315437/success-tick-dribbble.gif" class="ms-auto h-100 w-100" />
+                                    @foreach (var result in lookupResults)
+                                    {
+                                        <div class="row mb-4">
+                                            <div class="col-md-6">
+                                                <p><strong>Khách hàng:</strong> @result.CustomerName</p>
+                                                <p><strong>Số điện thoại:</strong> @result.PhoneNumber</p>
+                                                <p><strong>Email:</strong> @result.Email</p>
+
+                                                <p><strong>Ngày khởi hành:</strong> @result.TripStartDate.ToString("dd/MM/yyyy")</p>
+                                                <p><strong>Ngày kết thúc:</strong> @result.TripEndDate.ToString("dd/MM/yyyy")</p>
+                                                <p><strong>Điểm đón:</strong> @result.TripFrom</p>
+                                                <p><strong>Điểm đến:</strong> @result.TripTo</p>
+
+                                                <p><strong>Giá vé:</strong> @result.TripPrice</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p><strong>Số ghế:</strong> @result.CarSeat</p>
+                                                <p><strong>Màu xe:</strong> @result.CarColor</p>
+                                                <p><strong>Tên xe:</strong> @result.CarName</p>
+                                                <p><strong>Biển số xe:</strong> @result.CarNumber</p>
+                                                <p><strong>Tên tài xế:</strong> @result.DriverName</p>
+                                                <p><strong>Hiệu xe:</strong> @result.CarBrand</p>
+                                                <p><strong>Loại xe:</strong> @result.CarType</p>
+                                                <p><strong>Trạng thái chuyến xe:</strong> @result.TripStatus</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <p><strong>Khách hàng:</strong> @lookupResult.CustomerName</p>
-                                            <p><strong>Số điện thoại:</strong> @lookupResult.PhoneNumber</p>
-                                            <p><strong>Ngày khởi hành:</strong> @lookupResult.TripStartDate.ToString("dd/MM/yyyy")</p>
-                                            <p><strong>Ngày kết thúc:</strong> @lookupResult.TripEndDate.ToString("dd/MM/yyyy")</p>
-                                            <p><strong>Loại xe:</strong> @lookupResult.CarType</p>
-                                            <p><strong>Giá vé:</strong> @lookupResult.TripPrice</p>
-                                            <p><strong>Trạng thái chuyến xe:</strong> @lookupResult.TripStatus</p>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <p><strong>Số ghế:</strong> @lookupResult.CarSeat</p>
-                                            <p><strong>Biển số xe:</strong> @lookupResult.CarNumber</p>
-                                            <p><strong>Tên tài xế:</strong> @lookupResult.DriverName</p>
-                                            <p><strong>Điểm đón:</strong> @lookupResult.TripFrom</p>
-                                            <p><strong>Điểm đến:</strong> @lookupResult.TripTo</p>
-                                            <p><strong>Quảng đường:</strong> @lookupResult.TripDistance</p>
-                                        </div>
-                                    </div>
+                                        <hr />
+                                    }
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @onclick="CloseModal">Close</button>
+                                    <button type="button" class="btn btn-danger me-2" data-bs-dismiss="modal" @onclick="CloseModal">Thoát</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 }
+
                 @if (!string.IsNullOrEmpty(errorMessage))
                 {
                     <div class="alert alert-danger mt-4">@errorMessage</div>
@@ -81,20 +86,20 @@
 
 @code {
     private LookupModel lookupModel = new LookupModel();
-    private lookup lookupResult;
+    private List<lookup> lookupResults = new List<lookup>();
     private string errorMessage;
 
     private async Task OnSubmit()
     {
         errorMessage = null;
-        lookupResult = null;
+        lookupResults.Clear();
         var response = await Http.GetAsync($"http://localhost:49922/api/Lookup/{lookupModel.PhoneNumber}/{lookupModel.TicketCode}");
         if (response.IsSuccessStatusCode)
         {
             var results = await response.Content.ReadFromJsonAsync<IEnumerable<lookup>>();
-            lookupResult = results.FirstOrDefault();
+            lookupResults = results.ToList();
 
-            if (lookupResult == null)
+            if (lookupResults.Count == 0)
             {
                 errorMessage = "Không tìm thấy thông tin đặt vé!";
             }
@@ -106,7 +111,7 @@
     }
     private void CloseModal()
     {
-        lookupResult = null; 
+       
     }
 
     public class LookupModel
@@ -116,8 +121,7 @@
         public string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập mã vé xe")]
-        [Range(1, int.MaxValue, ErrorMessage = "Mã vé không hợp lệ")]
-        public int? TicketCode { get; set; }
+        public string? TicketCode { get; set; }
     }
 
 }

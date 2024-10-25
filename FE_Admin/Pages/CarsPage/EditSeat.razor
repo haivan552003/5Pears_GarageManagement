@@ -17,13 +17,6 @@
                              Required="true"
                              Min="1"
                              Class="mt-3" />
-            <MudSelect @bind-Value="seat.status"
-                       Label="Trạng thái"
-                       Required="true"
-                       Class="mt-3">
-                <MudSelectItem Value="0">Trống</MudSelectItem>
-                <MudSelectItem Value="1">Đã đặt</MudSelectItem>
-            </MudSelect>
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -51,7 +44,6 @@
                     name = Seat.name,
                     row = Seat.row,
                     col = Seat.col,
-                    status = Seat.status,
                     car_id = Seat.car_id
                 };
         }

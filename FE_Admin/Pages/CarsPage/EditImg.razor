@@ -1,0 +1,146 @@
+﻿@inject ISnackbar Snackbar
+@inject IJSRuntime js
+
+<MudDialog>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" Class="d-flex flex-column gap-4">
+                <div>
+                    <InputFile id="fileInput" OnChange="LoadCarImages" multiple hidden />
+                    <MudButton HtmlTag="label"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.CloudUpload"
+                               for="fileInput"
+                               Disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <MudProgressCircular Class="ms-3" Size="Size.Small" Indeterminate="true" />
+                            <span class="ms-2">Đang tải lên...</span>
+                        }
+                        else
+                        {
+                            <span>Chọn ảnh</span>
+                        }
+                    </MudButton>
+                </div>
+
+                @if (selectedFiles.Any())
+                {
+                    <MudPaper Class="pa-4" Elevation="0">
+                        <MudText Typo="Typo.subtitle1" Class="mb-4">Danh sách ảnh đã chọn:</MudText>
+                        <MudList Dense="true">
+                            @foreach (var file in selectedFiles)
+                            {
+                                <MudListItem>
+                                    <div class="d-flex align-center gap-4">
+                                        <MudIcon Icon="@Icons.Material.Filled.Image" />
+                                        <MudText>@file.Name</MudText>
+                                        @if (uploadedImages.ContainsKey(file.Name))
+                                        {
+                                            <MudChip Color="Color.Success" Size="Size.Small">Đã tải lên</MudChip>
+                                        }
+                                    </div>
+                                </MudListItem>
+                            }
+                        </MudList>
+                    </MudPaper>
+                }
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Hủy</MudButton>
+        <MudButton Color="Color.Primary"
+                   OnClick="Submit"
+                   Disabled="@(!selectedFiles.Any() || isLoading)">
+            OK
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public int CarId { get; set; }
+
+    private List<IBrowserFile> selectedFiles = new List<IBrowserFile>();
+    private Dictionary<string, string> uploadedImages = new Dictionary<string, string>();
+    private bool isLoading = false;
+
+    private async Task<string> GetBase64Image(IBrowserFile file)
+    {
+        try
+        {
+            using var memoryStream = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(memoryStream);
+            var bytes = memoryStream.ToArray();
+            return Convert.ToBase64String(bytes);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi xử lý ảnh: {ex.Message}", Severity.Error);
+            return null;
+        }
+    }
+
+    private async Task LoadCarImages(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            isLoading = true;
+            selectedFiles.Clear();
+            uploadedImages.Clear();
+            StateHasChanged();
+
+            foreach (var file in e.GetMultipleFiles())
+            {
+                selectedFiles.Add(file);
+                var base64Data = await GetBase64Image(file);
+                if (base64Data != null)
+                {
+                    var fileName = $"car_images/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                    var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
+                    if (!string.IsNullOrEmpty(imageUrl))
+                    {
+                        uploadedImages.Add(file.Name, imageUrl);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi tải ảnh: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Submit()
+    {
+        if (!uploadedImages.Any())
+        {
+            Snackbar.Add("Vui lòng chọn ít nhất một ảnh", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            var carImages = uploadedImages.Values.Select(url => new car_img
+                {
+                    car_id = CarId,
+                    name = url
+                }).ToList();
+
+            MudDialog.Close(DialogResult.Ok(carImages));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+}

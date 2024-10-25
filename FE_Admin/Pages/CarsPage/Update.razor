@@ -122,8 +122,7 @@
                                             <MudGrid>
                                                 <MudItem xs="9">
                                                     <MudText>@seat.name (Hàng: @seat.row, Cột: @seat.col)</MudText>
-                                                    <MudText>Trạng thái: @(seat.status == 0 ? "Trống" : "Đã đặt")</MudText>
-                                                </MudItem>
+                                                    </MudItem>
                                                 <MudItem xs="3" Class="d-flex justify-end">
                                                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                                                    Color="Color.Primary"
@@ -137,6 +136,54 @@
                         </MudGrid>
                     </MudPaper>
                 </MudItem>
+                <MudItem xs="12" md="4">
+                    <MudPaper Elevation="3" Class="pa-4">
+                        <MudText Typo="Typo.h6" Class="mb-4">Hình ảnh xe</MudText>
+                        <div class="d-flex gap-2 mb-3">
+                            <MudButton OnClick="OpenAddImageDialog"
+                                       Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Add">
+                                Thêm ảnh
+                            </MudButton>
+                            <MudButton OnClick="DeleteSelectedImages"
+                                       Variant="Variant.Filled"
+                                       Color="Color.Error"
+                                       StartIcon="@Icons.Material.Filled.Delete"
+                                       Disabled="@(!SelectedImages.Any())">
+                                Xóa ảnh đã chọn
+                            </MudButton>
+                        </div>
+
+                        <MudGrid>
+                            @foreach (var image in CarImages)
+                            {
+                                <MudItem xs="12">
+                                    <MudCard>
+                                        <MudCardContent>
+                                            <MudGrid>
+                                                <MudItem xs="2">
+                                                    <MudCheckBox T="bool"
+                                                                 Checked="@(SelectedImages.Contains(image.id))"
+                                                                 CheckedChanged="@( (bool value) => OnImageSelected(value, image.id))" />
+                                                </MudItem>
+                                                <MudItem xs="7">
+                                                    <MudText>@image.name</MudText>
+                                                </MudItem>
+                                                <MudItem xs="3" Class="d-flex justify-end">
+                                                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                                   Color="Color.Primary"
+                                                                   OnClick="@(() => OpenEditImageDialog(image))" />
+                                                </MudItem>
+                                            </MudGrid>
+                                        </MudCardContent>
+                                    </MudCard>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+
 
                 <MudItem xs="12" Class="d-flex justify-end mt-4">
                     <MudButton Variant="Variant.Filled"
@@ -158,9 +205,9 @@
 
     private car Car = new car();
     private List<car_seat> CarSeats = new List<car_seat>();
+    private List<car_img> CarImages = new List<car_img>();
+    private HashSet<int> SelectedImages = new HashSet<int>();
     private string apiUrl = "http://localhost:49922/api";
-
-    // Thêm các biến DateTime? để xử lý ngày tháng
     private DateTime? registrationStartDate;
     private DateTime? registrationEndDate;
     private DateTime? productionDate;
@@ -168,13 +215,14 @@
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Xe", "/", icon: Icons.Material.Outlined.DirectionsCar),
-        new BreadcrumbItem("Danh sách xe", "/getcars", icon: Icons.Material.Outlined.List),
+        new BreadcrumbItem("Danh sách xe", "/getcar", icon: Icons.Material.Outlined.List),
         new BreadcrumbItem("Chỉnh sửa xe", null, icon: Icons.Material.Outlined.Edit)
     };
 
     protected override async Task OnInitializedAsync()
     {
         await LoadCarAndSeats();
+        await LoadCarImages();
     }
     private async Task OpenAddSeatDialog()
     {
@@ -227,7 +275,6 @@
     {
         try
         {
-            // Load car information
             var carResponse = await httpClient.GetFromJsonAsync<car>($"{apiUrl}/Cars/{id}");
             if (carResponse != null)
             {
@@ -275,11 +322,137 @@
             }
 
             Snackbar.Add("Cập nhật thành công", Severity.Success);
-            navigationManager.NavigateTo("/cars");
+            navigationManager.NavigateTo("/getcar");
         }
         catch (Exception ex)
         {
             Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+    private async Task LoadCarImages()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<car_img>>($"{apiUrl}/Cars/GetImgById/{id}");
+            if (response != null)
+            {
+                CarImages = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Chưa có ảnh xe nào được thêm", Severity.Info);
+        }
+    }
+
+    private async Task OpenAddImageDialog()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("CarId", id);
+        var dialog = DialogService.Show<EditImg>("Thêm nhiều ảnh", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            var newImages = (List<car_img>)result.Data;
+            try
+            {
+                var tasks = newImages.Select(img =>
+                    httpClient.PostAsJsonAsync($"{apiUrl}/Cars/CreateImg", img));
+
+                var responses = await Task.WhenAll(tasks);
+
+                if (responses.All(r => r.IsSuccessStatusCode))
+                {
+                    await LoadCarImages();
+                    Snackbar.Add("Thêm ảnh mới thành công", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Có lỗi xảy ra khi thêm một số ảnh", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Lỗi khi thêm ảnh mới: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task OpenEditImageDialog(car_img image)
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("Image", image);
+        parameters.Add("CarId", id);
+        var dialog = DialogService.Show<EditImg>("Chỉnh sửa thông tin ảnh", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            var updatedImage = (car_img)result.Data;
+            var response = await httpClient.PutAsJsonAsync($"{apiUrl}/Cars/updateImg/{image.id}", updatedImage);
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadCarImages();
+                Snackbar.Add("Cập nhật thông tin ảnh thành công", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Lỗi khi cập nhật thông tin ảnh", Severity.Error);
+            }
+        }
+    }
+
+    private void OnImageSelected(bool isChecked, int imageId)
+    {
+        if (isChecked)
+        {
+            SelectedImages.Add(imageId);
+        }
+        else
+        {
+            SelectedImages.Remove(imageId);
+        }
+    }
+
+    private async Task DeleteSelectedImages()
+    {
+        if (!SelectedImages.Any()) return;
+
+        var parameters = new DialogParameters
+        {
+            { "ContentText", $"Bạn có chắc chắn muốn xóa {SelectedImages.Count} ảnh đã chọn không?" },
+            { "ButtonText", "Xóa" },
+            { "Color", Color.Error }
+        };
+
+        var dialog = DialogService.Show<DeleteImg>("Xác nhận xóa", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            try
+            {
+                var deleteTasks = SelectedImages.Select(imageId =>
+                    httpClient.DeleteAsync($"{apiUrl}/Cars/deleteImg/{imageId}"));
+
+                var results = await Task.WhenAll(deleteTasks);
+
+                if (results.All(r => r.IsSuccessStatusCode))
+                {
+                    await LoadCarImages();
+                    SelectedImages.Clear();
+                    Snackbar.Add("Xóa ảnh thành công", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Có lỗi xảy ra khi xóa một số ảnh", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+            }
         }
     }
 

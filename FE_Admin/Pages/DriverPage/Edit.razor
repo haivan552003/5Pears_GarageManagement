@@ -293,7 +293,6 @@
             {
                 if (string.IsNullOrEmpty(responseContent))
                 {
-                    // Nếu phản hồi trống nhưng status code là success
                     Snackbar.Add("Chỉnh sửa tài xế thành công", Severity.Success);
                     navigationManager.NavigateTo("/getDriver");
                     return;
