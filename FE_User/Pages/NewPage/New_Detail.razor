@@ -1,0 +1,120 @@
+﻿@page "/news/{Id:int}"
+@using MudBlazor
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<MudContainer Class="pa-0" style="margin-top:95px">
+    @if (_loading)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    }
+    else if (_news != null)
+    {
+        <MudPaper Elevation="0" Class="pa-4">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h4" Class="mb-4">@_news.title</MudText>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudImage Src="@_news.news_img"
+                              Alt="News Image"
+                              Width="1250"
+                              Height="500"
+                              ObjectFit="ObjectFit.Cover"
+                              Class="rounded-lg mb-4"
+                              Elevation="3" />
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudText Typo="Typo.body1" Class="mb-6">
+                        @((MarkupString)_news.content)
+                    </MudText>
+                </MudItem>
+            </MudGrid>
+
+            <MudDivider Class="my-6" />
+
+            @if (_relatedNews != null && _relatedNews.Any())
+            {
+                <MudText Typo="Typo.h5" Class="mb-4">Tin Tức Liên Quan</MudText>
+                <MudGrid>
+                    @foreach (var item in _relatedNews.Take(3))
+                    {
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudCard Elevation="4" Class="rounded-lg h-100" @onclick="@(() => NavigateToNews(item.id))" Style="cursor: pointer">
+                                <MudCardMedia Image="@item.news_img"
+                                              Height="200"
+                                              Class="object-fit-cover" />
+                                <MudCardContent>
+                                    <MudText Typo="Typo.h6" Class="mb-2 text-truncate">@item.title</MudText>
+                                    <MudText Typo="Typo.body2">
+                                        @((MarkupString)GetTruncatedContent(item.content))
+                                    </MudText>
+                                </MudCardContent>
+                                <MudCardActions Class="mt-auto justify-end">
+                                    <MudLink OnClick="@(() => NavigateToNews(item.id))" Underline="Underline.None" Color="Color.Primary">
+                                        Xem thêm >>
+                                    </MudLink>
+                                </MudCardActions>
+                            </MudCard>
+                        </MudItem>
+                    }
+
+                </MudGrid>
+            }
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private news _news;
+    private List<news> _relatedNews;
+    private bool _loading = true;
+
+    private List<BreadcrumbItem> _breadcrumbs = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Trang chủ", "/"),
+        new BreadcrumbItem("Tin tức", "/news"),
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadNews();
+    }
+
+    private async Task LoadNews()
+    {
+        try
+        {
+            _loading = true;
+            _news = await Http.GetFromJsonAsync<news>($"http://localhost:49922/api/News/{Id}");
+            _relatedNews = await Http.GetFromJsonAsync<List<news>>("http://localhost:49922/api/News");
+            _relatedNews = _relatedNews
+                .Where(n => n.id != Id)
+                .ToList();
+        }
+        catch (Exception)
+        {
+            Navigation.NavigateTo("/news");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private string GetTruncatedContent(string content)
+    {
+        if (string.IsNullOrEmpty(content)) return "";
+        return content.Length > 100 ? content.Substring(0, 100) + "..." : content;
+    }
+
+    private void NavigateToNews(int newsId)
+    {
+        Navigation.NavigateTo($"/news/{newsId}");
+    }
+}
