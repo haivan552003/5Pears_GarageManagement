@@ -1,0 +1,106 @@
+﻿@page "/checkout"
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8 mb-5">
+    <MudPaper Class="p-5 mud-elevation-2">
+        <MudStack Direction="StackDirection.Column" AlignItems="AlignItems.Center" JustifyContent="center" Spacing="1">
+            <MudIcon Icon="@Icons.Material.Outlined.Description" Size="Size.Large" Color="Color.Primary" />
+            <MudText Typo="Typo.h4" Align="Align.Center" Class="font-weight-bold">
+                THANH TOÁN
+            </MudText>
+            <MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Secondary">
+                Vui lòng kiểm tra thông tin Khách hàng, thông tin vé xe trước khi đặt vé
+            </MudText>
+        </MudStack>
+        <MudGrid Spacing="4" Class="mt-4">
+            <!-- Thông tin khách hàng -->
+            <MudItem xs="12" md="6">
+                <MudPaper Class="p-4 mud-elevation-1" Style="min-height: 300px;">
+                    <MudText Typo="Typo.h5" Class="mb-3 font-weight-bold">
+                        Thông Tin Khách Hàng
+                    </MudText>
+
+                    <MudInputLabel Class="font-weight-bold">Họ Tên</MudInputLabel>
+                    <MudText Class="mt-1 font-weight-bold">@customerName</MudText>
+
+                    <MudInputLabel Class="font-weight-bold mt-2">Điện Thoại</MudInputLabel>
+                    <MudText Class="mt-1 font-weight-bold">@phone</MudText>
+
+                    <MudDivider Class="mt-4 mb-3" />
+                    <MudText Typo="Typo.h6" Class="font-weight-bold">
+                        Hình thức thanh toán
+                    </MudText>
+                    <MudRadioGroup T="string" @bind-Value="selectedPaymentMethod">
+                        <MudRadio Option="@selectedPaymentMethod" Color="Color.Primary">Tiền mặt</MudRadio>
+                        <MudRadio Option="Bank" Color="Color.Primary">Chuyển khoản VNPay</MudRadio>
+                    </MudRadioGroup>
+                </MudPaper>
+            </MudItem>
+
+            <!-- Thông tin lượt đi -->
+            <MudItem xs="12" md="6">
+                <MudPaper Class="p-4 mud-elevation-1" Style="min-height: 300px;">
+                    <MudText Typo="Typo.h5" Class="font-weight-bold mb-3" Color="Color.Primary">
+                        Thông tin vé
+                    </MudText>
+
+                    <MudStack Spacing="1">
+                        <MudGrid>
+                            <MudItem xs="6">
+                                <MudText Typo="Typo.body1"><b>Tuyến xe:</b></MudText>
+                                <MudText Typo="Typo.body1"><b>Thời gian đi:</b></MudText>
+                                <MudText Typo="Typo.body1"><b>Thời gian về:</b></MudText>
+                                <MudText Typo="Typo.body1"><b>Số lượng ghế:</b></MudText>
+                                <MudText Typo="Typo.body1"><b>Số ghế lượt đi:</b></MudText>
+                                <MudText Typo="Typo.body1"><b>Số ghế lượt về:</b></MudText>
+                                <MudText Typo="Typo.body1"><b>Điểm lên xe:</b></MudText>
+                                <MudText Typo="Typo.body1"><b>Thời gian tới điểm lên xe:</b></MudText>
+                                <MudText Typo="Typo.body1"><b>Điểm trả khách:</b></MudText>
+                                <MudText Typo="Typo.body1"><b>Điểm quay về:</b></MudText>
+                                <MudText Typo="Typo.body1"><b>Thời gian tới điểm lên xe:</b></MudText>
+                                <MudText Typo="Typo.body1"><b>Điểm trả khách:</b></MudText>
+                                <MudText Typo="Typo.body1"><b>Tổng tiền lượt đi:</b></MudText>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudText Typo="Typo.body1" style="color:teal;">Da Lat - Mien Tay</MudText>
+                                <MudText Typo="Typo.body1" style="color:teal;">21:30 16/09/2024</MudText>
+                                <MudText Typo="Typo.body1" style="color:red;">20:30 20/09/2024</MudText>
+                                <MudText Typo="Typo.body1" style="color:teal;">1 Ghế</MudText>
+                                <MudText Typo="Typo.body1">B08</MudText>
+                                <MudText Typo="Typo.body1" style="color:red;">B10</MudText>
+                                <MudText Typo="Typo.body1">Đà Lạt</MudText>
+                                <MudText Typo="Typo.body1" style="color:teal;">Trước 21:15 16/09/2024</MudText>
+                                <MudText Typo="Typo.body1">Bến xe Miền Tây</MudText>
+                                <MudText Typo="Typo.body1" style="color:red;">Bến xe Miền Tây</MudText>
+                                <MudText Typo="Typo.body1" style="color:red;">Trước 20:15h 20/09/2024</MudText>
+                                <MudText Typo="Typo.body1" style="color:red;">Đà Lạt</MudText>
+                                <MudText Typo="Typo.body1" style="color:teal;">290.000₫</MudText>
+                            </MudItem>
+                        </MudGrid>
+                    </MudStack>
+
+                    <!-- Nút Thanh Toán -->
+                    <MudStack Direction="Row" AlignItems="AlignItems.Center" JustifyContent="start" Class="mt-4">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"
+                                   Style="border-radius:24px;" OnClick="HandlePayment">
+                            Thanh Toán
+                        </MudButton>
+                    </MudStack>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private string customerName = "John Doe";
+    private string gender = "Nam";
+    private string address = "123 Đường ABC";
+    private string phone = "0765944704";
+    private string selectedPaymentMethod = "Tiền mặt";
+    private string Bank = "Chuyển khoản VNPay";
+
+    private void HandlePayment()
+    {
+        Console.WriteLine($"Phương thức thanh toán: {selectedPaymentMethod}");
+    }
+}

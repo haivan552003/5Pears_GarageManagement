@@ -1,0 +1,65 @@
+﻿@page "/GetPaymentSucce"
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8 mb-5">
+    <MudPaper Class="p-5 mud-elevation-2">
+        <MudStack AlignItems="AlignItems.Center" JustifyContent="center" Spacing="3">
+            <MudIcon Icon="@Icons.Material.Outlined.CheckCircle" Size="Size.Large" Color="Color.Success" />
+            <MudText Typo="Typo.h4" Align="Align.Center" Class="font-weight-bold">
+                Thanh Toán Thành Công
+            </MudText>
+            <MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Secondary">
+                Cảm ơn bạn! Giao dịch của bạn đã được thực hiện thành công.
+            </MudText>
+        </MudStack>
+
+        <MudDivider Class="my-4" />
+
+        <MudText Typo="Typo.h6" Class="font-weight-bold mb-3" Align="Align.Center">
+            Thông tin giao dịch:
+        </MudText>
+
+        <MudGrid>
+            <MudItem xs="6">
+                <MudText Typo="Typo.body1" Align="Align.Start" Style="font-weight: 500;">
+                    <b>Số giao dịch:</b>
+                </MudText>
+                <MudText Typo="Typo.body1" Align="Align.Start" Style="font-weight: 500;">
+                    <b>Số tiền:</b>
+                </MudText>
+                <MudText Typo="Typo.body1" Align="Align.Start" Style="font-weight: 500;">
+                    <b>Phương thức thanh toán:</b>
+                </MudText>
+                <MudText Typo="Typo.body1" Align="Align.Start" Style="font-weight: 500;">
+                    <b>Ngày giao dịch:</b>
+                </MudText>
+            </MudItem>
+            <MudItem xs="6">
+                <MudText Typo="Typo.body1" Align="Align.End" Style="font-weight: 500;">
+                    <span style="color: #000;">1234567890</span>
+                </MudText>
+                <MudText Typo="Typo.body1" Align="Align.End" Style="font-weight: 500;">
+                    <span style="color: #d32f2f;">290.000₫</span>
+                </MudText>
+                <MudText Typo="Typo.body1" Align="Align.End" Style="font-weight: 500;">
+                    <span style="color: #000;">Tiền mặt</span>
+                </MudText>
+                <MudText Typo="Typo.body1" Align="Align.End" Style="font-weight: 500;">
+                    <span style="color: #000;">16/09/2024</span>
+                </MudText>
+            </MudItem>
+        </MudGrid>
+
+        <MudStack Spacing="2" JustifyContent="Justify.Center" AlignItems="AlignItems.Center" Class="mt-5">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="NavigateHome" Style="border-radius:24px;">
+                <MudIcon Icon="@Icons.Material.Outlined.ArrowBack" /> <!-- Thay thế biểu tượng theo ý muốn -->
+                Quay lại trang chủ
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private void NavigateHome()
+    {
+    }
+}
