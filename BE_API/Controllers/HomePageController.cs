@@ -21,6 +21,18 @@ namespace BE_API.Controllers
             _connectionString = configuration.GetConnectionString("SqlConnection");
         }
 
+        [HttpGet("Get3Banner")]
+        public async Task<ActionResult<IEnumerable<banner>>> Get3Banner()
+        {
+            var procedureName = "sp_view_top3_banner";
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var products = await connection.QueryAsync<banner>(procedureName, commandType: CommandType.StoredProcedure);
+                return Ok(products);
+            }
+
+        }
         [HttpGet("Get3News1")]
         public async Task<ActionResult<IEnumerable<news>>> Get3News_1()
         {
@@ -96,17 +108,6 @@ namespace BE_API.Controllers
             }
         }
 
-        [HttpGet("VoucherHome")]
-        public async Task<ActionResult<IEnumerable<banner>>> VoucherHome()
-        {
-            var procedureName = "sp_view_voucher_home";
-
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var products = await connection.QueryAsync<banner>(procedureName, commandType: CommandType.StoredProcedure);
-                return Ok(products);
-            }
-        }
 
         [HttpGet("DriverHome")]
         public async Task<ActionResult<IEnumerable<driver_home>>> DriverHome()
