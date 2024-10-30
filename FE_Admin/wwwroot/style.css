@@ -2,6 +2,8 @@
     font-family: 'Montserrat';
     color: #2E2E2E;
     font-size: 16px;
+    font-weight: 400;
+    background-color: #F5F9FF;
 }
 
 img {
@@ -20,6 +22,10 @@ img {
 /* margin */
 .mt-90 {
     margin-top: 90px;
+}
+
+.mb-90 {
+    margin-bottom: 90px;
 }
 
 .mt-75 {
