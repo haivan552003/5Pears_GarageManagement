@@ -1,0 +1,34 @@
+﻿@page "/getCar/{carId:int}"
+@inject HttpClient httpClient
+
+<h3>Car Details</h3>
+
+@if (Car == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="car-details">
+        <p><strong>Car Number:</strong> @Car.car_number</p>
+        <p><strong>Type:</strong> @Car.type</p>
+        <p><strong>Brand:</strong> @Car.brand</p>
+        <p><strong>Color:</strong> @Car.color</p>
+        <p><strong>Registration Start:</strong> @Car.vehicle_registration_start.ToShortDateString()</p>
+        <p><strong>Registration End:</strong> @Car.vehicle_registration_end.ToShortDateString()</p>
+        <p><strong>Status:</strong> @Car.status</p>
+        <p><strong>Status of Vehicle Registration:</strong> @Car.status_vehicle_registration</p>
+        <MudIconButton Href="@($"/getcarseat/{@Car.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+
+    </div>
+}
+
+@code {
+    [Parameter] public int carId { get; set; }
+    private car Car { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Car = await httpClient.GetFromJsonAsync<car>($"http://localhost:49922/api/Cars/{carId}");
+    }
+}

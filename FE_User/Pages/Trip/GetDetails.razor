@@ -1,0 +1,45 @@
+﻿@page "/getTrip/{id:int}"
+
+@using FE_User.Models
+@inject HttpClient Http
+
+<h3>Chi tiết chuyến đi</h3>
+
+@if (tripDetails == null)
+{
+    <p>Đang tải...</p>
+}
+else if (tripDetails.Count == 0)
+{
+    <p>Không có thông tin chi tiết cho chuyến đi này.</p>
+}
+else
+{
+    <h4>Chi tiết chuyến đi</h4>
+    <MudTable Items="@tripDetails" Striped="true" Hover="true" Bordered="true">
+        <HeaderContent>
+            <MudTh>Thời gian bắt đầu</MudTh>
+            <MudTh>Thời gian kết thúc</MudTh>
+            <MudTh>Giá</MudTh>
+            <MudTh>Voucher</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.time_start.ToString("HH:mm:ss")</MudTd>
+            <MudTd>@context.time_end.ToString("HH:mm:ss")</MudTd>
+            <MudTd>@context.price.ToString("C")</MudTd>
+            <MudTd>@context.voucher.ToString("C")</MudTd>
+            <MudTd>@context.car_id</MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+    private List<trip_detail> tripDetails;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API để lấy thông tin chi tiết chuyến đi theo id_trip
+        tripDetails = await Http.GetFromJsonAsync<List<trip_detail>>($"http://localhost:49922/api/Trips/tripdetailany/{id}");
+    }
+}

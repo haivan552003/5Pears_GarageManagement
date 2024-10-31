@@ -4,7 +4,7 @@ namespace FE_User.Models
 {
     public class trip
     {
-        public int id_trip { get; set; }
+        public int id { get; set; }
         public string img_trip { get; set; }
         public string from { get; set; }
         public string to { get; set; }
@@ -13,5 +13,8 @@ namespace FE_User.Models
         public DateTime date_update { get; set; }
         public byte is_delete { get; set; }
         public int emp_create { get; set; }
+        public List<trip_detail> trip_Details { get; set; } = new();
+        public bool IsDetailsVisible { get; set; } = false;
+
     }
 }
