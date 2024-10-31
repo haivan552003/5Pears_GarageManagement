@@ -162,6 +162,20 @@ namespace BE_API.Controllers
 
         // GET: api/Products/5
 
+
+        [HttpGet("tripDetails")]
+        public async Task<ActionResult<IEnumerable<trip_detail>>> sp_Get_Trips_details()
+        {
+            var procedureName = "sp_getall_tripdetail";
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var employeesList = await connection.QueryAsync<trip_detail>(procedureName, commandType: CommandType.StoredProcedure);
+                return Ok(employeesList);
+            }
+        }
+
+
         [HttpGet("tripdetail/{id}")]
         public async Task<ActionResult<trip_detail>> GetTripDetailID(int id)
         {
@@ -183,6 +197,30 @@ namespace BE_API.Controllers
                 return Ok(product);
             }
         }
+
+        [HttpGet("tripdetailany/{id}")]
+        public async Task<ActionResult<IEnumerable<trip_detail>>> GetTripDetailIDany(int id)
+        {
+            var procedureName = "sp_getid_tripdetail_any";
+            var parameters = new { id };
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var tripDetails = await connection.QueryAsync<trip_detail>(
+                    procedureName,
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                if (!tripDetails.Any())
+                {
+                    return NotFound();
+                }
+
+                return Ok(tripDetails);  // Trả về danh sách các bản ghi
+            }
+        }
+
 
 
         // POST: api/trips

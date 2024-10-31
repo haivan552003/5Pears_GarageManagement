@@ -5,7 +5,7 @@ namespace FE_User.Models
 {
     public class car
     {
-        public int id_car { get; set; }
+        public int id { get; set; }
         public string car_number { get; set; }
         public string type { get; set; }
         public string brand { get; set; }

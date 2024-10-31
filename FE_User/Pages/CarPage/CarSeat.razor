@@ -1,0 +1,67 @@
+﻿@page "/getcarseat/{carId:int}"
+@inject HttpClient Http
+
+@code {
+    [Parameter] public int carId { get; set; }
+
+    private List<car_seat> carSeats;
+    private bool isLoading = true;
+    private string errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+            carSeats = await Http.GetFromJsonAsync<List<car_seat>>($"http://localhost:49922/api/Cars/getCarSeats/{carId}");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An error occurred while fetching data.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p class="text-danger">@errorMessage</p>
+}
+else if (carSeats != null && carSeats.Count > 0)
+{
+    <h3>Car Seats for Car ID: @carId</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Row</th>
+                <th>Column</th>
+                <th>Car ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var seat in carSeats)
+            {
+                <tr>
+                    <td>@seat.id</td>
+                    <td>@seat.name</td>
+                    <td>@seat.row</td>
+                    <td>@seat.col</td>
+                    <td>@seat.car_id</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No seats found for this car.</p>
+}
