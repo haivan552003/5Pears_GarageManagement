@@ -18,14 +18,35 @@
                                               Variant="Variant.Outlined"
                                               Placeholder="Email"
                                               @bind-Value="model.email" For="@(() => model.email)" />
-                                <MudTextField Label="Password" Class="mt-3"
+                                <MudTextField Label="Mật khẩu" Class="mt-3"
                                               Variant="Variant.Outlined"
-                                              Placeholder="Password"
+                                              Placeholder="Mật khẩu"
                                               @bind-Value="model.password" For="@(() => model.password)" InputType="InputType.Password" />
+
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mx-auto w-100 mt-7">Đăng nhập</MudButton>
+                                <MudText Class="mt-2 mb-2 text-center" Typo="Typo.subtitle2" Color="Color.Default">hoặc</MudText>
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Custom.Brands.Google" IconColor="Color.Secondary" Class="mx-auto w-100">
+                                    Google
+                                </MudButton>
+                                <MudGrid Class="mt-3 mb-5">
+                                    <MudItem xs="3" Class="text-center pa-0">
+                                        <MudLink Href="/" Underline="Underline.None">Trang chủ</MudLink>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="pa-0">
+                                        <MudText Color="Color.Default" Class="text-center">|</MudText>
+                                    </MudItem>
+                                    <MudItem xs="3" Class="text-center pa-0">
+                                        <MudLink Href="/register" Underline="Underline.None">Đăng ký</MudLink>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="pa-0">
+                                        <MudText Color="Color.Default" Class="text-center">|</MudText>
+                                    </MudItem>
+                                    <MudItem xs="4" Class="text-center pa-0">
+                                        <MudLink Href="/register" Underline="Underline.None">Quên mật khẩu</MudLink>
+                                    </MudItem>
+                                </MudGrid>
+
                             </MudCardContent>
-                            <MudCardActions>
-                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Đăng nhập</MudButton>
-                            </MudCardActions>
                             @if (LoginFailed)
                             {
                                 <MudAlert Severity="Severity.Error" Class="mt-2">Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.</MudAlert>
