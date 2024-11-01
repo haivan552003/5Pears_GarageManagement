@@ -198,10 +198,10 @@ namespace BE_API.Controllers
             }
         }
 
-        [HttpGet("tripdetailany/{id}")]
+        [HttpGet("tripdetail_by_tripid/{id}")]
         public async Task<ActionResult<IEnumerable<trip_detail>>> GetTripDetailIDany(int id)
         {
-            var procedureName = "sp_getid_tripdetail_any";
+            var procedureName = "[dbo].[sp_view_tripdetail_by_tripid]";
             var parameters = new { id };
 
             using (var connection = new SqlConnection(_connectionString))
@@ -217,7 +217,7 @@ namespace BE_API.Controllers
                     return NotFound();
                 }
 
-                return Ok(tripDetails);  // Trả về danh sách các bản ghi
+                return Ok(tripDetails);
             }
         }
 
@@ -275,8 +275,6 @@ namespace BE_API.Controllers
                     return BadRequest();
                 }
             }
-
-            return NoContent();
         }
         [HttpDelete("tripdetail/{id}")]
         public async Task<IActionResult> DeleteTripDetail(int id)
@@ -309,6 +307,36 @@ namespace BE_API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = $"Error occurred: {ex.Message}" });
+            }
+        }
+
+
+        [HttpGet("view_tripdetail/{id}")]
+        public async Task<ActionResult<IEnumerable<trip_detail>>> ViewTripDetailID(int id)
+        {
+            var procedureName = "[dbo].[sp_view_tripdetail]";
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Int32, ParameterDirection.Input);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var multi = await connection.QueryMultipleAsync(procedureName, parameters, commandType: CommandType.StoredProcedure))
+                {
+                    var trip_detail = multi.ReadFirstOrDefault<ModelCustom.trip_detail>();
+
+                    if (trip_detail == null)
+                    {
+                        return NotFound();
+                    }
+
+                    var car_seat = multi.Read<ModelCustom.car_seat>().ToList();
+
+                    trip_detail.car_seats = car_seat;
+
+                    return Ok(trip_detail);
+                }
             }
         }
     }

@@ -1,0 +1,122 @@
+﻿@page "/getTrip"
+@using System.Net.Http.Json
+@inject HttpClient httpClient
+
+<div class="container">
+    <MudTable Hover="false" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+              Items="FilteredTrips"
+              Virtualize="true"
+              GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+              GroupFooterClass="mb-4"
+              Dense="true"
+              MultiSelection="false">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6"></MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" OnKeyUp="ApplyFilter"></MudTextField>
+        </ToolBarContent>
+        <RowTemplate>
+            <MudTd Class="fw-bold">
+                <MudButton Variant="Variant.Outlined" Size="Size.Small" EndIcon="@Icons.Material.Outlined.KeyboardArrowDown" Color="Color.Secondary" OnClick="@(() => ShowBtnPress(context.id))">
+                    @context.from - @context.to
+                </MudButton>
+            </MudTd>
+        </RowTemplate>
+        <ChildRowContent>
+            @if (context.IsDetailsVisible)
+            {
+                <MudTr>
+                    <MudTd>
+                        <MudCard Elevation="0">
+                            <MudCardContent Class="pa-0">
+                                <MudTable Items="@context.trip_Details" Context="TripDetail" Dense="true" Striped="true" Bordered="true" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                    <ColGroup>
+                                        <col />
+                                        <col />
+                                        <col />
+                                        <col />
+                                        <col />
+                                        <col />
+                                        <col />
+                                        <col />
+                                    </ColGroup>
+                                    <HeaderContent>
+                                        <MudTh Class="fw-bold">Mã chuyến</MudTh>
+                                        <MudTh Class="fw-bold">Từ</MudTh>
+                                        <MudTh Class="fw-bold">Đến</MudTh>
+                                        <MudTh Class="fw-bold">Quãng đường</MudTh>
+                                        <MudTh Class="fw-bold">Thời gian bắt đầu</MudTh>
+                                        <MudTh Class="fw-bold">Thời gian kết thúc</MudTh>
+                                        <MudTh Class="fw-bold">Giá vé</MudTh>
+                                        <MudTh></MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd>@TripDetail.trip_detail_code</MudTd>
+                                        <MudTd>@TripDetail.location_from</MudTd>
+                                        <MudTd>@TripDetail.location_to</MudTd>
+                                        <MudTd>@TripDetail.distance km</MudTd>
+                                        <MudTd>@TripDetail.time_start.ToString("dd/MM/yyyy HH:mm")</MudTd>
+                                        <MudTd>@TripDetail.time_end.ToString("dd/MM/yyyy HH:mm")</MudTd>
+                                        <MudTd>@TripDetail.price.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</MudTd>
+                                        <MudTd>
+                                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Href="@($"/getTrip/{TripDetail.trip_id}")">
+                                                Đặt vé
+                                            </MudButton>
+                                        </MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudTd>
+                </MudTr>
+            }
+        </ChildRowContent>
+    </MudTable>
+</div>
+
+@code {
+    private List<trip> Trips = new List<trip>();
+    private IEnumerable<trip> FilteredTrips => Trips.Where(trip => FilterFunc(trip));
+    private string searchString1 = "";
+
+    public string urlTrip = "http://localhost:49922/api/Trips/trip";
+    public string urlTripDetail = "http://localhost:49922/api/Trips/tripdetail_by_tripid";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Trips = await httpClient.GetFromJsonAsync<List<trip>>(urlTrip) ?? new List<trip>();
+    }
+
+    private async Task ShowBtnPress(int tripId)
+    {
+        var trip = Trips.FirstOrDefault(t => t.id == tripId);
+        if (trip != null)
+        {
+            trip.IsDetailsVisible = !trip.IsDetailsVisible;
+
+            if (trip.IsDetailsVisible && (trip.trip_Details == null || !trip.trip_Details.Any()))
+            {
+                var tripDetails = await httpClient.GetFromJsonAsync<List<trip_detail>>($"{urlTripDetail}/{tripId}");
+                trip.trip_Details = tripDetails ?? new List<trip_detail>();
+                StateHasChanged();
+            }
+            else
+            {
+                trip.trip_Details = null;
+            }
+        }
+    }
+
+    private bool FilterFunc(trip element)
+    {
+        if (string.IsNullOrWhiteSpace(searchString1))
+            return true;
+
+        return $"{element.from} {element.to}".Contains(searchString1, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void ApplyFilter()
+    {
+        StateHasChanged();
+    }
+}
