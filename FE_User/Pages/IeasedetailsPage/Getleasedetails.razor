@@ -1,0 +1,77 @@
+﻿@page "/chitietthuetai"
+
+<MudPaper Class="mud-paper" Style="width: 80%; margin: auto; padding: 40px; background-color: #f5f5f5; border-radius: 12px;">
+    <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-6" Style="color: midnightblue;">Xác Nhận Thuê Tài Xế</MudText>
+
+    <MudGrid Class="p-4">
+        <!-- Left Side - Driver Information -->
+        <MudItem xs="12" sm="4" Class="text-center">
+            <MudAvatar Size="Size.Large" ImageUrl="https://i.pinimg.com/736x/7d/ba/2b/7dba2b8d7c73ce353828bb3ff2ada0d5.jpg" Style="width: 200px; height: 200px;" />
+            <MudText Typo="Typo.h6" Class="mt-2" Style="color: black;">Lê Tấn Bảo</MudText>
+            <MudText Typo="Typo.subtitle2" Color="Color.Success">Tài Xế</MudText>
+            <MudText Typo="Typo.body2" Class="mt-1" Style="color: black;">0916778799</MudText>
+            <MudText Typo="Typo.body2" Style="color: black;">letanbao3@gmail.com</MudText>
+            <MudText Typo="Typo.body2" Class="mt-2">
+                <MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Warning" /> 5.0 &nbsp;
+                <MudIcon Icon="@Icons.Material.Filled.SignalCellularAlt" Color="Color.Default" /> 19 chuyến
+            </MudText>
+        </MudItem>
+
+        <!-- Right Side - Rental Information -->
+        <MudItem xs="12" sm="8">
+            <MudGrid Class="p-2">
+                <!-- Rental Time Information -->
+                <MudItem xs="6">
+                    <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="Bắt đầu thuê tài xế" HelperText="" DateFormat="dd/MM/yyyy" Date="@(new DateTime(2020,10,19))" />
+                    <MudText Typo="Typo.body2">08:00 - 19/10/2024</MudText>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="Kết thúc thuê tài xế" HelperText="" DateFormat="dd/MM/yyyy" Date="@(new DateTime(2020,10,19))" />
+                    <MudText Typo="Typo.body2">08:00 - 19/10/2024</MudText>
+                </MudItem>
+
+                <!-- Pricing Information -->
+                <MudItem xs="12" Class="mt-4">
+                    <MudText Typo="Typo.subtitle2" Style="color: darkturquoise;">Bảng tính giá</MudText>
+                    <MudTable T="PriceInfo" Items="@priceList" Striped="true" Hover="true" Style="padding: 8px;">
+                        <HeaderContent>
+                            <MudTh Style="background-color: aliceblue; padding: 8px;">Chi tiết</MudTh>
+                            <MudTh Align="Align.Right" Style="background-color: aliceblue; padding: 8px;">Giá</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd Style="padding: 8px;">@context.Description</MudTd>
+                            <MudTd Align="Align.Right" Style="padding: 8px;">@context.Amount</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Action Buttons -->
+    <MudGrid Class="mt-2">
+        <MudItem xs="12" Class="text-left" Align="right" Style="padding : 38px" >
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" Style="margin-right: 8px;">Hủy</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary">
+                <MudIcon Icon="@Icons.Material.Filled.CarRental" Style="margin-right: 8px;" /> Thuê Tài Xế
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+
+</MudPaper>
+
+@code {
+    public class PriceInfo
+    {
+        public string Description { get; set; }
+        public string Amount { get; set; }
+    }
+
+    private List<PriceInfo> priceList = new List<PriceInfo>
+    {
+        new PriceInfo { Description = "Đơn giá thuê", Amount = "500.000đ" },
+        new PriceInfo { Description = "Bảo hiểm thuê", Amount = "7.000đ" },
+        new PriceInfo { Description = "Phí đưa đón", Amount = "Miễn phí" },
+        new PriceInfo { Description = "Thành tiền", Amount = "507.000đ" }
+    };
+}
