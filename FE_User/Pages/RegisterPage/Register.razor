@@ -3,36 +3,75 @@
 @inject HttpClient httpClient
 @inject ISnackbar Snackbar
 
-<MudContainer MaxWidth="MaxWidth.Small">
-    <MudCard Elevation="3" Class="mt-6">
-        <MudForm Model="@model" @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-            <MudCardContent>
-                <MudText Typo="Typo.h4" Class="mb-4">Đăng ký tài khoản</MudText>
+<MudContainer Class="mt-16 pa-0" MaxWidth="MaxWidth.False" Style="margin-top: 100px;">
+    <MudGrid Class="pa-0 justify-center">
+        <MudItem xs="6" Class="mx-auto">
+            <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudCard Class="mud-elevation-12 rounded pa-6" Style="border-radius: 12px;">
+                            <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center pt-5">Đăng ký tài khoản</MudText>
+                            <MudCardContent Class="pa-4">
+                                <MudTextField Label="Email" Class="mt-3"
+                                              Variant="Variant.Outlined"
+                                              Placeholder="Email"
+                                              @bind-Value="model.email" Required="true"
+                                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Email" />
 
-                <MudTextField T="string" Label="Email" @bind-Value="model.email" Required="true" />
+                                <MudTextField Label="Mật khẩu" Class="mt-3"
+                                              Variant="Variant.Outlined"
+                                              Placeholder="Mật khẩu"
+                                              @bind-Value="model.pass_word" Required="true"
+                                              InputType="InputType.Password"
+                                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Lock" />
 
-                <MudTextField T="string" Label="Password" @bind-Value="model.pass_word" Required="true"
-                              RequiredError="Password is required!"
-                              InputType="InputType.Password" />
+                                <MudTextField Label="Họ tên" Class="mt-3"
+                                              Variant="Variant.Outlined"
+                                              Placeholder="Họ tên"
+                                              @bind-Value="model.full_name" Required="true"
+                                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Person" />
 
-                <MudTextField T="string" Label="Full Name" @bind-Value="model.full_name" Required="true"
-                              RequiredError="Full name is required!" />
+                                <MudDatePicker Label="Ngày sinh" Class="mt-3"
+                                               Variant="Variant.Outlined"
+                                               @bind-Date="model.birthday" Required="true" />
 
-                <MudDatePicker Label="Birthday" @bind-Date="model.birthday" Required="true"
-                               RequiredError="Birthday is required!" />             
-                <MudTextField T="string" Label="Phone Number" @bind-Value="model.phone_number" Required="true"
-                              RequiredError="Phone number is required!" />
-                <MudRadioGroup T="byte" @bind-Value="model.gender" Required="true" RequiredError="Gender is required!">
-                    <MudRadio Value="@((byte)0)" Color="Color.Primary">Nam</MudRadio>
-                    <MudRadio Value="@((byte)1)" Color="Color.Secondary">Nữ</MudRadio>
-                </MudRadioGroup>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await OnValidSubmit())">Đăng ký</MudButton>
-            </MudCardActions>
-        </MudForm>
-    </MudCard>
+                                <MudTextField Label="Số điện thoại" Class="mt-3"
+                                              Variant="Variant.Outlined"
+                                              Placeholder="Số điện thoại"
+                                              @bind-Value="model.phone_number" Required="true"
+                                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Phone" />
+
+                                <MudRadioGroup T="byte" Class="mt-3" Variant="Variant.Outlined"
+                                               @bind-Value="model.gender" Required="true">
+                                    <MudRadio Value="0" Color="Color.Primary">Nam</MudRadio>
+                                    <MudRadio Value="1" Color="Color.Secondary">Nữ</MudRadio>
+                                </MudRadioGroup>
+
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                                           Color="Color.Primary" Class="mx-auto w-100 mt-7 mb-3" Style="border-radius: 20px;">
+                                    Đăng ký
+                                </MudButton>
+
+                                <MudGrid Class="mt-3 mb-5">
+                                    <MudItem xs="6" Class="text-center pa-0">
+                                        <MudLink Href="/" Underline="Underline.Hover">Trang chủ</MudLink>
+                                    </MudItem>
+                                    <MudItem xs="6" Class="text-center pa-0">
+                                        <MudLink Href="/login" Underline="Underline.Hover">Đã có tài khoản? Đăng nhập</MudLink>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                </MudGrid>
+            </EditForm>
+        </MudItem>
+    </MudGrid>
 </MudContainer>
+
+
+
 
 @code {
     private add_model_customer model = new add_model_customer();
