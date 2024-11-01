@@ -1,6 +1,4 @@
 ﻿@page "/getTrip/{id:int}"
-
-@using FE_User.Models
 @inject HttpClient Http
 
 <h3>Chi tiết chuyến đi</h3>
@@ -39,7 +37,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // Gọi API để lấy thông tin chi tiết chuyến đi theo id_trip
         tripDetails = await Http.GetFromJsonAsync<List<trip_detail>>($"http://localhost:49922/api/Trips/tripdetailany/{id}");
     }
 }
