@@ -92,6 +92,33 @@ namespace BE_API.Controllers
             }
 
         }
+
+        [HttpGet("tripfrom")]
+        public async Task<ActionResult<IEnumerable<dropdown>>> DropdownTripFrom()
+        {
+            var procedureName = "sp_dropdown_trip_from";
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var dropdown = await connection.QueryAsync<dropdown>(procedureName, commandType: CommandType.StoredProcedure);
+                return Ok(dropdown);
+            }
+
+        }
+
+        [HttpGet("tripto")]
+        public async Task<ActionResult<IEnumerable<dropdown>>> DropdownTripTo()
+        {
+            var procedureName = "sp_dropdown_trip_to";
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var dropdown = await connection.QueryAsync<dropdown>(procedureName, commandType: CommandType.StoredProcedure);
+                return Ok(dropdown);
+            }
+
+        }
+
         [HttpGet("tripdetail")]
         public async Task<ActionResult<IEnumerable<dropdown>>> DropdownTripDetail()
         {

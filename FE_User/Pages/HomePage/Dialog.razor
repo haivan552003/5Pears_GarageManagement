@@ -1,0 +1,74 @@
+﻿@inject HttpClient httpClient
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        <!-- Bảng hiển thị dữ liệu -->
+        <MudTable Items="trips" Hover="true">
+            <HeaderContent>
+                <MudTh><b>Mã Chuyến</b></MudTh>
+                <MudTh><b>Điểm Đi</b></MudTh>
+                <MudTh><b>Điểm Đến</b></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Mã Chuyến">@context.id</MudTd>
+                <MudTd DataLabel="Điểm Đi">@context.from</MudTd>
+                <MudTd DataLabel="Điểm Đến">@context.to</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Hủy</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private List<trip> trips = new List<trip>(); // Danh sách sẽ lấy từ API
+    private bool isLoading = true;
+    private string searchString1 = "";
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+     
+    private void Cancel() => MudDialog.Cancel();
+
+    private bool FilterFunc1(trip element) => FilterFunc(element, searchString1);
+
+    private bool FilterFunc(trip element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.from.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.to.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if ($"{element.id}".Contains(searchString))
+            return true;
+        return false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTripFromApi();
+    }
+
+    private async Task LoadTripFromApi()
+    {
+        try
+        {
+            // Gọi API để lấy dữ liệu
+            trips = await httpClient.GetFromJsonAsync<List<trip>>("http://localhost:49922/api/Trips/trip");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi khi tải dữ liệu: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
