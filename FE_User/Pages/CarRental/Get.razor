@@ -4,16 +4,24 @@
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-5 mb-5">
     <MudGrid>
-        <!-- Phần bên trái: Nav menu -->
         <MudItem xs="3">
             <MudPaper Width="300px" Class="d-inline-flex p-3" Elevation="0">
                 <MudNavMenu Dense="true" Rounded="true" Class="mud-width-full">
-                    <MudTextField T="string" Placeholder="Tìm kiếm dòng xe, thương hiệu..." Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Class="mb-4" />
+                    <MudTextField T="string"
+                                  Placeholder="Tìm kiếm dòng xe, thương hiệu..."
+                                  Variant="Variant.Outlined"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  Class="mb-4"
+                                  @bind-Value="searchString1"
+                                  OnInput="OnSearchInput" />
                     <MudDivider Class="my-2" />
 
                     <MudNavGroup Title="Chọn loại xe" Icon="" Expanded="false">
-                        <MudNavLink Href="/users" Icon="" IconColor="Color.Success">Xe thể thao</MudNavLink>
-                        <MudNavLink Href="/security" Icon="" IconColor="Color.Info">Xe du lịch</MudNavLink>
+                        @foreach (var item in car_Types)
+                        {
+                            <MudNavLink Href="/users" Icon="" IconColor="Color.Success">@item.name</MudNavLink>
+                        }
                     </MudNavGroup>
 
                     <MudNavGroup Title="Chọn loại hộp số" Icon="" Expanded="false">
@@ -22,71 +30,87 @@
                     </MudNavGroup>
 
                     <MudNavGroup Title="Chọn hãng xe" Icon="" Expanded="false">
-                        <MudNavLink Href="/users" Icon="" IconColor="Color.Success">Honda</MudNavLink>
-                        <MudNavLink Href="/security" Icon="" IconColor="Color.Info">Mazda</MudNavLink>
-                    </MudNavGroup>
-
-                    <MudNavGroup Title="Chọn thành phố" Icon="" Expanded="false">
-                        <MudNavLink Href="/users" Icon="" IconColor="Color.Success">Cần Thơ</MudNavLink>
-                        <MudNavLink Href="/security" Icon="" IconColor="Color.Info">Cà Mau</MudNavLink>
+                        @foreach (var item in car_Brands)
+                        {
+                            <MudNavLink Href="/users" Icon="" IconColor="Color.Success">@item.name</MudNavLink>
+                        }
                     </MudNavGroup>
 
                     <MudNavLink Href="/dashboard" Icon="">Thuê Tài Xế</MudNavLink>
-
                 </MudNavMenu>
             </MudPaper>
         </MudItem>
 
-        <!-- Phần bên phải: Các box hiển thị xe -->
-        <!-- Phần bên phải: Các box hiển thị xe -->
         <MudItem xs="9">
             <MudGrid>
-                @for (int i = 1; i <= 12; i++)
+                @foreach (var item in PaginatedElements)
                 {
                     <MudItem xs="12" sm="6" md="4" Class="mb-4">
-                        <MudPaper Class="p-4" Style="padding: 1.5rem;">
-                            <!-- Hình xe tròn -->
-                            <img src="https://cdn.tuoitre.vn/thumb_w/480/2022/7/3/the-lamborghini-aventador-is-dead-long-live-its-v12-powered-successor1-1656842844018699231869.jpg" alt="Hình xe" style="width:100%; height:200px; border-radius: 15%;" class="mb-3" />
-
-                            <!-- Loại hộp số -->
-                            <MudButton Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Class="mb-1">Tự động</MudButton>
-
-                            <!-- Tên xe -->
-                            <MudText Typo="Typo.h6" Class="mb-1">Toyota Camry</MudText>
-
-                            <!-- Vị trí của chiếc xe -->
-                            <MudItem Class="d-flex align-center">
-                                <MudIcon Icon="@Icons.Material.Filled.LocationOn" />
-                                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="ml-1">Quận 1, Hồ Chí Minh</MudText>
-                            </MudItem>
-                            <!-- Lượt đánh giá, số chuyến, và giá tiền mỗi chuyến -->
-                            <MudGrid Class="mt-3">
-                                <MudItem xs="3" Class="d-flex align-center">
-                                    <!-- Icon ngôi sao vàng -->
-                                    <MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Warning" />
-                                    <MudText Typo="Typo.caption" Class="ml-1">4.5</MudText>
+                       @*  <MudNavLink Href="@($"/carDetail/{item.id}")" Class="mud-width-full" Style="text-decoration: none;"> *@
+                            <MudPaper Class="p-4" Style="padding: 1.5rem;">
+                                <img src="@item.img_name" alt="Hình xe"
+                                     style="width: 100%; height: 200px; border-radius: 15%; object-fit: cover;"
+                                     class="mb-3" />
+                                <MudButton Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Class="mb-1">
+                                    @(item.isAuto == 0 ? "Tự động" : "Số Sàn")
+                                </MudButton>
+                                <MudText Typo="Typo.h6" Class="mb-1">@item.brand_name</MudText>
+                                <MudItem Class="d-flex align-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" />
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="ml-1">@item.type_name</MudText>
                                 </MudItem>
-                                <MudItem xs="3" Class="d-flex align-center">
-                                    <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Success" />
-                                    <MudText Typo="Typo.caption" Class="ml-1">20</MudText>
-                                </MudItem>
-                                <MudItem xs="6">
-                                    <MudText Typo="Typo.caption" Color="Color.Error">1.000.000/Chuyến</MudText>
-                                </MudItem>
-                            </MudGrid>
-                        </MudPaper>
+                                <MudGrid Class="mt-3">
+                                    <MudItem xs="3" Class="d-flex align-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Success" />
+                                        <MudText Typo="Typo.caption" Class="ml-1">20</MudText>
+                                    </MudItem>
+
+                                    <MudItem xs="3" Class="d-flex align-center">
+                                        <a href="@($"/getcarrentalconfirmation/{item.id}")" class="mud-typography-body2 mud-button mud-button-text mud-button-color-success">
+                                            Xem
+                                        </a>
+                                    </MudItem>
+
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.caption" Color="Color.Error">1.000.000/Ngày</MudText>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudPaper>
+                      @*   </MudNavLink> *@
                     </MudItem>
+
                 }
             </MudGrid>
         </MudItem>
     </MudGrid>
 </MudContainer>
 
+<MudGrid Justify="Justify.Center">
+    <MudItem>
+        <MudPagination Align="Align.Center" Color="Color.Primary" Count="@TotalPages" @bind-Selected="@_selected" />
+    </MudItem>
+</MudGrid>
 
 @code {
+    private int _selected = 1;
+    private const int PageSize = 3;
     private IEnumerable<car> Elements = new List<car>();
+    private IEnumerable<car> FilteredElements => Elements.Where(FilterFunc);
+    private IEnumerable<car> PaginatedElements => FilteredElements.Skip((_selected - 1) * PageSize).Take(PageSize);
+    private IEnumerable<car_type> car_Types = new List<car_type>();
+    private IEnumerable<car_brand> car_Brands = new List<car_brand>();
+    private string searchString1 = "";
+
+    private int TotalPages => (int)Math.Ceiling((double)FilteredElements.Count() / PageSize);
 
     protected override async Task OnInitializedAsync()
+    {
+        await LoadCars();
+        await LoadCartype();
+        await LoadCarBrand();
+    }
+
+    private async Task LoadCars()
     {
         try
         {
@@ -96,5 +120,48 @@
         {
             Console.WriteLine($"Error: {ex.Message}");
         }
+    }
+
+    private async Task LoadCartype()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<car_type>>("http://localhost:49922/api/CarTypes");
+            if (response != null)
+            {
+                car_Types = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private async Task LoadCarBrand()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<car_brand>>("http://localhost:49922/api/CarBrands");
+            if (response != null)
+            {
+                car_Brands = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private bool FilterFunc(car element) =>
+        string.IsNullOrWhiteSpace(searchString1) ||
+        element.brand_name.Contains(searchString1, StringComparison.OrdinalIgnoreCase) ||
+        element.type_name.Contains(searchString1, StringComparison.OrdinalIgnoreCase);
+
+    private void OnSearchInput(ChangeEventArgs e)
+    {
+        searchString1 = e.Value.ToString();
+        _selected = 1; // Reset to first page on search
     }
 }
