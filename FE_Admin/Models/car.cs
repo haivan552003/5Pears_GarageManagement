@@ -3,6 +3,7 @@
     public class car
     {
         public int id { get; set; }
+        public string car_name{ get; set; }
         public string car_number { get; set; }
         public string color { get; set; }
         public DateTime vehicle_registration_start { get; set; }
