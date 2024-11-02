@@ -21,6 +21,7 @@ namespace BE_API.Models
         public string phonenumber { get; set; }
         public string address { get; set; }
         public byte status { get; set; }
+        public int age { get; set; }
      
     }
 }

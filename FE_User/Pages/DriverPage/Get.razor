@@ -1,0 +1,120 @@
+﻿@page "/getdriver"
+@using MudBlazor
+@inject HttpClient httpClient
+
+<MudContainer Class="pt-5 mb-5">
+    <MudGrid>
+        <MudItem xs="3">
+            <MudPaper Width="300px" Class="d-inline-flex p-3" Elevation="0">
+                <MudNavMenu Dense="true" Rounded="true" Class="mud-width-full">
+                    <MudTextField T="string"
+                                  Placeholder="Tìm kiếm tài xế"
+                                  Variant="Variant.Outlined"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  Class="mb-4"
+                                  @bind-Value="searchString1"
+                                  OnInput="OnSearchInput" />
+                    <MudDivider Class="my-2" />
+                    <MudNavLink Href="/getCar" Icon="">Thuê Xe</MudNavLink>
+                </MudNavMenu>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="9">
+            <MudGrid>
+                @foreach (var item in PaginatedElements)
+                {
+                    <MudItem xs="12" sm="6" md="4" Class="mb-4">
+                        <a Href="@($"/getIdDriver/{item.id}")" Class="mud-width-full" Style="text-decoration: none;">
+                            <MudPaper Class="p-4" Style="padding: 1.5rem;">
+                                <img src="@item.img_driver" alt="Hình xe" style="width:100%; height:200px; border-radius: 15%;" class="mb-3" />
+                                <MudText Typo="Typo.h6" Class="mb-1">@item.fullname</MudText>
+                                <MudItem Class="d-flex align-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.LocalPhone" Color="Color.Info" />
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="ml-1">@item.phonenumber</MudText>
+                                </MudItem>
+                                <MudItem Class="d-flex align-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.DateRange" Color="Color.Primary" />
+                                    <MudText Typo="Typo.body2" Color="Color.Dark" Class="ml-1">@item.age tuổi</MudText>
+                                </MudItem>
+                                <MudItem Class="d-flex align-center">
+                                    <MudIcon Icon="fa-solid fa-venus-mars" Color="Color.Default" />
+                                    @if (item.gender == 0)
+                                    {
+                                        <MudText Typo="Typo.body2" Color="Color.Tertiary" Class="ml-1">
+                                            Nam
+                                        </MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudText Typo="Typo.body2" Color="Color.Tertiary" Class="ml-1">
+                                            Nữ
+                                        </MudText>
+                                    }
+
+                                </MudItem>
+                                <MudGrid Class="mt-3">
+                                    <MudItem xs="3" Class="d-flex align-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Success" />
+                                        <MudText Typo="Typo.subtitle2" Class="ml-1">20</MudText>
+                                    </MudItem>
+                                    <MudItem xs="9">
+                                        <MudText Typo="Typo.subtitle1" Color="Color.Error">@item.price.ToString("#,##0")/Ngày</MudText>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudPaper>
+                        </a>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+<MudGrid Justify="Justify.Center">
+    <MudItem>
+        <MudPagination Align="Align.Center" Color="Color.Primary" Count="@TotalPages" @bind-Selected="@_selected" />
+    </MudItem>
+</MudGrid>
+
+
+@code {
+    private int _selected = 1;
+    private const int PageSize = 12;
+    private IEnumerable<driver> Elements = new List<driver>();
+    private IEnumerable<driver> FilteredElements => Elements.Where(FilterFunc);
+    private IEnumerable<driver> PaginatedElements => FilteredElements.Skip((_selected - 1) * PageSize).Take(PageSize);
+    private string searchString1 = "";
+
+    private int TotalPages => (int)Math.Ceiling((double)FilteredElements.Count() / PageSize);
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDriver();
+    }
+
+    private async Task LoadDriver()
+    {
+        try
+        {
+            Elements = await httpClient.GetFromJsonAsync<List<driver>>("http://localhost:49922/api/Driver");
+            Console.WriteLine(Elements);
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private bool FilterFunc(driver element) =>
+      string.IsNullOrWhiteSpace(searchString1) ||
+       element.fullname.Contains(searchString1, StringComparison.OrdinalIgnoreCase);
+
+    private void OnSearchInput(ChangeEventArgs e)
+    {
+        searchString1 = e.Value.ToString();
+        _selected = 1;
+    }
+}

@@ -36,7 +36,7 @@
                         }
                     </MudNavGroup>
 
-                    <MudNavLink Href="/dashboard" Icon="">Thuê Tài Xế</MudNavLink>
+                    <MudNavLink Href="/getdriver" Icon="">Thuê Tài Xế</MudNavLink>
                 </MudNavMenu>
             </MudPaper>
         </MudItem>
@@ -75,7 +75,6 @@
                             </MudPaper>
                          </a>
                     </MudItem>
-
                 }
             </MudGrid>
         </MudItem>
@@ -159,6 +158,6 @@
     private void OnSearchInput(ChangeEventArgs e)
     {
         searchString1 = e.Value.ToString();
-        _selected = 1; // Reset to first page on search
+        _selected = 1;
     }
 }
