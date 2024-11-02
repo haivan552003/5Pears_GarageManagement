@@ -1,0 +1,258 @@
+﻿@page "/getIdDriver/{id:int}"
+@using MudBlazor
+@inject HttpClient httpClient
+
+
+<MudContainer Class="pt-5">
+    @if (drivers != null)
+    {
+        <MudGrid>
+            <MudItem xs="8">
+                <MudGrid>
+
+                    <MudItem xs="12">
+                        <MudGrid>
+                            <MudItem xs="6">
+                                <img src="@drivers.img_driver" Alt="Hình chiếc xe" class="img-fluid mx-auto rounded-3 w-100" />
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudText Typo="Typo.h4"><b>@drivers.fullname</b></MudText>
+                                <MudGrid>
+                                    <MudItem xs="2" Class="d-flex align-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Warning" />
+                                        <MudText Typo="Typo.body1" Class="ml-1">4.5</MudText>
+                                    </MudItem>
+
+                                    <MudItem xs="10" Class="d-flex align-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Success" />
+                                        <MudText Typo="Typo.body1" Class="ml-1">20</MudText>
+                                    </MudItem>
+                                </MudGrid>
+                                <MudItem xs="10" Class="d-flex align-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Email" />
+                                    <MudText Typo="Typo.body1" Class="ml-1">@drivers.email</MudText>
+                                </MudItem>
+                            </MudItem>
+                        </MudGrid>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudDivider Style="height: 1px; background-color: #333;" />
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h5"><b>Đặc Điểm</b></MudText>
+                    </MudItem>
+
+                    <MudGrid>
+                        <MudItem xs="4">
+                            <MudGrid>
+                                <MudItem xs="5" Class="d-flex align-center justify-end">
+                                    <MudIcon Icon="@Icons.Material.Filled.QrCode2" Size="Size.Large" Color="Color.Success" />
+                                </MudItem>
+                                <MudItem xs="7">
+                                    <MudGrid>
+                                        <MudItem xs="12">
+                                            <MudText Class="mb-1" Typo="Typo.subtitle1">Mã Tài Xế</MudText>
+                                            <MudText Typo="Typo.h6"><b>@drivers.driver_code</b></MudText>
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+
+                        <MudItem xs="4">
+
+                            <MudGrid>
+                                <MudItem xs="5" Class="d-flex align-center justify-end">
+                                    <MudIcon Icon="@Icons.Material.Filled.PhoneAndroid" Size="Size.Large" Color="Color.Success" />
+                                </MudItem>
+                                <MudItem xs="7">
+                                    <MudGrid>
+                                        <MudItem xs="12">
+                                            <MudText Class="mb-1" Typo="Typo.subtitle1">SĐT</MudText>
+                                            <MudText Typo="Typo.h6"><b>@drivers.phonenumber</b></MudText>
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudItem>
+                            </MudGrid>
+
+                        </MudItem>
+
+                        <MudItem xs="4">
+
+                            <MudGrid>
+                                <MudItem xs="5" Class="d-flex align-center justify-end">
+                                    <i class="fa-solid fa-venus-mars" style="width:35px;height:35px;color:var(--mud-palette-success) !important"></i>
+                                </MudItem>
+                                <MudItem xs="7">
+                                    <MudGrid>
+                                        <MudItem xs="12">
+                                            <MudText Class="mb-1" Typo="Typo.subtitle1">Giới Tính</MudText>
+                                            @if(drivers.gender == 0){
+                                                <MudText Typo="Typo.h6"><b>Nam</b></MudText>
+                                            }
+                                            else{
+                                                <MudText Typo="Typo.h6"><b>Nữ</b></MudText>
+                                            }
+                                        </MudItem>
+
+                                    </MudGrid>
+                                </MudItem>
+                            </MudGrid>
+
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudItem xs="12">
+                        <MudDivider Style="height: 2px; background-color: #333;" />
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+            <MudItem xs="4">
+                <MudPaper Class="p-4 rounded-lg" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #E3F2FD; box-shadow: none; border: 1px solid #f4f4f4;">
+                    <MudGrid>
+                        <MudItem xs="2">
+                            <MudText Typo="Typo.h6" Style="text-decoration: line-through; color:#c6c6c6;">505K</MudText>
+                        </MudItem>
+                        <MudItem xs="10">
+                            <MudPaper Style="background: #f26a2b; border-radius: 100px; padding: 0 4px; width: fit-content; margin-top: 5px;">
+                                <MudText Typo="Typo.h6" Style="color: #fff!important; font-size: 12px; ">-23%</MudText>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h4" Style=""><b>@drivers.price.ToString("#,##0")</b><span style="color: #767676; font-size: 20px;">/ngày</span>
+                            </MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudTextField T="DateTime?" Format="s" Label="DateTimeLocal" InputType="InputType.DateTimeLocal" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudTextField T="DateTime?" Format="s" Label="DateTimeLocal" InputType="InputType.DateTimeLocal" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudPaper Class="pt-3 pb-3 pl-4 pe-4 rounded-lg" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #fff; border: 1px solid #e0e0e0; box-shadow: none;">
+                                <MudText Typo="Typo.subtitle2">Địa điểm giao xe</MudText>
+                                <MudText Style="font-size: 16px" Typo="Typo.h6"><b>Nguyễn Văn Linh, TP.Cần Thơ</b></MudText>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudDivider Style="height: 1px; background-color: #333;" />
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Typo="Typo.subtitle1">Đơn giá thuê</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>500 500đ/ ngày</b></MudText>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Typo="Typo.subtitle1">Bảo hiểm thuê xe</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>50 500đ/ ngày</b></MudText>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudDivider Style="height: 2px; background-color: #333;" />
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Typo="Typo.subtitle1">Tổng cộng</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>551 000đ/ ngày</b></MudText>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Typo="Typo.subtitle1"><b>Thành Tiền</b></MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>551 000đ/ ngày</b></MudText>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudDivider Style="height: 1px; background-color: #333;" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudButton Class="pt-4 pb-4 rounded-1" MaxWidth="MaxWidth.Medium" Style="width: 100%;" Variant="Variant.Filled" Color="Color.Primary">Chọn Thuê</MudButton>
+                        </MudItem>
+                    </MudGrid>
+
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    }
+    <MudItem xs="12">
+        <MudText Typo="Typo.h5"><b>Danh Sách Tài Xế Nổi Bật Trong Tháng</b></MudText>
+    </MudItem>
+    <MudGrid>
+        @foreach (var item in eDriver)
+        {
+            <MudItem xs="3">
+                <MudCard Style="background-color: #FFF7F5">
+                    <MudCardContent>
+                        <MudImage Height="300" Src="@item.img_driver" Fluid="true" />
+                        <MudText Class="text-center mt-2" Typo="Typo.h6" Color="Color.Secondary">@item.fullname</MudText>
+                        <MudGrid Class="mt-2">
+                            <MudItem xs="4">
+                                <MudText>@item.birthday tuổi</MudText>
+                            </MudItem>
+                            <MudItem xs="8">
+                                <MudText>@item.trip_count chuyến xe</MudText>
+                            </MudItem>
+                        </MudGrid>
+                        <MudButton Variant="Variant.Outlined" Size="Size.Small" class="mt-4" Color="Color.Secondary">Thuê ngay</MudButton>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+</MudContainer>
+
+
+
+
+@code {
+    [Parameter] public int id { get; set; }
+    private DRIVERS drivers;
+    private IEnumerable<driver_home> eDriver = new List<driver_home>();
+    private string urlDriver = "http://localhost:49922/api/HomePage/DriverHome";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCars();
+        await Driver();
+
+    }
+
+    private async Task LoadCars()
+    {
+        try
+        {
+            drivers = await httpClient.GetFromJsonAsync<DRIVERS>($"http://localhost:49922/api/Driver/{id}");
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+    async Task Driver()
+    {
+        try
+        {
+            eDriver = await httpClient.GetFromJsonAsync<List<driver_home>>(urlDriver);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+
+
+}
