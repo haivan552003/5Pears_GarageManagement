@@ -111,10 +111,10 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@vehical_registration_start", cars.vehicle_registration_start);
                 cmd.Parameters.AddWithValue("@vehical_registration_end", cars.vehicle_registration_end);
                 cmd.Parameters.AddWithValue("@price", cars.price);
-                cmd.Parameters.AddWithValue("@isAuto", cars.is_auto);
+                cmd.Parameters.AddWithValue("@isAuto", cars.isAuto);
                 cmd.Parameters.AddWithValue("@status", cars.status);
-                cmd.Parameters.AddWithValue("@id_type", cars.id_type);
-                cmd.Parameters.AddWithValue("@id_brand", cars.id_brand);
+                cmd.Parameters.AddWithValue("@id_type", cars.type_id);
+                cmd.Parameters.AddWithValue("@id_brand", cars.brand_id);
                 cmd.Parameters.AddWithValue("@year_production", cars.year_production);
                 cmd.Parameters.AddWithValue("@odo", cars.odo);
                 cmd.Parameters.AddWithValue("@insurance_fee", cars.insurance_fee);
@@ -154,10 +154,10 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@vehical_registration_start", cars.vehicle_registration_start);
                 cmd.Parameters.AddWithValue("@vehical_registration_end", cars.vehicle_registration_end);
                 cmd.Parameters.AddWithValue("@price", cars.price);
-                cmd.Parameters.AddWithValue("@isAuto", cars.is_auto);
+                cmd.Parameters.AddWithValue("@isAuto", cars.isAuto);
                 cmd.Parameters.AddWithValue("@status", cars.status);
-                cmd.Parameters.AddWithValue("@id_type", cars.id_type);
-                cmd.Parameters.AddWithValue("@id_brand", cars.id_brand);
+                cmd.Parameters.AddWithValue("@id_type", cars.type_id);
+                cmd.Parameters.AddWithValue("@id_brand", cars.brand_id);
                 cmd.Parameters.AddWithValue("@year_production", cars.year_production);
                 cmd.Parameters.AddWithValue("@odo", cars.odo);
                 cmd.Parameters.AddWithValue("@insurance_fee", cars.insurance_fee);
