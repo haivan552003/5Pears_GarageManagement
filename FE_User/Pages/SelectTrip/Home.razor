@@ -1,0 +1,372 @@
+﻿@page "/selecttrip"
+@using MudBlazor
+@inject HttpClient httpClient
+
+    <MudContainer Class="pt-5">
+        <MudGrid>
+            <MudItem xs="8">
+                <MudPaper Class="p-4 rounded-lg" Elevation="0" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #ffff; border: 1px solid #e5e7eb;">
+                    <MudGrid>
+                        <MudItem xs="4">
+                        <MudText Typo="Typo.h5"><b>Chọn Ghế</b></MudText>
+                        </MudItem>
+                        <MudItem xs="8">
+                            <MudText Typo="Typo.subtitle1">Thông tin xe</MudText>
+                        </MudItem>
+
+                        <MudItem xs="9">
+                            <MudGrid>
+                                <MudItem xs="5">
+                                    <MudGrid>
+                                        <MudItem xs="12">
+                                            <MudText Align="Align.Center" Typo="Typo.h6" Style="font-size: 14px;">Tầng Dưới</MudText>
+                                        </MudItem>
+
+                                        <!-- Ghế Đã Bán-->
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4"></MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <!-- Ghế Đang Chọn -->
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #FDEDE8;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+
+                                        <!-- Ghế Còn Trống -->
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #DEF3FF;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #DEF3FF;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #DEF3FF;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudItem>
+
+                            <MudItem xs="2"></MudItem>
+
+                                <MudItem xs="5">
+                                    <MudGrid>
+                                        <MudItem xs="12">
+                                            <MudText Align="Align.Center" Typo="Typo.h6" Style="font-size: 14px;">Tầng Trên</MudText>
+                                        </MudItem>
+
+                                        <!-- Ghế Đã Bán-->
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4"></MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <!-- Ghế Đang Chọn -->
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #FDEDE8;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+
+                                        <!-- Ghế Còn Trống -->
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #DEF3FF;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #DEF3FF;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #DEF3FF;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="4">
+                                            <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
+                                                <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
+                                            </MudPaper>
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+
+                        <MudItem xs="3">
+                            <MudGrid>
+
+                                <MudItem xs="12" Class="d-flex align-center">
+                                    <MudPaper Class="mr-2" Elevation="0" Style="height: 16px; width: 16px; background: #D5D9DD;"></MudPaper>
+                                    <MudText Class="align-self-center" Typo="Typo.h6" Style="font-size: 13px;">Đã Bán</MudText>
+                                </MudItem>
+
+                                <MudItem xs="12" Class="d-flex align-center">
+                                    <MudPaper Class="mr-2" Elevation="0" Style="height: 16px; width: 16px; background: #DEF3FF;"></MudPaper>
+                                    <MudText Class="align-self-center" Typo="Typo.h6" Style="font-size: 13px;">Còn Trống</MudText>
+                                </MudItem>
+
+                                <MudItem xs="12" Class="d-flex align-center">
+                                    <MudPaper Class="mr-2" Elevation="0" Style="height: 16px; width: 16px; background: #FDEDE8;"></MudPaper>
+                                    <MudText Class="align-self-center" Typo="Typo.h6" Style="font-size: 13px;">Đang Chọn</MudText>
+                                </MudItem>
+
+
+                            </MudGrid>      
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+                <MudPaper Class="p-4 rounded-lg mt-1" Elevation="0" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #ffff; border: 1px solid #e5e7eb;">
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudText Typo="Typo.h5"><b>Thông Tin Khách Hàng</b></MudText>
+                                </MudItem>
+
+                                <MudItem xs="12" Class="mb-3">
+                                    <MudInputLabel Style="font-size: 14px;">Họ và tên <span style="color: #E12424; font-size: 14px;">*</span></MudInputLabel>
+                                    <MudTextField @bind-Value="TextValue" Label="Nhập họ và tên" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                </MudItem>
+                                <MudItem xs="12" Class="mb-3">
+                                    <MudInputLabel Style="font-size: 14px;">Email <span style="color: #E12424; font-size: 14px;">*</span></MudInputLabel>
+                                    <MudTextField @bind-Value="TextValue" Label="Nhập email" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                </MudItem>
+                                <MudItem xs="12" Class="mb-3">
+                                    <MudInputLabel Style="font-size: 14px;">Số điện thoại <span style="color: #E12424; font-size: 14px;">*</span></MudInputLabel>
+                                    <MudTextField @bind-Value="TextValue" Label="Nhập số điện thoại" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudGrid>
+                            <MudItem xs="12" Class="mb-3">
+                                <MudText Align="Align.Center" Typo="Typo.h6" Style="color: #ef5222; font-size: 18px;">ĐIỀU KHOẢN LƯU Ý</MudText>
+                            </MudItem>
+
+                            <MudItem xs="12" Class="mb-2">
+                                <span style="font-weight: bold;">
+                                    (*) Quý khách vui lòng có mặt tại bến xuất phát của xe trước ít nhất 30 phút giờ xe khởi hành, mang theo thông báo đã thanh toán vé thành công có chứa mã vé được gửi từ hệ thống FUTA BUS LINE. Vui lòng liên hệ Trung tâm tổng đài <a href="" style="color: #ef5222; text-decoration: none;">1900 6067</a> để được hỗ trợ.
+                                </span>
+                            </MudItem>
+                            <MudItem xs="12" Class="mb-2">
+                                <span style="font-weight: bold;">
+                                    (*) Nếu quý khách có nhu cầu trung chuyển, vui lòng liên hệ Tổng đài trung chuyển <a href="" style="color: #ef5222; text-decoration: none;">1900 6067</a> trước khi đặt vé. Chúng tôi không đón/trung chuyển tại những điểm xe trung chuyển không thể tới được.
+                                </span>
+                            </MudItem>
+
+                                
+                            </MudGrid>
+                        </MudItem>
+                    </MudGrid>     
+                </MudPaper>
+
+                <MudPaper Class="p-4 rounded-lg mt-1" Elevation="0" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #ffff; border: 1px solid #e5e7eb;">
+                    <MudGrid>
+                        <MudItem xs="7">
+                            <MudText Typo="Typo.h5"><b>165.000đ</b></MudText>
+                        </MudItem>
+                    <MudItem xs="5">
+
+                        <MudGrid>
+                            <MudItem xs="6">
+                                <MudButton Style="border-radius: 32px; width: 125px" Variant="Variant.Outlined">Hủy</MudButton>
+
+                            </MudItem>
+
+                            <MudItem xs="6">
+                                <MudButton Style="border-radius: 32px; width: 125px border: none;" Variant="Variant.Filled" Color="Color.Primary">Thanh Toán</MudButton>
+                            </MudItem>
+                        </MudGrid>
+                        
+                    </MudItem>
+                    </MudGrid>
+                </MudPaper>
+
+
+            </MudItem>
+
+            <MudItem xs="4">
+                <MudPaper Class="p-4 rounded-lg" Elevation="0" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #fff; border: 1px solid #e5e7eb; box-shadow: none;">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudText Style="font-size: 20px" Typo="Typo.h5"><b>Thông Tin Lượt Đi</b></MudText>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                        <MudText Style="font-size: 15px; color: #637280;" Typo="Typo.h5">Tuyến Xe</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                        <MudText Align="Align.End" Style="font-size: 15px; font-weight: bold" Typo="Typo.h5">Cần Thơ - Miền Tây</MudText>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                        <MudText Style="font-size: 15px; color: #637280;" Typo="Typo.h5">Thời Gian Xuất Bến</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                        <MudText Align="Align.End" Style="font-size: 15px; font-weight: bold" Typo="Typo.h5">18:00 2/11/2024</MudText>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                        <MudText Style="font-size: 15px; color: #637280;" Typo="Typo.h5">Số Lượng Ghế</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                        <MudText Align="Align.End" Style="font-size: 15px; font-weight: bold" Typo="Typo.h5">1</MudText>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                        <MudText Style="font-size: 15px; color: #637280;" Typo="Typo.h5">Số Ghế</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                        <MudText Align="Align.End" Style="font-size: 15px; font-weight: bold" Typo="Typo.h5">A01</MudText>
+                        </MudItem>
+
+                    <MudItem xs="6">
+                        <MudText Style="font-size: 15px; color: #637280;" Typo="Typo.h5">Tổng Tiền Lượt Đi</MudText>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudText Align="Align.End" Style="font-size: 15px; font-weight: bold" Typo="Typo.h5">165.000đ</MudText>
+                    </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+    </MudContainer>
+@code {
+    public string TextValue { get; set; }
+}
