@@ -357,5 +357,32 @@ namespace BE_API.Controllers
                 return StatusCode(500, "An error occurred while processing your request.");
             }
         }
+        [HttpGet("viewCar/{id}")]
+        public async Task<ActionResult<car>> sp_GetTripsID(int id)
+        {
+            var procedureName = "sp_view_by_id_cars";
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Int32, ParameterDirection.Input);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var multi = await connection.QueryMultipleAsync(procedureName, parameters, commandType: CommandType.StoredProcedure))
+                {
+                    var car = multi.ReadFirstOrDefault<car>();
+                    if (car == null)
+                    {
+                        return NotFound();
+                    }
+
+                    var carImages = multi.Read<car_img>().ToList();
+                    car.car_img = carImages;
+
+                    return Ok(car);
+                }
+            }
+        }
+
+
     }
 }

@@ -1,397 +1,379 @@
-﻿@page "/getcarrentalconfirmation"
+﻿@page "/getidcar/{id:int}"
 @using MudBlazor
+@inject HttpClient httpClient
 
 
-<MudContainer  Class="mt-5">
-        <!-- Hình ảnh chiếc xe -->
+<MudContainer Class="pt-5">
+    <!-- Hình ảnh chiếc xe -->
+    @if (cars != null)
+    {
         <MudGrid>
             <MudItem xs="8">
                 <div class="pb-5">
-                    <img src="https://n1-pstg.mioto.vn/cho_thue_xe_o_to_tu_lai_thue_xe_du_lich_hochiminh/chevrolet_spark_2013/p/g/2023/02/24/15/GXXaE0aooA-DBXuw2HwEOA.jpg" Elevation="25" class="rounded-3" Alt="Hình chiếc xe 1" Style="width:810px; height:600px;" />
+                    @if (cars.car_img != null && cars.car_img.Any())
+                    {
+                        <img src="@cars.car_img.First().name" Alt="Hình chiếc xe" class="img-fluid w-100 mx-auto rounded-3" Style="width:810px; height:600px;" />
+                    }
                 </div>
                 <MudGrid>
-                    
+
                     <MudItem xs="12">
-                            <MudText Typo="Typo.h4"><b>CHEVROLET SPARK 2013</b></MudText>
+                        <MudText Typo="Typo.h4"><b>@cars.car_name</b></MudText>
                     </MudItem>
 
                     <MudItem xs="1" Class="d-flex align-center">
                         <!-- Icon ngôi sao vàng -->
                         <MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Warning" />
-                    <MudText Typo="Typo.body1" Class="ml-1">4.5</MudText>
+                        <MudText Typo="Typo.body1" Class="ml-1">4.5</MudText>
                     </MudItem>
 
-                <MudItem xs="1" Class="d-flex align-center">
+                    <MudItem xs="1" Class="d-flex align-center">
                         <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Success" />
-                    <MudText Typo="Typo.body1" Class="ml-1">20</MudText>
+                        <MudText Typo="Typo.body1" Class="ml-1">20</MudText>
                     </MudItem>
 
-                <MudItem xs="10" Class="d-flex align-center">
-                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" />
-                    <MudText Typo="Typo.body1" Class="ml-1">Quận 1, Hồ Chí Minh</MudText>
-                </MudItem>
-
-                <MudItem xs="12">
-                    <MudDivider Style="height: 1px; background-color: #333;" />
-                </MudItem>
-
-                <!-- Đặc Điểm -->
-                <MudItem xs="12">
-                    <MudText Typo="Typo.h5"><b>Đặc Điểm</b></MudText>
-                </MudItem>
-
-                <MudGrid>
-                    <MudItem xs="4">
-                        <MudGrid>
-                            <MudItem xs="5" Class="d-flex align-center justify-end">
-                                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M25.9163 7.99992C25.9163 9.05846 25.0582 9.91659 23.9997 9.91659C22.9411 9.91659 22.083 9.05846 22.083 7.99992C22.083 6.94137 22.9411 6.08325 23.9997 6.08325C25.0582 6.08325 25.9163 6.94137 25.9163 7.99992Z" stroke="#5FCF86" stroke-width="1.5"></path><circle cx="23.9997" cy="23.9999" r="1.91667" stroke="#5FCF86" stroke-width="1.5"></circle><path d="M17.9163 7.99992C17.9163 9.05846 17.0582 9.91659 15.9997 9.91659C14.9411 9.91659 14.083 9.05846 14.083 7.99992C14.083 6.94137 14.9411 6.08325 15.9997 6.08325C17.0582 6.08325 17.9163 6.94137 17.9163 7.99992Z" stroke="#5FCF86" stroke-width="1.5"></path><path d="M17.9163 23.9999C17.9163 25.0585 17.0582 25.9166 15.9997 25.9166C14.9411 25.9166 14.083 25.0585 14.083 23.9999C14.083 22.9414 14.9411 22.0833 15.9997 22.0833C17.0582 22.0833 17.9163 22.9414 17.9163 23.9999Z" stroke="#5FCF86" stroke-width="1.5"></path><circle cx="7.99967" cy="7.99992" r="1.91667" stroke="#5FCF86" stroke-width="1.5"></circle><path d="M10.1025 26.6666V21.3333H7.99837C7.59559 21.3333 7.25184 21.4053 6.96712 21.5494C6.68066 21.6918 6.46278 21.894 6.31348 22.1562C6.16244 22.4166 6.08691 22.723 6.08691 23.0754C6.08691 23.4296 6.1633 23.7343 6.31608 23.9895C6.46886 24.243 6.69021 24.4374 6.98014 24.5728C7.26834 24.7083 7.6173 24.776 8.02702 24.776H9.43587V23.8697H8.20931C7.99403 23.8697 7.81521 23.8402 7.67285 23.7812C7.53049 23.7221 7.42459 23.6336 7.35514 23.5155C7.28396 23.3975 7.24837 23.2508 7.24837 23.0754C7.24837 22.8984 7.28396 22.7491 7.35514 22.6275C7.42459 22.506 7.53136 22.414 7.67546 22.3515C7.81782 22.2872 7.9975 22.2551 8.21452 22.2551H8.97493V26.6666H10.1025ZM7.22233 24.2395L5.89681 26.6666H7.1416L8.43848 24.2395H7.22233Z" fill="#5FCF86"></path><path d="M24 10.6665V15.9998M24 21.3332V15.9998M16 10.6665V21.3332M8 10.6665V15.4998C8 15.776 8.22386 15.9998 8.5 15.9998H24" stroke="#5FCF86" stroke-width="1.5" stroke-linecap="round"></path></svg>
-                            </MudItem>
-                            <MudItem xs="7">
-                                <MudGrid>
-                                    <MudItem xs="12">
-                                        <MudText Class="mb-1" Typo="Typo.h6">Loại hộp số</MudText>
-                                        <MudText Typo="Typo.h5"><b>Số Tự Động</b></MudText>
-                                    </MudItem>
-                                </MudGrid>
-                            </MudItem>
-                        </MudGrid>
+                    <MudItem xs="10" Class="d-flex align-center">
+                        <MudIcon Icon="@Icons.Material.Filled.LocationOn" />
+                        <MudText Typo="Typo.body1" Class="ml-1">Quận 1, Hồ Chí Minh</MudText>
                     </MudItem>
 
-                    <MudItem xs="4">
-
-                        <MudGrid>
-                            <MudItem xs="5" Class="d-flex align-center justify-end">
-                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.914 23.3289C10.9148 23.3284 10.9156 23.3279 10.9163 23.3274C10.9155 23.3279 10.9148 23.3284 10.914 23.3289ZM10.914 23.3289C10.914 23.3289 10.914 23.3289 10.914 23.3289L11.3128 23.9114M10.914 23.3289L11.3128 23.9114M11.3128 23.9114L10.9807 23.2882L20.6697 23.9458C20.6682 23.9484 20.6656 23.9496 20.6631 23.9479C20.655 23.9424 20.6343 23.9284 20.6014 23.9074C20.6014 23.9073 20.6014 23.9073 20.6013 23.9073C20.5141 23.8516 20.3413 23.7468 20.0921 23.6208C20.0919 23.6207 20.0918 23.6206 20.0917 23.6206C19.3397 23.2404 17.8926 22.6674 16.0003 22.6674C14.1715 22.6674 12.7584 23.2026 11.9869 23.5817L11.9929 23.5929M11.3128 23.9114L11.331 23.9456C11.3324 23.9483 11.3352 23.9495 11.3377 23.9478C11.3444 23.9432 11.3592 23.9332 11.3821 23.9184L11.9929 23.5929L11.9929 23.5929M11.9929 23.5929C11.9909 23.5892 11.9889 23.5855 11.9868 23.5818C11.6767 23.7342 11.4702 23.8614 11.3821 23.9184L11.9929 23.5929ZM10.6691 24.2983L10.6691 24.2983C10.7406 24.4324 10.8728 24.5792 11.0793 24.6538C11.3072 24.7361 11.5609 24.7039 11.7614 24.5667L11.7614 24.5667C11.7978 24.5418 13.4597 23.4174 16.0003 23.4174C18.5426 23.4174 20.205 24.5432 20.2393 24.5667L20.2393 24.5667C20.4389 24.7034 20.6938 24.7372 20.9245 24.6528C21.1293 24.5779 21.2557 24.4338 21.3233 24.3136L22.4886 22.2427L24.3242 23.0447L21.6934 28.584H9.99882L7.65051 23.0635L9.57427 22.2435L10.6691 24.2983ZM24.4348 22.8117L24.4345 22.8124L24.4348 22.8117Z" stroke="#5FCF86" stroke-width="1.5"></path><path d="M12.75 4.66675C12.75 3.97639 13.3096 3.41675 14 3.41675H18C18.6904 3.41675 19.25 3.97639 19.25 4.66675V7.00008C19.25 7.13815 19.1381 7.25008 19 7.25008H13C12.8619 7.25008 12.75 7.13815 12.75 7.00008V4.66675Z" stroke="#5FCF86" stroke-width="1.5"></path><path d="M9.33398 22.6668L9.90564 11.2336C9.95887 10.1692 10.8374 9.3335 11.9031 9.3335H20.0982C21.1639 9.3335 22.0424 10.1692 22.0957 11.2336L22.6673 22.6668" stroke="#5FCF86" stroke-width="1.5"></path><path d="M14.667 7.35815V9.8901" stroke="#5FCF86" stroke-width="1.5"></path><path d="M17.334 7.35815V9.8901" stroke="#5FCF86" stroke-width="1.5"></path></svg>
-                            </MudItem>
-                            <MudItem xs="7">
-                                <MudGrid>
-                                    <MudItem xs="12">
-                                        <MudText Class="mb-1" Typo="Typo.h6">Số Ghế</MudText>
-                                        <MudText Typo="Typo.h5"><b>5 chỗ</b></MudText>
-                                    </MudItem>
-                                </MudGrid>
-                            </MudItem>
-                        </MudGrid>
-
-                    </MudItem>
-
-                    <MudItem xs="4">
-
-                        <MudGrid>
-                            <MudItem xs="5" Class="d-flex align-center justify-end">
-                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24.3337 27.2499H7.66699C7.52892 27.2499 7.41699 27.138 7.41699 26.9999V12.4599C7.41699 12.3869 7.44888 12.3175 7.5043 12.27L14.652 6.14344L14.1639 5.574L14.652 6.14344C14.6973 6.1046 14.755 6.08325 14.8147 6.08325H24.3337C24.4717 6.08325 24.5837 6.19518 24.5837 6.33325V26.9999C24.5837 27.138 24.4717 27.2499 24.3337 27.2499Z" stroke="#5FCF86" stroke-width="1.5" stroke-linecap="round"></path><path d="M12.0001 5.33325L7.42285 9.46712" stroke="#5FCF86" stroke-width="1.5" stroke-linecap="round"></path><path d="M17.888 19.5212L16.7708 15.93C16.5378 15.1812 15.4785 15.1798 15.2436 15.928L14.1172 19.5164C13.7178 20.7889 14.6682 22.0833 16.0019 22.0833C17.3335 22.0833 18.2836 20.7927 17.888 19.5212Z" stroke="#5FCF86" stroke-width="1.5" stroke-linecap="round"></path><path d="M23.2503 3.66675V5.66675C23.2503 5.80482 23.1384 5.91675 23.0003 5.91675H14.667C14.5827 5.91675 14.5365 5.8916 14.5072 5.86702C14.4721 5.83755 14.44 5.78953 14.4245 5.72738C14.4089 5.66524 14.4147 5.60775 14.4318 5.56523C14.4461 5.52975 14.4749 5.48584 14.5493 5.44616L18.2993 3.44616C18.3356 3.42685 18.376 3.41675 18.417 3.41675H23.0003C23.1384 3.41675 23.2503 3.52868 23.2503 3.66675Z" stroke="#5FCF86" stroke-width="1.5" stroke-linecap="round"></path></svg>
-                            </MudItem>
-                            <MudItem xs="7">
-                                <MudGrid>
-                                    <MudItem xs="12">
-                                        <MudText Class="mb-1" Typo="Typo.h6">Nhiên Liệu</MudText>
-                                        <MudText Typo="Typo.h5"><b>Xăng</b></MudText>
-                                    </MudItem>
-                                </MudGrid>
-                            </MudItem>
-                        </MudGrid>
-
-                    </MudItem>
-                </MudGrid>
-
-                <MudItem xs="12">
-                    <MudDivider Style="height: 2px; background-color: #333;" />
-                </MudItem>
-
-                <!-- Mô Tả -->
-                <MudItem xs="12">
-                    <MudText Typo="Typo.h5"><b>Mô Tả</b></MudText>
-                </MudItem>
-
-                <MudItem xs="12">
-                    <MudGrid>
-                        <MudItem xs="12" Style="margin-left:50px">
-                            <MudText Typo="Typo.subtitle1">
-                                CHEVROLET SPARK 2013
-                            </MudText>
-                            <MudText Typo="Typo.subtitle1">
-                                Số tự động, Nội thất sạch sẽ, camera trước sau, căn lề, màn hình DVD , cảnh báo tốc độ và chỉ dẫn hành trình đi lại…
-                            </MudText>
-                        </MudItem>
-                    
-            </MudGrid>
-                </MudItem>
-
-                <MudItem xs="12">
-                    <MudDivider Style="height: 1px; background-color: #333;" />
-                </MudItem>
-
-                <!-- Các Tiện Nghi -->
-                <MudItem xs="12">
-                    <MudText Typo="Typo.h5"><b>Các Tiện Nghi Khác</b></MudText>
-                </MudItem>
-
-                <MudItem xs="12" Style="margin-left:50px">
-                    <MudGrid>
-                        <MudItem xs="3" Class="d-flex align-center">
-                            <!-- Icon -->
-                            <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/map-v2.png" alt="" style="width:32px; height:32px;">
-                            <MudText Typo="Typo.body1" Class="ml-1">Bản Đồ</MudText>
-                        </MudItem>
-
-                        <MudItem xs="3" Class="d-flex align-center">
-                            <!-- Icon -->
-                            <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/bluetooth-v2.png" alt="" style="width:32px; height:32px;">
-                            <MudText Typo="Typo.body1" Class="ml-1">Bluetooth</MudText>
-                        </MudItem>
-
-                        <MudItem xs="3" Class="d-flex align-center">
-                            <!-- Icon -->
-                            <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/360_camera-v2.png" alt="" style="width:32px; height:32px;">
-                            <MudText Typo="Typo.body1" Class="ml-1">Camera 360</MudText>
-                        </MudItem>
-
-                        <MudItem xs="3" Class="d-flex align-center">
-                            <!-- Icon -->
-                            <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/parking_camera-v2.png" alt="" style="width:32px; height:32px;">
-                            <MudText Typo="Typo.body1" Class="ml-1">Camera Cập Lề</MudText>
-                        </MudItem>
-                    </MudGrid>
-                </MudItem>
-
-                <MudItem xs="12" Style="margin-left:50px">
-                    <MudGrid>
-                        <MudItem xs="3" Class="d-flex align-center">
-                            <!-- Icon -->
-                            <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/map-v2.png" alt="" style="width:32px; height:32px;">
-                            <MudText Typo="Typo.body1" Class="ml-1">Bản Đồ</MudText>
-                        </MudItem>
-
-                        <MudItem xs="3" Class="d-flex align-center">
-                            <!-- Icon -->
-                            <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/bluetooth-v2.png" alt="" style="width:32px; height:32px;">
-                            <MudText Typo="Typo.body1" Class="ml-1">Bluetooth</MudText>
-                        </MudItem>
-
-                        <MudItem xs="3" Class="d-flex align-center">
-                            <!-- Icon -->
-                            <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/360_camera-v2.png" alt="" style="width:32px; height:32px;">
-                            <MudText Typo="Typo.body1" Class="ml-1">Camera 360</MudText>
-                        </MudItem>
-
-                        <MudItem xs="3" Class="d-flex align-center">
-                            <!-- Icon -->
-                            <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/parking_camera-v2.png" alt="" style="width:32px; height:32px;">
-                            <MudText Typo="Typo.body1" Class="ml-1">Camera Cập Lề</MudText>
-                        </MudItem>
-                    </MudGrid>
-                </MudItem>
-
-                <MudItem xs="12" Style="margin-left:50px">
-                    <MudGrid>
-                        <MudItem xs="3" Class="d-flex align-center">
-                            <!-- Icon -->
-                            <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/map-v2.png" alt="" style="width:32px; height:32px;">
-                            <MudText Typo="Typo.body1" Class="ml-1">Bản Đồ</MudText>
-                        </MudItem>
-
-                        <MudItem xs="3" Class="d-flex align-center">
-                            <!-- Icon -->
-                            <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/bluetooth-v2.png" alt="" style="width:32px; height:32px;">
-                            <MudText Typo="Typo.body1" Class="ml-1">Bluetooth</MudText>
-                        </MudItem>
-
-                        <MudItem xs="3" Class="d-flex align-center">
-                            <!-- Icon -->
-                            <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/360_camera-v2.png" alt="" style="width:32px; height:32px;">
-                            <MudText Typo="Typo.body1" Class="ml-1">Camera 360</MudText>
-                        </MudItem>
-
-                        <MudItem xs="3" Class="d-flex align-center">
-                            <!-- Icon -->
-                            <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/parking_camera-v2.png" alt="" style="width:32px; height:32px;">
-                            <MudText Typo="Typo.body1" Class="ml-1">Camera Cập Lề</MudText>
-                        </MudItem>
-                    </MudGrid>
-                </MudItem>
-
-                <MudItem xs="12">
-                    <MudDivider Style="height: 2px; background-color: #333;" />
-                </MudItem>
-
-                <!-- Giấy Tờ Thuê Xe -->
-                <MudItem xs="12">
-                    <MudText Typo="Typo.h6"><b>Giấy Tờ Thuê Xe</b></MudText>
-                </MudItem>
-                <MudPaper Elevation="1" Class="p-4 rounded-lg" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #fef7f4; border-left: 8px solid #f26a2b; margin-left:50px;">
-                    <MudItem xs="12" Class="d-flex align-center mb-3">
-                        <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/papers/gplx_cccd.png" alt="" style="width:32px; height:32px;">
-                        <MudText Typo="Typo.h6" Class="ml-2">GPLX (đối chiếu) & CCCD (đối chiếu VNEID)</MudText>
-                    </MudItem>
-                    <MudItem xs="12" Class="d-flex align-center">
-                        <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/papers/gplx_passport.png" alt="" style="width:32px; height:32px;">
-                        <MudText Typo="Typo.h6" Class="ml-2">GPLX (đối chiếu) & Passport (giữ lại)</MudText>
-                    </MudItem>
-                </MudPaper>
-
-                <MudItem xs="12">
-                    <MudDivider Style="height: 2px; background-color: #333;" />
-                </MudItem>
-
-                <!-- Chủ Xe -->
-                <MudItem xs="12">
-                    <MudText Typo="Typo.h6"><b>Chủ Xe</b></MudText>
-                </MudItem>
-
-                <MudItem xs="12" Style="margin-left:50px">
-                    <MudGrid>
-                        <MudItem xs="12">
-                            <MudGrid>
-                                <MudItem xs="5">
-                                    <MudGrid>
-                                        <MudItem xs="3" Class="d-flex align-center justify-end">
-                                            <MudImage Src="https://bagps.vn/public/media//giai-phap/kpi-lai-xe.png" Style="width:80px; height:80px; border-radius: 50%;" />
-                                        </MudItem>
-                                        <MudItem xs="9">
-                                            <MudGrid>
-                                                <MudItem xs="12">
-                                                    <MudText Class="mb-1" Typo="Typo.h5"><b>Lê Tấn Bảo</b></MudText>
-                                                    <MudGrid>
-                                                        <MudItem xs="3" Class="d-flex align-center">
-                                                            <!-- Icon ngôi sao vàng -->
-                                                            <MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Warning" />
-                                                            <MudText Typo="Typo.body1" Class="ml-1">4.5</MudText>
-                                                        </MudItem>
-
-                                                        <MudItem xs="9" Class="d-flex align-center">
-                                                            <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Success" />
-                                                            <MudText Typo="Typo.body1" Class="ml-1">20</MudText>
-                                                        </MudItem>
-                                                    </MudGrid>
-                                                </MudItem>
-                                            </MudGrid>
-                                        </MudItem>
-                                    </MudGrid>
-                                </MudItem>
-                                <MudItem xs="7">
-                                    <MudGrid>
-                                        <MudItem xs="4">
-                                            <MudGrid>
-                                                <MudItem xs="12">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color:#767676">Tỉ lệ phản hồi</MudText>
-                                                    <MudText Align="Align.Center" Typo="Typo.h6"><b>100%</b></MudText>
-                                                </MudItem>
-                                            </MudGrid>
-                                        </MudItem>
-                                        <MudItem xs="5">
-                                            <MudGrid>
-                                                <MudItem xs="12">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color:#767676">Thời gian phản hồi</MudText>
-                                                    <MudText Align="Align.Center" Typo="Typo.h6"><b>5 Phút</b></MudText>
-                                                </MudItem>
-                                            </MudGrid>
-                                        </MudItem>
-                                        <MudItem xs="3">
-                                            <MudGrid>
-                                                <MudItem xs="12">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color:#767676">Tỉ lệ đồng ý</MudText>
-                                                    <MudText Align="Align.Center" Typo="Typo.h6"><b>100%</b></MudText>
-                                                </MudItem>
-                                            </MudGrid>
-                                        </MudItem>
-                                    </MudGrid>
-                                </MudItem>
-                                
-                            </MudGrid>
-                        </MudItem>
-
-                        <MudItem xs="12">
-                        </MudItem>
-                    </MudGrid>
-                </MudItem>
-                
-            
-                </MudGrid>
-            </MudItem>
-            <MudItem xs="4">
-                <div class="pb-5">
-                    <img src="https://n1-pstg.mioto.vn/cho_thue_xe_o_to_tu_lai_thue_xe_du_lich_hochiminh/chevrolet_spark_2013/p/g/2023/02/24/15/xdZn34zsXNxA50ZObMOtew.jpg" class="rounded-3 pb-3" Alt="Hình chiếc xe 2" Style="width:410px; height:200px;" />
-                    <img src="https://n1-pstg.mioto.vn/cho_thue_xe_o_to_tu_lai_thue_xe_du_lich_hochiminh/chevrolet_spark_2013/p/g/2023/02/24/15/5mDN4tnJMhyoUG3Z0NC7eg.jpg" class="rounded-3 pb-3" Alt="Hình chiếc xe 3" Style="width:410px; height:200px;" />
-                    <img src="https://n1-pstg.mioto.vn/cho_thue_xe_o_to_tu_lai_thue_xe_du_lich_hochiminh/chevrolet_spark_2013/p/g/2023/02/24/15/D_vkvDqT0Ev4XH2NzEwGLg.jpg" class="rounded-3" Alt="Hình chiếc xe 4" Style="width:410px; height:200px;" />
-                </div>
-            <MudPaper Class="p-4 rounded-lg" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #E3F2FD; box-shadow: none; border: 1px solid #f4f4f4;">
-                <MudGrid>
-                    <MudItem xs="2">
-                        <MudText Typo="Typo.h6" Style="text-decoration: line-through; color:#c6c6c6;">505K</MudText>
-                    </MudItem>
-                    <MudItem xs="10">
-                        <MudPaper Style="background: #f26a2b; border-radius: 100px; padding: 0 4px; width: fit-content; margin-top: 5px;">
-                            <MudText Typo="Typo.h6" Style="color: #fff!important; font-size: 12px; ">-23%</MudText>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.h4" Style=""><b>404K</b><span style="color: #767676; font-size: 20px;">/ngày</span></MudText>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudTextField T="DateTime?" Format="s" Label="DateTimeLocal" InputType="InputType.DateTimeLocal" />
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudTextField T="DateTime?" Format="s" Label="DateTimeLocal" InputType="InputType.DateTimeLocal" />
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudPaper Class="pt-3 pb-3 pl-4 pe-4 rounded-lg" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #fff; border: 1px solid #e0e0e0; box-shadow: none;">
-                            <MudText Typo="Typo.subtitle2">Địa điểm giao xe</MudText>
-                            <MudText Style="font-size: 16px" Typo="Typo.h6"><b>Nguyễn Văn Linh, TP.Cần Thơ</b></MudText>
-                        </MudPaper>
-                    </MudItem>
                     <MudItem xs="12">
                         <MudDivider Style="height: 1px; background-color: #333;" />
                     </MudItem>
 
-                    <MudItem xs="6">
-                        <MudText Style="font-size: 16px" Typo="Typo.subtitle1">Đơn giá thuê</MudText>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>500 500đ/ ngày</b></MudText>
+                    <!-- Đặc Điểm -->
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h5"><b>Đặc Điểm</b></MudText>
                     </MudItem>
 
-                    <MudItem xs="6">
-                        <MudText Style="font-size: 16px" Typo="Typo.subtitle1">Bảo hiểm thuê xe</MudText>
+                    <MudGrid>
+                        <MudItem xs="4">
+                            <MudGrid>
+                                <MudItem xs="5" Class="d-flex align-center justify-end">
+                                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M25.9163 7.99992C25.9163 9.05846 25.0582 9.91659 23.9997 9.91659C22.9411 9.91659 22.083 9.05846 22.083 7.99992C22.083 6.94137 22.9411 6.08325 23.9997 6.08325C25.0582 6.08325 25.9163 6.94137 25.9163 7.99992Z" stroke="#5FCF86" stroke-width="1.5"></path><circle cx="23.9997" cy="23.9999" r="1.91667" stroke="#5FCF86" stroke-width="1.5"></circle><path d="M17.9163 7.99992C17.9163 9.05846 17.0582 9.91659 15.9997 9.91659C14.9411 9.91659 14.083 9.05846 14.083 7.99992C14.083 6.94137 14.9411 6.08325 15.9997 6.08325C17.0582 6.08325 17.9163 6.94137 17.9163 7.99992Z" stroke="#5FCF86" stroke-width="1.5"></path><path d="M17.9163 23.9999C17.9163 25.0585 17.0582 25.9166 15.9997 25.9166C14.9411 25.9166 14.083 25.0585 14.083 23.9999C14.083 22.9414 14.9411 22.0833 15.9997 22.0833C17.0582 22.0833 17.9163 22.9414 17.9163 23.9999Z" stroke="#5FCF86" stroke-width="1.5"></path><circle cx="7.99967" cy="7.99992" r="1.91667" stroke="#5FCF86" stroke-width="1.5"></circle><path d="M10.1025 26.6666V21.3333H7.99837C7.59559 21.3333 7.25184 21.4053 6.96712 21.5494C6.68066 21.6918 6.46278 21.894 6.31348 22.1562C6.16244 22.4166 6.08691 22.723 6.08691 23.0754C6.08691 23.4296 6.1633 23.7343 6.31608 23.9895C6.46886 24.243 6.69021 24.4374 6.98014 24.5728C7.26834 24.7083 7.6173 24.776 8.02702 24.776H9.43587V23.8697H8.20931C7.99403 23.8697 7.81521 23.8402 7.67285 23.7812C7.53049 23.7221 7.42459 23.6336 7.35514 23.5155C7.28396 23.3975 7.24837 23.2508 7.24837 23.0754C7.24837 22.8984 7.28396 22.7491 7.35514 22.6275C7.42459 22.506 7.53136 22.414 7.67546 22.3515C7.81782 22.2872 7.9975 22.2551 8.21452 22.2551H8.97493V26.6666H10.1025ZM7.22233 24.2395L5.89681 26.6666H7.1416L8.43848 24.2395H7.22233Z" fill="#5FCF86"></path><path d="M24 10.6665V15.9998M24 21.3332V15.9998M16 10.6665V21.3332M8 10.6665V15.4998C8 15.776 8.22386 15.9998 8.5 15.9998H24" stroke="#5FCF86" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                </MudItem>
+                                <MudItem xs="7">
+                                    <MudGrid>
+                                        <MudItem xs="12">
+                                            <MudText Class="mb-1" Typo="Typo.subtitle1">Loại hộp số</MudText>
+                                            @if (@cars.isAuto == 0)
+                                            {
+                                                <MudText Typo="Typo.h6"><b>Số Tự Động</b></MudText>
+                                            }
+                                            else
+                                            {
+                                                <MudText Typo="Typo.h6"><b>Số Sàn</b></MudText>
+
+                                            }
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+
+                        <MudItem xs="4">
+
+                            <MudGrid>
+                                <MudItem xs="5" Class="d-flex align-center justify-end">
+                                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.914 23.3289C10.9148 23.3284 10.9156 23.3279 10.9163 23.3274C10.9155 23.3279 10.9148 23.3284 10.914 23.3289ZM10.914 23.3289C10.914 23.3289 10.914 23.3289 10.914 23.3289L11.3128 23.9114M10.914 23.3289L11.3128 23.9114M11.3128 23.9114L10.9807 23.2882L20.6697 23.9458C20.6682 23.9484 20.6656 23.9496 20.6631 23.9479C20.655 23.9424 20.6343 23.9284 20.6014 23.9074C20.6014 23.9073 20.6014 23.9073 20.6013 23.9073C20.5141 23.8516 20.3413 23.7468 20.0921 23.6208C20.0919 23.6207 20.0918 23.6206 20.0917 23.6206C19.3397 23.2404 17.8926 22.6674 16.0003 22.6674C14.1715 22.6674 12.7584 23.2026 11.9869 23.5817L11.9929 23.5929M11.3128 23.9114L11.331 23.9456C11.3324 23.9483 11.3352 23.9495 11.3377 23.9478C11.3444 23.9432 11.3592 23.9332 11.3821 23.9184L11.9929 23.5929L11.9929 23.5929M11.9929 23.5929C11.9909 23.5892 11.9889 23.5855 11.9868 23.5818C11.6767 23.7342 11.4702 23.8614 11.3821 23.9184L11.9929 23.5929ZM10.6691 24.2983L10.6691 24.2983C10.7406 24.4324 10.8728 24.5792 11.0793 24.6538C11.3072 24.7361 11.5609 24.7039 11.7614 24.5667L11.7614 24.5667C11.7978 24.5418 13.4597 23.4174 16.0003 23.4174C18.5426 23.4174 20.205 24.5432 20.2393 24.5667L20.2393 24.5667C20.4389 24.7034 20.6938 24.7372 20.9245 24.6528C21.1293 24.5779 21.2557 24.4338 21.3233 24.3136L22.4886 22.2427L24.3242 23.0447L21.6934 28.584H9.99882L7.65051 23.0635L9.57427 22.2435L10.6691 24.2983ZM24.4348 22.8117L24.4345 22.8124L24.4348 22.8117Z" stroke="#5FCF86" stroke-width="1.5"></path><path d="M12.75 4.66675C12.75 3.97639 13.3096 3.41675 14 3.41675H18C18.6904 3.41675 19.25 3.97639 19.25 4.66675V7.00008C19.25 7.13815 19.1381 7.25008 19 7.25008H13C12.8619 7.25008 12.75 7.13815 12.75 7.00008V4.66675Z" stroke="#5FCF86" stroke-width="1.5"></path><path d="M9.33398 22.6668L9.90564 11.2336C9.95887 10.1692 10.8374 9.3335 11.9031 9.3335H20.0982C21.1639 9.3335 22.0424 10.1692 22.0957 11.2336L22.6673 22.6668" stroke="#5FCF86" stroke-width="1.5"></path><path d="M14.667 7.35815V9.8901" stroke="#5FCF86" stroke-width="1.5"></path><path d="M17.334 7.35815V9.8901" stroke="#5FCF86" stroke-width="1.5"></path></svg>
+                                </MudItem>
+                                <MudItem xs="7">
+                                    <MudGrid>
+                                        <MudItem xs="12">
+                                            <MudText Class="mb-1" Typo="Typo.subtitle1">Số Ghế</MudText>
+                                            <MudText Typo="Typo.h6"><b>5 chỗ</b></MudText>
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudItem>
+                            </MudGrid>
+
+                        </MudItem>
+
+                        <MudItem xs="4">
+
+                            <MudGrid>
+                                <MudItem xs="5" Class="d-flex align-center justify-end">
+                                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24.3337 27.2499H7.66699C7.52892 27.2499 7.41699 27.138 7.41699 26.9999V12.4599C7.41699 12.3869 7.44888 12.3175 7.5043 12.27L14.652 6.14344L14.1639 5.574L14.652 6.14344C14.6973 6.1046 14.755 6.08325 14.8147 6.08325H24.3337C24.4717 6.08325 24.5837 6.19518 24.5837 6.33325V26.9999C24.5837 27.138 24.4717 27.2499 24.3337 27.2499Z" stroke="#5FCF86" stroke-width="1.5" stroke-linecap="round"></path><path d="M12.0001 5.33325L7.42285 9.46712" stroke="#5FCF86" stroke-width="1.5" stroke-linecap="round"></path><path d="M17.888 19.5212L16.7708 15.93C16.5378 15.1812 15.4785 15.1798 15.2436 15.928L14.1172 19.5164C13.7178 20.7889 14.6682 22.0833 16.0019 22.0833C17.3335 22.0833 18.2836 20.7927 17.888 19.5212Z" stroke="#5FCF86" stroke-width="1.5" stroke-linecap="round"></path><path d="M23.2503 3.66675V5.66675C23.2503 5.80482 23.1384 5.91675 23.0003 5.91675H14.667C14.5827 5.91675 14.5365 5.8916 14.5072 5.86702C14.4721 5.83755 14.44 5.78953 14.4245 5.72738C14.4089 5.66524 14.4147 5.60775 14.4318 5.56523C14.4461 5.52975 14.4749 5.48584 14.5493 5.44616L18.2993 3.44616C18.3356 3.42685 18.376 3.41675 18.417 3.41675H23.0003C23.1384 3.41675 23.2503 3.52868 23.2503 3.66675Z" stroke="#5FCF86" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                </MudItem>
+                                <MudItem xs="7">
+                                    <MudGrid>
+                                        <MudItem xs="12">
+                                            <MudText Class="mb-1" Typo="Typo.subtitle1">Nhiên Liệu</MudText>
+                                            <MudText Typo="Typo.h6"><b>Xăng</b></MudText>
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudItem>
+                            </MudGrid>
+
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudItem xs="12">
+                        <MudDivider Style="height: 2px; background-color: #333;" />
                     </MudItem>
-                    <MudItem xs="6">
-                        <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>50 500đ/ ngày</b></MudText>
+
+                    <!-- Mô Tả -->
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h5"><b>Mô Tả</b></MudText>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudGrid>
+                            <MudItem xs="12" Style="margin-left:50px">
+                                <MudText Typo="Typo.subtitle1">
+                                    CHEVROLET SPARK 2013
+                                </MudText>
+                                <MudText Typo="Typo.subtitle1">
+                                    Số tự động, Nội thất sạch sẽ, camera trước sau, căn lề, màn hình DVD , cảnh báo tốc độ và chỉ dẫn hành trình đi lại…
+                                </MudText>
+                            </MudItem>
+
+                        </MudGrid>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudDivider Style="height: 1px; background-color: #333;" />
+                    </MudItem>
+
+                    <!-- Các Tiện Nghi -->
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h5"><b>Các Tiện Nghi Khác</b></MudText>
+                    </MudItem>
+
+                    <MudItem xs="12" Style="margin-left:50px">
+                        <MudGrid>
+                            <MudItem xs="3" Class="d-flex align-center">
+                                <!-- Icon -->
+                                <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/map-v2.png" alt="" style="width:32px; height:32px;">
+                                <MudText Typo="Typo.body1" Class="ml-1">Bản Đồ</MudText>
+                            </MudItem>
+
+                            <MudItem xs="3" Class="d-flex align-center">
+                                <!-- Icon -->
+                                <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/bluetooth-v2.png" alt="" style="width:32px; height:32px;">
+                                <MudText Typo="Typo.body1" Class="ml-1">Bluetooth</MudText>
+                            </MudItem>
+
+                            <MudItem xs="3" Class="d-flex align-center">
+                                <!-- Icon -->
+                                <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/360_camera-v2.png" alt="" style="width:32px; height:32px;">
+                                <MudText Typo="Typo.body1" Class="ml-1">Camera 360</MudText>
+                            </MudItem>
+
+                            <MudItem xs="3" Class="d-flex align-center">
+                                <!-- Icon -->
+                                <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/parking_camera-v2.png" alt="" style="width:32px; height:32px;">
+                                <MudText Typo="Typo.body1" Class="ml-1">Camera Cập Lề</MudText>
+                            </MudItem>
+                        </MudGrid>
+                    </MudItem>
+
+                    <MudItem xs="12" Style="margin-left:50px">
+                        <MudGrid>
+                            <MudItem xs="3" Class="d-flex align-center">
+                                <!-- Icon -->
+                                <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/map-v2.png" alt="" style="width:32px; height:32px;">
+                                <MudText Typo="Typo.body1" Class="ml-1">Bản Đồ</MudText>
+                            </MudItem>
+
+                            <MudItem xs="3" Class="d-flex align-center">
+                                <!-- Icon -->
+                                <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/bluetooth-v2.png" alt="" style="width:32px; height:32px;">
+                                <MudText Typo="Typo.body1" Class="ml-1">Bluetooth</MudText>
+                            </MudItem>
+
+                            <MudItem xs="3" Class="d-flex align-center">
+                                <!-- Icon -->
+                                <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/360_camera-v2.png" alt="" style="width:32px; height:32px;">
+                                <MudText Typo="Typo.body1" Class="ml-1">Camera 360</MudText>
+                            </MudItem>
+
+                            <MudItem xs="3" Class="d-flex align-center">
+                                <!-- Icon -->
+                                <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/parking_camera-v2.png" alt="" style="width:32px; height:32px;">
+                                <MudText Typo="Typo.body1" Class="ml-1">Camera Cập Lề</MudText>
+                            </MudItem>
+                        </MudGrid>
+                    </MudItem>
+
+                    <MudItem xs="12" Style="margin-left:50px">
+                        <MudGrid>
+                            <MudItem xs="3" Class="d-flex align-center">
+                                <!-- Icon -->
+                                <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/map-v2.png" alt="" style="width:32px; height:32px;">
+                                <MudText Typo="Typo.body1" Class="ml-1">Bản Đồ</MudText>
+                            </MudItem>
+
+                            <MudItem xs="3" Class="d-flex align-center">
+                                <!-- Icon -->
+                                <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/bluetooth-v2.png" alt="" style="width:32px; height:32px;">
+                                <MudText Typo="Typo.body1" Class="ml-1">Bluetooth</MudText>
+                            </MudItem>
+
+                            <MudItem xs="3" Class="d-flex align-center">
+                                <!-- Icon -->
+                                <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/360_camera-v2.png" alt="" style="width:32px; height:32px;">
+                                <MudText Typo="Typo.body1" Class="ml-1">Camera 360</MudText>
+                            </MudItem>
+
+                            <MudItem xs="3" Class="d-flex align-center">
+                                <!-- Icon -->
+                                <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/features/parking_camera-v2.png" alt="" style="width:32px; height:32px;">
+                                <MudText Typo="Typo.body1" Class="ml-1">Camera Cập Lề</MudText>
+                            </MudItem>
+                        </MudGrid>
                     </MudItem>
 
                     <MudItem xs="12">
                         <MudDivider Style="height: 2px; background-color: #333;" />
                     </MudItem>
 
-                    <MudItem xs="6">
-                        <MudText Style="font-size: 16px" Typo="Typo.subtitle1">Tổng cộng</MudText>
+                    <!-- Giấy Tờ Thuê Xe -->
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h6"><b>Giấy Tờ Thuê Xe</b></MudText>
                     </MudItem>
-                    <MudItem xs="6">
-                        <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>551 000đ/ ngày</b></MudText>
-                    </MudItem>
-
-                    <MudItem xs="6">
-                        <MudText Style="font-size: 16px" Typo="Typo.subtitle1"><b>Thành Tiền</b></MudText>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>551 000đ/ ngày</b></MudText>
-                    </MudItem>
+                    <MudPaper Elevation="1" Class="p-4 rounded-lg" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #fef7f4; border-left: 8px solid #f26a2b; margin-left:50px;">
+                        <MudItem xs="12" Class="d-flex align-center mb-3">
+                            <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/papers/gplx_cccd.png" alt="" style="width:32px; height:32px;">
+                            <MudText Typo="Typo.h6" Class="ml-2">GPLX (đối chiếu) & CCCD (đối chiếu VNEID)</MudText>
+                        </MudItem>
+                        <MudItem xs="12" Class="d-flex align-center">
+                            <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/papers/gplx_passport.png" alt="" style="width:32px; height:32px;">
+                            <MudText Typo="Typo.h6" Class="ml-2">GPLX (đối chiếu) & Passport (giữ lại)</MudText>
+                        </MudItem>
+                    </MudPaper>
 
                     <MudItem xs="12">
-                        <MudDivider Style="height: 1px; background-color: #333;" />
+                        <MudDivider Style="height: 2px; background-color: #333;" />
                     </MudItem>
 
-                    <MudItem xs="12">
-                        <MudButton Class="pt-4 pb-4 rounded-1" MaxWidth="MaxWidth.Medium" Style="width: 100%;" Variant="Variant.Filled" Color="Color.Primary">Chọn Thuê</MudButton>
-                    </MudItem>
+
+
                 </MudGrid>
-
-            </MudPaper>
             </MudItem>
-    </MudGrid>
+            <MudItem xs="4">
+                <div class="pb-5">
+                    @if (latestImages != null && latestImages.Any())
+                    {
+                        @foreach (var image in latestImages)
+                        {
+                            <img src="@image.name" class="rounded-3 pb-3 w-100" Alt="Hình chiếc xe 2" />
+                        }
+                    }
+                    else
+                    {
+                        <p>No images available.</p>
+                    }
+ @*                <img src="https://n1-pstg.mioto.vn/cho_thue_xe_o_to_tu_lai_thue_xe_du_lich_hochiminh/chevrolet_spark_2013/p/g/2023/02/24/15/xdZn34zsXNxA50ZObMOtew.jpg" class="rounded-3 pb-3" Alt="Hình chiếc xe 2" Style="width:410px; height:200px;" />
+                <img src="https://n1-pstg.mioto.vn/cho_thue_xe_o_to_tu_lai_thue_xe_du_lich_hochiminh/chevrolet_spark_2013/p/g/2023/02/24/15/5mDN4tnJMhyoUG3Z0NC7eg.jpg" class="rounded-3 pb-3" Alt="Hình chiếc xe 3" Style="width:410px; height:200px;" />
+                <img src="https://n1-pstg.mioto.vn/cho_thue_xe_o_to_tu_lai_thue_xe_du_lich_hochiminh/chevrolet_spark_2013/p/g/2023/02/24/15/D_vkvDqT0Ev4XH2NzEwGLg.jpg" class="rounded-3" Alt="Hình chiếc xe 4" Style="width:410px; height:200px;" /> *@
+                </div>
+                <MudPaper Class="p-4 rounded-lg" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #E3F2FD; box-shadow: none; border: 1px solid #f4f4f4;">
+                    <MudGrid>
+                        <MudItem xs="2">
+                            <MudText Typo="Typo.h6" Style="text-decoration: line-through; color:#c6c6c6;">505K</MudText>
+                        </MudItem>
+                        <MudItem xs="10">
+                            <MudPaper Style="background: #f26a2b; border-radius: 100px; padding: 0 4px; width: fit-content; margin-top: 5px;">
+                                <MudText Typo="Typo.h6" Style="color: #fff!important; font-size: 12px; ">-23%</MudText>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h4" Style=""><b>@cars.price.ToString("#,##0")</b><span style="color: #767676; font-size: 20px;">/ngày</span>
+                            </MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudTextField T="DateTime?" Format="s" Label="DateTimeLocal" InputType="InputType.DateTimeLocal" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudTextField T="DateTime?" Format="s" Label="DateTimeLocal" InputType="InputType.DateTimeLocal" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudPaper Class="pt-3 pb-3 pl-4 pe-4 rounded-lg" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #fff; border: 1px solid #e0e0e0; box-shadow: none;">
+                                <MudText Typo="Typo.subtitle2">Địa điểm giao xe</MudText>
+                                <MudText Style="font-size: 16px" Typo="Typo.h6"><b>Nguyễn Văn Linh, TP.Cần Thơ</b></MudText>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudDivider Style="height: 1px; background-color: #333;" />
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Typo="Typo.subtitle1">Đơn giá thuê</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>500 500đ/ ngày</b></MudText>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Typo="Typo.subtitle1">Bảo hiểm thuê xe</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>50 500đ/ ngày</b></MudText>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudDivider Style="height: 2px; background-color: #333;" />
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Typo="Typo.subtitle1">Tổng cộng</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>551 000đ/ ngày</b></MudText>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Typo="Typo.subtitle1"><b>Thành Tiền</b></MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>551 000đ/ ngày</b></MudText>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudDivider Style="height: 1px; background-color: #333;" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudButton Class="pt-4 pb-4 rounded-1" MaxWidth="MaxWidth.Medium" Style="width: 100%;" Variant="Variant.Filled" Color="Color.Primary">Chọn Thuê</MudButton>
+                        </MudItem>
+                    </MudGrid>
+
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    }
+
 </MudContainer>
 
 
 
 
 @code {
+    [Parameter] public int id { get; set; }
+    private car cars;
+    private List<car_img> latestImages;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCars();
+
+    }
+
+    private async Task LoadCars()
+    {
+        try
+        {
+            cars = await httpClient.GetFromJsonAsync<car>($"http://localhost:49922/api/Cars/viewCar/{id}");
+            latestImages = cars?.car_img.OrderByDescending(img => img.id).Take(3).ToList();
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+
 
 }

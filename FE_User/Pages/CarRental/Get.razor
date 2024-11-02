@@ -46,7 +46,7 @@
                 @foreach (var item in PaginatedElements)
                 {
                     <MudItem xs="12" sm="6" md="4" Class="mb-4">
-                       @*  <MudNavLink Href="@($"/carDetail/{item.id}")" Class="mud-width-full" Style="text-decoration: none;"> *@
+                        <a Href="@($"/getidcar/{item.id}")" Class="mud-width-full" Style="text-decoration: none;">
                             <MudPaper Class="p-4" Style="padding: 1.5rem;">
                                 <img src="@item.img_name" alt="Hình xe"
                                      style="width: 100%; height: 200px; border-radius: 15%; object-fit: cover;"
@@ -54,7 +54,7 @@
                                 <MudButton Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Class="mb-1">
                                     @(item.isAuto == 0 ? "Tự động" : "Số Sàn")
                                 </MudButton>
-                                <MudText Typo="Typo.h6" Class="mb-1">@item.brand_name</MudText>
+                                <MudText Typo="Typo.h6" Class="mb-1">@item.car_name</MudText>
                                 <MudItem Class="d-flex align-center">
                                     <MudIcon Icon="@Icons.Material.Filled.LocationOn" />
                                     <MudText Typo="Typo.body2" Color="Color.Secondary" Class="ml-1">@item.type_name</MudText>
@@ -62,21 +62,18 @@
                                 <MudGrid Class="mt-3">
                                     <MudItem xs="3" Class="d-flex align-center">
                                         <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Success" />
-                                        <MudText Typo="Typo.caption" Class="ml-1">20</MudText>
+                                        <MudText Typo="Typo.subtitle1" Class="ml-1">20</MudText>
                                     </MudItem>
 
-                                    <MudItem xs="3" Class="d-flex align-center">
-                                        <a href="@($"/getcarrentalconfirmation/{item.id}")" class="mud-typography-body2 mud-button mud-button-text mud-button-color-success">
-                                            Xem
-                                        </a>
-                                    </MudItem>
+                                    <MudItem xs="8">
+                                        <MudText Typo="Typo.subtitle1" Color="Color.Error">
+                                            @item.price.ToString("#,##0") /Ngày
+                                        </MudText>
 
-                                    <MudItem xs="6">
-                                        <MudText Typo="Typo.caption" Color="Color.Error">1.000.000/Ngày</MudText>
                                     </MudItem>
                                 </MudGrid>
                             </MudPaper>
-                      @*   </MudNavLink> *@
+                         </a>
                     </MudItem>
 
                 }

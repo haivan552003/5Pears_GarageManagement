@@ -4,7 +4,7 @@ namespace FE_User.Models
 {
     public class car_img
     {
-        public int id_car_img { get; set; }
+        public int id { get; set; }
 
         public string name { get; set; }
         public byte is_delete { get; set; }
