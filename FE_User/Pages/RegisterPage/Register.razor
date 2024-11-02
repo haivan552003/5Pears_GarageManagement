@@ -2,8 +2,9 @@
 @using System.ComponentModel.DataAnnotations
 @inject HttpClient httpClient
 @inject ISnackbar Snackbar
+@layout EmptyLayout
 
-<MudContainer Class="mt-16 pa-0" MaxWidth="MaxWidth.False" Style="margin-top: 100px;">
+<MudContainer Class="mt-5 pa-0" MaxWidth="MaxWidth.False" Style="margin-top: 100px;">
     <MudGrid Class="pa-0 justify-center">
         <MudItem xs="6" Class="mx-auto">
             <EditForm Model="@model" OnValidSubmit="OnValidSubmit">

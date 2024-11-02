@@ -74,8 +74,8 @@
                 var token = await response.Content.ReadAsStringAsync();
 
                 await js.InvokeVoidAsync("localStorage.setItem", "authToken", token);
-
-                NavigationManager.NavigateTo("/index", true);
+                StateHasChanged();
+                NavigationManager.NavigateTo("/", true);
             }
             else
             {

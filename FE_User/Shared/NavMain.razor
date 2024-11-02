@@ -85,7 +85,7 @@
                 <ChildContent>
                     <MudMenuItem Href="/profile">
                         <MudIcon Icon="@Icons.Material.Outlined.SupervisedUserCircle" Color="Color.Default" />
-                        Xin chào, @username
+                        @username
                     </MudMenuItem>
                     <hr class="m-0" />
                     <MudMenuItem @onclick="Logout">Đăng xuất</MudMenuItem>
@@ -140,7 +140,7 @@
             var jwtToken = handler.ReadJwtToken(token);
 
             // Lấy giá trị của 'username' từ payload của token
-            var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "username");
+            var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "fullname");
 
             if (usernameClaim != null)
             {
