@@ -90,7 +90,7 @@
 
 @code {
     private int _selected = 1;
-    private const int PageSize = 3;
+    private const int PageSize = 12;
     private IEnumerable<car> Elements = new List<car>();
     private IEnumerable<car> FilteredElements => Elements.Where(FilterFunc);
     private IEnumerable<car> PaginatedElements => FilteredElements.Skip((_selected - 1) * PageSize).Take(PageSize);
