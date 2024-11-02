@@ -51,7 +51,7 @@ namespace BE_API.Controllers
                     new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                     new Claim("email", userData.email.ToString()),
                     new Claim("password", userData.password.ToString()),
-                    new Claim("emp_id", userData.id.ToString()),
+                    new Claim("id", userData.id.ToString()),
                     new Claim("fullname", userData.fullname.ToString()),
                     new Claim(ClaimTypes.Role, userData.role_id.ToString()),
                 };
