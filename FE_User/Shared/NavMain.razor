@@ -1,7 +1,7 @@
 ﻿@inject IJSRuntime js
 @inject NavigationManager NavigationManager
 
-<MudContainer Class="fixed z-60">
+<MudContainer Class="fixed z-60 pt-5">
     <MudAppBar Elevation="1" Class="pt-2 pb-2">
         <MudLink Typo="Typo.h4" Href="/" Underline="Underline.None">
             <MudText Typo="Typo.h4" Class="fw-bold text-white">BOXCARS</MudText>
@@ -43,7 +43,7 @@
 
         <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
             <ActivatorContent>
-                <MudChip Href="" Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
+                <MudChip Href="/getdriver" Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
                     <MudText Class="text-uppercase">
                         <MudIcon Icon="@Icons.Material.Outlined.People" Size="Size.Medium" Class="mb-1" />
                         thuê tài xế
