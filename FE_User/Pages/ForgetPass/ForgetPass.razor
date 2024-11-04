@@ -1,0 +1,151 @@
+﻿@page "/change-password"
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+@inject IJSRuntime js
+
+<MudContainer>
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">Đổi Mật Khẩu</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudForm @ref="_form" @bind-IsValid="_isValid">
+                <MudTextField @bind-Value="_model.OldPassword"
+                              Label="Mật khẩu hiện tại"
+                              InputType="InputType.Password"
+                              Required="true"
+                              RequiredError="Vui lòng nhập mật khẩu hiện tại" />
+
+                <MudTextField @bind-Value="_model.NewPassword"
+                              Label="Mật khẩu mới"
+                              InputType="InputType.Password"
+                              Required="true"
+                              RequiredError="Vui lòng nhập mật khẩu mới"
+                              Validation="@(new Func<string, string>(ValidateNewPassword))" />
+
+                <MudTextField @bind-Value="_model.ConfirmPassword"
+                              Label="Xác nhận mật khẩu"
+                              InputType="InputType.Password"
+                              Required="true"
+                              RequiredError="Vui lòng xác nhận mật khẩu"
+                              Validation="@(new Func<string, string>(ValidateConfirmPassword))" />
+            </MudForm>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       Disabled="!_isValid"
+                       OnClick="ChangePasswordAsync">
+                Đổi Mật Khẩu
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+<script>
+    // Lấy token từ localStorage
+    function getAuthToken() {
+        return localStorage.getItem("authToken");
+    }
+</script>
+@code {
+    private MudForm? _form;
+    private bool _isValid;
+    private Change_pass _model = new Change_pass();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Lấy JWT token từ localStorage
+        var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            // Giải mã token
+            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            // Lấy giá trị của 'username' từ payload của token
+            var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "id");
+
+            if (userId != null)
+            {
+                _model.Id = userId.Value;
+            }
+        }
+    }
+
+    private string ValidateNewPassword(string newPassword)
+    {
+        if (string.IsNullOrWhiteSpace(newPassword))
+            return "Mật khẩu không được để trống";
+
+        if (newPassword.Length < 8)
+            return "Mật khẩu phải có ít nhất 8 ký tự";
+
+        // Kiểm tra độ phức tạp của mật khẩu
+        bool hasUpperCase = newPassword.Any(char.IsUpper);
+        bool hasLowerCase = newPassword.Any(char.IsLower);
+        bool hasDigit = newPassword.Any(char.IsDigit);
+        bool hasSpecialChar = newPassword.Any(ch => !char.IsLetterOrDigit(ch));
+
+        if (!(hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar))
+            return "Mật khẩu phải chứa chữ hoa, chữ thường, số và ký tự đặc biệt";
+
+        return string.Empty;
+    }
+
+    private string ValidateConfirmPassword(string confirmPassword)
+    {
+        if (confirmPassword != _model.NewPassword)
+            return "Mật khẩu xác nhận không khớp";
+
+        return string.Empty;
+    }
+
+    private async Task ChangePasswordAsync()
+    {
+        // Check validation
+        if (!_isValid) return;
+
+        if (string.IsNullOrEmpty(_model.Id))
+        {
+            Snackbar.Add("Bạn chưa đăng nhập", Severity.Error);
+            return;
+        }
+
+        try
+        {
+            // Send the password change request
+            var response = await Http.PostAsJsonAsync("http://localhost:49922/api/Password/change", _model);
+
+            // Check response
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Đổi mật khẩu thành công", Severity.Success);
+                await js.InvokeVoidAsync("localStorage.removeItem", "authToken");
+                NavigationManager.NavigateTo("/login");
+            }
+            else
+            {
+                // If not successful, get the error message
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Đổi mật khẩu thất bại: {errorMessage}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Đã xảy ra lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+
+    // Phương thức reset form
+    private void ResetForm()
+    {
+        _model = new Change_pass();
+        _form?.Reset();
+    }
+}

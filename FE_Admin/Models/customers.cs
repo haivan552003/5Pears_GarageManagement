@@ -17,5 +17,6 @@
         public int id_role { get; set; }
         //public string name { get; set; }
         public bool status { get; set; }
+        public string img_cus { get; set; }
     }
 }
