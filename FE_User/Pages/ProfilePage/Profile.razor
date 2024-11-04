@@ -1,0 +1,260 @@
+﻿@page "/profile"
+@inject HttpClient httpClient
+@inject IJSRuntime js
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    @if (showSuccess)
+    {
+        <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
+            Cập nhật thành công
+        </MudAlert>
+    }
+    else if (showError)
+    {
+        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
+            Cập nhật thất bại
+        </MudAlert>
+    }
+
+    <!-- Form Cập nhật công việc -->
+    <MudGrid>
+        <MudItem xs="12">
+        </MudItem>
+        <MudItem xs="6" Class="mx-auto">
+            <MudPaper Elevation="0" Class="pa-3">
+                <MudItem xs="12">
+                    <MudPaper Elevation="4" Class="p-4">
+                        <MudText Typo="Typo.h6" Class="mb-5">Cập nhật công việc</MudText>
+                        <MudForm @ref="form" Style="height:auto">
+                            <MudTextField ShrinkLabel @bind-Value="newRoleTask.email" Label="Email" Placeholder="Email" Variant="Variant.Outlined" Required="true" />
+                            <MudTextField ShrinkLabel @bind-Value="newRoleTask.fullname" Label="Tên" Placeholder="Tên" Variant="Variant.Outlined" Required="true" />
+                            <MudDatePicker @bind-Date="birthdayDate" Label="Ngày sinh" Required="true" Variant="Variant.Outlined" />
+                            <MudSelect @bind-Value="newRoleTask.gender" Label="Giới tính" Required="true">
+                                <MudSelectItem Value="(byte)1">Nam</MudSelectItem>
+                                <MudSelectItem Value="(byte)0">Nữ</MudSelectItem>
+                            </MudSelect>
+                            <MudTextField ShrinkLabel @bind-Value="newRoleTask.phone_number" Label="SĐT" Placeholder="SĐT" Variant="Variant.Outlined" Required="true" />
+
+                        </MudForm>
+                    </MudPaper>
+                </MudItem>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Form Cập nhật địa chỉ khách hàng -->
+        <MudItem xs="6" Class="mx-auto">
+            <MudPaper Elevation="0" Class="pa-3">
+                <MudItem xs="12">
+                    <MudPaper Elevation="4" Class="p-4">
+                        <MudText Typo="Typo.h6" Class="mb-5">Cập nhật địa chỉ khách hàng</MudText>
+
+                        @foreach (var address in customerAddresses)
+                        {
+                            <MudForm @ref="formAddress" @bind-IsValid="isFormValid" Style="height:auto">
+                                <MudTextField ShrinkLabel @bind-Value="address.address" Label="Địa chỉ" Placeholder="Địa chỉ" Variant="Variant.Outlined" Required="true" />
+                                <MudTextField ShrinkLabel @bind-Value="address.id_cus" Label="ID Khách Hàng" Placeholder="ID Khách Hàng" Variant="Variant.Outlined" Disabled="true" />
+                                <MudTextField ShrinkLabel @bind-Value="address.type" Label="Loại" Placeholder="Loại" Variant="Variant.Outlined" Required="true" />
+                                <MudSelect @bind-Value="address.status" Label="Trạng thái" Required="true">
+                                    <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
+                                </MudSelect>
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="() => UpdateAddress(address)" Class="mt-3">Cập nhật</MudButton>
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Delete" Color="Color.Error" OnClick="() => OpenDeleteDialog(address)" Class="mt-3">Xóa</MudButton>
+                            </MudForm>
+                        }
+                    </MudPaper>
+                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Add" Color="Color.Secondary" OnClick="OpenAddAddressDialog" Class="mt-3">Thêm</MudButton>
+
+                </MudItem>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+    <MudItem xs="12" Class="mx-auto">
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateData" Class="mt-3">Cập nhật</MudButton>
+    </MudItem>
+</MudContainer>
+<MudDialog @bind-IsVisible="isDialogVisible" MaxWidth="MaxWidth.Medium">
+    <DialogContent>
+        <MudTextField ShrinkLabel @bind-Value="newAddress.address" Label="Địa chỉ" Placeholder="Địa chỉ" Variant="Variant.Outlined" Required="true" />
+        <MudTextField ShrinkLabel @bind-Value="newAddress.type" Label="Loại" Placeholder="Loại" Variant="Variant.Outlined" Required="true" />
+        <MudSelect @bind-Value="newAddress.status" Label="Trạng thái" Required="true">
+            <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
+            <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
+        </MudSelect>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddNewAddress">Lưu</MudButton>
+        <MudButton Variant="Variant.Text" OnClick="CloseDialog">Hủy</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [Parameter] public int customerId { get; set; } // Lấy ID từ URL
+    private bool isDialogVisible = false; // Hiển thị dialog
+    private customer_address newAddress = new customer_address();
+    private customer newRoleTask = new customer();
+    private List<customer_address> customerAddresses = new List<customer_address>();
+    private bool isFormValid = false;
+    private bool showSuccess = false;
+    private bool showError = false;
+    private DateTime? birthdayDate;
+    private MudForm form;
+    private MudForm formAddress;
+    private string url = "http://localhost:49922/api/Customer";
+    private string addressUrl = "http://localhost:49922/api/Cus_Address"; 
+
+    private void OpenAddAddressDialog()
+    {
+        isDialogVisible = true;
+    }
+
+    // Đóng dialog
+    private void CloseDialog()
+    {
+        isDialogVisible = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Lấy JWT token từ localStorage
+        var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            // Giải mã token
+            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            // Lấy giá trị của 'username' từ payload của token
+            var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "id");
+
+            if (userId != null)
+            {
+                customerId = int.Parse(userId.Value);
+            }
+        }
+        // Load customer info
+        var response = await httpClient.GetFromJsonAsync<customer>($"{url}/{customerId}");
+        if (response != null)
+        {
+            newRoleTask = response;
+            birthdayDate = newRoleTask.birthday;
+        }
+        await LoadCustomerAddress(); // Load customer addresses
+    }
+
+    private async Task LoadCustomerAddress()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<customer_address>>($"{addressUrl}/{customerId}");
+            if (response != null)
+            {
+                customerAddresses = response; // Store multiple addresses
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    private async Task UpdateData()
+    {
+        try
+        {
+            newRoleTask.birthday = birthdayDate.Value; // Set birthday before sending data
+            var response = await httpClient.PutAsJsonAsync($"{url}/{newRoleTask.Id}", newRoleTask);
+            if (response.IsSuccessStatusCode)
+            {
+                showSuccess = true;
+            }
+            else
+            {
+                showError = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi cập nhật thông tin: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task UpdateAddress(customer_address address)
+    {
+        address.id_cus = customerId; // Ensure the id_cus is correctly assigned
+
+        var response = await httpClient.PutAsJsonAsync($"{addressUrl}/{address.id}", address);
+        if (response.IsSuccessStatusCode)
+        {
+            showSuccess = true;
+        }
+        else
+        {
+            showError = true;
+        }
+    }
+    private async Task AddNewAddress()
+    {
+        newAddress.id_cus = customerId; // Gán ID khách hàng
+        var response = await httpClient.PostAsJsonAsync($"{addressUrl}", newAddress);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Địa chỉ mới đã được thêm.", Severity.Success);
+            // Điều hướng đến trang getcus_addresstask với tham số thông báo
+            NavigationManager.NavigateTo("/getcus_addresstask");
+        }
+        else
+        {
+            Snackbar.Add("Lỗi khi thêm địa chỉ mới.", Severity.Error);
+        }
+
+        newAddress = new customer_address(); // Reset form
+        CloseDialog(); // Đóng modal
+    }
+
+    private async Task OpenDeleteDialog(customer_address address)
+    {
+        var parameters = new DialogParameters
+        {
+            { "ContentText", $"Bạn có chắc chắn muốn xóa địa chỉ { address.address}?" },
+            { "ButtonText", "Xóa" },
+            { "Color", Color.Error }
+        };
+
+        var options = new DialogOptions() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await DialogService.ShowAsync<DeleteAddress>("Xác nhận xóa", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            await DeleteAddress(address);
+        }
+    }
+
+    // Hàm thực hiện việc xóa địa chỉ
+    private async Task DeleteAddress(customer_address address)
+    {
+        try
+        {
+            var response = await httpClient.DeleteAsync($"{addressUrl}/{address.id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add($"Đã xóa địa chỉ {address.address} thành công", Severity.Success);
+                await LoadCustomerAddress();  // Tải lại danh sách địa chỉ sau khi xóa
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Lỗi khi xóa địa chỉ: {response.ReasonPhrase}. Chi tiết: {errorContent}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi xóa địa chỉ: {ex.Message}", Severity.Error);
+        }
+    }
+
+}
