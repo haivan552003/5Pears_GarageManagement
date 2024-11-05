@@ -7,14 +7,18 @@
     <MudGrid Class="pa-0">
         <MudItem xs="12">
             <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudText Typo="Typo.h6" Class="mb-5">Thêm Chuyến Đi</MudText>
+                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
             </MudPaper>
         </MudItem>
-
         <MudGrid xs="10" Class="mx-auto">
             <MudItem xs="12">
-                <MudPaper Class="mud-paper mud-elevation-4 p-8">
+                <MudPaper Elevation="6" Class="pa-8">
                     <MudForm @ref="form" @bind-IsValid="isFormValid">
+                        <MudItem xs="12" md="12">
+                            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4};")">
+                                <MudText Typo="Typo.h6" Class="mb-5">Thêm Chuyến Đi</MudText>
+                            </MudPaper>
+                        </MudItem>
                         <MudGrid Gutter="true">
 
                             <MudItem xs="6" Class="mb-4">
@@ -33,14 +37,14 @@
                                 <MudTextField Label="Hình ảnh chuyến đi" @bind-Value="newTrip.img_trip" Placeholder="URL Hình Ảnh"
                                               Variant="Variant.Outlined" />
                             </MudItem>
-                            <MudItem xs="4" Class="mb-4">
-                                <MudSelect @bind-Value="newTrip.status" Label="Trạng thái" Required="true">
+                            <MudItem xs="6" Class="mb-4">
+                                <MudSelect @bind-Value="newTrip.status" Label="Trạng thái " Variant="Variant.Outlined" Required="true">
                                     <MudSelectItem Value="true">Hoạt động</MudSelectItem>
                                     <MudSelectItem Value="false">Không hoạt động</MudSelectItem>
                                 </MudSelect>
                             </MudItem>
-                            <MudItem xs="4" Class="mb-4">
-                                <MudSelect @bind-Value="newTrip.is_return" Label="Trở về" Required="true">
+                            <MudItem xs="6" Class="mb-4">
+                                <MudSelect @bind-Value="newTrip.is_return" Label="Trở về" Variant="Variant.Outlined" Required="true">
                                     <MudSelectItem Value="true">Có</MudSelectItem>
                                     <MudSelectItem Value="false">Không</MudSelectItem>
                                 </MudSelect>
@@ -62,6 +66,12 @@
     private bool isFormValid = false;
     private MudForm form;
     private string url = "http://localhost:49922/api/Trips/trip";
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Chuyến đi", href: null, icon: @Icons.Material.Outlined.LocationOn),
+        new BreadcrumbItem("Danh sách chuyến đi", href: "/gettrip", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Cập nhật", href: null, icon: @Icons.Material.Filled.Edit),
+    };
 
     private async Task Addtrip()
     {
