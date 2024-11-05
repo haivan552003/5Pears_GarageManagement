@@ -339,5 +339,31 @@ namespace BE_API.Controllers
                 }
             }
         }
+
+        [HttpGet("viewTrip/{id}")]
+        public async Task<ActionResult<trip_detail>> sp_GetTripsDetailsID(int id)
+        {
+            var procedureName = "get_view_trip_deatails_by_id";
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Int32, ParameterDirection.Input);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var multi = await connection.QueryMultipleAsync(procedureName, parameters, commandType: CommandType.StoredProcedure))
+                {
+                    var car = multi.ReadFirstOrDefault<trip_detail>();
+                    if (car == null)
+                    {
+                        return NotFound();
+                    }
+
+                    var carImages = multi.Read<car_seat>().ToList();
+                    car.car_seat = carImages;
+
+                    return Ok(car);
+                }
+            }
+        }
     }
 }

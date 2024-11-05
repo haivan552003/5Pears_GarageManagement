@@ -49,6 +49,10 @@ namespace BE_API.Models
         public string car_code { get; set; }
         public string car_name { get; set; }
         public string fullname { get; set; }
+        public string from { get; set; }
+        public string to { get; set; }
+        public List<car_seat> car_seat { get; set; }
+
     }
 
     public class trip_detail_update
