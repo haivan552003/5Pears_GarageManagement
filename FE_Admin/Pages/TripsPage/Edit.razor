@@ -11,19 +11,31 @@
                 <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
             </MudPaper>
         </MudItem>
-        <MudItem xs="6" Class="mx-auto">
+        <MudItem xs="12" Class="mx-auto">
             <MudPaper Elevation="0" Class="pa-3">
                 <MudItem xs="12" md="12">
                     <MudPaper Elevation="4" Class="p-4">
                         <MudText Typo="Typo.h6" Class="mb-5">Cập nhật thông tin chuyến đi</MudText>
                         <MudForm @ref="form" Style="height:auto">
-                            <MudTextField ShrinkLabel @bind-Value="tripInfo.trip_code" Label="Mã chuyến đi" Variant="Variant.Outlined" Required="true" />
-                            <MudTextField ShrinkLabel @bind-Value="tripInfo.from" Label="Điểm khởi hành" Variant="Variant.Outlined" Required="true" />
-                            <MudTextField ShrinkLabel @bind-Value="tripInfo.to" Label="Điểm đến" Variant="Variant.Outlined" Required="true" />
-                            <MudSelect @bind-Value="tripInfo.status" Label="Trạng thái" Variant="Variant.Outlined" Required="true">
-                                <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
-                                <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
-                            </MudSelect>
+                            <MudGrid>
+                                <MudItem xs="3">
+                                    <MudTextField ShrinkLabel @bind-Value="tripInfo.trip_code" Label="Mã chuyến đi" Variant="Variant.Outlined" Required="true" />
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudTextField ShrinkLabel @bind-Value="tripInfo.from" Label="Điểm khởi hành" Variant="Variant.Outlined" Required="true" />
+
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudTextField ShrinkLabel @bind-Value="tripInfo.to" Label="Điểm đến" Variant="Variant.Outlined" Required="true" />
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudSelect @bind-Value="tripInfo.status" Label="Trạng thái" Variant="Variant.Outlined" Required="true">
+                                        <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
+                                        <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
+                                    </MudSelect>
+                                </MudItem>
+                            </MudGrid>                           
+                           
                             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateTrip" Class="mt-3">Cập nhật</MudButton>
                         </MudForm>
                     </MudPaper>

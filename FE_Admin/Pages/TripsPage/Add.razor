@@ -33,10 +33,10 @@
                                 <MudTextField Label="Điểm đến" @bind-Value="newTrip.to" Placeholder="Đến"
                                               Variant="Variant.Outlined" Required="true" />
                             </MudItem>
-                            <MudItem xs="6" Class="mb-4">
+                          @*   <MudItem xs="6" Class="mb-4">
                                 <MudTextField Label="Hình ảnh chuyến đi" @bind-Value="newTrip.img_trip" Placeholder="URL Hình Ảnh"
                                               Variant="Variant.Outlined" />
-                            </MudItem>
+                            </MudItem> *@
                             <MudItem xs="6" Class="mb-4">
                                 <MudSelect @bind-Value="newTrip.status" Label="Trạng thái " Variant="Variant.Outlined" Required="true">
                                     <MudSelectItem Value="true">Hoạt động</MudSelectItem>
@@ -81,6 +81,7 @@
 
             try
             {
+                newTrip.img_trip = "1";
                 var response = await httpClient.PostAsJsonAsync(url, newTrip);
                 if (response.IsSuccessStatusCode)
                 {

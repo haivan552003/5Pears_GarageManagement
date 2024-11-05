@@ -18,24 +18,24 @@
                     <MudPaper Elevation="3" Class="pa-4">
                         <MudText Typo="Typo.h6" Class="mb-5">Thêm tài xế</MudText>
                         <MudGrid>
-                            <MudItem xs="12" sm="6">
+                            <MudItem xs="3">
                                 <MudTextField ShrinkLabel @bind-Value="newDriver.fullname" For="@(() => newDriver.fullname)"
                                               Label="Họ và tên" Required="true" RequiredError="Vui lòng nhập họ và tên"
                                               Validation="@(new Func<string, IEnumerable<string>>(ValidateFullName))"
                                               Variant="Variant.Outlined" />
                             </MudItem>
-                            <MudItem xs="12" sm="6">
+                            <MudItem xs="3">
                                 <MudTextField ShrinkLabel @bind-Value="newDriver.phonenumber" For="@(() => newDriver.phonenumber)"
                                               Label="Số điện thoại" Required="true" RequiredError="Vui lòng nhập số điện thoại"
                                               Variant="Variant.Outlined" />
                             </MudItem>
-                            <MudItem xs="12" sm="6">
+                            <MudItem xs="3">
                                 <MudDatePicker @bind-Date="birthdayDate" For="@(() => newDriver.birthday)"
                                                Label="Ngày sinh" Required="true" RequiredError="Vui lòng chọn ngày sinh"
                                                Variant="Variant.Outlined" DateFormat="dd/MM/yyyy"
                                                MaxDate="@DateTime.Now.AddYears(-18)" />
                             </MudItem>
-                            <MudItem xs="12" sm="6">
+                            <MudItem xs="3">
                                 <MudSelect @bind-Value="newDriver.gender" For="@(() => newDriver.gender)"
                                            Label="Giới tính" Required="true" RequiredError="Vui lòng chọn giới tính"
                                            Variant="Variant.Outlined">
@@ -43,12 +43,12 @@
                                     <MudSelectItem Value="@((byte)1)">Nữ</MudSelectItem>
                                 </MudSelect>
                             </MudItem>
-                            <MudItem xs="12" sm="6">
+                            <MudItem xs="3">
                                 <MudTextField ShrinkLabel @bind-Value="newDriver.citizen_identity_number" For="@(() => newDriver.citizen_identity_number)"
                                               Label="Số CCCD" Required="true" RequiredError="Vui lòng nhập số CCCD"
                                               Variant="Variant.Outlined" />
                             </MudItem>
-                            <MudItem xs="12" sm="6">
+                            <MudItem xs="3">
                                 <MudTextField ShrinkLabel @bind-Value="newDriver.driver_license_number" For="@(() => newDriver.driver_license_number)"
                                               Label="Số bằng lái" Required="true" RequiredError="Vui lòng nhập số bằng lái"
                                               Variant="Variant.Outlined" />
