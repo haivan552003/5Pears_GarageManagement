@@ -100,29 +100,32 @@ namespace BE_API.Controllers
             }
         }
         [HttpPost("PostCars")]
-        public async Task<ActionResult<car>> PostCars(car cars)
+        public async Task<ActionResult<car>> PostCars(car_create cars)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            try
             {
-                SqlCommand cmd = new SqlCommand("sp_create_cars", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@car_number", cars.car_number);
-                cmd.Parameters.AddWithValue("@color", cars.color);
-                cmd.Parameters.AddWithValue("@vehical_registration_start", cars.vehicle_registration_start);
-                cmd.Parameters.AddWithValue("@vehical_registration_end", cars.vehicle_registration_end);
-                cmd.Parameters.AddWithValue("@price", cars.price);
-                cmd.Parameters.AddWithValue("@isAuto", cars.isAuto);
-                cmd.Parameters.AddWithValue("@status", cars.status);
-                cmd.Parameters.AddWithValue("@id_type", cars.type_id);
-                cmd.Parameters.AddWithValue("@id_brand", cars.brand_id);
-                cmd.Parameters.AddWithValue("@year_production", cars.year_production);
-                cmd.Parameters.AddWithValue("@odo", cars.odo);
-                cmd.Parameters.AddWithValue("@insurance_fee", cars.insurance_fee);
+                var parameters = new DynamicParameters(cars);
 
-                await conn.OpenAsync();
-                await cmd.ExecuteNonQueryAsync();
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var result = await connection.ExecuteAsync("sp_create_cars", parameters, commandType: CommandType.StoredProcedure);
+
+                    if (result > 0)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
             }
-            return CreatedAtAction(nameof(GetAllCars), new { id = cars.id }, cars);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi: {ex.Message}");
+            }
         }
         [HttpPost("PostCarSeat")]
         public async Task<ActionResult<car>> PostCarSeat(car_seat cs)
@@ -142,33 +145,26 @@ namespace BE_API.Controllers
             return CreatedAtAction(nameof(GetAllCars), new { id = cs.id }, cs);
         }
         [HttpPut("putCars/{id}")]
-        public async Task<IActionResult> PutCars(int id, car cars)
+        public async Task<IActionResult> PutCars(int id, car_create cars)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand("sp_update_car", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@id", id);
-                cmd.Parameters.AddWithValue("@car_number", cars.car_number);
-                cmd.Parameters.AddWithValue("@color", cars.color);
-                cmd.Parameters.AddWithValue("@vehical_registration_start", cars.vehicle_registration_start);
-                cmd.Parameters.AddWithValue("@vehical_registration_end", cars.vehicle_registration_end);
-                cmd.Parameters.AddWithValue("@price", cars.price);
-                cmd.Parameters.AddWithValue("@isAuto", cars.isAuto);
-                cmd.Parameters.AddWithValue("@status", cars.status);
-                cmd.Parameters.AddWithValue("@id_type", cars.type_id);
-                cmd.Parameters.AddWithValue("@id_brand", cars.brand_id);
-                cmd.Parameters.AddWithValue("@year_production", cars.year_production);
-                cmd.Parameters.AddWithValue("@odo", cars.odo);
-                cmd.Parameters.AddWithValue("@insurance_fee", cars.insurance_fee);
-                await conn.OpenAsync();
+                var parameters = new DynamicParameters(cars);
+                parameters.Add("@id", id);
 
-                int rowsAffected = await cmd.ExecuteNonQueryAsync();
-
-                if (rowsAffected == 0)
+                using (var connection = new SqlConnection(_connectionString))
                 {
-                    return NotFound();
+                    await connection.OpenAsync();
+
+                    var result = await connection.ExecuteAsync("sp_update_car", parameters, commandType: CommandType.StoredProcedure);
+
+                    if (result == 0)
+                    {
+                        return NotFound();
+                    }
                 }
+
+                return NoContent();
             }
 
             return NoContent();

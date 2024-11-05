@@ -37,39 +37,6 @@ namespace BE_API.Controllers
             }
         }
 
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<customers>> GetCustomerWithId(int id)
-        //{
-        //    using (IDbConnection db = new SqlConnection(_connectionString))
-        //    {
-        //        // Gọi thủ tục lưu trữ để lấy thông tin khách hàng theo ID
-        //        var customer = await db.QueryFirstOrDefaultAsync<customers>(
-        //            "sp_view_customer_with_id",
-        //            new { id },
-        //            commandType: CommandType.StoredProcedure);
-
-        //        // Kiểm tra xem khách hàng có tồn tại không
-        //        if (customer == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        // Truy vấn địa chỉ của khách hàng
-        //        var addresses = await db.QueryAsync<customers>(
-        //            "SELECT * FROM customer_addresses WHERE is_delete = 'False' AND id_cus = @Id",
-        //            new { Id = id });
-
-        //        // Tạo một đối tượng ẩn danh để chứa thông tin khách hàng và địa chỉ
-        //        var result = new
-        //        {
-        //            Customer = customer,
-        //            Addresses = addresses.ToList()
-        //        };
-
-        //        return Ok(result);
-        //    }
-        //}
-
         [HttpGet("{id}")]
         public async Task<ActionResult<customers>> GetCustomerById(int id)
         {
@@ -87,101 +54,55 @@ namespace BE_API.Controllers
             }
         }
 
-        //[HttpPost]
-        //public async Task<ActionResult> AddCustomer([FromBody] customers newCustomer)
-        //{
-        //    try
-        //    {
-        //        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newCustomer.password);
-        //        var parameters = new DynamicParameters(newCustomer);
-        //        using (var connection = new SqlConnection(_connectionString))
-        //        {
-        //            await connection.OpenAsync();
-        //            var result = await connection.ExecuteAsync("sp_add_customers", parameters, commandType: CommandType.StoredProcedure);
-        //            if (result > 0)
-        //            {
-        //                return Ok();
-        //            }
-        //            else
-        //            {
-        //                return BadRequest();
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, $"Lỗi: {ex.Message}");
-        //    }
-        //}
-
-        //POST: api/Customer
        [HttpPost]
-        public async Task<ActionResult> AddCustomer([FromBody] customers newCustomer)
+        public async Task<ActionResult> AddCustomer(customer_create newCustomer)
         {
-            var procedureName = "sp_add_customers";
-            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newCustomer.password);
-            var parameters = new DynamicParameters();
-            parameters.Add("@password", hashedPassword, DbType.String);
-            parameters.Add("@fullname", newCustomer.fullname, DbType.String);
-            parameters.Add("@birthday", newCustomer.birthday, DbType.Date);
-            parameters.Add("@gender", newCustomer.gender, DbType.String);
-            parameters.Add("@phone_number", newCustomer.phone_number, DbType.String);
-            parameters.Add("@citizen_identity_img1", newCustomer.citizen_identity_img1, DbType.String);
-            parameters.Add("@citizen_identity_number", newCustomer.citizen_identity_number, DbType.String);
-            parameters.Add("@driver_license_img1", newCustomer.driver_license_img1, DbType.String);
-            parameters.Add("@driver_license_number", newCustomer.driver_license_number, DbType.String);
-            parameters.Add("@role_id", newCustomer.id_role, DbType.Int32);
-            parameters.Add("@status", newCustomer.status, DbType.String);
-            parameters.Add("@email", newCustomer.email, DbType.String);
-
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                await connection.OpenAsync();
-                var result = await connection.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                var parameters = new DynamicParameters(newCustomer);
 
-                if (result > 0)
+                using (var connection = new SqlConnection(_connectionString))
                 {
-                    return Ok();
-                }
+                    await connection.OpenAsync();
 
-                return BadRequest();
+                    var result = await connection.ExecuteAsync("sp_add_customers", parameters, commandType: CommandType.StoredProcedure);
+
+                    if (result > 0)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi: {ex.Message}");
             }
         }
 
 
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCustomer(int id, [FromBody] customers updatedCustomer)
+        public async Task<IActionResult> UpdateCustomer(int id, [FromBody] customer_create updatedCustomer)
         {
-            var procedureName = "sp_update_customers";
-            var parameters = new DynamicParameters();
-            parameters.Add("@cus_id", id, DbType.Int32);
-            parameters.Add("@cus_code", updatedCustomer.cus_code, DbType.String);
-            parameters.Add("@email", updatedCustomer.email, DbType.String);
-            parameters.Add("@password", updatedCustomer.password, DbType.String);
-            parameters.Add("@fullname", updatedCustomer.fullname, DbType.String);
-            parameters.Add("@birthday", updatedCustomer.birthday, DbType.Date);
-            parameters.Add("@gender", updatedCustomer.gender, DbType.String);
-            parameters.Add("@phone_number", updatedCustomer.phone_number, DbType.String);
-            parameters.Add("@citizen_identity_img1", updatedCustomer.citizen_identity_img1, DbType.String);
-            parameters.Add("@citizen_identity_number", updatedCustomer.citizen_identity_number, DbType.String);
-            parameters.Add("@driver_license_img1", updatedCustomer.driver_license_img1, DbType.String);
-            parameters.Add("@driver_license_number", updatedCustomer.driver_license_number, DbType.String);
-            parameters.Add("@role_id", updatedCustomer.id_role, DbType.Int32);
-            parameters.Add("@status", updatedCustomer.status, DbType.String);
+            var parameters = new DynamicParameters(updatedCustomer);
+            parameters.Add("@id", id);
 
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                var result = await connection.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
 
-                if (result > 0)
+                var result = await connection.ExecuteAsync("sp_update_customers", parameters, commandType: CommandType.StoredProcedure);
+
+                if (result == 0)
                 {
-                    return Ok(new { message = "Customer updated successfully" });
+                    return NotFound();
                 }
-
-                return BadRequest(new { message = "Failed to update customer" });
             }
+
+            return NoContent();
         }
 
         [HttpDelete("{id}")]

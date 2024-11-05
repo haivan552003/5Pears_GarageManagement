@@ -64,65 +64,53 @@ namespace BE_API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<driver>> AddDriver(driver driver)
+        public async Task<ActionResult<driver>> AddDriver(driver_create driver)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            try
             {
-                SqlCommand cmd = new SqlCommand("sp_create_drivers", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@fullname", driver.fullname);
-                cmd.Parameters.AddWithValue("@birthday", driver.birthday);
-                cmd.Parameters.AddWithValue("@img_driver", driver.img_driver);
-                cmd.Parameters.AddWithValue("@driver_license_img1", driver.driver_license_img1);  
-                cmd.Parameters.AddWithValue("@driver_license_img2", driver.driver_license_img2);
-                cmd.Parameters.AddWithValue("@driver_license_number", driver.driver_license_number);
-                cmd.Parameters.AddWithValue("@citizen_identity_img1", driver.citizen_identity_img1);    
-                cmd.Parameters.AddWithValue("@citizen_identity_img2", driver.citizen_identity_img2);
-                cmd.Parameters.AddWithValue("@citizen_identity_number", driver.citizen_identity_number);
-                cmd.Parameters.AddWithValue("@gender", driver.gender);
-                cmd.Parameters.AddWithValue("@price", driver.price);
-                cmd.Parameters.AddWithValue("@voucher", driver.voucher);
-                cmd.Parameters.AddWithValue("@phonenumber", driver.phonenumber);
-                cmd.Parameters.AddWithValue("@address", driver.address);
-                cmd.Parameters.AddWithValue("@status", driver.status);
-                await conn.OpenAsync();
-                await cmd.ExecuteNonQueryAsync();
-            }
+                var parameters = new DynamicParameters(driver);
 
-            return CreatedAtAction(nameof(GetAllDrivers), new { id = driver.id }, driver);
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var result = await connection.ExecuteAsync("sp_create_drivers", parameters, commandType: CommandType.StoredProcedure);
+
+                    if (result > 0)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi: {ex.Message}");
+            }
         }
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDriver(int id, driver driver)
+        public async Task<IActionResult> PutDriver(int id, driver_create driver)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            var parameters = new DynamicParameters(driver);
+            parameters.Add("@id", id);
+
+            using (var connection = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand("sp_update_driver", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@id", id);
-                cmd.Parameters.AddWithValue("@fullname", driver.fullname);
-                cmd.Parameters.AddWithValue("@birthday", driver.birthday);
-                cmd.Parameters.AddWithValue("@img_driver", driver.img_driver);
-                cmd.Parameters.AddWithValue("@driver_license_img1", driver.driver_license_img1);
-                cmd.Parameters.AddWithValue("@driver_license_img2", driver.driver_license_img2);
-                cmd.Parameters.AddWithValue("@driver_license_number", driver.driver_license_number);
-                cmd.Parameters.AddWithValue("@citizen_identity_img1", driver.citizen_identity_img1);
-                cmd.Parameters.AddWithValue("@citizen_identity_img2", driver.citizen_identity_img2);
-                cmd.Parameters.AddWithValue("@citizen_identity_number", driver.citizen_identity_number);
-                cmd.Parameters.AddWithValue("@gender", driver.gender);
-                cmd.Parameters.AddWithValue("@price", driver.price);
-                cmd.Parameters.AddWithValue("@voucher", driver.voucher);
-                cmd.Parameters.AddWithValue("@phonenumber", driver.phonenumber);
-                cmd.Parameters.AddWithValue("@address", driver.address);
-                cmd.Parameters.AddWithValue("@status", driver.status);
-                await conn.OpenAsync();
-                int rowsAffected = await cmd.ExecuteNonQueryAsync();
-                if (rowsAffected == 0)
+                await connection.OpenAsync();
+
+                var result = await connection.ExecuteAsync("sp_update_driver", parameters, commandType: CommandType.StoredProcedure);
+
+                if (result == 0)
                 {
                     return NotFound();
                 }
             }
+
             return NoContent();
         }
 

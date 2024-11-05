@@ -24,6 +24,30 @@ namespace BE_API.Models
         public int age { get; set; }
         public string driver_code {  get; set; }
         public string email {  get; set; }
+        public string class_driver_license {  get; set; }
+        public string password {  get; set; }
      
+    }
+
+    public class driver_create
+    {
+        public string fullname { get; set;}
+        public DateTime birthday { get; set;}
+        public string img_driver { get; set;}
+        public string driver_license_img1 { get; set;}
+        public string driver_license_img2 { get; set;}
+        public string driver_license_number { get; set;}
+        public string citizen_identity_img1 { get; set;}
+        public string citizen_identity_img2 { get; set;}
+        public string citizen_identity_number { get; set;}
+        public bool gender { get; set;}
+        public float price { get; set;}
+        public float voucher { get; set;}
+        public string phonenumber { get; set;}
+        public string address { get; set;}
+        public bool status { get; set;}
+        public int class_driver_license { get; set;}
+        public string email { get; set;}
+        public string password { get; set;}
     }
 }
