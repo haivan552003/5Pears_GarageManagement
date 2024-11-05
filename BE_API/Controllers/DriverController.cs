@@ -85,6 +85,10 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@phonenumber", driver.phonenumber);
                 cmd.Parameters.AddWithValue("@address", driver.address);
                 cmd.Parameters.AddWithValue("@status", driver.status);
+                cmd.Parameters.AddWithValue("@class_driver_license", driver.class_driver_license);
+                cmd.Parameters.AddWithValue("@email", driver.email);
+                cmd.Parameters.AddWithValue("@password", driver.password);
+
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
@@ -116,6 +120,9 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@phonenumber", driver.phonenumber);
                 cmd.Parameters.AddWithValue("@address", driver.address);
                 cmd.Parameters.AddWithValue("@status", driver.status);
+                cmd.Parameters.AddWithValue("@class_driver_license", driver.class_driver_license);
+                cmd.Parameters.AddWithValue("@email", driver.email);
+                cmd.Parameters.AddWithValue("@password", driver.password);
                 await conn.OpenAsync();
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
                 if (rowsAffected == 0)

@@ -15,7 +15,7 @@
         </MudItem>
         <EditForm Model="@Driver" Class="pa-3" OnValidSubmit="SubmitForm">
             <MudGrid>
-                <MudItem xs="12" md="12">
+                <MudItem xs="12" md="8">
                     <DataAnnotationsValidator />
                     <MudPaper Elevation="3" Class="pa-4">
                         <MudText Typo="Typo.h6" Class="mb-5">Sửa thông tin tài xế</MudText>
@@ -56,6 +56,20 @@
                                               Label="Số bằng lái" Required="true" RequiredError="Vui lòng nhập số bằng lái"
                                               Variant="Variant.Outlined" />
                             </MudItem>
+
+                            <MudItem xs="12" sm="4">
+                                <MudTextField @bind-Value="Driver.class_driver_license" For="@(() => Driver.class_driver_license)"
+                                              Label="Hạng bằng lái" Required="true" RequiredError="Vui lòng nhập hạng bằng lái xe"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="4">
+                                <MudTextField @bind-Value="Driver.email" For="@(() => Driver.email)"
+                                              Label="Email" Variant="Variant.Outlined" RequiredError="Vui lòng nhập Email" />
+                            </MudItem>
+                            <MudItem xs="12" sm="4">
+                                <MudTextField @bind-Value="Driver.password" For="@(() => Driver.password)"
+                                              Label="Mật khẩu" Variant="Variant.Outlined" RequiredError="Vui lòng nhập mật khẩu" />
+                            </MudItem>
                             <MudItem xs="12" sm="4">
                                 <MudNumericField @bind-Value="Driver.price" For="@(() => Driver.price)"
                                                  Label="Giá" Required="true" RequiredError="Vui lòng nhập giá"
@@ -73,6 +87,7 @@
                                     <MudSelectItem Value="@((byte)1)">Không hoạt động</MudSelectItem>
                                 </MudSelect>
                             </MudItem>
+
                             <MudItem xs="12">
                                 <MudTextField ShrinkLabel @bind-Value="Driver.address" For="@(() => Driver.address)"
                                               Label="Địa chỉ" Required="true" RequiredError="Vui lòng nhập địa chỉ"
@@ -85,7 +100,7 @@
                     </MudPaper>
                 </MudItem>
 
-                <MudItem xs="12" md="12">
+                <MudItem xs="12" md="4">
                     <MudPaper Elevation="3" Class="pa-4">
                         <MudText Typo="Typo.h6" Class="mb-4">Hình ảnh</MudText>
                         <MudGrid>
