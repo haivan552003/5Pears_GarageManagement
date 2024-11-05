@@ -24,6 +24,9 @@ namespace BE_API.Models
         public int age { get; set; }
         public string driver_code {  get; set; }
         public string email {  get; set; }
-     
+        public int class_driver_license { get; set; }
+        public string password { get; set; }
+
+
     }
 }
