@@ -21,7 +21,13 @@
                                 <MudTextField Label="Password" Class="mt-3"
                                               Variant="Variant.Outlined"
                                               Placeholder="Password"
-                                              @bind-Value="model.password" For="@(() => model.password)" InputType="InputType.Password" />
+                                              @bind-Value="model.password"
+                                              For="@(() => model.password)"
+                                              InputType="@PasswordInput"
+                                              Adornment="Adornment.End"
+                                              AdornmentIcon="@PasswordInputIcon"
+                                              OnAdornmentClick="TogglePasswordVisibility"
+                                              AdornmentAriaLabel="Show Password" />
                             </MudCardContent>
                             <MudCardActions>
                                 <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Đăng nhập</MudButton>
@@ -37,7 +43,6 @@
         </MudItem>
     </MudGrid>
 </MudContainer>
-
 
 @code {
     login model = new login();
@@ -72,4 +77,14 @@
         }
     }
 
+    // Các biến quản lý hiển thị mật khẩu
+    private bool isShowPassword = false;
+    private InputType PasswordInput => isShowPassword ? InputType.Text : InputType.Password;
+    private string PasswordInputIcon => isShowPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
+
+    private void TogglePasswordVisibility()
+    {
+        isShowPassword = !isShowPassword; // Đảo giá trị hiển thị mật khẩu
+    }
 }
+

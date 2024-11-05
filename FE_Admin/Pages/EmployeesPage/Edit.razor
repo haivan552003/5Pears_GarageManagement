@@ -35,16 +35,26 @@
                             </MudItem>
 
                             <MudItem xs="6" Class="mb-4">
-                                <MudDatePicker Label="Ngày sinh" @bind-Value="Employee.birthday" Required="true"
-                                               Variant="Variant.Outlined" Class="mb-4"
-                                               LabelStyle="font-weight: 600; color: #1976d2;" />
+                                <MudDatePicker @bind-Date="birthdayDate" For="@(() => Employee.birthday)"
+                                               Label="Ngày sinh" Required="true" RequiredError="Vui lòng chọn ngày sinh"
+                                               Variant="Variant.Outlined" DateFormat="dd/MM/yyyy"
+                                               MaxDate="@DateTime.Now.AddYears(-18)" />
                             </MudItem>
 
                             <MudItem xs="6" Class="mb-4">
-                                <MudTextField Label="Mật khẩu" @bind-Value="Employee.password" Placeholder="Mật Khẩu"
-                                              Variant="Variant.Outlined" Required="true" Type="password"
-                                              LabelStyle="font-weight: 600; color: #1976d2;" ReadOnly="true" />
+                                <MudTextField Label="Mật khẩu"
+                                              @bind-Value="Employee.password"
+                                              Placeholder="Mật Khẩu"
+                                              Variant="Variant.Outlined"
+                                              Required="true"
+                                              InputType="@PasswordInput"
+                                              Adornment="Adornment.End"
+                                              AdornmentIcon="@PasswordInputIcon"
+                                              OnAdornmentClick="TogglePasswordVisibility"
+                                              AdornmentAriaLabel="Show Password"
+                                              LabelStyle="font-weight: 600; color: #1976d2;" />
                             </MudItem>
+
                             <MudItem xs="6" Class="mb-4">
                                 <MudTextField Label="Họ và tên" @bind-Value="Employee.fullname" Placeholder="Họ Và Tên"
                                               Variant="Variant.Outlined" Required="true"
@@ -55,8 +65,8 @@
                                 <MudSelect @bind-Value="Employee.status" Label="Trạng thái" Required="true"
                                            Placeholder="Trạng Thái" Variant="Variant.Outlined"
                                            LabelStyle="font-weight: 600; color: #1976d2;">
-                                    <MudSelectItem Value="true">Hoạt động</MudSelectItem>
-                                    <MudSelectItem Value="false">Không hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="4" Class="mb-4">
@@ -69,7 +79,7 @@
                             </MudItem>
 
                             <MudItem xs="4" Class="mb-4">
-                                <MudTextField Label="ID vai trò" @bind-Value="Employee.role_id" Placeholder="ID Vai Trò"
+                                <MudTextField Label="ID vai trò" @bind-Value="Employee.role_name" Placeholder="ID Vai Trò"
                                               Variant="Variant.Outlined" Required="true" Type="number"
                                               LabelStyle="font-weight: 600; color: #1976d2;" ReadOnly="true" />
                             </MudItem>
@@ -100,8 +110,10 @@
     [Parameter] public int Id { get; set; }
     private employees Employee = new employees();
     private bool isFormValid = false;
+    private DateTime? birthdayDate;
     private MudForm form;
     private string url = "http://localhost:49922/api/Employees";
+
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -110,11 +122,42 @@
         new BreadcrumbItem("Chỉnh sửa nhân viên", href: "", icon: @Icons.Material.Filled.Edit),
     };
 
+    private bool isShowPassword = false;
+    private InputType PasswordInput => isShowPassword ? InputType.Text : InputType.Password;
+    private string PasswordInputIcon => isShowPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
+
+    private void TogglePasswordVisibility()
+    {
+        isShowPassword = !isShowPassword; // Đảo giá trị hiển thị mật khẩu
+    }
+
     protected override async Task OnInitializedAsync()
     {
         var response = await httpClient.GetFromJsonAsync<employees>(url + "/" + Id);
         Employee = response;
+        await LoadDriver();
     }
+
+    private async Task LoadDriver()
+    {
+        try
+        {
+            Employee = await httpClient.GetFromJsonAsync<employees>($"{url}/{Id}");
+            if (Employee != null)
+            {
+                birthdayDate = Employee.birthday;
+            }
+            else
+            {
+                Snackbar.Add("Không tìm thấy thông tin tài xế", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi tải thông tin tài xế: {ex.Message}", Severity.Error);
+        }
+    }
+
 
     private async Task EditEmployee()
     {
@@ -135,6 +178,7 @@
             Snackbar.Add($"Có lỗi xảy ra: {ex.Message}", Severity.Error);
         }
     }
+
 
     private void Cancel()
     {

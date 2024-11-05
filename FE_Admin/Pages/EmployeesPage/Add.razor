@@ -20,10 +20,10 @@
                         <MudGrid Gutter="true">
                             <MudItem xs="6" Class="mb-4">
                                 <MudTextField Label="Mã nhân viên" @bind-Value="newEmployee.emp_code" Placeholder="Mã Nhân Viên"
-                                              Variant="Variant.Outlined" Required="true"
-                                              Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidateEmpCode))"
+                                              Variant="Variant.Outlined" Required="true" ReadOnly="true"                               
                                               LabelStyle="font-weight: 600; color: #1976d2;" />
                             </MudItem>
+
                             <MudItem xs="6" Class="mb-4">
                                 <MudTextField Label="Email" @bind-Value="newEmployee.email" Placeholder="Email"
                                               Variant="Variant.Outlined" Required="true"
@@ -43,11 +43,20 @@
                             </MudItem>
 
                             <MudItem xs="6" Class="mb-4">
-                                <MudTextField Label="Mật khẩu" @bind-Value="newEmployee.password" Placeholder="Mật Khẩu"
-                                              Variant="Variant.Outlined" Required="true" Type="password"
+                                <MudTextField Label="Mật khẩu"
+                                              @bind-Value="newEmployee.password"
+                                              Placeholder="Mật Khẩu"
+                                              Variant="Variant.Outlined"
+                                              Required="true"
+                                              InputType="@PasswordInput"
+                                              Adornment="Adornment.End"
+                                              AdornmentIcon="@PasswordInputIcon"
+                                              OnAdornmentClick="TogglePasswordVisibility"
+                                              AdornmentAriaLabel="Show Password"
                                               Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidatePassword))"
                                               LabelStyle="font-weight: 600; color: #1976d2;" />
                             </MudItem>
+
                             <MudItem xs="6" Class="mb-4">
                                 <MudTextField Label="Họ và tên" @bind-Value="newEmployee.fullname" Placeholder="Họ Và Tên"
                                               Variant="Variant.Outlined" Required="true"
@@ -59,8 +68,8 @@
                                 <MudSelect @bind-Value="newEmployee.status" Label="Trạng thái" Required="true"
                                            Placeholder="Trạng Thái" Variant="Variant.Outlined"
                                            LabelStyle="font-weight: 600; color: #1976d2;">
-                                    <MudSelectItem Value="true">Hoạt động</MudSelectItem>
-                                    <MudSelectItem Value="false">Không hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="4" Class="mb-4">
@@ -74,7 +83,7 @@
                             </MudItem>
 
                             <MudItem xs="4" Class="mb-4">
-                                <MudTextField Label="ID vai trò" @bind-Value="newEmployee.role_id" Placeholder="ID Vai Trò"
+                                <MudTextField Label="vai trò" @bind-Value="newEmployee.role_name" Placeholder="Vai Trò"
                                               Variant="Variant.Outlined" Required="true" Type="number"
                                               Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidateRoleID))"
                                               LabelStyle="font-weight: 600; color: #1976d2;" />
@@ -122,6 +131,23 @@
         new BreadcrumbItem("Danh sách nhân viên", href: "/getemployees", icon: @Icons.Material.Outlined.List),
         new BreadcrumbItem("Thêm mới", href: "/addemp", icon: @Icons.Material.Filled.AddCircleOutline),
     };
+        private bool isShowPassword = false;
+        private InputType PasswordInput => isShowPassword ? InputType.Text : InputType.Password;
+        private string PasswordInputIcon => isShowPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
+
+        private void TogglePasswordVisibility()
+        {
+            isShowPassword = !isShowPassword; 
+        }
+
+    protected override void OnInitialized()
+    {
+        newEmployee = new employees
+            {
+               
+            };
+        birthdayDate = DateTime.Now.AddYears(-18);
+    }
 
     private async Task<bool> IsEmailExists(string email)
     {
@@ -139,7 +165,7 @@
         }
         else if (email.Length < 20 || email.Length > 150)
         {
-            errors.Add("Email phải có độ dài từ 20 đến 150 ký tự.");
+            errors.Add("Email không hợp lệ.");
         }
         else
         {
@@ -171,7 +197,7 @@
         }
         else if (password.Length < 8 || password.Length > 15)
         {
-            yield return "Mật khẩu phải có độ dài từ 8 đến 15 ký tự.";
+            yield return "Mật khẩu không hợp lệ.";
         }
         else if (!password.Any(char.IsUpper) || !password.Any(char.IsLower) ||
                  !password.Any(char.IsDigit) || !password.Any(ch => "!@#$%^&*()_+[]{}|;':\",.<>?/`~".Contains(ch)))
@@ -186,9 +212,9 @@
         {
             yield return "Vui lòng điền họ và tên.";
         }
-        else if (fullName.Length < 10 || fullName.Length > 150)
+        else if (fullName.Length < 5 || fullName.Length > 150)
         {
-            yield return "Họ và tên phải có độ dài từ 10 đến 150 ký tự.";
+            yield return "Họ và tên không hợp lệ.";
         }
         else if (fullName.Any(ch => !char.IsLetter(ch) && !char.IsWhiteSpace(ch)))
         {
@@ -204,7 +230,7 @@
         }
         else if (!int.TryParse(roleId, out _))
         {
-            yield return "ID vai trò phải là một số.";
+            yield return "ID vai trò không hợp lệ .";
         }
     }
 
@@ -228,7 +254,7 @@
         }
         else if (!string.IsNullOrWhiteSpace(citizenIdentityNumber) && citizenIdentityNumber.Length != 9 && citizenIdentityNumber.Length != 12)
         {
-            yield return "Số CMND/CCCD không hợp lệ.";
+            yield return "Số CCCD không hợp lệ.";
         }
     }
 

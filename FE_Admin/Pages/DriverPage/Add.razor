@@ -6,14 +6,14 @@
 @inject IJSRuntime js
 <MudContainer MaxWidth="MaxWidth.False" Class="mt-14 pa-0">
     <MudGrid>
-        <MudItem xs="12">
+        <MudItem xs="12" md="12">
             <MudPaper Elevation="0" Class="pa-3 mb-1" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
                 <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
             </MudPaper>
         </MudItem>
         <EditForm Model="@newDriver" Class="pa-3" OnValidSubmit="AddDriver">
             <MudGrid>
-                <MudItem xs="12" md="8">
+                <MudItem xs="12" md="12">
                     <DataAnnotationsValidator />
                     <MudPaper Elevation="3" Class="pa-4">
                         <MudText Typo="Typo.h6" Class="mb-5">Thêm tài xế</MudText>
@@ -78,16 +78,11 @@
                                               Variant="Variant.Outlined" />
                             </MudItem>
                         </MudGrid>
-                        <MudItem xs="12" Class="d-flex justify-end mt-6">
-                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mr-2"
-                                       OnClick="@(() => NavigationManager.NavigateTo("/getDriver"))">Hủy</MudButton>
-                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                                       StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary">Lưu</MudButton>
-                        </MudItem>
+                        
                     </MudPaper>
                 </MudItem>
 
-                <MudItem xs="12" md="4">
+                <MudItem xs="12" md="12">
                     <MudPaper Elevation="3" Class="pa-4">
                         <MudText Typo="Typo.h6" Class="mb-4">Hình ảnh</MudText>
                         <MudGrid>
@@ -169,8 +164,16 @@
                                               Width="100" Height="100" ObjectFit="ObjectFit.Cover" Class="mt-2" />
                                 }
                             </MudItem>
+
                         </MudGrid>
+
                     </MudPaper>
+                </MudItem>
+                <MudItem xs="12" Class="d-flex justify-end mt-6">
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mr-2"
+                               OnClick="@(() => NavigationManager.NavigateTo("/getDriver"))">Hủy</MudButton>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary">Lưu</MudButton>
                 </MudItem>
             </MudGrid>
 

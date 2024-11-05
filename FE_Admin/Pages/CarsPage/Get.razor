@@ -36,12 +36,12 @@
                     </ToolBarContent>
                     <Columns>
                         <SelectColumn T="car" />
-                        <PropertyColumn T="car" TProperty="string" Property="x => x.car_number" Title="Biển số xe" />
-                        <PropertyColumn T="car" TProperty="string" Property="x => x.color" Title="Màu sắc" />
-                        <PropertyColumn T="car" TProperty="DateTime" Property="x => x.vehicle_registration_start" Title="Đăng ký bắt đầu" Format="dd/MM/yyyy" />
-                        <PropertyColumn T="car" TProperty="DateTime" Property="x => x.vehicle_registration_end" Title="Đăng ký kết thúc" Format="dd/MM/yyyy" />
-                        <PropertyColumn T="car" TProperty="float" Property="x => x.price" Title="Giá" />
-                        <PropertyColumn T="car" TProperty="float" Property="x => x.odo" Title="ODO" />
+                        <PropertyColumn T="car" TProperty="string" Class="fw-bold" Property="x => x.car_number" Title="Biển số xe" />
+                        <PropertyColumn T="car" TProperty="string" Class="fw-bold" Property="x => x.color" Title="Màu sắc" />
+                        <PropertyColumn T="car" TProperty="DateTime" Class="fw-bold" Property="x => x.vehicle_registration_start" Title="Đăng ký bắt đầu" Format="dd/MM/yyyy" />
+                        <PropertyColumn T="car" TProperty="DateTime" Class="fw-bold" Property="x => x.vehicle_registration_end" Title="Đăng ký kết thúc" Format="dd/MM/yyyy" />
+                        <PropertyColumn T="car" TProperty="float" Class="fw-bold" Property="x => x.price" Title="Giá" />
+                        <PropertyColumn T="car" TProperty="float" Class="fw-bold" Property="x => x.odo" Title="ODO" />
                         <TemplateColumn T="car" Style="width: 80%;" Class="fw-bold" Title="Trạng Thái">
                             <CellTemplate Context="element">
                                 @if (element.Item.status == "0")
