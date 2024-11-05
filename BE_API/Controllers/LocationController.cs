@@ -67,7 +67,6 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@name", Location.name);
                 cmd.Parameters.AddWithValue("@address", Location.address);
                 cmd.Parameters.AddWithValue("@phone_number", Location.phone_number);
-                cmd.Parameters.AddWithValue("@location_code", Location.location_code);
                 cmd.Parameters.AddWithValue("@status", Location.status);
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
