@@ -6,21 +6,21 @@
 
 <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
     <MudGrid>
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-3">
-                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+        <MudItem xs="12" >
+            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
             </MudPaper>
         </MudItem>
         <MudItem xs="6" Class="mx-auto">
             <MudPaper Elevation="0" Class="pa-3">
-                <MudItem xs="12">
+                <MudItem xs="12" md="12">
                     <MudPaper Elevation="4" Class="p-4">
                         <MudText Typo="Typo.h6" Class="mb-5">Cập nhật thông tin chuyến đi</MudText>
                         <MudForm @ref="form" Style="height:auto">
                             <MudTextField ShrinkLabel @bind-Value="tripInfo.trip_code" Label="Mã chuyến đi" Variant="Variant.Outlined" Required="true" />
                             <MudTextField ShrinkLabel @bind-Value="tripInfo.from" Label="Điểm khởi hành" Variant="Variant.Outlined" Required="true" />
                             <MudTextField ShrinkLabel @bind-Value="tripInfo.to" Label="Điểm đến" Variant="Variant.Outlined" Required="true" />
-                            <MudSelect @bind-Value="tripInfo.status" Label="Trạng thái" Required="true">
+                            <MudSelect @bind-Value="tripInfo.status" Label="Trạng thái" Variant="Variant.Outlined" Required="true">
                                 <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
                                 <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
                             </MudSelect>
