@@ -5,44 +5,108 @@
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
 
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    @if (showSuccess)
-    {
-        <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
-            Cập nhật thành công
-        </MudAlert>
-    }
-    else if (showError)
-    {
-        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
-            Cập nhật thất bại
-        </MudAlert>
-    }
 
+<MudContainer Class="mt-14 pa-0 fs-18" MaxWidth="MaxWidth.False">
+    <MudGrid Class="pa-0">
+
+        <NavProfileUser />
+
+        <MudItem xs="9">
+            <MudPaper Elevation="2">
+                <MudText Class="pa-3 fw-bold text-uppercase" Typo="Typo.subtitle1">Thông tin tài khoản</MudText>
+
+                <MudGrid>
+                    <MudItem xs="4" Class="pa-5">
+                        <MudImage Src="@newRoleTask.img_cus" Height="320" Alt="Swedish Farm House" Elevation="0" Class="w-100" />
+                    </MudItem>
+                    <MudItem xs="8" Class="pa-5">
+                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Họ và tên</MudText>
+                        <MudTextField Class="mb-3" ShrinkLabel @bind-Value="newRoleTask.fullname" Variant="Variant.Outlined" Required="true" />
+
+                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Ngày sinh</MudText>
+                        <MudDatePicker Class="mb-3" @bind-Date="birthdayDate" Required="true" Variant="Variant.Outlined" />
+
+                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Giới tính</MudText>
+                        <MudSelect @bind-Value="newRoleTask.gender" Variant="Variant.Outlined" Required="true">
+                            <MudSelectItem Value="(byte)0">Nam</MudSelectItem>
+                            <MudSelectItem Value="(byte)1">Nữ</MudSelectItem>
+                        </MudSelect>
+                        <MudButton Variant="Variant.Outlined" Size="Size.Small" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateData" Class="mt-3 float-end">Lưu</MudButton>
+                    </MudItem>
+                  
+                    <MudItem xs="12" Class="ma-5">
+                        <MudGrid>
+                            <MudPaper Elevation="0" Style="background-color:#ECECF8" Class="rounded-2 w-100">
+                                <MudGrid>
+                                    <MudItem xs="4" Class="pa-10">
+                                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Class="pb-3" Typo="Typo.subtitle1">Số điện thoại</MudText>
+                                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Class="pb-3" Typo="Typo.subtitle1">Email</MudText>
+                                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Class="pb-3" Typo="Typo.subtitle1">Số hóa đơn</MudText>
+                                    </MudItem>
+                                    <MudItem xs="8" Class="text-end pa-10">
+                                        <MudText Class="pb-3 fw-bold" Typo="Typo.subtitle1">@newRoleTask.phone_number</MudText>
+                                        <MudText Class="pb-3 fw-bold" Typo="Typo.subtitle1">@newRoleTask.email</MudText>
+                                        <MudText  Class="fw-bold" Typo="Typo.subtitle1" Style="@($"color:{Colors.Grey.Darken3};")">Số hóa đơn: 8 hóa đơn</MudText>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudPaper>
+                        </MudGrid>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+
+            <MudPaper Elevation="2" Class="mt-10">
+                <MudText Class="pa-3 fw-bold text-uppercase" Typo="Typo.subtitle1">Bằng lái xe</MudText>
+
+                <MudGrid>
+                    <MudItem xs="6" Class="pl-5">
+                        <MudText Class="pb-8 fw-bold" Typo="Typo.subtitle1">Hình ảnh mặt trước</MudText>
+                        <MudImage Fluid="true" Src="@newRoleTask.driver_license_img1" Alt="@newRoleTask.driver_license_img1" Elevation="0" Class="mb-5" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudText Class="pb-5 fw-bold" Typo="Typo.subtitle1">Thông tin chung</MudText>
+
+                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Số bằng lái</MudText>
+                        <MudTextField @bind-Value="@newRoleTask.driver_license_number" Class="mb-3 me-3" Variant="Variant.Outlined" ReadOnly="true" />
+
+                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Họ và tên</MudText>
+                        <MudTextField @bind-Value="@newRoleTask.fullname" Class="mb-3 me-3" Variant="Variant.Outlined" ReadOnly="true" />
+
+                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Ngày sinh</MudText>
+                        <MudTextField @bind-Value="@newRoleTask.birthday" Class="mb-3 me-3" Variant="Variant.Outlined" ReadOnly="true" />
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
     <!-- Form Cập nhật công việc -->
     <MudGrid>
-        <MudItem xs="12">
+        @*  <MudItem xs="12">
         </MudItem>
         <MudItem xs="6" Class="mx-auto">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudItem xs="12">
-                    <MudPaper Elevation="4" Class="p-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Cập nhật công việc</MudText>
-                        <MudForm @ref="form" Style="height:auto">
-                            <MudTextField ShrinkLabel @bind-Value="newRoleTask.email" Label="Email" Placeholder="Email" Variant="Variant.Outlined" Required="true" />
-                            <MudTextField ShrinkLabel @bind-Value="newRoleTask.fullname" Label="Tên" Placeholder="Tên" Variant="Variant.Outlined" Required="true" />
-                            <MudDatePicker @bind-Date="birthdayDate" Label="Ngày sinh" Required="true" Variant="Variant.Outlined" />
-                            <MudSelect @bind-Value="newRoleTask.gender" Label="Giới tính" Required="true">
-                                <MudSelectItem Value="(byte)1">Nam</MudSelectItem>
-                                <MudSelectItem Value="(byte)0">Nữ</MudSelectItem>
-                            </MudSelect>
-                            <MudTextField ShrinkLabel @bind-Value="newRoleTask.phone_number" Label="SĐT" Placeholder="SĐT" Variant="Variant.Outlined" Required="true" />
+        <MudPaper Elevation="0" Class="pa-3">
+        <MudItem xs="12">
+        <MudPaper Elevation="4" Class="p-4">
+        <MudText Typo="Typo.h6" Class="mb-5">Cập nhật công việc</MudText>
+        <MudForm @ref="form" Style="height:auto">
+        <MudTextField ShrinkLabel @bind-Value="newRoleTask.email" Label="Email" Placeholder="Email" Variant="Variant.Outlined" Required="true" />
+        <MudTextField ShrinkLabel @bind-Value="newRoleTask.fullname" Label="Tên" Placeholder="Tên" Variant="Variant.Outlined" Required="true" />
+        <MudDatePicker @bind-Date="birthdayDate" Label="Ngày sinh" Required="true" Variant="Variant.Outlined" />
+        <MudSelect @bind-Value="newRoleTask.gender" Label="Giới tính" Required="true">
+        <MudSelectItem Value="(byte)1">Nam</MudSelectItem>
+        <MudSelectItem Value="(byte)0">Nữ</MudSelectItem>
+        </MudSelect>
+        <MudTextField ShrinkLabel @bind-Value="newRoleTask.phone_number" Label="SĐT" Placeholder="SĐT" Variant="Variant.Outlined" Required="true" />
 
-                        </MudForm>
-                    </MudPaper>
-                </MudItem>
-            </MudPaper>
+        </MudForm>
+        </MudPaper>
         </MudItem>
+        </MudPaper>
+        </MudItem> *@
 
         <!-- Form Cập nhật địa chỉ khách hàng -->
         <MudItem xs="6" Class="mx-auto">
@@ -73,7 +137,7 @@
         </MudItem>
     </MudGrid>
     <MudItem xs="12" Class="mx-auto">
-        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateData" Class="mt-3">Cập nhật</MudButton>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateData" Class="mt-3">Lưu</MudButton>
     </MudItem>
 </MudContainer>
 <MudDialog @bind-IsVisible="isDialogVisible" MaxWidth="MaxWidth.Medium">
@@ -103,7 +167,7 @@
     private MudForm form;
     private MudForm formAddress;
     private string url = "http://localhost:49922/api/Customer";
-    private string addressUrl = "http://localhost:49922/api/Cus_Address"; 
+    private string addressUrl = "http://localhost:49922/api/Cus_Address";
 
     private void OpenAddAddressDialog()
     {

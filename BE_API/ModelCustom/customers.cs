@@ -6,6 +6,7 @@ namespace BE_API.ModelCustom
     {
         public int Id { get; set; }
         public string cus_code { get; set; }
+        public string img_cus { get; set; }
         public string email { get; set; }
         public string password { get; set; }
         public string fullname { get; set; }

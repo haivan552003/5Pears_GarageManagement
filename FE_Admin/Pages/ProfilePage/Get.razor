@@ -29,12 +29,12 @@
                         <MudGrid>
                             <MudPaper Elevation="0" Style="@($"background:{Colors.DeepPurple.Lighten5};")" Class="rounded-2 ma-4 mr-10 w-100">
                                 <MudGrid>
-                                    <MudItem xs="6" Class="pa-10">
+                                    <MudItem xs="4" Class="pa-10">
                                         <MudText Style="@($"color:{Colors.Grey.Darken1};")" Class="pb-3" Typo="Typo.subtitle1">Mã nhân viên</MudText>
                                         <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Email</MudText>
 
                                     </MudItem>
-                                    <MudItem xs="6" Class="text-end pa-10">
+                                    <MudItem xs="8" Class="text-end pa-10">
                                         <MudText Class="pb-3 fw-bold" Typo="Typo.subtitle1">@Employee.emp_code</MudText>
                                         <MudText Class="fw-bold" Typo="Typo.subtitle1">@Employee.email</MudText>
                                     </MudItem>
@@ -78,7 +78,7 @@
                         <MudImage Fluid="true" Src="@Employee.citizen_identity_img" Alt="@Employee.citizen_identity_number" Elevation="3" Class="mb-5" />
                     </MudItem>
                     <MudItem xs="6">
-                        <MudText Class="pb-5 pt-15 fw-bold" Typo="Typo.subtitle1">Thông tin chung</MudText>
+                        <MudText Class="pb-5 pt-5 fw-bold" Typo="Typo.subtitle1">Thông tin chung</MudText>
 
                         <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Số CCCD</MudText>
                         <MudTextField @bind-Value="@Employee.citizen_identity_number" Class="mb-3 me-10" Variant="Variant.Outlined" ReadOnly="true" />
