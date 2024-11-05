@@ -4,7 +4,7 @@
 
 <MudDialog MaxWidth="MaxWidth.Medium">
     <DialogContent>
-        <MudPaper Elevation="4" Class="pa-4">
+        <MudPaper Elevation="0">
             <MudText Typo="Typo.h6" Class="mb-5">@ContentText</MudText>
             <MudForm @ref="form">
                 <MudGrid Gutter="true">
@@ -29,7 +29,7 @@
                         </MudSelect>
                     </MudItem>
                     <MudItem xs="6" Class="mb-4">
-                        <MudSelect @bind-Value="SelectedTrip.location_to_id" Label="Điểm đến" Variant="Variant.Outlined" Required="true">
+                        <MudSelect @bind-Value="SelectedTrip.location_from_id" Label="Điểm đến" Variant="Variant.Outlined" Required="true">
                             @foreach (var location in locationsfrom)
                             {
                                 <MudSelectItem Value="@location.id">@location.name</MudSelectItem>
@@ -53,8 +53,10 @@
                         </MudSelect>
                     </MudItem>
                     <MudItem xs="6" Class="mb-4">
-                        <MudTextField Label="Trạng thái" @bind-Value="SelectedTrip.status"
-                                      Placeholder="Trạng thái chuyến" Variant="Variant.Outlined" Required="true" />
+                        <MudSelect Variant="Variant.Outlined" @bind-Value="SelectedTrip.status" Label="Trạng thái" Required="true" RequiredError="Trạng thái là bắt buộc">
+                            <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
+                            <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
+                        </MudSelect>
                     </MudItem>
                     <MudItem xs="6" Class="mb-4">
                         <MudTextField Label="Thời gian bắt đầu" @bind-Value="SelectedTrip.time_start"
@@ -82,10 +84,10 @@
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public string ContentText { get; set; }
     [Parameter]
-    public trip_detail SelectedTrip { get; set; } = new trip_detail();
+    public trip_detail_create SelectedTrip { get; set; } = new trip_detail_create();
 
     private MudForm form;
-   
+
 
     private List<dropdown> drivers = new List<dropdown>();
     private List<dropdown> locationsfrom = new List<dropdown>(); // điểm đến
@@ -94,15 +96,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Gọi API để lấy danh sách tài xế
         drivers = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/driver");
 
-        // Gọi API để lấy danh sách địa điểm
         locationsfrom = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/tripfrom");
 
-        // Gọi API để lấy danh sách xe
         cars = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/car");
-        // Gọi API để lấy danh sách địa điểm
+
         locationsto = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/tripto");
     }
 
