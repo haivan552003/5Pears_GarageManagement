@@ -221,7 +221,6 @@ namespace BE_API.Controllers
         }
 
 
-
         // POST: api/trips
         [HttpPost("tripdetail")]
         public async Task<ActionResult> AddTripDetail([FromBody] trip_detail newTrip)

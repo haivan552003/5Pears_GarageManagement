@@ -2,7 +2,14 @@
 
 namespace BE_API.Models
 {
-    public class lookup
+    public class CarSeat
+    {
+        public string SeatName { get; set; }
+        public int row { get; set; }
+        public int col { get; set; }
+    }
+
+    public class Lookup
     {
         public string CustomerName { get; set; }
         public string PhoneNumber { get; set; }
@@ -20,7 +27,6 @@ namespace BE_API.Models
         public string DriverName { get; set; }
         public string TripFrom { get; set; }
         public string TripTo { get; set; }
-
-        public string TicketCode { get; set; } 
+        public string TicketCode { get; set; }
     }
 }

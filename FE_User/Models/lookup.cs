@@ -1,5 +1,12 @@
 ﻿namespace FE_User.Models
 {
+    public class CarSeat
+    {
+        public string SeatName { get; set; }
+        public int row { get; set; }
+        public int col { get; set; }
+    }
+
     public class lookup
     {
         public string CustomerName { get; set; }
@@ -18,7 +25,6 @@
         public string DriverName { get; set; }
         public string TripFrom { get; set; }
         public string TripTo { get; set; }
-
         public string TicketCode { get; set; }
     }
 }

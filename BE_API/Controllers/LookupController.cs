@@ -19,14 +19,14 @@ namespace BE_API.Controllers
             _connectionString = configuration.GetConnectionString("SqlConnection");
         }
         [HttpGet("{phoneNumber}/{ticketCode}")]
-        public async Task<ActionResult<IEnumerable<lookup>>> GetCarTripDetails(string phoneNumber, string ticketCode)
+        public async Task<ActionResult<IEnumerable<Lookup>>> GetCarTripDetails(string phoneNumber, string ticketCode)
         {
             var parameters = new DynamicParameters();
             parameters.Add("@PhoneNumber", phoneNumber, DbType.String);
             parameters.Add("@TicketCode", ticketCode, DbType.String);
             using (var connection = new SqlConnection(_connectionString))
             {
-                var result = await connection.QueryAsync<lookup>("sp_lookup_car", parameters, commandType: CommandType.StoredProcedure);
+                var result = await connection.QueryAsync<Lookup>("sp_lookup_car", parameters, commandType: CommandType.StoredProcedure);
                 return Ok(result);
             }
         }

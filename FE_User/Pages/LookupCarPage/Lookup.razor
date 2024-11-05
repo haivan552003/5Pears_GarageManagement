@@ -93,6 +93,7 @@
 @code {
     private LookupModel lookupModel = new LookupModel();
     private List<lookup> lookupResults = new List<lookup>();
+    private List<CarSeat> seatsResults = new List<CarSeat>();
     private string errorMessage;
 
     private async Task OnSubmit()
@@ -103,6 +104,7 @@
         if (response.IsSuccessStatusCode)
         {
             var results = await response.Content.ReadFromJsonAsync<IEnumerable<lookup>>();
+
             lookupResults = results.ToList();
 
             if (lookupResults.Count == 0)
