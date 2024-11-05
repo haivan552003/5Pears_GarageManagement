@@ -2134,6 +2134,29 @@ GO
 
 exec sp_delete_car_types 1
 
+select * from trips
+CREATE OR ALTER PROC sp_dropdown_trip_from
+AS
+	BEGIN
+		SELECT id, [from] AS name
+		FROM trips
+		WHERE is_delete = 'False'
+		ORDER BY id DESC
+	END
+GO
+exec sp_dropdown_trip_from
+
+CREATE OR ALTER PROC sp_dropdown_trip_to
+AS
+	BEGIN
+		SELECT id, [to] AS name
+		FROM trips
+		WHERE is_delete = 'False'
+		ORDER BY id DESC
+	END
+GO
+exec sp_dropdown_trip_to
+
 
 --------------------------------------------------------------------------------------------------------------------------------------
 --Thịnh

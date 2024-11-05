@@ -121,7 +121,6 @@ namespace BE_API.Controllers
             var procedureName = "sp_add_customers";
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newCustomer.password);
             var parameters = new DynamicParameters();
-            parameters.Add("@cus_code", newCustomer.cus_code, DbType.String);
             parameters.Add("@password", hashedPassword, DbType.String);
             parameters.Add("@fullname", newCustomer.fullname, DbType.String);
             parameters.Add("@birthday", newCustomer.birthday, DbType.Date);

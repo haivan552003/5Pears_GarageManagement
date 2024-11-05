@@ -80,7 +80,6 @@ namespace BE_API.Controllers
             parameters.Add("@from", newTrip.from);
             parameters.Add("@to", newTrip.to);
             parameters.Add("@emp_create", newTrip.emp_create);
-            parameters.Add("@trip_code", newTrip.trip_code);
             parameters.Add("@status", newTrip.status);
             parameters.Add("@is_return", newTrip.is_return);
 
@@ -237,7 +236,6 @@ namespace BE_API.Controllers
             parameters.Add("@location_from_id", newTrip.location_from_id);
             parameters.Add("@driver_id", newTrip.driver_id);
             parameters.Add("@location_to_id", newTrip.location_to_id);
-            parameters.Add("@trip_detail_code", newTrip.trip_detail_code);
             parameters.Add("@distance", newTrip.distance);
             parameters.Add("@status", newTrip.status);
 
