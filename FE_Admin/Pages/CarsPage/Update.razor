@@ -15,56 +15,72 @@
             <MudGrid>
                 <MudItem xs="12" md="8">
                     <DataAnnotationsValidator />
-                    <MudPaper Elevation="3" Class="pa-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Thông tin xe</MudText>
+                    <MudPaper Class="pa-4">
+                        <MudText Typo="Typo.h5" Class="mb-4">Thông tin xe</MudText>
                         <MudGrid>
-                            <MudItem xs="12" sm="6">
-                                <MudTextField @bind-Value="Car.car_number"
-                                              Label="Biển số xe"
-                                              Required="true"
-                                              RequiredError="Vui lòng nhập biển số xe"
-                                              Variant="Variant.Outlined" />
+                            <MudItem xs="4">
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_code" Label="Mã xe" ReadOnly="true" />
                             </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudTextField @bind-Value="Car.color"
-                                              Label="Màu sắc"
-                                              Required="true"
-                                              RequiredError="Vui lòng nhập màu sắc"
-                                              Variant="Variant.Outlined" />
+                            <MudItem xs="4">
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_number" Label="Biển số xe" Required="true" RequiredError="Biển số xe là bắt buột" />
                             </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudDatePicker @bind-Date="registrationStartDate"
-                                               Label="Ngày đăng kiểm"
-                                               Required="true"
-                                               RequiredError="Vui lòng chọn ngày đăng kiểm"
-                                               DateFormat="dd/MM/yyyy"
-                                               Variant="Variant.Outlined" />
+                            <MudItem xs="4">
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_name" Label="Tên xe" Required="true" RequiredError="Tên xe là bắt buột" />
                             </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudDatePicker @bind-Date="registrationEndDate"
-                                               Label="Ngày hết hạn đăng kiểm"
-                                               Required="true"
-                                               RequiredError="Vui lòng chọn ngày hết hạn đăng kiểm"
-                                               DateFormat="dd/MM/yyyy"
-                                               Variant="Variant.Outlined" />
+                            <MudItem xs="4">
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.fuel" Label="Nhiên liệu" Required="true" RequiredError="Nhiên liệu là bắt buột" />
                             </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudNumericField @bind-Value="Car.price"
-                                                 Label="Giá thuê"
-                                                 Required="true"
-                                                 RequiredError="Vui lòng nhập giá thuê"
-                                                 Min="0"
-                                                 Variant="Variant.Outlined" />
+                            <MudItem xs="4">
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.description" Label="Mô tả" Required="true" RequiredError="Mô tả là bắt buột" />
                             </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudNumericField @bind-Value="Car.insurance_fee"
-                                                 Label="Phí bảo hiểm"
-                                                 Required="true"
-                                                 RequiredError="Vui lòng nhập phí bảo hiểm"
-                                                 Min="0"
-                                                 Variant="Variant.Outlined" />
+                            <MudItem xs="4">
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.insurance_fee" Label="Phí" Required="true" RequiredError="Phí là bắt buột" />
                             </MudItem>
-                            <MudItem xs="12" sm="6">
+                            <MudItem xs="4">
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.color" Label="Màu xe" Required="true" RequiredError="Màu xe đi được là bắt buột" />
+                            </MudItem>
+                            @*   <MudItem xs="4">
+                            <MudDatePicker @bind-Date="@vehicle_registration_start" Label="Ngày đăng ký" Required="true" RequiredError="Ngày đăng ký là bắt buộc" />
+                            </MudItem>
+                            <MudItem xs="4">
+                            <MudDatePicker Date="@vehicle_registration_end" Label="Ngày hết hạn đăng ký" Required="true" RequiredError="Ngày hết hạn đăng ký là bắt buộc" />
+                            </MudItem> *@
+                            <MudItem xs="4">
+                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.price" Label="Giá xe" Required="true" RequiredError="Giá xe là bắt buộc" />
+                            </MudItem>
+
+                            <MudItem xs="4">
+                                <MudSelect Variant="Variant.Outlined" @bind-Value="Car.status" Label="Trạng thái" Required="true" RequiredError="Trạng thái là bắt buộc">
+                                   @*  <MudSelectItem Value="@("1")">Có sẵn</MudSelectItem>
+                                    <MudSelectItem Value="@("2")">Đã thuê</MudSelectItem>
+                                    <MudSelectItem Value="@("3")">Bảo trì</MudSelectItem> *@
+                                    <MudSelectItem Value="@("1")">Đang hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="@("2")">Ngưng hoạt động</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudSelect @bind-Value="Car.type_id" Label="Vai trò" Required="true" Variant="Variant.Outlined">
+                                    @if (car_types != null)
+                                    {
+                                        @foreach (var role in car_types)
+                                        {
+                                            <MudSelectItem Value="role.id">@role.name</MudSelectItem>
+                                        }
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudSelect @bind-Value="Car.brand_id" Label="Vai trò" Required="true" Variant="Variant.Outlined">
+                                    @if (car_brands != null)
+                                    {
+                                        @foreach (var role in car_brands)
+                                        {
+                                            <MudSelectItem Value="role.id">@role.name</MudSelectItem>
+                                        }
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="4">
                                 <MudSelect @bind-Value="Car.is_auto"
                                            Label="Loại hộp số"
                                            Required="true"
@@ -74,38 +90,33 @@
                                     <MudSelectItem Value="@((byte)1)">Số tự động</MudSelectItem>
                                 </MudSelect>
                             </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudSelect @bind-Value="Car.status"
-                                           Label="Trạng thái"
-                                           Required="true"
-                                           Variant="Variant.Outlined">
-                                    <MudSelectItem Value="@("active")">Hoạt động</MudSelectItem>
-                                    <MudSelectItem Value="@("inactive")">Không hoạt động</MudSelectItem>
-                                </MudSelect>
+                            @*    <MudItem xs="4">
+                            <MudDatePicker Date="@year_production" Label="Năm sản xuất" Required="true" RequiredError="Năm sản xuất là bắt buộc" PickerVariant="PickerVariant.Dialog" />
+                            </MudItem> *@
+                            <MudItem xs="4">
+                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.odo" Label="Số km đã đi" Required="true" RequiredError="Số km đã đi là bắt buộc" />
                             </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudNumericField @bind-Value="Car.odo"
-                                                 Label="Số KM đã đi"
-                                                 Required="true"
-                                                 RequiredError="Vui lòng nhập số KM"
-                                                 Min="0"
-                                                 Variant="Variant.Outlined" />
+                            <MudItem xs="4">
+                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.insurance_fee" Label="Phí bảo hiểm" Required="true" RequiredError="Phí bảo hiểm là bắt buộc" />
                             </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudDatePicker @bind-Date="productionDate"
-                                               Label="Năm sản xuất"
-                                               Required="true"
-                                               RequiredError="Vui lòng chọn năm sản xuất"
-                                               DateFormat="dd/MM/yyyy"
-                                               Variant="Variant.Outlined" />
+                            <MudItem xs="12" Class="d-flex justify-end mt-4">
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Secondary"
+                                           OnClick="Cancel"
+                                           Class="mx-2">Hủy</MudButton>
+                                <MudButton ButtonType="ButtonType.Submit"
+                                           Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.Save">Lưu</MudButton>
                             </MudItem>
                         </MudGrid>
+
                     </MudPaper>
                 </MudItem>
 
                 <MudItem xs="12" md="4">
                     <MudPaper Elevation="3" Class="pa-4">
-                        <MudText Typo="Typo.h6" Class="mb-4">Cấu hình ghế</MudText>
+                        <MudText Typo="Typo.h6" Class="mb-4">Ghế</MudText>
                         <MudButton OnClick="OpenAddSeatDialog"
                                    Variant="Variant.Filled"
                                    Color="Color.Primary"
@@ -122,7 +133,7 @@
                                             <MudGrid>
                                                 <MudItem xs="9">
                                                     <MudText>@seat.name (Hàng: @seat.row, Cột: @seat.col)</MudText>
-                                                    </MudItem>
+                                                </MudItem>
                                                 <MudItem xs="3" Class="d-flex justify-end">
                                                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                                                    Color="Color.Primary"
@@ -136,7 +147,7 @@
                         </MudGrid>
                     </MudPaper>
                 </MudItem>
-                <MudItem xs="12" md="4">
+                <MudItem xs="12">
                     <MudPaper Elevation="3" Class="pa-4">
                         <MudText Typo="Typo.h6" Class="mb-4">Hình ảnh xe</MudText>
                         <div class="d-flex gap-2 mb-3">
@@ -156,45 +167,37 @@
                         </div>
 
                         <MudGrid>
-                            @foreach (var image in CarImages)
-                            {
-                                <MudItem xs="12">
-                                    <MudCard>
-                                        <MudCardContent>
-                                            <MudGrid>
-                                                <MudItem xs="2">
+
+                            <MudItem xs="12">
+                                <MudCard>
+                                    <MudCardContent>
+                                        <MudGrid>
+                                            @foreach (var image in CarImages)
+                                            {
+                                                <MudItem xs="3" Class="mx-auto">
                                                     <MudCheckBox T="bool"
                                                                  Checked="@(SelectedImages.Contains(image.id))"
                                                                  CheckedChanged="@( (bool value) => OnImageSelected(value, image.id))" />
+                                                    <img src="@image.name" class="img-fluid" style="width:250px; height: 200px" alt="Alternate Text" />
+                                                    @* <MudText>@image.name</MudText> *@
                                                 </MudItem>
-                                                <MudItem xs="7">
-                                                    <MudText>@image.name</MudText>
-                                                </MudItem>
-                                                <MudItem xs="3" Class="d-flex justify-end">
-                                                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                                                   Color="Color.Primary"
-                                                                   OnClick="@(() => OpenEditImageDialog(image))" />
-                                                </MudItem>
-                                            </MudGrid>
-                                        </MudCardContent>
-                                    </MudCard>
-                                </MudItem>
-                            }
+                                            }
+                                            @*  <MudItem xs="3" Class="d-flex justify-end">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                            Color="Color.Primary"
+                                            OnClick="@(() => OpenEditImageDialog(image))" />
+                                            </MudItem> *@
+                                        </MudGrid>
+                                    </MudCardContent>
+                                </MudCard>
+                            </MudItem>
+
                         </MudGrid>
                     </MudPaper>
                 </MudItem>
 
 
-                <MudItem xs="12" Class="d-flex justify-end mt-4">
-                    <MudButton Variant="Variant.Filled"
-                               Color="Color.Secondary"
-                               OnClick="Cancel"
-                               Class="mx-2">Hủy</MudButton>
-                    <MudButton ButtonType="ButtonType.Submit"
-                               Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               StartIcon="@Icons.Material.Filled.Save">Lưu</MudButton>
-                </MudItem>
+
             </MudGrid>
         </EditForm>
     </MudGrid>
@@ -211,6 +214,11 @@
     private DateTime? registrationStartDate;
     private DateTime? registrationEndDate;
     private DateTime? productionDate;
+    private List<dropdown> car_types = new List<dropdown>();
+    private List<dropdown> car_brands = new List<dropdown>();
+
+    private string typeUrl = "http://localhost:49922/api/Dropdown/car_type";
+    private string brandUrl = "http://localhost:49922/api/Dropdown/car_brand";
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -219,10 +227,42 @@
         new BreadcrumbItem("Chỉnh sửa xe", null, icon: Icons.Material.Outlined.Edit)
     };
 
+    private async Task LoadType()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<dropdown>>(typeUrl);
+            if (response != null)
+            {
+                car_types = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi tải danh sách vai trò: {ex.Message}", Severity.Error);
+        }
+    }
+    private async Task LoadBrand()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<dropdown>>(brandUrl);
+            if (response != null)
+            {
+                car_brands = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi tải danh sách vai trò: {ex.Message}", Severity.Error);
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         await LoadCarAndSeats();
         await LoadCarImages();
+        await LoadType();
+        await LoadBrand();
     }
     private async Task OpenAddSeatDialog()
     {

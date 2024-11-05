@@ -224,7 +224,7 @@ namespace BE_API.Controllers
 
         // POST: api/trips
         [HttpPost("tripdetail")]
-        public async Task<ActionResult> AddTripDetail([FromBody] trip_detail newTrip)
+        public async Task<ActionResult> AddTripDetail(trip_detail_create newTrip)
         {
             var parameters = new DynamicParameters();
             parameters.Add("@time_start", newTrip.time_start);

@@ -166,5 +166,29 @@ namespace BE_API.Controllers
                 return Ok(dropdown);
             }
         }
+
+        [HttpGet("car_type")]
+        public async Task<ActionResult<IEnumerable<dropdown>>> DropdownCarType()
+        {
+            var procedureName = "sp_dropdown_car_types";
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var dropdown = await connection.QueryAsync<dropdown>(procedureName, commandType: CommandType.StoredProcedure);
+                return Ok(dropdown);
+            }
+        }
+
+        [HttpGet("car_brand")]
+        public async Task<ActionResult<IEnumerable<dropdown>>> DropdownCarBrand()
+        {
+            var procedureName = "sp_dropdown_car_brands";
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var dropdown = await connection.QueryAsync<dropdown>(procedureName, commandType: CommandType.StoredProcedure);
+                return Ok(dropdown);
+            }
+        }
     }
 }

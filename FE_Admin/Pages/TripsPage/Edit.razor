@@ -106,7 +106,7 @@
 
     private trip tripInfo = new trip();
     private List<trip_detail> tripDetails = new List<trip_detail>();
-    private trip_detail newTripDetail = new trip_detail();
+    private trip_detail_create newTripDetail = new trip_detail_create();
     private MudForm form;
     private string url = "http://localhost:49922/api/Trips/trip";
     private string tripdetailUrl = "http://localhost:49922/api/Trips/tripdetail";
@@ -176,17 +176,17 @@
            return $"{x.trip_detail_code} {x.car_code} {x.car_name} {x.car_number} {x.fullname} {x.fullname} {x.location_from} {x.location_to} {x.time_start} {x.time_end}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
        };
 
-    private async Task OpenDetailCreateDialog(trip_detail selectedTrip = null)
+    private async Task OpenDetailCreateDialog(trip_detail_create selectedTrip = null)
     {
         var parameters = new DialogParameters
         {
-            { "SelectedTrip", selectedTrip ?? new trip_detail()}
+            { "SelectedTrip", selectedTrip ?? new trip_detail_create()}
         };
 
         var dialog = DialogService.Show<Add_Detail>("Thêm chi tiết chuyến xe", parameters);
         var result = await dialog.Result;
 
-        if (!result.Cancelled && result.Data is trip_detail newTripDetail)
+        if (!result.Cancelled && result.Data is trip_detail_create newTripDetail)
         {
             this.newTripDetail = newTripDetail;
             await AddTripDetail();
@@ -202,7 +202,7 @@
         var dialog = DialogService.Show<Update_Detail>("Chi tiết chuyến xe", parameters);
         var result = await dialog.Result;
 
-        if (!result.Cancelled && result.Data is trip_detail newTripDetail)
+        if (!result.Cancelled && result.Data is trip_detail_create newTripDetail)
         {
             this.newTripDetail = newTripDetail;
             await UpdateTripDetail();
@@ -222,7 +222,7 @@
             }
             else
             {
-                Snackbar.Add($"Thêm thất bại" + response, Severity.Error);
+                Snackbar.Add($"Thêm thất bại", Severity.Error);
             }
         }
         catch (Exception ex)
