@@ -2,12 +2,13 @@
 @using System.ComponentModel.DataAnnotations
 @inject HttpClient httpClient
 @inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
 @layout EmptyLayout
 
 <MudContainer Class="mt-5 pa-0" MaxWidth="MaxWidth.False" Style="margin-top: 100px;">
     <MudGrid Class="pa-0 justify-center">
         <MudItem xs="6" Class="mx-auto">
-            <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <MudForm @ref="form" Model="@model">
                 <DataAnnotationsValidator />
                 <MudGrid>
                     <MudItem xs="12">
@@ -15,42 +16,65 @@
                             <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center pt-5">Đăng ký tài khoản</MudText>
                             <MudCardContent Class="pa-4">
                                 <MudTextField Label="Email" Class="mt-3"
+                                              @bind-Value="model.email"
+                                              For="@(() => model.email)"
                                               Variant="Variant.Outlined"
                                               Placeholder="Email"
-                                              @bind-Value="model.email" Required="true"
-                                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Email" />
+                                              Required="true"
+                                              RequiredError="Email là bắt buộc"
+                                              Adornment="Adornment.Start"
+                                              AdornmentIcon="@Icons.Material.Filled.Email" />
 
                                 <MudTextField Label="Mật khẩu" Class="mt-3"
+                                              @bind-Value="model.pass_word"
+                                              For="@(() => model.pass_word)"
                                               Variant="Variant.Outlined"
                                               Placeholder="Mật khẩu"
-                                              @bind-Value="model.pass_word" Required="true"
+                                              Required="true"
+                                              RequiredError="Mật khẩu là bắt buộc"
                                               InputType="InputType.Password"
-                                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Lock" />
+                                              Adornment="Adornment.Start"
+                                              AdornmentIcon="@Icons.Material.Filled.Lock" />
 
                                 <MudTextField Label="Họ tên" Class="mt-3"
+                                              @bind-Value="model.full_name"
+                                              For="@(() => model.full_name)"
                                               Variant="Variant.Outlined"
                                               Placeholder="Họ tên"
-                                              @bind-Value="model.full_name" Required="true"
-                                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Person" />
+                                              Required="true"
+                                              RequiredError="Họ tên là bắt buộc"
+                                              Adornment="Adornment.Start"
+                                              AdornmentIcon="@Icons.Material.Filled.Person" />
 
                                 <MudDatePicker Label="Ngày sinh" Class="mt-3"
+                                               @bind-Date="model.birthday"
+                                               For="@(() => model.birthday)"
                                                Variant="Variant.Outlined"
-                                               @bind-Date="model.birthday" Required="true" />
+                                               Required="true"
+                                               RequiredError="Ngày sinh là bắt buộc" />
 
                                 <MudTextField Label="Số điện thoại" Class="mt-3"
+                                              @bind-Value="model.phone_number"
+                                              For="@(() => model.phone_number)"
                                               Variant="Variant.Outlined"
                                               Placeholder="Số điện thoại"
-                                              @bind-Value="model.phone_number" Required="true"
-                                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Phone" />
+                                              Required="true"
+                                              RequiredError="Số điện thoại là bắt buộc"
+                                              Adornment="Adornment.Start"
+                                              AdornmentIcon="@Icons.Material.Filled.Phone" />
 
-                                <MudRadioGroup T="byte" Class="mt-3" Variant="Variant.Outlined"
-                                               @bind-Value="model.gender" Required="true">
-                                    <MudRadio Value="0" Color="Color.Primary">Nam</MudRadio>
-                                    <MudRadio Value="1" Color="Color.Secondary">Nữ</MudRadio>
+                                <MudRadioGroup T="byte"
+                                               @bind-Value="model.gender"
+                                               For="@(() => model.gender)"
+                                               Required="true"
+                                               RequiredError="Vui lòng chọn giới tính">
+                                    <MudRadio Value="@((byte)0)" Color="Color.Primary">Nam</MudRadio>
+                                    <MudRadio Value="@((byte)1)" Color="Color.Secondary">Nữ</MudRadio>
                                 </MudRadioGroup>
 
-                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                                           Color="Color.Primary" Class="mx-auto w-100 mt-7 mb-3" Style="border-radius: 20px;">
+                                <MudButton OnClick="OnValidSubmit" Variant="Variant.Filled"
+                                           Color="Color.Primary" Class="mx-auto w-100 mt-7 mb-3"
+                                           Style="border-radius: 20px;">
                                     Đăng ký
                                 </MudButton>
 
@@ -66,38 +90,34 @@
                         </MudCard>
                     </MudItem>
                 </MudGrid>
-            </EditForm>
+            </MudForm>
         </MudItem>
     </MudGrid>
 </MudContainer>
 
-
-
-
 @code {
-    private add_model_customer model = new add_model_customer();
-    private bool success;
-    private string[] errors = { };
+    private add_model_customer model = new();
     private MudForm form;
 
-    public class add_model_customer : IValidatableObject
+    public class add_model_customer
     {
         [Required(ErrorMessage = "Email chưa được nhập")]
         [EmailAddress(ErrorMessage = "Email định dạng chưa đúng")]
         public string email { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]
-        [StringLength(30, MinimumLength = 5, ErrorMessage = "Mật khẩu không hợp lệ")]
+        [StringLength(30, MinimumLength = 5, ErrorMessage = "Mật khẩu phải từ 5-30 ký tự")]
         public string pass_word { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập tên của bạn")]
-        [StringLength(100, MinimumLength = 5, ErrorMessage = "Tên quá ngắn & quá dài vui lòng nhập lại")]
+        [StringLength(100, MinimumLength = 5, ErrorMessage = "Tên phải từ 5-100 ký tự")]
         public string full_name { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng chọn độ tuổi")]
+        [Required(ErrorMessage = "Vui lòng chọn ngày sinh")]
         public DateTime? birthday { get; set; }
 
         [Required(ErrorMessage = "Vui lòng chọn giới tính")]
+        [Range(0, 1, ErrorMessage = "Giới tính không hợp lệ")]
         public byte gender { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
@@ -105,27 +125,7 @@
         public string phone_number { get; set; }
 
         public byte is_delete { get; set; } = 0;
-
-        public int id_role { get; set; } = 2;  // Mặc định là vai trò người dùng mới
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (birthday.HasValue)
-            {
-                var today = DateTime.Today;
-                var age = today.Year - birthday.Value.Year;
-
-                if (birthday.Value.Date > today.AddYears(-age))
-                {
-                    age--;
-                }
-
-                if (age < 18)
-                {
-                    yield return new ValidationResult("Không đủ tuổi để tạo tài khoản, hãy đủ 18 tuổi", new[] { nameof(birthday) });
-                }
-            }
-        }
+        public int id_role { get; set; } = 2;
     }
 
     private async Task OnValidSubmit()
@@ -134,30 +134,40 @@
 
         if (form.IsValid)
         {
-            var validationContext = new ValidationContext(model, null, null);
-            var validationResults = new List<ValidationResult>();
-            if (!Validator.TryValidateObject(model, validationContext, validationResults, true))
+            // Validate tuổi
+            if (model.birthday.HasValue)
             {
-                foreach (var validationResult in validationResults)
+                var today = DateTime.Today;
+                var age = today.Year - model.birthday.Value.Year;
+                if (model.birthday.Value.Date > today.AddYears(-age))
                 {
-                    Snackbar.Add(validationResult.ErrorMessage, Severity.Error);
+                    age--;
                 }
-                return;
+                if (age < 18)
+                {
+                    Snackbar.Add("Bạn phải đủ 18 tuổi để đăng ký", Severity.Error);
+                    return;
+                }
             }
 
-            var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Register", model);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                Snackbar.Add("Đăng ký thành công!", Severity.Success);
+                var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Register", model);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Đăng ký thành công!", Severity.Success);
+                    NavigationManager.NavigateTo("/login");
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Đăng ký không thành công! {errorContent}", Severity.Error);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Đăng ký không thành công! vui lòng thử lại!", Severity.Error);
+                Snackbar.Add($"Lỗi kết nối: {ex.Message}", Severity.Error);
             }
-
-
         }
     }
 }
