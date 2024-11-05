@@ -17,10 +17,10 @@
                 <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
             </MudPaper>
         </MudItem>
-        <MudItem xs="8" Class="mx-auto">
+        <MudItem xs="12" md="12">
             <MudPaper Elevation="0" Class="pa-3">
                 <MudGrid>
-                    <MudItem xs="7" md="8">
+                    <MudItem xs="12" md="12">
                         @*                     <DataAnnotationsValidator />
                         *@                    <MudPaper Elevation="3" Class="pa-4">
                             <MudText Typo="Typo.h6" Class="mb-5">Thêm tài xế</MudText>
@@ -86,19 +86,7 @@
                                         <MudSelectItem Value="false">Không hoạt động</MudSelectItem>
                                     </MudSelect>
                                 </MudItem>
-                                <MudItem xs="12" sm="6">
-                                    <MudSelect @bind-Value="newRoleTask.id_role" Label="Vai trò" Required="true" Variant="Variant.Outlined">
-                                        @if (roles != null)
-                                        {
-                                            @foreach (var role in roles)
-                                            {
-                                                <MudSelectItem Value="@role.id">@role.name</MudSelectItem>
-                                            }
-                                        }
-                                    </MudSelect>
-
-
-                                </MudItem>
+                               
 
                             </MudGrid>
 @*                             <MudItem xs="12" Class="d-flex justify-end mt-6">
@@ -110,7 +98,7 @@
                         </MudPaper>
                     </MudItem>
 
-                    <MudItem xs="5" md="4">
+                    <MudItem xs="12" md="12">
                         <MudPaper Elevation="3" Class="pa-4">
                             <MudText Typo="Typo.h6" Class="mb-4">Hình ảnh</MudText>
                             <MudGrid>
@@ -152,7 +140,7 @@
         </MudItem>
 
         <!-- Form Cập nhật địa chỉ khách hàng -->
-        <MudItem xs="4" Class="mx-auto">
+        <MudItem xs="12" md="12">
             <MudPaper Elevation="0" Class="pa-3">
                 <MudItem xs="12">
                     <MudPaper Elevation="4" Class="p-4">
