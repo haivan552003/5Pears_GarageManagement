@@ -5,8 +5,6 @@
 
 
 <MudContainer Class="pt-5">
-    @if (tripds != null)
-    {
         <MudGrid>
             <MudItem xs="8">
                 <MudPaper Class="p-4 rounded-lg" Elevation="0" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #ffff; border: 1px solid #e5e7eb;">
@@ -25,8 +23,6 @@
                                         <MudItem xs="12">
                                             <MudText Align="Align.Center" Typo="Typo.h6" Style="font-size: 14px;">Tầng Dưới</MudText>
                                         </MudItem>
-
-                                        <!-- Ghế Đã Bán-->
                                         <MudItem xs="4">
                                             <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
                                                 <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
@@ -44,7 +40,6 @@
                                                 <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
                                             </MudPaper>
                                         </MudItem>
-                                        <!-- Ghế Đang Chọn -->
                                         <MudItem xs="4">
                                             <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #FDEDE8;">
                                                 <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
@@ -56,7 +51,6 @@
                                             </MudPaper>
                                         </MudItem>
 
-                                        <!-- Ghế Còn Trống -->
                                         <MudItem xs="4">
                                             <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #DEF3FF;">
                                                 <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
@@ -131,7 +125,6 @@
                                             <MudText Align="Align.Center" Typo="Typo.h6" Style="font-size: 14px;">Tầng Trên</MudText>
                                         </MudItem>
 
-                                        <!-- Ghế Đã Bán-->
                                         <MudItem xs="4">
                                             <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #D5D9DD;">
                                                 <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
@@ -149,7 +142,6 @@
                                                 <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
                                             </MudPaper>
                                         </MudItem>
-                                        <!-- Ghế Đang Chọn -->
                                         <MudItem xs="4">
                                             <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #FDEDE8;">
                                                 <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
@@ -161,7 +153,6 @@
                                             </MudPaper>
                                         </MudItem>
 
-                                        <!-- Ghế Còn Trống -->
                                         <MudItem xs="4">
                                             <MudPaper Class="position-relative d-flex align-center justify-center" Elevation="0" Style="height: 32px; width: 32px; background: #DEF3FF;">
                                                 <MudText Class="position-absolute" Align="Align.Center" Typo="Typo.h6" Style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px;"><b>A01</b></MudText>
@@ -376,9 +367,6 @@
                 </MudPaper>
             </MudItem>
         </MudGrid>
-    }
-
-
 </MudContainer>
 <script>
     // Lấy token từ localStorage
@@ -415,19 +403,20 @@
             if (usernameClaim != null)
             {
                 username = usernameClaim.Value;
-                // customer = await httpClient.GetFromJsonAsync<customer>($"{urlCus}/{int.Parse}");
-                Console.WriteLine("ABC");
-                Console.WriteLine(customer.user_name);
+                await LoadUser();
             }
         }
 
+    }
+    private async Task LoadUser()
+    {
+        customer = await httpClient.GetFromJsonAsync<customer>($"{urlCus}/{username}");
     }
     private async Task LoadCars()
     {
         try
         {
             tripds = await httpClient.GetFromJsonAsync<TRIPDETAILS>($"http://localhost:49922/api/Trips/viewTrip/{id}");
-            tripds = await httpClient.GetFromJsonAsync<TRIPDETAILS>($"{urlCus}/{id}");
         }
         catch (Exception ex)
         {

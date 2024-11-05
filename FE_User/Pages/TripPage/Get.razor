@@ -59,7 +59,7 @@
                                         <MudTd>@TripDetail.time_end.ToString("dd/MM/yyyy HH:mm")</MudTd>
                                         <MudTd>@TripDetail.price.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</MudTd>
                                         <MudTd>
-                                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Href="@($"/getTrip/{TripDetail.trip_id}")">
+                                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Href="@($"/getTrip/{TripDetail.id}")">
                                                 Đặt vé
                                             </MudButton>
                                         </MudTd>

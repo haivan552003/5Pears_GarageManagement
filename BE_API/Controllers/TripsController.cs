@@ -343,7 +343,7 @@ namespace BE_API.Controllers
         [HttpGet("viewTrip/{id}")]
         public async Task<ActionResult<trip_detail>> sp_GetTripsDetailsID(int id)
         {
-            var procedureName = "get_view_trip_deatails_by_id";
+            var procedureName = "sp_get_view_trip_deatails_by_id";
             var parameters = new DynamicParameters();
             parameters.Add("Id", id, DbType.Int32, ParameterDirection.Input);
 
