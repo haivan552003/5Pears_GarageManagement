@@ -47,15 +47,15 @@
                 </MudItem>
                 <MudItem xs="12" md="6">
                     <MudGrid Spacing="3">
-                        @foreach (var news in _news.Skip(1).Take(4))
+                        @foreach (var news in _news.Skip(1).Take(2))
                         {
-                            <MudItem xs="12" sm="6">
+                            <MudItem xs="12">
                                 <MudCard Elevation="2" Class="h-100">
                                     <div class="d-flex">
                                         <MudCardMedia Image="@news.news_img"
                                                       Height="260"
                                                       Class="flex-shrink-0"
-                                                      Style="width: 135px;" />
+                                                      Style="width: 50%;" />
                                         <div class="d-flex flex-column justify-space-between take4">
                                             <MudCardContent>
                                                 <MudText Typo="Typo.subtitle2" Class="text-truncate-2">

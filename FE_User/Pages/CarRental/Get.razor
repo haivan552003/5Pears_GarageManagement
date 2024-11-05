@@ -51,12 +51,12 @@
                                 <img src="@item.img_name" alt="Hình xe"
                                      style="width: 100%; height: 200px; border-radius: 15%; object-fit: cover;"
                                      class="mb-3" />
-                                <MudButton Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Class="mb-1">
+                                <MudText Typo="Typo.h6" Class="mb-1">@item.car_name</MudText>
+                                <MudButton Variant="Variant.Outlined" Size="Size.Small" Color="Color.Primary" Class="mb-1">
                                     @(item.isAuto == 0 ? "Tự động" : "Số Sàn")
                                 </MudButton>
-                                <MudText Typo="Typo.h6" Class="mb-1">@item.car_name</MudText>
                                 <MudItem Class="d-flex align-center">
-                                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" />
+                                    <MudIcon Icon="@Icons.Material.Filled.Category" />
                                     <MudText Typo="Typo.body2" Color="Color.Secondary" Class="ml-1">@item.type_name</MudText>
                                 </MudItem>
                                 <MudGrid Class="mt-3">

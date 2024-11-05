@@ -13,7 +13,6 @@
         width: 100%;
         height: 100%;
         border-radius: 5px
-
     }
 
     .mud-card {
@@ -27,7 +26,7 @@
 </style>
 
 <MudContainer Class="pa-0" style="margin-top:95px">
-    <div class="position-relative" style="margin-bottom: 180px">
+    <div class="position-relative">
         <MudCarousel Class="mud-width-full rounded-3" style="height:550px" ShowArrows="true" TData="banner" ShowBullets="false" EnableSwipeGesture="true" AutoCycle="true" TData="object">
             @foreach (var item in eBanner)
             {
@@ -36,50 +35,6 @@
                 </MudCarouselItem>
             }
         </MudCarousel>
-        <div class="position-absolute top-100 start-50 translate-middle">
-            <MudItem xs="12" Class="mx-auto">
-                <MudCard Class="w-100">
-                    <MudText Class="text-center text-uppercase fw-bold pt-3" Typo="Typo.h5" Color="Color.Primary">Tra cứu chuyến xe</MudText>
-
-                    <MudCardContent Class="pt-0">
-                        <MudRadioGroup @bind-Value="Dense_Radio" Class="pb-5">
-                            <MudRadio Value="true" Color="Color.Primary" Size="Size.Small" Dense="false">Một Chiều</MudRadio>
-                            <MudRadio Value="false" Color="Color.Primary" Size="Size.Small" Dense="false">Khứ Hồi</MudRadio>
-                        </MudRadioGroup>
-                        <MudGrid>
-                            <MudItem xs="6">
-                                <MudStack Style="width: -moz-available">
-                                    <MudSelect @bind-Value="dropDown.id" Variant="Variant.Outlined" Margin="Margin.None" Dense="false"
-                                                ReadOnly="false" Placeholder="Chọn Điểm Đi"
-                                               HelperTextOnFocus="true" Clearable="true" Label="Điểm Đi">
-                                        @foreach (var item in tripFrom)
-                                        {
-                                            <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </MudStack>
-                            </MudItem>
-                            <MudItem xs="6">
-                                <MudStack Style="width: -moz-available">
-                                    <MudSelect @bind-Value="dropDown.id" Variant="Variant.Outlined" Margin="Margin.None" Dense="false"
-                                               ReadOnly="false" Placeholder="Chọn Điểm Đi"
-                                               HelperText="@(_helperText ? "Helper Text" : null)"
-                                               HelperTextOnFocus="_helperTextOnFocus" Clearable="true" Label="Điểm Đến">
-                                        @foreach (var item in tripTo)
-                                        {
-                                            <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </MudStack>
-                            </MudItem>
-                        </MudGrid>
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudButton OnClick="@(() => OpenDialogAsync(_maxWidth))" Class="mx-auto mb-4 mt-0" Variant="Variant.Outlined" Size="Size.Large" IconClass="@Icons.Material.Outlined.Search" Color="Color.Primary">Tìm kiếm</MudButton>
-                    </MudCardActions>
-                </MudCard>
-            </MudItem>
-        </div>
     </div>
     @* chuyến xe phổ biến *@
     <MudText Class="text-center text-uppercase fw-bold pt-9 pb-3" Typo="Typo.h5" Color="Color.Primary">tuyến xe phổ biến</MudText>
@@ -96,21 +51,21 @@
                 @foreach (var item in eTrip1)
                 {
                     <MudCard>
-                    <MudCardContent Class="bg-white rounded-2 mt-1 mb-1">
-                        
-                        <MudGrid>
-                            <MudItem xs="8">
-                                <MudLink Href="" Underline="Underline.None" Color="Color.Primary" Typo="Typo.subtitle1"><b>@item.to</b></MudLink>
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudText Typo="Typo.subtitle1"><b>@item.price.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) VNĐ</b></MudText>
-                            </MudItem>
-                        </MudGrid>
-                        
-                        <MudText Style="@($"color:{Colors.Grey.Darken1};")">Quãng đường: @item.distance</MudText>
-                        <MudText Style="@($"color:{Colors.Grey.Darken1};")">Khởi hành ngày: @item.time_start.ToString("dd/MM/yyyy")</MudText>
-                        
-                    </MudCardContent>
+                        <MudCardContent Class="bg-white rounded-2 mt-1 mb-1">
+
+                            <MudGrid>
+                                <MudItem xs="8">
+                                    <MudLink Href="" Underline="Underline.None" Color="Color.Primary" Typo="Typo.subtitle1"><b>@item.to</b></MudLink>
+                                </MudItem>
+                                <MudItem xs="4">
+                                    <MudText Typo="Typo.subtitle1"><b>@item.price.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) VNĐ</b></MudText>
+                                </MudItem>
+                            </MudGrid>
+
+                            <MudText Style="@($"color:{Colors.Grey.Darken1};")">Quãng đường: @item.distance</MudText>
+                            <MudText Style="@($"color:{Colors.Grey.Darken1};")">Khởi hành ngày: @item.time_start.ToString("dd/MM/yyyy")</MudText>
+
+                        </MudCardContent>
                     </MudCard>
                 }
             </MudCard>
@@ -126,19 +81,19 @@
                 </div>
                 @foreach (var item in eTrip2)
                 {
-                <MudCard>
-                    <MudCardContent Class="bg-white rounded-2 mt-1 mb-1">
-                        <MudGrid>
-                            <MudItem xs="8">
-                                <MudLink Href="" Underline="Underline.None" Color="Color.Primary" Typo="Typo.subtitle1"><b>@item.to</b></MudLink>
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudText Typo="Typo.subtitle1"><b>@item.price.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) VNĐ</b></MudText>
-                            </MudItem>
-                        </MudGrid>
-                        <MudText Style="@($"color:{Colors.Grey.Darken1};")">Quãng đường: @item.distance</MudText>
-                        <MudText Style="@($"color:{Colors.Grey.Darken1};")">Khởi hành ngày: @item.time_start.ToString("dd/MM/yyyy")</MudText>
-                    </MudCardContent>
+                    <MudCard>
+                        <MudCardContent Class="bg-white rounded-2 mt-1 mb-1">
+                            <MudGrid>
+                                <MudItem xs="8">
+                                    <MudLink Href="" Underline="Underline.None" Color="Color.Primary" Typo="Typo.subtitle1"><b>@item.to</b></MudLink>
+                                </MudItem>
+                                <MudItem xs="4">
+                                    <MudText Typo="Typo.subtitle1"><b>@item.price.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) VNĐ</b></MudText>
+                                </MudItem>
+                            </MudGrid>
+                            <MudText Style="@($"color:{Colors.Grey.Darken1};")">Quãng đường: @item.distance</MudText>
+                            <MudText Style="@($"color:{Colors.Grey.Darken1};")">Khởi hành ngày: @item.time_start.ToString("dd/MM/yyyy")</MudText>
+                        </MudCardContent>
                     </MudCard>
                 }
             </MudCard>
@@ -155,18 +110,18 @@
                 @foreach (var item in eTrip3)
                 {
                     <MudCard>
-                    <MudCardContent Class="bg-white rounded-2 mt-1 mb-1">
-                        <MudGrid>
-                            <MudItem xs="8">
-                                <MudLink Href="" Underline="Underline.None" Color="Color.Primary" Typo="Typo.subtitle1"><b>@item.to</b></MudLink>
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudText Typo="Typo.subtitle1"><b>@item.price.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) VNĐ</b></MudText>
-                            </MudItem>
-                        </MudGrid>
-                        <MudText Style="@($"color:{Colors.Grey.Darken1};")">Quãng đường: @item.distance</MudText>
-                        <MudText Style="@($"color:{Colors.Grey.Darken1};")">Khởi hành ngày: @item.time_start.ToString("dd/MM/yyyy")</MudText>
-                    </MudCardContent>
+                        <MudCardContent Class="bg-white rounded-2 mt-1 mb-1">
+                            <MudGrid>
+                                <MudItem xs="8">
+                                    <MudLink Href="" Underline="Underline.None" Color="Color.Primary" Typo="Typo.subtitle1"><b>@item.to</b></MudLink>
+                                </MudItem>
+                                <MudItem xs="4">
+                                    <MudText Typo="Typo.subtitle1"><b>@item.price.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) VNĐ</b></MudText>
+                                </MudItem>
+                            </MudGrid>
+                            <MudText Style="@($"color:{Colors.Grey.Darken1};")">Quãng đường: @item.distance</MudText>
+                            <MudText Style="@($"color:{Colors.Grey.Darken1};")">Khởi hành ngày: @item.time_start.ToString("dd/MM/yyyy")</MudText>
+                        </MudCardContent>
                     </MudCard>
                 }
             </MudCard>
@@ -174,24 +129,24 @@
     </MudGrid>
 
     @* bạn cần thuê xe *@
-    <MudPaper Class="pa-5 mt-16"  style="background-color:#EFFAF3">
+    <MudPaper Class="pa-5 mt-16" style="background-color:#F4F6FF">
         <MudGrid>
             <MudItem xs="5">
                 <MudImage Fluid="true" Src="https://vietnamadventuretour.com.vn/wp-content/uploads/2023/07/Car-Rental.jpg" Class="rounded-lg" />
             </MudItem>
             <MudItem xs="7" Class="text-center">
-                <MudIcon Icon="@Icons.Material.Outlined.DirectionsCar" Size="Size.Large" Color="Color.Tertiary"></MudIcon>
+                <MudIcon Icon="@Icons.Material.Outlined.DirectionsCar" Size="Size.Large" Color="Color.Primary"></MudIcon>
                 <MudText Typo="Typo.h5">Bạn cần thuê xe?</MudText>
                 <MudItem xs="8" Class="mx-auto text-justify text-center">
                     <MudText Typo="Typo.subtitle1">BOXCAR với đa dạng các dòng xe từ bình dân đến cao cấp, bạn có thể dễ dàng tìm được chiếc xe phù hợp với nhu cầu của mình. Quá trình đặt xe nhanh chóng, an toàn và minh bạch, giúp bạn tiết kiệm thời gian mà vẫn đảm bảo chất lượng dịch vụ.</MudText>
-                    <MudButton Class="mx-auto mt-10" Variant="Variant.Filled" Color="Color.Tertiary">thuê xe</MudButton>
+                    <MudButton Href="/getCar" Class="mx-auto mt-10" Variant="Variant.Filled" Color="Color.Primary">thuê xe</MudButton>
                 </MudItem>
             </MudItem>
         </MudGrid>
     </MudPaper>
 
     @* bạn cần thuê tài xế *@
-    <MudPaper Class="pa-5 mt-16" style="background-color:#EEF7FF">
+    <MudPaper Class="pa-5 mt-16" style="background-color:#F4F6FF">
         <MudGrid>
             <MudItem xs="8" Class="text-center">
                 <MudIcon Icon="@Icons.Material.Outlined.CarRental" Size="Size.Large" Color="Color.Primary"></MudIcon>
@@ -199,7 +154,7 @@
                 <MudItem xs="8" Class="mx-auto text-justify text-center">
                     <MudText Typo="Typo.subtitle1">BOXCAR cam kết đem đến cho bạn dịch vụ thuê tài xế nhanh chóng và đáng tin cậy. Bạn có thể đặt ngay một tài xế phù hợp với nhu cầu di chuyển của mình, , đảm bảo hành trình của bạn luôn an toàn và thoải mái.</MudText>
                 </MudItem>
-                <MudButton Class="mx-auto mt-10" Variant="Variant.Filled" Color="Color.Primary">thuê tài xế</MudButton>
+                <MudButton Href="/getdriver" Class="mx-auto mt-10" Variant="Variant.Filled" Color="Color.Primary">thuê tài xế</MudButton>
             </MudItem>
             <MudItem xs="4">
                 <MudImage Fluid="true" Src="https://sydneyphysiosolutions.com.au/wp-content/uploads/2016/09/driving1.png" Class="rounded-lg w-100" />
@@ -320,19 +275,19 @@
         @foreach (var item in eDriver)
         {
             <MudItem xs="3">
-                <MudCard Style="background-color: #FFF7F5">
+                <MudCard Style="background-color: #F4F6FF">
                     <MudCardContent>
                         <MudImage Height="300" Src="@item.img_driver" Fluid="true" />
-                        <MudText Class="text-center mt-2" Typo="Typo.h6" Color="Color.Secondary">@item.fullname</MudText>
+                        <MudText Class="text-center mt-2" Typo="Typo.h6" Color="Color.Primary">@item.fullname</MudText>
                         <MudGrid Class="mt-2">
                             <MudItem xs="4">
                                 <MudText>@item.birthday tuổi</MudText>
                             </MudItem>
                             <MudItem xs="8">
-                                <MudText>@item.trip_count chuyến xe</MudText>
+                                <MudText Class="float-end">@item.trip_count chuyến xe</MudText>
                             </MudItem>
                         </MudGrid>
-                        <MudButton Variant="Variant.Outlined" Size="Size.Small" class="mt-4" Color="Color.Secondary">Thuê ngay</MudButton>
+                        <MudButton Variant="Variant.Filled" Size="Size.Small" class="mt-4" Color="Color.Primary">Thuê ngay</MudButton>
                     </MudCardContent>
                 </MudCard>
             </MudItem>
@@ -340,10 +295,10 @@
     </MudGrid>
 
     @* quảng cáo *@
-    <MudPaper Class="pa-12 mt-14" Style="background-color: #FFF7F5">
+    <MudPaper Class="pa-12 mt-14" Style="background-color: #F4F6FF">
         <div class="col-md-8 mx-auto">
-            <MudText Class="text-center text-uppercase fw-bold pb-3" Typo="Typo.h4" Color="Color.Secondary">BOXCARS</MudText>
-            <MudText Class="text-center text-uppercase fw-bold pb-3" Typo="Typo.h5" Color="Color.Secondary">CHẤT LƯỢNG LÀ DANH DỰ HÀNG ĐẦU CỦA CHÚNG TÔI</MudText>
+            <MudText Class="text-center text-uppercase fw-bold pb-3" Typo="Typo.h4" Color="Color.Primary">BOXCARS</MudText>
+            <MudText Class="text-center text-uppercase fw-bold pb-3" Typo="Typo.h5" Color="Color.Primary">CHẤT LƯỢNG LÀ DANH DỰ HÀNG ĐẦU CỦA CHÚNG TÔI</MudText>
             <MudText Class="text-center pb-5" Typo="Typo.subtitle1">
                 Được khách hàng tin tưởng và lựa chọn là niềm vinh hạnh của chúng
                 tôi
