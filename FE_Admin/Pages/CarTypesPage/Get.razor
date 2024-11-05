@@ -34,7 +34,7 @@
                         </MudItem>
                     </ToolBarContent>
                     <Columns>
-                        <SelectColumn T="car_types" />
+                        
                         @* <PropertyColumn T="role_task" TProperty="int" Property="x => x.id_role_task" /> *@
 
                         <PropertyColumn T="car_types" Style="width: 80%;" TProperty="string" Property="x => x.name" SortBy="@_sortBy" Class="fw-bold" Title="Tên Loại Xe" />
@@ -70,8 +70,8 @@
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
             {
-            new BreadcrumbItem("Bài Viết", href: "/getcartypes", icon: @Icons.Material.Outlined.WorkOutline),
-            new BreadcrumbItem("Danh sách bài viết", href: "/getcartypes", icon: @Icons.Material.Outlined.List),
+            new BreadcrumbItem("Loại xe", href: "/getcartypes", icon: @Icons.Material.Outlined.WorkOutline),
+            new BreadcrumbItem("Danh sách loại xe", href: "/getcartypes", icon: @Icons.Material.Outlined.List),
             };
 
     private Func<car_types, object> _sortBy => x =>

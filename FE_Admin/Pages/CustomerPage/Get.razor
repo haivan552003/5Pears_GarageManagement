@@ -36,19 +36,13 @@
 
                     <!-- DataGrid Columns -->
                     <Columns>
-                        <SelectColumn T="customers" />
-                        <PropertyColumn T="customers" TProperty="string" Property="x => x.cus_code" Title="Mã khách hàng"
+                        <PropertyColumn T="customers" Class="fw-bold" TProperty="string" Property="x => x.cus_code" Title="Mã khách hàng"
                                         Style="width: 15%; white-space: nowrap;" />
-                        <PropertyColumn T="customers" TProperty="string" Property="x => x.fullname" Title="Họ và Tên"
+                        <PropertyColumn T="customers" Class="fw-bold" TProperty="string" Property="x => x.fullname" Title="Họ và Tên"
                                         Style="width: 20%; white-space: nowrap;" />
-                        <PropertyColumn T="customers" TProperty="string" Property="x => x.phone_number" Title="Số điện thoại"
+                        <PropertyColumn T="customers" Class="fw-bold" TProperty="string" Property="x => x.phone_number" Title="Số điện thoại"
                                         Style="width: 15%; white-space: nowrap;" />
-@*                         <TemplateColumn T="customers" Class="fw-bold" Title="Giới tính" Style="white-space: nowrap;">
-                            <CellTemplate Context="element">
-                                @(element.Item.gender ? "Nam" : "Nữ")
-                            </CellTemplate>
-                        </TemplateColumn> *@
-                        <PropertyColumn T="customers" TProperty="string" Property="x => x.email" Title="Email"
+                        <PropertyColumn T="customers" Class="fw-bold" TProperty="string" Property="x => x.email" Title="Email"
                                         Style="width: 20%; white-space: nowrap;" />
                         <TemplateColumn T="customers" Style="width: 80%; white-space: nowrap;" Class="fw-bold" Title="Trạng Thái">
                             <CellTemplate Context="element">
@@ -100,7 +94,7 @@
         if (string.IsNullOrWhiteSpace(_searchString))
             return true;
 
-        return $"{x.email} {x.cus_code} {x.fullname}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
+        return $"{x.email} {x.cus_code} {x.fullname} {x.phone_number}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
     };
 
     protected override async Task OnInitializedAsync()
