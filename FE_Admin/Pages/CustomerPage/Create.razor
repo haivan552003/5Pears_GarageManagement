@@ -14,7 +14,7 @@
         </MudItem>
         <EditForm Model="@newDriver" Class="pa-3" OnValidSubmit="AddDriver">
             <MudGrid>
-                <MudItem xs="12" md="8">
+                <MudItem xs="12" md="12">
                     <DataAnnotationsValidator />
                     <MudPaper Elevation="3" Class="pa-4">
                         <MudText Typo="Typo.h6" Class="mb-5">Thêm tài xế</MudText>
@@ -51,21 +51,11 @@
                             </MudItem>
                             <MudItem xs="12" sm="6">
                                 <MudSelect @bind-Value="newDriver.status" For="@(() => newDriver.status)" Label="Trạng thái" Required="true" Variant="Variant.Outlined">
-                                    <MudSelectItem Value="true">Hoạt động</MudSelectItem>
-                                    <MudSelectItem Value="false">Không hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="true">Đang Hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
                                 </MudSelect>
                             </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudSelect @bind-Value="newDriver.id_role" Label="Vai trò" Required="true" Variant="Variant.Outlined">
-                                    @if (roles != null)
-                                    {
-                                        @foreach (var role in roles)
-                                        {
-                                            <MudSelectItem Value="role.id">@role.name</MudSelectItem>
-                                        }
-                                    }
-                                </MudSelect>
-                            </MudItem>
+                           
                         </MudGrid>
                         <MudItem xs="12" Class="d-flex justify-end mt-6">
                             <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mr-2" OnClick="@(() => NavigationManager.NavigateTo("/getDriver"))">Hủy</MudButton>

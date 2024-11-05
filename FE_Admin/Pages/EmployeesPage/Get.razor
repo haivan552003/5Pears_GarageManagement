@@ -20,6 +20,7 @@
                         <MudItem xs="4" Elevation="0" Class="pb-3">
                             <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
                                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+
                         </MudItem>
                         <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
                             <MudButton Href="/addemp" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
@@ -36,10 +37,10 @@
 
                     <!-- DataGrid Columns -->
                     <Columns>
-                        <SelectColumn T="employees" />
-                        <PropertyColumn T="employees" TProperty="string" Property="x => x.emp_code" Title="Mã nhân viên"
+                        
+                        <PropertyColumn T="employees" Class="fw-bold" TProperty="string" Property="x => x.emp_code" Title="Mã nhân viên"
                                         Style="width: 15%; white-space: nowrap;" />
-                        <PropertyColumn T="employees" TProperty="string" Property="x => x.fullname" Title="Họ và Tên"
+                        <PropertyColumn T="employees" Class="fw-bold" TProperty="string" Property="x => x.fullname" Title="Họ và Tên"
                                         Style="width: 20%; white-space: nowrap;" />
 
                         <TemplateColumn T="employees" Class="fw-bold" Title="Giới tính" Style="white-space: nowrap;">
@@ -47,13 +48,9 @@
                                 @(element.Item.gender ? "Nam" : "Nữ")
                             </CellTemplate>
                         </TemplateColumn>
-                        <PropertyColumn T="employees" TProperty="string" Property="x => x.citizen_identity_number" Title="Số CMND/CCCD"
+                        <PropertyColumn T="employees" Class="fw-bold" TProperty="string" Property="x => x.citizen_identity_number" Title="Số CCCD"
                                         Style="width: 15%; white-space: nowrap;" />
-
-                        <PropertyColumn T="employees" TProperty="string" Property="x => x.role_name" Title="Họ và Tên"
-                                        Style="width: 20%; white-space: nowrap;" />
-
-                        <TemplateColumn T="employees" Style="width: 80%; white-space: nowrap;" Class="fw-bold" Title="Trạng Thái">
+                        <TemplateColumn T="employees"  Style="width: 80%; white-space: nowrap;" Class="fw-bold" Title="Trạng Thái">
                             <CellTemplate Context="element">
                                 @if (element.Item.status)
                                 {
@@ -102,12 +99,13 @@
     };
 
     private Func<employees, bool> _quickFilter => x =>
-    {
-        if (string.IsNullOrWhiteSpace(_searchString))
-            return true;
+     {
+     if (string.IsNullOrWhiteSpace(_searchString))
+         return true;
 
-        return $"{x.email} {x.emp_code} {x.fullname}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
-    };
+     return $"{x.email} {x.emp_code} {x.fullname} {x.citizen_identity_number}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
+     };
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -198,4 +196,5 @@
             Snackbar.Add("Xóa nhân viên thất bại!", Severity.Error);
         }
     }
+
 }

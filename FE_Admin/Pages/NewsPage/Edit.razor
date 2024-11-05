@@ -11,54 +11,57 @@
                 <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
             </MudPaper>
         </MudItem>
-        <MudItem xs="6" Class="mx-auto">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudItem xs="12">
-                    <MudPaper Elevation="4" Class="p-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Thông tin công việc</MudText>
-                        <MudForm @ref="form" @bind-IsValid="@isFormValid" Style="height:auto">
-                            <InputFile id="newsImageInput" OnChange="@LoadNewsImage" hidden accept=".jpg,.jpeg,.png" />
-                            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.CloudUpload" for="newsImageInput"
-                                       FullWidth="true" Class="mb-3">
-                                Chọn hình ảnh mới
-                            </MudButton>
+        <MudItem xs="4" Class="mx-auto">
+            <MudPaper Elevation="4" Class="pa-3">
+                <MudText Typo="Typo.h6" Class="mb-5">Chỉnh sửa thông tin công việc</MudText>
+                <MudGrid>
+                    <MudItem xs="12" Class="mx-auto">
+                        <MudForm @ref="form" Style="height:auto" Class="mud-width-full">
                             @if (!string.IsNullOrEmpty(News.news_img))
                             {
-                                <MudImage Src="@News.news_img" Alt="Hình ảnh mới" Width="100"
-                                          Height="100" ObjectFit="ObjectFit.Cover" Class="mb-3" />
+                                <MudImage Fluid="false" Src="@News.news_img" Class="rounded-lg mb-2 w-100 mx-auto d-block" Height="260" />
                             }
+                            <MudButton HtmlTag="label" For="newsImageInput" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary"
+                                       StartIcon="@Icons.Material.Outlined.CloudUpload"
+                                       FullWidth="true" Class="mud-button-small-text">
+                                Chọn hình ảnh mới
+                            </MudButton>
 
-                            <MudTextField @bind-Value="News.title" Label="Tiêu Đề"
+                            <InputFile id="newsImageInput" OnChange="LoadNewsImage" accept="image/*" style="display: none;" />
+
+                            <MudTextField ShrinkLabel @bind-Value="News.title" Label="Tiêu đề"
+                                          Class="py-3"
                                           Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
-                                          Placeholder="Tiêu Đề" Variant="Variant.Outlined" Required="true" />
+                                          Placeholder="Tiêu đề công việc" Variant="Variant.Outlined" Required="true" />
+
+                            <MudTextField ShrinkLabel @bind-Value="News.id_emp" Label="Người tạo"
+                                          Class="py-3"
+                                          Disabled="true"
+                                          Placeholder="Người tạo" Variant="Variant.Outlined" Required="true" />
 
                             <CKeditor Id="newsContent" @bind-Value="News.content" />
 
-                            <MudTextField @bind-Value="News.id_emp" Label="Người Tạo"
-                                          Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
-                                          Placeholder="Người Tạo" Variant="Variant.Outlined" Required="true" />
-
-                            <MudSelect @bind-Value="News.status" Label="Trạng Thái" Variant="Variant.Outlined" Required="true">
+                            <MudSelect @bind-Value="News.status" Label="Trạng thái" Variant="Variant.Outlined" Required="true">
                                 <MudSelectItem Value="@true">Đang hoạt động</MudSelectItem>
                                 <MudSelectItem Value="@false">Ngưng hoạt động</MudSelectItem>
                             </MudSelect>
 
-                            <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" 
-                                       Variant="Variant.Filled" OnClick="SubmitForm" Disabled="@(!isFormValid || isLoading)">
-                                @(isLoading ? "Đang lưu..." : "Lưu")
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary"
+                                       OnClick="SubmitForm" Class="mt-3">
+                                Lưu
                             </MudButton>
-                            <MudButton Class="mt-3 ml-3" StartIcon="@Icons.Material.Outlined.ArrowBack" 
-                                       Variant="Variant.Outlined" OnClick="Cancel" Disabled="@isLoading">
+                            <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.ArrowBack"
+                                       OnClick="Cancel" Class="mt-3 ml-3">
                                 Trở về
                             </MudButton>
                         </MudForm>
-                    </MudPaper>
-                </MudItem>
+                    </MudItem>
+                </MudGrid>
             </MudPaper>
         </MudItem>
     </MudGrid>
 </MudContainer>
+
 
 @code {
     [Parameter] public int Id { get; set; }

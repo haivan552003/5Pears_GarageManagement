@@ -44,7 +44,7 @@
                                         Style="width: 15%;" />
                         <PropertyColumn T="trip" Class="fw-bold"  TProperty="string" Property="x => x.to" Title="Điểm đến"
                                         Style="width: 15%;" />
-                        <TemplateColumn T="trip" Title="Trạng thái" Style="white-space: nowrap;">
+                        <TemplateColumn T="trip" Class="fw-bold" Title="Trạng thái" Style="white-space: nowrap;">
                             <CellTemplate Context="element">
                                 @if (element.Item.status)
                                 {
@@ -85,7 +85,7 @@
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Chuyến đi", href: "/gettrips", icon: @Icons.Material.Outlined.Map),
+        new BreadcrumbItem("Tuyến xe", href: "/gettrips", icon: @Icons.Material.Outlined.Map),
         new BreadcrumbItem("Danh sách chuyến đi", href: "/gettrips", icon: @Icons.Material.Outlined.List),
     };
 
