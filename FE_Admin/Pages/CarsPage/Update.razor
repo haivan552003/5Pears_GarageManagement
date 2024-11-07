@@ -22,22 +22,19 @@
                                 <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_code" Label="Mã xe" ReadOnly="true" />
                             </MudItem>
                             <MudItem xs="4">
-                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_number" Label="Biển số xe" Required="true" RequiredError="Biển số xe là bắt buột" />
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_number" Label="Biển số xe" Required="true" RequiredError="Biển số xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateCarNumber))" />
                             </MudItem>
                             <MudItem xs="4">
-                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_name" Label="Tên xe" Required="true" RequiredError="Tên xe là bắt buột" />
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_name" Label="Tên xe" Required="true" RequiredError="Tên xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateCarName))" />
                             </MudItem>
                             <MudItem xs="4">
-                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.fuel" Label="Nhiên liệu" Required="true" RequiredError="Nhiên liệu là bắt buột" />
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.fuel" Label="Nhiên liệu" Required="true" RequiredError="Nhiên liệu là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateColor))" />
                             </MudItem>
                             <MudItem xs="4">
-                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.description" Label="Mô tả" Required="true" RequiredError="Mô tả là bắt buột" />
+                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.price" Label="Giá xe" Required="true" RequiredError="Giá xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidatePrice))" />
                             </MudItem>
                             <MudItem xs="4">
-                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.insurance_fee" Label="Phí" Required="true" RequiredError="Phí là bắt buột" />
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.color" Label="Màu xe" Required="true" RequiredError="Màu xe đi được là bắt buột" />
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.color" Label="Màu xe" Required="true" RequiredError="Màu xe đi được là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateColor))" />
                             </MudItem>
                             @*   <MudItem xs="4">
                             <MudDatePicker @bind-Date="@vehicle_registration_start" Label="Ngày đăng ký" Required="true" RequiredError="Ngày đăng ký là bắt buộc" />
@@ -45,9 +42,6 @@
                             <MudItem xs="4">
                             <MudDatePicker Date="@vehicle_registration_end" Label="Ngày hết hạn đăng ký" Required="true" RequiredError="Ngày hết hạn đăng ký là bắt buộc" />
                             </MudItem> *@
-                            <MudItem xs="4">
-                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.price" Label="Giá xe" Required="true" RequiredError="Giá xe là bắt buộc" />
-                            </MudItem>
 
                             <MudItem xs="4">
                                 <MudSelect Variant="Variant.Outlined" @bind-Value="Car.status" Label="Trạng thái" Required="true" RequiredError="Trạng thái là bắt buộc">
@@ -59,7 +53,7 @@
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="4">
-                                <MudSelect @bind-Value="Car.type_id" Label="Vai trò" Required="true" Variant="Variant.Outlined">
+                                <MudSelect @bind-Value="Car.type_id" Label="Loại Xe" Required="true" Variant="Variant.Outlined">
                                     @if (car_types != null)
                                     {
                                         @foreach (var role in car_types)
@@ -70,7 +64,7 @@
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="4">
-                                <MudSelect @bind-Value="Car.brand_id" Label="Vai trò" Required="true" Variant="Variant.Outlined">
+                                <MudSelect @bind-Value="Car.brand_id" Label="Hãng Xe" Required="true" Variant="Variant.Outlined">
                                     @if (car_brands != null)
                                     {
                                         @foreach (var role in car_brands)
@@ -94,10 +88,22 @@
                             <MudDatePicker Date="@year_production" Label="Năm sản xuất" Required="true" RequiredError="Năm sản xuất là bắt buộc" PickerVariant="PickerVariant.Dialog" />
                             </MudItem> *@
                             <MudItem xs="4">
-                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.odo" Label="Số km đã đi" Required="true" RequiredError="Số km đã đi là bắt buộc" />
+                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.odo" Label="Số km đã đi" Required="true" RequiredError="Số km đã đi là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateOdo))" />
                             </MudItem>
                             <MudItem xs="4">
-                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.insurance_fee" Label="Phí bảo hiểm" Required="true" RequiredError="Phí bảo hiểm là bắt buộc" />
+                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.insurance_fee" Label="Phí bảo hiểm" Required="true" RequiredError="Phí bảo hiểm là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateBh))" />
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudSelect Variant="Variant.Outlined" @bind-Value="Car.status" Label="Trạng thái" Required="true" RequiredError="Trạng thái là bắt buộc">
+                                    @*  <MudSelectItem Value="@("1")">Có sẵn</MudSelectItem>
+                                    <MudSelectItem Value="@("2")">Đã thuê</MudSelectItem>
+                                    <MudSelectItem Value="@("3")">Bảo trì</MudSelectItem> *@
+                                    <MudSelectItem Value="@("1")">Đang hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="@("2")">Ngưng hoạt động</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.description" Label="Mô tả" Required="true" Lines=" 3 " RequiredError="Mô tả là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateDescription))" />
                             </MudItem>
                             <MudItem xs="12" Class="d-flex justify-end mt-4">
                                 <MudButton Variant="Variant.Filled"
@@ -499,5 +505,91 @@
     private void Cancel()
     {
         navigationManager.NavigateTo("/cars");
+    }
+    private IEnumerable<string> CarValidateCarNumber(string number)
+    {
+        if (string.IsNullOrWhiteSpace(number))
+        {
+            yield return "Vui lòng điền bảng số.";
+        }
+        else
+        {
+            var regex = new System.Text.RegularExpressions.Regex(@"^[A-Za-z]{2}-\d{5}$");
+            if (!regex.IsMatch(number))
+            {
+                yield return "Biển số xe không hợp lệ. Định dạng phải là XX-12345.";
+            }
+        }
+    }
+
+    private IEnumerable<string> CarValidateCarName(string carname)
+    {
+        if (string.IsNullOrWhiteSpace(carname))
+        {
+            yield return "Vui lòng điền tên xe.";
+        }
+        else if (carname.Length < 5 || carname.Length > 100)
+        {
+            yield return "Tên xe không hợp lệ.";
+        }
+    }
+
+    private IEnumerable<string> CarValidateColor(string color)
+    {
+        if (string.IsNullOrWhiteSpace(color))
+        {
+            yield return "Vui lòng điền màu xe.";
+        }
+        else if (color.Length > 20)
+        {
+            yield return "Màu xe không hợp lệ.";
+        }
+    }
+
+    private IEnumerable<string> CarValidatePrice(string price)
+    {
+        if (string.IsNullOrWhiteSpace(price))
+        {
+            yield return "Vui lòng điền giá xe.";
+        }
+        else if (price.Length < 0)
+        {
+            yield return "giá xe không hợp lệ.";
+        }
+    }
+
+    private IEnumerable<string> CarValidateOdo(string odo)
+    {
+        if (string.IsNullOrWhiteSpace(odo))
+        {
+            yield return "Vui lòng điền số km.";
+        }
+        else if (odo.Length < 0)
+        {
+            yield return "giá xe không hợp lệ.";
+        }
+    }
+    private IEnumerable<string> CarValidateBh(string bh)
+    {
+        if (string.IsNullOrWhiteSpace(bh))
+        {
+            yield return "Vui lòng điền phí bảo hiểm.";
+        }
+        else if (bh.Length < 0)
+        {
+            yield return "Phí bảo hiểm không hợp lệ.";
+        }
+    }
+
+    private IEnumerable<string> CarValidateDescription(string description)
+    {
+        if (string.IsNullOrWhiteSpace(description))
+        {
+            yield return "Vui lòng điền mô tả.";
+        }
+        else if (description.Length < 2 || description.Length > 250)
+        {
+            yield return "Mô tả không hợp lệ.";
+        }
     }
 }
