@@ -24,14 +24,14 @@ namespace FE_Admin.Models
         [Required(ErrorMessage = "Ảnh CCCD (mặt sau) là bắt buộc.")]
         public string citizen_identity_img2 { get; set; }
         [Required(ErrorMessage = "Số CCCD là bắt buộc.")]
-        [RegularExpression(@"^\d{9}|\d{12}$", ErrorMessage = "Số CCCD không hợp lệ.")]
+        [RegularExpression(@"^\d{12}|\d{12}$", ErrorMessage = "Số CCCD không hợp lệ.")]
         public string citizen_identity_number { get; set; }
         [Required(ErrorMessage = "Ảnh GPLX (mặt trước) là bắt buộc.")]
         public string driver_license_img1 { get; set; }
         [Required(ErrorMessage = "Ảnh GPLX (mặt sau) là bắt buộc.")]
         public string driver_license_img2 { get; set; }
         [Required(ErrorMessage = "Số GPLX là bắt buộc.")]
-        [RegularExpression(@"^\d{9}$", ErrorMessage = "Số GPLX phải có 9 chữ số.")]
+        [RegularExpression(@"^\d{12}$", ErrorMessage = "Số GPLX phải có 12 chữ số.")]
         public string driver_license_number { get; set; }
         [Range(0, 1, ErrorMessage = "Giới tính không hợp lệ.")]
         public byte gender { get; set; }

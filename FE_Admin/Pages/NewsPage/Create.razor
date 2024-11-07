@@ -27,39 +27,44 @@
             <MudPaper Elevation="0" Class="pa-3">
                 <MudItem xs="12">
                     <MudPaper Elevation="4" Class="p-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Thêm công việc</MudText>
+                        <MudText Typo="Typo.h6" Class="mb-5">Thêm tin tức</MudText>
                         <MudForm @ref="form" @bind-IsValid="@isFormValid" Style="height:auto">
+                            <MudTextField @bind-Value="News.title" Class="py-3" Label="Tiêu Đề"
+                                          Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
+                                          Placeholder="Tiêu Đề" Variant="Variant.Outlined" Required="true" />
+
+                            <CKeditor Id="newsContent" @bind-Value="News.content" />
+
+                            <MudTextField @bind-Value="News.id_emp" Class="py-3" Label="Người Tạo"
+                                          Validation="@(new Func<string, IEnumerable<string>>(NguoiiTaoValidate))"
+                                          Placeholder="Tên công việc" Variant="Variant.Outlined" Required="true" />
+
+                            <MudSelect @bind-Value="News.status" Label="Trạng Thái " Class="py-3" Variant="Variant.Outlined" Required="true">
+                                <MudSelectItem Value="@true">Đang hoạt động</MudSelectItem>
+                                <MudSelectItem Value="@false">Ngưng hoạt động</MudSelectItem>
+                            </MudSelect>
                             <InputFile id="newsImageInput" OnChange="@LoadNewsImage" hidden accept=".jpg,.jpeg,.png" />
                             <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.CloudUpload" for="newsImageInput"
                                        FullWidth="true" Class="mb-3">
                                 Chọn hình ảnh
                             </MudButton>
+
                             @if (!string.IsNullOrEmpty(News.news_img))
                             {
-                                <MudImage Src="@News.news_img" Alt="Hình ảnh mới" Width="100"
-                                          Height="100" ObjectFit="ObjectFit.Cover" Class="mb-3" />
+                                <MudImage Src="@News.news_img" Alt="Hình ảnh mới" Width="150" Height="150"
+                                          ObjectFit="ObjectFit.Cover" Class="mb-3 mx-auto d-block" />
                             }
 
-                            <MudTextField @bind-Value="News.title" Label="Tiêu Đề"
-                                          Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
-                                          Placeholder="Tiêu Đề" Variant="Variant.Outlined" Required="true" />
+                            <MudGrid>
+                                <MudItem xs="12" Class="d-flex justify-end">
+                                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save"
+                                               Color="Color.Primary" OnClick="AddNews" Class="mt-3" Disabled="@(!isFormValid || isLoading)">
+                                        @(isLoading ? "Đang lưu..." : "Lưu")
+                                    </MudButton>
+                                </MudItem>
+                            </MudGrid>
 
-                            <CKeditor Id="newsContent" @bind-Value="News.content" />
-
-                            <MudTextField @bind-Value="News.id_emp" Label="Người Tạo"
-                                          Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
-                                          Placeholder="Tên công việc" Variant="Variant.Outlined" Required="true" />
-
-                            <MudSelect @bind-Value="News.status" Label="Trạng Thái" Variant="Variant.Outlined" Required="true">
-                                <MudSelectItem Value="@true">Đang hoạt động</MudSelectItem>
-                                <MudSelectItem Value="@false">Ngưng hoạt động</MudSelectItem>
-                            </MudSelect>
-
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" 
-                                       Color="Color.Primary" OnClick="AddNews" Class="mt-3" Disabled="@(!isFormValid || isLoading)">
-                                @(isLoading ? "Đang lưu..." : "Lưu")
-                            </MudButton>
                         </MudForm>
                     </MudPaper>
                 </MudItem>
@@ -79,8 +84,8 @@
 
     private readonly List<BreadcrumbItem> _items = new()
     {
-        new BreadcrumbItem("Công việc", href: "/getnews", icon: Icons.Material.Outlined.WorkOutline),
-        new BreadcrumbItem("Danh sách công việc", href: "/getnews", icon: Icons.Material.Outlined.List),
+        new BreadcrumbItem("bài viết", href: "/getnews", icon: Icons.Material.Outlined.WorkOutline),
+        new BreadcrumbItem("Danh sách bài viết", href: "/getnews", icon: Icons.Material.Outlined.List),
         new BreadcrumbItem("Thêm mới", href: "/addnews", icon: Icons.Material.Filled.AddCircleOutline),
     };
 
@@ -89,6 +94,13 @@
         if (string.IsNullOrWhiteSpace(name))
         {
             yield return "Vui lòng điền thông tin";
+        }
+    }
+    private IEnumerable<string> NguoiiTaoValidate(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            yield return "Vui lòng điền thông tin người tạo";
         }
     }
 

@@ -30,9 +30,9 @@
                         <MudText Typo="Typo.h6" Class="mb-5">Thêm Loại Xe</MudText>
                         <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
 
-                            <MudTextField ShrinkLabel @bind-Value="CarTypes.name" Label="Địa Chỉ"
+                            <MudTextField ShrinkLabel @bind-Value="CarTypes.name" Label="Tên loại xe"
                                           Validation="@(new Func<string, IEnumerable<string>>(CarTypesValidate))"
-                                          Placeholder="Địa Chỉ" Variant="Variant.Outlined" Required="true" />
+                                          Placeholder="Tên loại xe" Variant="Variant.Outlined" Required="true" />
 
                             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddCarTypes" Class="mt-3">Lưu</MudButton>
                         </MudForm>
@@ -60,11 +60,11 @@
 
     private IEnumerable<string> CarTypesValidate(string name)
     {
+
         if (string.IsNullOrWhiteSpace(name))
-        {
-            yield return "Vui lòng điền thông tin";
-            yield break;
-        }
+            yield return " Tên loại không được để trống";
+        else if (name.Length < 2)
+            yield return "Tên loại phải có ít nhất 2 ký tự";
     }
 
     private async Task AddCarTypes()

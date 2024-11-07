@@ -63,8 +63,10 @@
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            yield return "Vui lòng điền thông tin";
-            yield break;
+            if (string.IsNullOrWhiteSpace(name))
+                yield return " Tên loại không được để trống";
+            else if (name.Length < 2)
+                yield return "Tên loại phải có ít nhất 2 ký tự";
         }
     }
 

@@ -17,17 +17,7 @@
                 <MudGrid>
                     <MudItem xs="12" Class="mx-auto">
                         <MudForm @ref="form" Style="height:auto" Class="mud-width-full">
-                            @if (!string.IsNullOrEmpty(News.news_img))
-                            {
-                                <MudImage Fluid="false" Src="@News.news_img" Class="rounded-lg mb-2 w-100 mx-auto d-block" Height="260" />
-                            }
-                            <MudButton HtmlTag="label" For="newsImageInput" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary"
-                                       StartIcon="@Icons.Material.Outlined.CloudUpload"
-                                       FullWidth="true" Class="mud-button-small-text">
-                                Chọn hình ảnh mới
-                            </MudButton>
-
-                            <InputFile id="newsImageInput" OnChange="LoadNewsImage" accept="image/*" style="display: none;" />
+                           
 
                             <MudTextField ShrinkLabel @bind-Value="News.title" Label="Tiêu đề"
                                           Class="py-3"
@@ -41,10 +31,21 @@
 
                             <CKeditor Id="newsContent" @bind-Value="News.content" />
 
-                            <MudSelect @bind-Value="News.status" Label="Trạng thái" Variant="Variant.Outlined" Required="true">
+                            <MudSelect @bind-Value="News.status" Label="Trạng thái" Variant="Variant.Outlined" Class="py-3" Required="true">
                                 <MudSelectItem Value="@true">Đang hoạt động</MudSelectItem>
                                 <MudSelectItem Value="@false">Ngưng hoạt động</MudSelectItem>
                             </MudSelect>
+                            @if (!string.IsNullOrEmpty(News.news_img))
+                            {
+                                <MudImage Fluid="false" Src="@News.news_img" Class="rounded-lg mb-2 w-100 mx-auto d-block" Height="260" />
+                            }
+                            <MudButton HtmlTag="label" For="newsImageInput" Size="Size.Small" Variant="Variant.Outlined"  Color="Color.Secondary"
+                                       StartIcon="@Icons.Material.Outlined.CloudUpload"
+                                       FullWidth="true" Class="mud-button-small-text">
+                                Chọn hình ảnh mới
+                            </MudButton>
+
+                            <InputFile id="newsImageInput" OnChange="LoadNewsImage" accept="image/*" style="display: none;" />
 
                             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary"
                                        OnClick="SubmitForm" Class="mt-3">
@@ -73,9 +74,9 @@
 
     private readonly List<BreadcrumbItem> _items = new()
     {
-        new BreadcrumbItem("Công việc", href: "/getnews", icon: Icons.Material.Outlined.WorkOutline),
-        new BreadcrumbItem("Danh sách công việc", href: "/getroletask", icon: Icons.Material.Outlined.List),
-        new BreadcrumbItem("Chỉnh sửa công việc", href: "", icon: Icons.Material.Filled.Edit),
+        new BreadcrumbItem("bài viết", href: "/getnews", icon: Icons.Material.Outlined.WorkOutline),
+        new BreadcrumbItem("Danh sách bài viết", href: "/getnews", icon: Icons.Material.Outlined.List),
+        new BreadcrumbItem("Chỉnh sửa bài viết", href: "", icon: Icons.Material.Filled.Edit),
     };
 
     protected override async Task OnInitializedAsync()
