@@ -39,7 +39,7 @@
                         <PropertyColumn T="location" Style="width: 80%;" TProperty="string" Property="x => x.name" SortBy="@_sortBy" Class="fw-bold" Title="Địa Chỉ" />
                         <PropertyColumn T="location" Style="width: 80%;" TProperty="string" Property="x => x.address" SortBy="@_sortBy" Class="fw-bold" Title="Thành Phố" />
                         <PropertyColumn T="location" Style="width: 80%;" TProperty="string" Property="x => x.phone_number" SortBy="@_sortBy" Class="fw-bold" Title="Số Điện Thoại" />
-                        <PropertyColumn T="location" Style="width: 80%;" TProperty="string" Property="x => x.location_code" SortBy="@_sortBy" Class="fw-bold" Title="Số Nhà" />
+                        <PropertyColumn T="location" Style="width: 80%;" TProperty="string" Property="x => x.location_code" SortBy="@_sortBy" Class="fw-bold" Title="Mã Địa Chỉ" />
                         <TemplateColumn T="location" Style="width: 80%;" Class="fw-bold" Title="Trạng Thái">
                             <CellTemplate Context="element">
                                 @if (element.Item.status)
@@ -84,8 +84,8 @@
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
             {
-            new BreadcrumbItem("Bài Viết", href: "/getlocation", icon: @Icons.Material.Outlined.WorkOutline),
-            new BreadcrumbItem("Danh sách bài viết", href: "/getlocation", icon: @Icons.Material.Outlined.List),
+            new BreadcrumbItem("Địa chỉ", href: "/getlocation", icon: @Icons.Material.Filled.LocationOn),
+            new BreadcrumbItem("Danh sách địa chỉ", href: "/getlocation", icon: @Icons.Material.Outlined.List),
             };
 
     private Func<location, object> _sortBy => x =>
@@ -138,7 +138,7 @@
 
         var parameters = new DialogParameters
     {
-        { "ContentText", $"Bạn có chắc chắn muốn xóa vị trí { location.address}?" },
+        { "ContentText", $"Bạn có chắc chắn muốn xóa địa chỉ { location.address}?" },
         { "ButtonText", "Xóa" },
         { "Color", Color.Error }
     };
@@ -160,18 +160,18 @@
             var response = await httpClient.DeleteAsync($"{url}/{location.id}");
             if (response.IsSuccessStatusCode)
             {
-                Snackbar.Add($"Đã xóa vị trí {location.address} thành công", Severity.Success);
+                Snackbar.Add($"Đã xóa địa chỉ {location.address} thành công", Severity.Success);
                 await OnInitializedAsync();  // Tải lại danh sách sau khi xóa
             }
             else
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Lỗi khi xóa vị trí: {response.ReasonPhrase}. Chi tiết: {errorContent}", Severity.Error);
+                Snackbar.Add($"Lỗi khi xóa địa chỉ: {response.ReasonPhrase}. Chi tiết: {errorContent}", Severity.Error);
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Lỗi khi xóa vị trí: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Lỗi khi xóa địa chỉ: {ex.Message}", Severity.Error);
         }
     }
 

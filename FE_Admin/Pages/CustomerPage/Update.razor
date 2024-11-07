@@ -23,7 +23,7 @@
                     <MudItem xs="12" md="12">
                         @*                     <DataAnnotationsValidator />
                         *@                    <MudPaper Elevation="3" Class="pa-4">
-                            <MudText Typo="Typo.h6" Class="mb-5">Thêm tài xế</MudText>
+                            <MudText Typo="Typo.h6" Class="mb-5">Chỉnh sửa khách hàng</MudText>
                             <MudGrid>
                                 <MudItem xs="12" sm="6">
                                     <MudTextField ShrinkLabel @bind-Value="newRoleTask.cus_code" For="@(() => newRoleTask.cus_code)"
@@ -34,35 +34,40 @@
                                 <MudItem xs="12" sm="6">
                                     <MudTextField ShrinkLabel @bind-Value="newRoleTask.email" For="@(() => newRoleTask.email)"
                                                   Label="Email"
-                                                  Variant="Variant.Outlined" />
+                                                  Variant="Variant.Outlined"
+                                                  Validation="@(new Func<string, Task<IEnumerable<string>>>(CustomerValidateEmail))"/>
                                 </MudItem>
 
                                 <MudItem xs="12" sm="6">
                                     <MudTextField ShrinkLabel @bind-Value="newRoleTask.password" For="@(() => newRoleTask.password)"
                                                   Label="Mật khẩu"
-                                                  Variant="Variant.Outlined" />
+                                                  Variant="Variant.Outlined" 
+                                                  Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePassword))" />
                                 </MudItem>
 
                                 <MudItem xs="12" sm="6">
                                     <MudTextField ShrinkLabel @bind-Value="newRoleTask.fullname" For="@(() => newRoleTask.fullname)"
                                                   Label="Họ và tên"
-                                                  Variant="Variant.Outlined" />
+                                                  Variant="Variant.Outlined" 
+                                                  Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateFullName))" />
                                 </MudItem>
                                 <MudItem xs="12" sm="6">
                                     <MudTextField ShrinkLabel @bind-Value="newRoleTask.phone_number" For="@(() => newRoleTask.phone_number)"
                                                   Label="Số điện thoại"
-                                                  Variant="Variant.Outlined" />
+                                                  Variant="Variant.Outlined"
+                                                  Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePhone))" />
                                 </MudItem>
                                 <MudItem xs="12" sm="6">
                                     <MudDatePicker @bind-Date="birthdayDate" For="@(() => newRoleTask.birthday)"
                                                    Label="Ngày sinh" Required="true" RequiredError="Vui lòng chọn ngày sinh"
                                                    Variant="Variant.Outlined" DateFormat="dd/MM/yyyy"
-                                                   MaxDate="@DateTime.Now.AddYears(-18)" />
+                                                   MaxDate="@DateTime.Now.AddYears(-18)" 
+                                                   Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateBirthday))" />
                                 </MudItem>
                                 <MudItem xs="12" sm="6">
                                     <MudSelect @bind-Value="newRoleTask.gender" For="@(() => newRoleTask.gender)"
                                                Label="Giới tính" Required="true" RequiredError="Vui lòng chọn giới tính"
-                                               Variant="Variant.Outlined">
+                                               Variant="Variant.Outlined" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateGender))">
                                         <MudSelectItem Value="@((byte)0)">Nam</MudSelectItem>
                                         <MudSelectItem Value="@((byte)1)">Nữ</MudSelectItem>
                                     </MudSelect>
@@ -70,18 +75,20 @@
                                 <MudItem xs="12" sm="6">
                                     <MudTextField ShrinkLabel @bind-Value="newRoleTask.citizen_identity_number" For="@(() => newRoleTask.citizen_identity_number)"
                                                   Label="Số CCCD" Required="true" RequiredError="Vui lòng nhập số CCCD"
-                                                  Variant="Variant.Outlined" />
+                                                  Variant="Variant.Outlined" 
+                                                  Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateCitizenIdentity))" />
                                 </MudItem>
                                 <MudItem xs="12" sm="6">
                                     <MudTextField ShrinkLabel @bind-Value="newRoleTask.driver_license_number" For="@(() => newRoleTask.driver_license_number)"
                                                   Label="Số bằng lái" Required="true" RequiredError="Vui lòng nhập số bằng lái"
-                                                  Variant="Variant.Outlined" />
+                                                  Variant="Variant.Outlined" 
+                                                  Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateDriverLicense))" />
                                 </MudItem>
 
 
                                 <MudItem xs="12" sm="6">
                                     <MudSelect @bind-Value="newRoleTask.status" For="@(() => newRoleTask.status)"
-                                               Label="Trạng thái" Required="true" Variant="Variant.Outlined">
+                                               Label="Trạng thái" Required="true" Variant="Variant.Outlined" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateStatus))">
                                         <MudSelectItem Value="true">Hoạt động</MudSelectItem>
                                         <MudSelectItem Value="false">Không hoạt động</MudSelectItem>
                                     </MudSelect>
@@ -464,4 +471,125 @@
         }
     }
 
+    private async Task<bool> IsEmailExists(string email)
+    {
+        var response = await httpClient.GetAsync($"{url}/exists?email={email}");
+        return response.IsSuccessStatusCode && bool.Parse(await response.Content.ReadAsStringAsync());
+    }
+    private async Task<IEnumerable<string>> CustomerValidateEmail(string email)
+    {
+        var errors = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            errors.Add("Vui lòng điền email.");
+        }
+        else if (email.Length < 20 || email.Length > 150)
+        {
+            errors.Add("Email không hợp lệ.");
+        }
+        else
+        {
+            if (await IsEmailExists(email))
+            {
+                errors.Add("Email đã tồn tại trong cơ sở dữ liệu.");
+            }
+        }
+
+        return errors;
+    }
+
+    private IEnumerable<string> CustomerValidatePassword(string password)
+    {
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            yield return "Vui lòng điền mật khẩu.";
+        }
+        else if (password.Length < 8 || password.Length > 15)
+        {
+            yield return "Mật khẩu không hợp lệ.";
+        }
+        else if (!password.Any(char.IsUpper) || !password.Any(char.IsLower) ||
+                 !password.Any(char.IsDigit) || !password.Any(ch => "!@#$%^&*()_+[]{}|;':\",.<>?/`~".Contains(ch)))
+        {
+            yield return "Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.";
+        }
+    }
+
+    private IEnumerable<string> CustomerValidateFullName(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            yield return "Vui lòng điền họ và tên.";
+        }
+        else if (fullName.Length < 5 || fullName.Length > 150)
+        {
+            yield return "Họ và tên không hợp lệ.";
+        }
+        else if (fullName.Any(ch => !char.IsLetter(ch) && !char.IsWhiteSpace(ch)))
+        {
+            yield return "Họ và tên không được chứa ký tự đặc biệt.";
+        }
+    }
+
+    private IEnumerable<string> CustomerValidatePhone(string phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+        {
+            yield return "Vui lòng điền số điện thoại.";
+        }
+        else if (phone.Length != 10 || !phone.All(char.IsDigit))
+        {
+            yield return "Số điện thoại không hợp lệ. Vui lòng nhập đủ 10 số.";
+        }
+    }
+
+    private IEnumerable<string> CustomerValidateBirthday(string birthday)
+    {
+        if (string.IsNullOrWhiteSpace(birthday))
+        {
+            yield return "Vui lòng chọn ngày sinh.";
+        }
+    }
+
+
+    private IEnumerable<string> CustomerValidateGender(string gender)
+    {
+        if (string.IsNullOrWhiteSpace(gender))
+        {
+            yield return "Vui lòng chọn giới tính.";
+        }
+    }
+
+    private IEnumerable<string> CustomerValidateCitizenIdentity(string citizenIdentityNumber)
+    {
+        if (string.IsNullOrWhiteSpace(citizenIdentityNumber))
+        {
+            yield return "Số CCCD không được bỏ trống.";
+        }
+        else if (citizenIdentityNumber.Length != 12)
+        {
+            yield return "Số CCCD không hợp lệ.";
+        }
+    }
+
+    private IEnumerable<string> CustomerValidateDriverLicense(string DriverLicenseNumber)
+    {
+        if (string.IsNullOrWhiteSpace(DriverLicenseNumber))
+        {
+            yield return "Số bằng lái không được bỏ trống.";
+        }
+        else if (DriverLicenseNumber.Length != 12)
+        {
+            yield return "Số bằng lái không hợp lệ.";
+        }
+    }
+
+    private IEnumerable<string> CustomerValidateStatus(string status)
+    {
+        if (string.IsNullOrWhiteSpace(status))
+        {
+            yield return "Vui lòng chọn trạng thái.";
+        }
+    }
 }

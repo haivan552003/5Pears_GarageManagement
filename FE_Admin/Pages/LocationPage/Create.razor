@@ -30,20 +30,16 @@
                         <MudText Typo="Typo.h6" Class="mb-5">Thêm Địa Chỉ</MudText>
                         <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
                             <MudTextField ShrinkLabel @bind-Value="Location.name" Label="Địa Chỉ"
-                                          Validation="@(new Func<string, IEnumerable<string>>(LocationValidate))"
+                                          Validation="@(new Func<string, IEnumerable<string>>(LocationValidateName))"
                                           Placeholder="Địa Chỉ" Variant="Variant.Outlined" Required="true" />
 
                             <MudTextField ShrinkLabel @bind-Value="Location.address" Label="Thành Phố"
-                                          Validation="@(new Func<string, IEnumerable<string>>(LocationValidate))"
+                                          Validation="@(new Func<string, IEnumerable<string>>(LocationValidateAddress))"
                                           Placeholder="Thành Phố" Variant="Variant.Outlined" Required="true" />
 
                             <MudTextField ShrinkLabel @bind-Value="Location.phone_number" Label="Số Điện Thoại"
-                                          Validation="@(new Func<string, IEnumerable<string>>(LocationValidate))"
+                                          Validation="@(new Func<string, IEnumerable<string>>(LocationValidatePhone))"
                                           Placeholder="Số Điện Thoại" Variant="Variant.Outlined" Required="true" />
-
-                            <MudTextField ShrinkLabel @bind-Value="Location.location_code" Label="Vị Trí"
-                                          Validation="@(new Func<string, IEnumerable<string>>(LocationValidate))"
-                                          Placeholder="Vị Trí" Variant="Variant.Outlined" Required="true" />
 
                             <MudSelect @bind-Value="Location.status" Label="Trạng Thái" Variant="Variant.Outlined" Required="true">
                                 <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
@@ -70,7 +66,7 @@
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Địa Chỉ", href: "/getlocation", icon: @Icons.Material.Outlined.WorkOutline),
+        new BreadcrumbItem("Địa Chỉ", href: "/getlocation", icon: @Icons.Material.Filled.LocationOn),
         new BreadcrumbItem("Danh sách địa chỉ", href: "/getlocation", icon: @Icons.Material.Outlined.List),
         new BreadcrumbItem("Thêm mới", href: "/addlocation", icon: @Icons.Material.Filled.AddCircleOutline),
     };
@@ -106,6 +102,42 @@
         catch (Exception ex)
         {
             Snackbar.Add($"Thêm thất bại", Severity.Warning);
+        }
+    }
+
+    private IEnumerable<string> LocationValidateName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            yield return "Vui lòng điền địa chỉ.";
+        }
+        else if (name.Length < 5 || name.Length > 100)
+        {
+            yield return "Địa chỉ không hợp lệ.";
+        }
+    }
+
+    private IEnumerable<string> LocationValidateAddress(string address)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            yield return "Vui lòng điền thành phố.";
+        }
+        else if (address.Length < 5 || address.Length > 100)
+        {
+            yield return "Thành phố không hợp lệ.";
+        }
+    }
+
+    private IEnumerable<string> LocationValidatePhone(string phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+        {
+            yield return "Vui lòng điền số điện thoại.";
+        }
+        else if (phone.Length != 10 || !phone.All(char.IsDigit))
+        {
+            yield return "Số điện thoại không hợp lệ. Vui lòng nhập đủ 10 số.";
         }
     }
 }
