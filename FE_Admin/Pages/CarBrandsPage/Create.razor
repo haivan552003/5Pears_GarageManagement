@@ -32,7 +32,7 @@
 
                             <MudTextField ShrinkLabel @bind-Value="CarBrands.name" Label="Tên Hãng Xe"
                                           Validation="@(new Func<string, IEnumerable<string>>(CarBrandsValidate))"
-                                          Placeholder="Địa Chỉ" Variant="Variant.Outlined" Required="true" />
+                                          Placeholder="Tên Hãng Xe" Variant="Variant.Outlined" Required="true" />
 
                             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddCarBrands" Class="mt-3">Lưu</MudButton>
                         </MudForm>
@@ -61,10 +61,9 @@
     private IEnumerable<string> CarBrandsValidate(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-        {
-            yield return "Vui lòng điền thông tin";
-            yield break;
-        }
+            yield return " Tên loại không được để trống";
+        else if (name.Length < 2)
+            yield return "Tên loại phải có ít nhất 2 ký tự";
     }
 
     private async Task AddCarBrands()

@@ -19,9 +19,9 @@
                         <MudText Typo="Typo.h6" Class="mb-5">Thông tin công việc</MudText>
                         <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
 
-                            <MudTextField ShrinkLabel @bind-Value="CarBrands.name" Label="Địa Chỉ"
+                            <MudTextField ShrinkLabel @bind-Value="CarBrands.name" Label="Tên Hãng Xe"
                                           Validation="@(new Func<string, IEnumerable<string>>(CarBrandsValidate))"
-                                          Placeholder="Địa Chỉ" Variant="Variant.Outlined" Required="true" />
+                                          Placeholder="Tên Hãng Xe" Variant="Variant.Outlined" Required="true" />
 
                             <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Variant="Variant.Filled" OnClick="SubmitForm">Lưu</MudButton>
                             <MudButton Class="mt-3 pl-3" StartIcon="@Icons.Material.Outlined.ArrowForward" Variant="Variant.Outlined" OnClick="Cancel">Trở về</MudButton>
@@ -61,10 +61,9 @@
     private IEnumerable<string> CarBrandsValidate(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-        {
-            yield return "Vui lòng điền thông tin";
-            yield break;
-        }
+            yield return " Tên hãng xe không được để trống";
+        else if (name.Length < 2)
+            yield return "Tên hãng xe phải có ít nhất 2 ký tự";
     }
 
     private async Task EditCarBrands()
