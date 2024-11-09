@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -21,44 +22,47 @@ namespace BE_API.Controllers
         }
 
         [HttpGet("Driver_Statistics")]
-        public async Task<ActionResult<IEnumerable<DriverStatistics>>> GetDriver()
+        public async Task<IEnumerable<DriverStatistics>> GetDriverStatisticsAsync([FromQuery] int? year = null)
         {
-            var procedureName = "sp_statistics_driver_year";
+            using var connection = new SqlConnection(_connectionString);
+            var parameters = new DynamicParameters();
+            parameters.Add("@Year", year ?? DateTime.Now.Year);
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var banners = await connection.QueryAsync<DriverStatistics>(procedureName, commandType: CommandType.StoredProcedure);
-                return Ok(banners);
-            }
-
+            return await connection.QueryAsync<DriverStatistics>(
+                "sp_statistics_driver_year",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
         }
 
         [HttpGet("Car_Statistics")]
-        public async Task<ActionResult<IEnumerable<CarStatistics>>> GetCar()
+        public async Task<ActionResult<IEnumerable<CarStatistics>>> GetCarStatisticsAsync([FromQuery] int? year = null)
         {
-            var procedureName = "sp_statistics_car_year";
+            using var connection = new SqlConnection(_connectionString);
+            var parameters = new DynamicParameters();
+            parameters.Add("@Year", year ?? DateTime.Now.Year);
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var banners = await connection.QueryAsync<CarStatistics>(procedureName, commandType: CommandType.StoredProcedure);
-                return Ok(banners);
-            }
-
+            var result = await connection.QueryAsync<CarStatistics>(
+                "sp_statistics_car_year",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+            return Ok(result);
         }
 
         [HttpGet("Trip_Statistics")]
-        public async Task<ActionResult<IEnumerable<TripStatistics>>> GetTripDetails()
+        public async Task<ActionResult<IEnumerable<TripStatistics>>> GetTripStatisticsAsync([FromQuery] int? year = null)
         {
-            var procedureName = "sp_statistics_trip_per_year";
+            using var connection = new SqlConnection(_connectionString);
+            var parameters = new DynamicParameters();
+            parameters.Add("@Year", year ?? DateTime.Now.Year);
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var banners = await connection.QueryAsync<TripStatistics>(procedureName, commandType: CommandType.StoredProcedure);
-                return Ok(banners);
-            }
-
+            var result = await connection.QueryAsync<TripStatistics>(
+                "sp_statistics_trip_per_year",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+            return Ok(result);
         }
-
-
     }
 }

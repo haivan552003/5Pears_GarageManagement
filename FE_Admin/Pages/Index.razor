@@ -1,10 +1,231 @@
 ﻿@page "/index"
+@using FE_Admin.Data
+@inject HttpClient Http
+@inject ISnackbar Snackbar
 
-<PageTitle>Index</PageTitle>
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudGrid>
+        <!-- Year Selector Card -->
+        <MudItem xs="12">
+            <MudCard Class="mb-4">
+                <MudCardHeader>
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudText Typo="Typo.h5">Thống kê năm @selectedYear</MudText>
+                        <MudSpacer />
+                        <MudSelect T="int" Label="Năm" @bind-Value="selectedYear" Dense="true" Style="width:120px" Class="mt-0" OnValueChanged="OnYearChanged">
+                            @foreach (var year in availableYears)
+                            {
+                                <MudSelectItem Value="@year">@year</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudStack>
+                </MudCardHeader>
+            </MudCard>
+        </MudItem>
 
-<h1>Hello, world!</h1>
+        <!-- Trip Statistics Card -->
+        <MudItem xs="12" md="6">
+            <MudCard>
+                <MudCardHeader>
+                    <MudText Typo="Typo.h6">Thống kê theo tuyến đường</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    @if (isLoadingTrip)
+                    {
+                        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4" />
+                    }
+                    else
+                    {
+                        <MudChart ChartType="ChartType.Line" ChartSeries="@tripSeries" XAxisLabels="@months" Width="100%" Height="300px">
+                            <CustomGraphics>
+                                <MudChartLegend Position="Position.Right" />
+                            </CustomGraphics>
+                        </MudChart>
+                    }
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
 
-Welcome to your new app.
-<a href="#" class="btn btn-primary">aaaaa</a>
+        <!-- Driver Statistics Card -->
+        <MudItem xs="12" md="6">
+            <MudCard>
+                <MudCardHeader>
+                    <MudText Typo="Typo.h6">Thống kê chuyến xe theo tài xế</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    @if (isLoadingDriver)
+                    {
+                        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4" />
+                    }
+                    else
+                    {
+                        <MudChart ChartType="ChartType.Line" ChartSeries="@driverSeries" XAxisLabels="@months" Width="100%" Height="300px">
+                            <CustomGraphics>
+                                <MudChartLegend Position="Position.Right" />
+                            </CustomGraphics>
+                        </MudChart>
+                    }
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+        <!-- Car Statistics Card -->
+        <MudItem xs="12">
+            <MudCard>
+                <MudCardHeader>
+                    <MudText Typo="Typo.h6">Thống kê chuyến xe theo xe</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    @if (isLoadingCar)
+                    {
+                        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4" />
+                    }
+                    else
+                    {
+                        <MudChart ChartType="ChartType.Line" ChartSeries="@carSeries" XAxisLabels="@months" Width="100%" Height="300px">
+                            <CustomGraphics>
+                                <MudChartLegend Position="Position.Right" />
+                            </CustomGraphics>
+                        </MudChart>
+                    }
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private int selectedYear = DateTime.Now.Year;
+    private List<int> availableYears = Enumerable.Range(DateTime.Now.Year - 4, 5).OrderByDescending(x => x).ToList();
+    private string[] months = { "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12" };
+
+    private bool isLoadingDriver = true;
+    private bool isLoadingCar = true;
+    private bool isLoadingTrip = true;
+
+    private List<ChartSeries> driverSeries = new();
+    private List<ChartSeries> carSeries = new();
+    private List<ChartSeries> tripSeries = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAllData();
+    }
+
+    private async Task LoadAllData()
+    {
+        await Task.WhenAll(
+            LoadDriverData(),
+            LoadCarData(),
+            LoadTripData()
+        );
+    }
+
+    private async Task LoadDriverData()
+    {
+        try
+        {
+            isLoadingDriver = true;
+            var response = await Http.GetFromJsonAsync<IEnumerable<DriverStatistics>>($"http://localhost:49922/api/Statistics/Driver_Statistics?year={selectedYear}");
+            if (response != null)
+            {
+                UpdateDriverChartData(response);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi tải dữ liệu tài xế: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoadingDriver = false;
+        }
+    }
+
+    private async Task LoadCarData()
+    {
+        try
+        {
+            isLoadingCar = true;
+            var response = await Http.GetFromJsonAsync<IEnumerable<CarStatistic>>($"http://localhost:49922/api/Statistics/Car_Statistics?year={selectedYear}");
+            if (response != null)
+            {
+                UpdateCarChartData(response);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi tải dữ liệu xe: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoadingCar = false;
+        }
+    }
+
+    private async Task LoadTripData()
+    {
+        try
+        {
+            isLoadingTrip = true;
+            var response = await Http.GetFromJsonAsync<IEnumerable<TripStatistic>>($"http://localhost:49922/api/Statistics/Trip_Statistics?year={selectedYear}");
+            if (response != null)
+            {
+                UpdateTripChartData(response);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi tải dữ liệu tuyến: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoadingTrip = false;
+        }
+    }
+
+    private void UpdateDriverChartData(IEnumerable<DriverStatistics> stats)
+    {
+        driverSeries.Clear();
+        foreach (var stat in stats)
+        {
+            driverSeries.Add(new ChartSeries
+            {
+                Name = stat.fullname,
+                Data = new double[] { stat.January, stat.February, stat.March, stat.April, stat.May,
+                                    stat.June, stat.July, stat.August, stat.September, stat.October,
+                                    stat.November, stat.December }
+            });
+        }
+    }
+
+    private void UpdateCarChartData(IEnumerable<CarStatistic> stats)
+    {
+        carSeries.Clear();
+        foreach (var stat in stats)
+        {
+            carSeries.Add(new ChartSeries
+            {
+                Name = stat.car_name,
+                Data = new double[] { stat.January, stat.February, stat.March, stat.April, stat.May,
+                                      stat.June, stat.July, stat.August, stat.September, stat.October,
+                                      stat.November, stat.December }
+            });
+        }
+    }
+
+    private void UpdateTripChartData(IEnumerable<TripStatistic> stats)
+    {
+        tripSeries.Clear();
+        foreach (var stat in stats)
+        {
+            tripSeries.Add(new ChartSeries
+            {
+                Name = stat.from,
+                Data = new double[] { stat.January, stat.February, stat.March, stat.April, stat.May,
+                                      stat.June, stat.July, stat.August, stat.September, stat.October,
+                                      stat.November, stat.December }
+            });
+        }
+    }
+}
