@@ -80,6 +80,14 @@
                                                       @bind-Value="statusText"
                                                       Variant="Variant.Outlined"
                                                       ReadOnly="true" />
+                                    </MudItem> 
+                                    <MudItem xs="3" Class="mb-4">
+                                        <MudTextField ShrinkLabel
+                                                      Label="Ngày thanh toán"
+                                                      T="DateTime"
+                                                      @bind-Value="bill.pay_date"
+                                                      Variant="Variant.Outlined"
+                                                      ReadOnly="true" />
                                     </MudItem>
                                 }
                                 else if (bill.status == 6)

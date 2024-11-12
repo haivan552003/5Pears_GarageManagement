@@ -22,6 +22,7 @@ namespace BE_API.Models
         public string location_to { get; set; }
         public DateTime time_start { get; set; }
         public DateTime time_end { get; set; }
+        public DateTime pay_date { get; set; }
         public float price { get; set; }
         public float return_money { get; set; }
         public int status { get; set; }
