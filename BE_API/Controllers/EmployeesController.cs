@@ -73,7 +73,7 @@ namespace BE_API.Controllers
 
                     if (result > 0)
                     {
-                        return Ok();
+                        return Ok(result);
                     }
                     else
                     {
