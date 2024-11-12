@@ -117,7 +117,12 @@
                                                FullWidth="true" Class="mud-button-small-text">
                                         CCCD (Trước)
                                     </MudButton>
-                                    @if (!string.IsNullOrEmpty(newRoleTask.citizen_identity_img1))
+
+                                    @if (isCitizenImageLoading)
+                                    {
+                                        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mt-2" />
+                                    }
+                                    else if (!string.IsNullOrEmpty(newRoleTask.citizen_identity_img1))
                                     {
                                         <MudImage Src="@newRoleTask.citizen_identity_img1" Alt="CCCD (Trước)" Width="100" Height="100"
                                                   ObjectFit="ObjectFit.Cover" Class="mt-2" />
@@ -132,7 +137,12 @@
                                                FullWidth="true" Class="mud-button-small-text">
                                         GPLX (Trước)
                                     </MudButton>
-                                    @if (!string.IsNullOrEmpty(newRoleTask.driver_license_img1))
+
+                                    @if (isLicenseImageLoading)
+                                    {
+                                        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mt-2" />
+                                    }
+                                    else if (!string.IsNullOrEmpty(newRoleTask.driver_license_img1))
                                     {
                                         <MudImage Src="@newRoleTask.driver_license_img1" Alt="GPLX (Trước)" Width="100" Height="100"
                                                   ObjectFit="ObjectFit.Cover" Class="mt-2" />
@@ -198,6 +208,8 @@
 
 
 @code {
+    private bool isCitizenImageLoading = false;
+    private bool isLicenseImageLoading = false;
     [Parameter] public int customerId { get; set; } 
     private bool isDialogVisible = false; 
     private cus_address newAddress = new cus_address();
@@ -286,6 +298,9 @@
 
     private async Task LoadCitizenIdImage(InputFileChangeEventArgs e, int imageNumber)
     {
+        isCitizenImageLoading = true; // Hiển thị MudProgressCircular
+        StateHasChanged();
+
         await LoadImage(e, "citizen_id_images", (url) =>
         {
             if (imageNumber == 1)
@@ -293,10 +308,16 @@
                 newRoleTask.citizen_identity_img1 = url;
             }
         });
+
+        isCitizenImageLoading = false; // Ẩn MudProgressCircular sau khi tải xong
+        StateHasChanged();
     }
 
     private async Task LoadLicenseImage(InputFileChangeEventArgs e, int imageNumber)
     {
+        isLicenseImageLoading = true; // Hiển thị MudProgressCircular
+        StateHasChanged();
+
         await LoadImage(e, "license_images", (url) =>
         {
             if (imageNumber == 1)
@@ -304,6 +325,9 @@
                 newRoleTask.driver_license_img1 = url;
             }
         });
+
+        isLicenseImageLoading = false; // Ẩn MudProgressCircular sau khi tải xong
+        StateHasChanged();
     }
     // Đóng dialog
     private void CloseDialog()
