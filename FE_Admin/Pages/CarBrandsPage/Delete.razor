@@ -6,11 +6,18 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Hủy</MudButton>
-        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+        <MudButton Color="@Color" Disabled="@isLoading" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
     </DialogActions>
-</MudDialog>
 
+</MudDialog>
+<MudItem xs="12" Class="d-flex justify-center mt-4">
+    @if (isLoading)
+    {
+        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+    }
+</MudItem>
 @code {
+    private bool isLoading = false;
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public string ContentText { get; set; }
     [Parameter] public string ButtonText { get; set; } = "Xóa";

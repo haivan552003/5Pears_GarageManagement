@@ -234,7 +234,13 @@
                     <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mr-2"
                                OnClick="@Cancel">Hủy</MudButton>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                               StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary">Lưu</MudButton>
+                               StartIcon="@Icons.Material.Outlined.Save" Disabled="@isLoading" Color="Color.Primary">Lưu</MudButton>
+                </MudItem>
+                <MudItem xs="12" Class="d-flex justify-center mt-4">
+                    @if (isLoading)
+                    {
+                        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+                    }
                 </MudItem>
             </MudGrid>
         </EditForm>
@@ -242,6 +248,8 @@
 </MudContainer>
 
 @code {
+    private bool isLoading = false;
+   
     [Parameter] public int id { get; set; }
     private driver Driver = new driver();
     private DateTime? birthdayDate;
@@ -297,33 +305,44 @@
         {
             Snackbar.Add($"Lỗi khi tải thông tin tài xế: {ex.Message}", Severity.Error);
         }
+      
     }
 
     private async Task LoadCitizenIdImage(InputFileChangeEventArgs e, int imageNumber)
     {
+       
         await LoadImage(e, "citizen_id_images", (url) =>
         {
+
+
             if (imageNumber == 1)
                 Driver.citizen_identity_img1 = url;
             else
                 Driver.citizen_identity_img2 = url;
-        });
+        }
+        );
     }
 
     private async Task LoadDriverImage(InputFileChangeEventArgs e)
     {
+        
         await LoadImage(e, "driver_images", (url) => Driver.img_driver = url);
+
     }
 
     private async Task LoadLicenseImage(InputFileChangeEventArgs e, int imageNumber)
     {
+      
         await LoadImage(e, "license_images", (url) =>
         {
+
             if (imageNumber == 1)
                 Driver.driver_license_img1 = url;
             else
                 Driver.driver_license_img2 = url;
-        });
+        }
+
+        );
     }
     private string ValidateVoucher(float voucher)
     {
@@ -354,12 +373,16 @@
             setUrl(url);
             StateHasChanged();
         }
+
+
     }
 
     private async Task EditDriver()
     {
+        isLoading = true;
         try
         {
+            await Task.Delay(2000);
             if (birthdayDate.HasValue)
             {
                 Driver.birthday = birthdayDate.Value;
@@ -410,6 +433,10 @@
         catch (Exception ex)
         {
             Snackbar.Add($"Đã xảy ra lỗi: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 

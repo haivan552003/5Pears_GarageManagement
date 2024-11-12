@@ -16,17 +16,23 @@
             <MudPaper Elevation="0" Class="pa-3">
                 <MudItem xs="12">
                     <MudPaper Elevation="4" Class="p-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Thông tin công việc</MudText>
+                        <MudText Typo="Typo.h6" Class="mb-5">Thông tin hãng xe</MudText>
                         <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
 
                             <MudTextField ShrinkLabel @bind-Value="CarBrands.name" Label="Tên Hãng Xe"
                                           Validation="@(new Func<string, IEnumerable<string>>(CarBrandsValidate))"
                                           Placeholder="Tên Hãng Xe" Variant="Variant.Outlined" Required="true" />
 
-                            <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Variant="Variant.Filled" OnClick="SubmitForm">Lưu</MudButton>
-                            <MudButton Class="mt-3 pl-3" StartIcon="@Icons.Material.Outlined.ArrowForward" Variant="Variant.Outlined" OnClick="Cancel">Trở về</MudButton>
+                            <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Disabled="@isLoading" Variant="Variant.Filled" OnClick="SubmitForm">Lưu</MudButton>
+                            <MudButton Class="mt-3 pl-3" StartIcon="@Icons.Material.Outlined.ArrowForward" Disabled="@isLoading" Variant="Variant.Outlined" OnClick="Cancel">Trở về</MudButton>
                         </MudForm>
                     </MudPaper>
+                    <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="full-height">
+                        @if (isLoading)
+                        {
+                            <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+                        }
+                    </MudGrid>
                 </MudItem>
             </MudPaper>
         </MudItem>
@@ -39,6 +45,7 @@
     private bool isFormValid = false;
     private bool showSuccess = false;
     private bool showError = false;
+    private bool isLoading = false;
     private bool showWarning = false;
     private MudForm form;
     private string url = "http://localhost:49922/api/CarBrands";
@@ -47,9 +54,9 @@
     // Thêm thông tin BreadcrumbItem
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Địa Chỉ", href: "/getcarbrands", icon: @Icons.Material.Outlined.WorkOutline),
-        new BreadcrumbItem("Danh sách địa chỉ", href: "/getcarbrands", icon: @Icons.Material.Outlined.List),
-        new BreadcrumbItem("Chỉnh sửa địa chỉ", href: "", icon: @Icons.Material.Filled.Edit),
+        new BreadcrumbItem("Địa Chỉ", href: "/getcarbrand", icon: @Icons.Material.Outlined.WorkOutline),
+        new BreadcrumbItem("Danh sách hãng xe", href: "/getcarbrand", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Chỉnh sửa hãng xe", href: "/getcarbrand", icon: @Icons.Material.Filled.Edit),
     };
 
     protected override async Task OnInitializedAsync()
@@ -68,8 +75,10 @@
 
     private async Task EditCarBrands()
     {
+        isLoading = true;
         try
         {
+            await Task.Delay(2000);
             if (form.IsValid)
             {
                 var response = await httpClient.PutAsJsonAsync(url + "/" + Id, CarBrands);
@@ -90,6 +99,10 @@
               {
                   options.SnackbarVariant = Variant.Filled;
               });
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 

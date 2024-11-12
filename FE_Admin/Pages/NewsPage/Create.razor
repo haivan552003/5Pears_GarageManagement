@@ -59,7 +59,7 @@
                             <MudGrid>
                                 <MudItem xs="12" Class="d-flex justify-end">
                                     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save"
-                                               Color="Color.Primary" OnClick="AddNews" Class="mt-3" Disabled="@(!isFormValid || isLoading)">
+                                               Color="Color.Primary" OnClick="AddNews"  Class="mt-3" Disabled="@(!isFormValid || isLoading)">
                                         @(isLoading ? "Đang lưu..." : "Lưu")
                                     </MudButton>
                                 </MudItem>
@@ -92,15 +92,16 @@
     private IEnumerable<string> NewsValidate(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-        {
-            yield return "Vui lòng điền thông tin";
-        }
+            yield return " Tên tiêu đề không được để trống";
+        else if (name.Length < 2)
+            yield return "Tên loại phải có ít nhất 2 ký tự";
     }
     private IEnumerable<string> NguoiiTaoValidate(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            yield return "Vui lòng điền thông tin người tạo";
+            if (string.IsNullOrWhiteSpace(name))
+                yield return " Người Tạo đề không được để trống";
         }
     }
 

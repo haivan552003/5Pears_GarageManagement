@@ -44,10 +44,16 @@
                                        FullWidth="true" Class="mud-button-small-text">
                                 Chọn hình ảnh mới
                             </MudButton>
+                            <MudItem xs="12" Class="d-flex justify-center mt-4">
+                                @if (isLoading1)
+                                {
+                                    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+                                }
+                            </MudItem>
 
                             <InputFile id="newsImageInput" OnChange="LoadNewsImage" accept="image/*" style="display: none;" />
 
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary"
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Disabled="@isLoading" Color="Color.Primary"
                                        OnClick="SubmitForm" Class="mt-3">
                                 Lưu
                             </MudButton>
@@ -59,6 +65,12 @@
                     </MudItem>
                 </MudGrid>
             </MudPaper>
+            <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="full-height">
+                @if (isLoading)
+                {
+                    <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+                }
+            </MudGrid>
         </MudItem>
     </MudGrid>
 </MudContainer>
@@ -70,7 +82,8 @@
     private bool isFormValid;
     private MudForm form;
     private readonly string url = "http://localhost:49922/api/News";
-    private bool isLoading;
+    private bool isLoading= false;
+    private bool isLoading1 = false;
 
     private readonly List<BreadcrumbItem> _items = new()
     {
@@ -95,9 +108,9 @@
     private IEnumerable<string> NewsValidate(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-        {
-            yield return "Vui lòng điền thông tin";
-        }
+            yield return " Tên tiêu đề không được để trống";
+        else if (name.Length < 5)
+            yield return "Tên tiêu đề phải có ít nhất 5 ký tự";
     }
 
     private async Task<string> GetBase64Image(IBrowserFile file)
@@ -117,9 +130,10 @@
 
     private async Task LoadNewsImage(InputFileChangeEventArgs e)
     {
+        isLoading1 = true;
         try
         {
-            isLoading = true;
+            await Task.Delay(2000);
             var file = e.File;
             if (file != null)
             {
@@ -139,15 +153,16 @@
         }
         finally
         {
-            isLoading = false;
+            isLoading1 = false;
         }
     }
 
     private async Task EditNews()
     {
+        isLoading = true;
         try
         {
-            isLoading = true;
+            await Task.Delay(2000);
             var response = await httpClient.PutAsJsonAsync($"{url}/{Id}", News);
             if (response.IsSuccessStatusCode)
             {
