@@ -44,7 +44,7 @@
                                     <MudIconButton Href="@($"/editcarbrands/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
                                 </MudTooltip>
                                 <MudTooltip Text="Xóa">
-                                    <MudIconButton OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
+                                    <MudIconButton OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" Disabled="@isLoading" Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
                                 </MudTooltip>
                             </CellTemplate>
                         </TemplateColumn>
@@ -59,6 +59,7 @@
 </MudContainer>
 
 @code {
+    private bool isLoading = false;
     [Parameter] public int Id { get; set; }
     private IEnumerable<car_brands> Elements = new List<car_brands>();
     private Dictionary<int, string> CategoryDict = new Dictionary<int, string>();
@@ -140,9 +141,11 @@
     }
     private async Task DeleteCarBrands(car_brands car_brands)
     {
+        isLoading = true;
         try
         {
             var response = await httpClient.DeleteAsync($"{url}/{car_brands.id}");
+            await Task.Delay(2000);
             if (response.IsSuccessStatusCode)
             {
                 Snackbar.Add($"Đã xóa tên hãng xe {car_brands.name} thành công", Severity.Success);
@@ -157,6 +160,10 @@
         catch (Exception ex)
         {
             Snackbar.Add($"Lỗi khi xóa vị trí: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 

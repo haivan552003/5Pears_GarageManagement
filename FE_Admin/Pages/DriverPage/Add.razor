@@ -210,6 +210,12 @@
                                     </MudGrid>
                                 }
                             </MudItem>
+                            <MudItem xs="12" Class="d-flex justify-center mt-4">
+                                @if (isLoading1)
+                                {
+                                    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+                                }
+                            </MudItem>
 
 
                         </MudGrid>
@@ -222,18 +228,27 @@
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
                                StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary">Lưu</MudButton>
                 </MudItem>
+
+                <MudItem xs="12" Class="d-flex justify-center mt-4">
+                    @if (isLoading)
+                    {
+                        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+                    }
+                </MudItem>
             </MudGrid>
 
 
         </EditForm>
     </MudGrid>
 </MudContainer>
+
 @code {
     private driver newDriver = new driver();
     private MudForm form;
     private DateTime? birthdayDate;
     private MudTextField<string> multilineReference;
     private bool isLoading = false;
+    private bool isLoading1 = false;
     private bool isShowPassword = false;
     private InputType PasswordInput => isShowPassword ? InputType.Text : InputType.Password;
     private string PasswordInputIcon => isShowPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
@@ -294,7 +309,7 @@
     {
         try
         {
-            isLoading = true;
+            isLoading1 = true;
             var file = e.File;
             if (file != null)
             {
@@ -314,7 +329,7 @@
         }
         finally
         {
-            isLoading = false;
+            isLoading1 = false;
         }
     }
 
@@ -322,7 +337,7 @@
     {
         try
         {
-            isLoading = true;
+            isLoading1 = true;
             var file = e.File;
             if (file != null)
             {
@@ -347,7 +362,7 @@
         }
         finally
         {
-            isLoading = false;
+            isLoading1 = false;
         }
     }
     private bool ValidateImages()
@@ -363,7 +378,7 @@
     {
         try
         {
-            isLoading = true;
+            isLoading1 = true;
             var file = e.File;
             if (file != null)
             {
@@ -388,14 +403,16 @@
         }
         finally
         {
-            isLoading = false;
+            isLoading1 = false;
         }
     }
 
     private async Task AddDriver()
     {
+        isLoading = true;
         try
         {
+            await Task.Delay(2000);
             if (!ValidateImages())
             {
                 Snackbar.Add("Vui lòng tải lên đầy đủ các ảnh yêu cầu", Severity.Warning);
@@ -438,7 +455,6 @@
             isLoading = false;
         }
     }
-
    
 }
 

@@ -17,6 +17,7 @@
         </MudAlert>
     }
 
+    
     <MudGrid>
         <MudItem xs="12">
             <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
@@ -34,11 +35,19 @@
                                           Validation="@(new Func<string, IEnumerable<string>>(CarBrandsValidate))"
                                           Placeholder="Tên Hãng Xe" Variant="Variant.Outlined" Required="true" />
 
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddCarBrands" Class="mt-3">Lưu</MudButton>
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Disabled="@isLoading" OnClick="AddCarBrands" Class="mt-3">Lưu</MudButton>
+                            
                         </MudForm>
                     </MudPaper>
                 </MudItem>
             </MudPaper>
+            <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="full-height">
+                @if (isLoading)
+                {
+                    <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+                }
+            </MudGrid>
+
         </MudItem>
     </MudGrid>
 </MudContainer>
@@ -48,13 +57,14 @@
     private bool isFormValid = false;
     private bool showSuccess = false;
     private bool showError = false;
+    private bool isLoading = false;
     private MudForm form;
     private string url = "http://localhost:49922/api/CarBrands";
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Địa Chỉ", href: "/getcarbrands", icon: @Icons.Material.Outlined.WorkOutline),
-        new BreadcrumbItem("Danh sách địa chỉ", href: "/getcarbrands", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Địa Chỉ", href: "/getcarbrand", icon: @Icons.Material.Outlined.WorkOutline),
+        new BreadcrumbItem("Danh sách hãng xe", href: "/getcarbrand", icon: @Icons.Material.Outlined.List),
         new BreadcrumbItem("Thêm mới", href: "/addcarbrands", icon: @Icons.Material.Filled.AddCircleOutline),
     };
 
@@ -68,8 +78,10 @@
 
     private async Task AddCarBrands()
     {
+        isLoading = true;
         try
         {
+            await Task.Delay(2000);
             if (form.IsValid)
             {
                 var response = await httpClient.PostAsJsonAsync(url, CarBrands);
@@ -88,6 +100,10 @@
         catch (Exception ex)
         {
             Snackbar.Add($"Thêm thất bại", Severity.Warning);
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 }

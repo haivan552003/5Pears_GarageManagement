@@ -34,9 +34,15 @@
                                           Validation="@(new Func<string, IEnumerable<string>>(CarTypesValidate))"
                                           Placeholder="Tên loại xe" Variant="Variant.Outlined" Required="true" />
 
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddCarTypes" Class="mt-3">Lưu</MudButton>
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Disabled="@isLoading" OnClick="AddCarTypes" Class="mt-3">Lưu</MudButton>
                         </MudForm>
                     </MudPaper>
+                    <MudItem xs="12" Class="d-flex justify-center mt-4">
+                        @if (isLoading)
+                        {
+                            <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+                        }
+                    </MudItem>
                 </MudItem>
             </MudPaper>
         </MudItem>
@@ -45,6 +51,7 @@
 
 @code {
     private car_types CarTypes = new car_types();
+    private bool isLoading = false;
     private bool isFormValid = false;
     private bool showSuccess = false;
     private bool showError = false;
@@ -69,8 +76,10 @@
 
     private async Task AddCarTypes()
     {
+        isLoading = true;
         try
         {
+            await Task.Delay(2000);
             if (form.IsValid)
             {
                 var response = await httpClient.PostAsJsonAsync(url, CarTypes);
@@ -89,6 +98,10 @@
         catch (Exception ex)
         {
             Snackbar.Add($"Thêm thất bại", Severity.Warning);
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 }

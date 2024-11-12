@@ -45,8 +45,14 @@
                                     <MudIconButton Href="@($"/editcartypes/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
                                 </MudTooltip>
                                 <MudTooltip Text="Xóa">
-                                    <MudIconButton OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
+                                    <MudIconButton OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" Disabled="@isLoading" Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
                                 </MudTooltip>
+                                <MudItem xs="12" Class="d-flex justify-center mt-4">
+                                    @if (isLoading)
+                                    {
+                                        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+                                    }
+                                </MudItem>
                             </CellTemplate>
                         </TemplateColumn>
                     </Columns>
@@ -60,6 +66,7 @@
 </MudContainer>
 
 @code {
+    private bool isLoading = false;
     [Parameter] public int Id { get; set; }
     private IEnumerable<car_types> Elements = new List<car_types>();
     private Dictionary<int, string> CategoryDict = new Dictionary<int, string>();
@@ -121,7 +128,6 @@
     }
     private async Task OpenDeleteDialog(car_types car_types)
     {
-
         var parameters = new DialogParameters
     {
         { "ContentText", $"Bạn có chắc chắn muốn xóa loại xe { car_types.name}?" },
@@ -133,17 +139,20 @@
 
         var dialog = await DialogService.ShowAsync<Delete>("Xác nhận xóa", parameters, options);
         var result = await dialog.Result;
-
+        
         if (!result.Cancelled)
         {
             await DeleteCarTypes(car_types);
         }
+
     }
     private async Task DeleteCarTypes(car_types car_types)
     {
+        isLoading = true;
         try
         {
             var response = await httpClient.DeleteAsync($"{url}/{car_types.id}");
+            await Task.Delay(2000);
             if (response.IsSuccessStatusCode)
             {
                 Snackbar.Add($"Đã xóa loại xe {car_types.name} thành công", Severity.Success);
@@ -158,6 +167,10 @@
         catch (Exception ex)
         {
             Snackbar.Add($"Lỗi khi xóa loại xe: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 

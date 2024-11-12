@@ -24,10 +24,16 @@
                                           Placeholder="Địa Chỉ" Variant="Variant.Outlined" Required="true" />
 
 
-                            <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Variant="Variant.Filled" OnClick="SubmitForm">Lưu</MudButton>
+                            <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Disabled="@isLoading" Color="Color.Primary" Variant="Variant.Filled" OnClick="SubmitForm">Lưu</MudButton>
                             <MudButton Class="mt-3 pl-3" StartIcon="@Icons.Material.Outlined.ArrowForward" Variant="Variant.Outlined" OnClick="Cancel">Trở về</MudButton>
                         </MudForm>
                     </MudPaper>
+                    <MudItem xs="12" Class="d-flex justify-center mt-4">
+                        @if (isLoading)
+                        {
+                            <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+                        }
+                    </MudItem>
                 </MudItem>
             </MudPaper>
         </MudItem>
@@ -38,6 +44,7 @@
     [Parameter] public int Id { get; set; }
     private car_types CarTypes = new car_types();
     private bool isFormValid = false;
+    private bool isLoading = false;
     private bool showSuccess = false;
     private bool showError = false;
     private bool showWarning = false;
@@ -72,8 +79,10 @@
 
     private async Task EditCarTypes()
     {
+        isLoading = true;
         try
         {
+            await Task.Delay(2000);
             if (form.IsValid)
             {
                 var response = await httpClient.PutAsJsonAsync(url + "/" + Id, CarTypes);
@@ -94,6 +103,10 @@
               {
                   options.SnackbarVariant = Variant.Filled;
               });
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
