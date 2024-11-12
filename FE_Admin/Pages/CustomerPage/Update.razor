@@ -28,7 +28,8 @@
                                 <MudItem xs="12" sm="6">
                                     <MudTextField ShrinkLabel @bind-Value="newRoleTask.cus_code" For="@(() => newRoleTask.cus_code)"
                                                   Label="Mã khách hàng"
-                                                  Variant="Variant.Outlined" />
+                                                  Variant="Variant.Outlined"
+                                                  ReadOnly = "true"/>
                                 </MudItem>
 
                                 <MudItem xs="12" sm="6">
@@ -85,14 +86,7 @@
                                                   Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateDriverLicense))" />
                                 </MudItem>
 
-                                <MudItem xs="12" sm="6">
-                                    <MudSelect @bind-Value="newRoleTask.id_role" Label="Vai trò" Variant="Variant.Outlined" Required="true">
-                                        @foreach (var roless in roles)
-                                        {
-                                            <MudSelectItem Value="@roless.id">@roless.name</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </MudItem>
+                             
 
                                 <MudItem xs="12" sm="6">
                                     <MudSelect @bind-Value="newRoleTask.status" For="@(() => newRoleTask.status)"

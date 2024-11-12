@@ -50,28 +50,12 @@
                                 <MudTextField ShrinkLabel @bind-Value="newDriver.driver_license_number" Label="Số bằng lái" Required="true" Variant="Variant.Outlined" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateDriverLicense))" />
                             </MudItem>
                             <MudItem xs="12" sm="6">
-                                <MudSelect @bind-Value="newDriver.id_role" Label="Vai trò" Variant="Variant.Outlined" Required="true">
-                                    @foreach (var roless in roles)
-                                    {
-                                        <MudSelectItem Value="@roless.id">@roless.name</MudSelectItem>
-                                    }
-                                </MudSelect>
-                            </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudSelect @bind-Value="newDriver.id_role" Label="Vai trò" Variant="Variant.Outlined" Required="true">
-                                    @foreach (var roless in roles)
-                                    {
-                                        <MudSelectItem Value="@roless.id">@roless.name</MudSelectItem>
-                                    }
-                                </MudSelect>
-                            </MudItem>
-                            <MudItem xs="12" sm="6">
                                 <MudSelect @bind-Value="newDriver.status" For="@(() => newDriver.status)" Label="Trạng thái" Required="true" Variant="Variant.Outlined">
                                     <MudSelectItem Value="true">Đang Hoạt động</MudSelectItem>
                                     <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
                                 </MudSelect>
                             </MudItem>
-                           
+
                         </MudGrid>
                         <MudItem xs="12" Class="d-flex justify-end mt-6">
                             <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mr-2" OnClick="@(() => NavigationManager.NavigateTo("/getDriver"))">Hủy</MudButton>
@@ -374,7 +358,7 @@
         }
     }
 
-    
+
 
 
 
