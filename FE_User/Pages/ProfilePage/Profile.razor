@@ -82,9 +82,9 @@
     </MudGrid>
 </MudContainer>
 
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+<MudContainer Class="mt-14 pa-0 fs-18" MaxWidth="MaxWidth.False">
     <!-- Form Cập nhật công việc -->
-    <MudGrid>
+    
         @*  <MudItem xs="12">
         </MudItem>
         <MudItem xs="6" Class="mx-auto">
@@ -108,31 +108,48 @@
         </MudPaper>
         </MudItem> *@
 
-        <!-- Form Cập nhật địa chỉ khách hàng -->
-        <MudItem xs="6" Class="mx-auto">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudItem xs="12">
-                    <MudPaper Elevation="4" Class="p-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Cập nhật địa chỉ khách hàng</MudText>
+    <MudGrid Class="pa-0">
+        <MudItem xs="3">
+        </MudItem>
+        <MudItem xs="9">
+            <MudPaper Elevation="2">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudPaper Elevation="4" Class="p-4">
+                            <MudText Typo="Typo.h6" Class="mb-5">Cập nhật địa chỉ khách hàng</MudText>
 
-                        @foreach (var address in customerAddresses)
-                        {
-                            <MudForm @ref="formAddress" @bind-IsValid="isFormValid" Style="height:auto">
-                                <MudTextField ShrinkLabel @bind-Value="address.address" Label="Địa chỉ" Placeholder="Địa chỉ" Variant="Variant.Outlined" Required="true" />
-                                <MudTextField ShrinkLabel @bind-Value="address.id_cus" Label="ID Khách Hàng" Placeholder="ID Khách Hàng" Variant="Variant.Outlined" Disabled="true" />
-                                <MudTextField ShrinkLabel @bind-Value="address.type" Label="Loại" Placeholder="Loại" Variant="Variant.Outlined" Required="true" />
-                                <MudSelect @bind-Value="address.status" Label="Trạng thái" Required="true">
+                            @foreach (var address in customerAddresses)
+                            {
+                                <MudForm @ref="formAddress" @bind-IsValid="isFormValid" Style="height:auto">
+                                    <MudGrid Class="mb-3">
+                                        <MudItem xs="4">
+                                            <MudTextField ShrinkLabel @bind-Value="address.address" Label="Địa chỉ" Placeholder="Địa chỉ" Variant="Variant.Outlined" Required="true" />
+                                        </MudItem>
+
+                                        <MudItem xs="4">
+                                            <MudSelect ShrinkLabel @bind-Value="address.type" Label="Loại địa chỉ" Required="true">
+                                                <MudSelectItem Value="@((byte)0)">Nhà Riêng</MudSelectItem>
+                                                <MudSelectItem Value="@((byte)1)">Công Ty</MudSelectItem>
+                                            </MudSelect>
+                                        </MudItem>
+
+                                        <MudItem xs="4" Class="mt-3">
+                                            <MudButton Class="me-3" Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="() => UpdateAddress(address)">Cập nhật</MudButton>
+                                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Delete" Color="Color.Error" OnClick="() => OpenDeleteDialog(address)">Xóa</MudButton>
+                                        </MudItem>
+
+                                        @* <MudTextField ShrinkLabel @bind-Value="address.id_cus" Label="ID Khách Hàng" Placeholder="ID Khách Hàng" Variant="Variant.Outlined" Disabled="true" /> *@
+                                        @* <MudSelect @bind-Value="address.status" Label="Trạng thái" Required="true">
                                     <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
                                     <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
-                                </MudSelect>
-                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="() => UpdateAddress(address)" Class="mt-3">Cập nhật</MudButton>
-                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Delete" Color="Color.Error" OnClick="() => OpenDeleteDialog(address)" Class="mt-3">Xóa</MudButton>
-                            </MudForm>
-                        }
-                    </MudPaper>
-                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Add" Color="Color.Secondary" OnClick="OpenAddAddressDialog" Class="mt-3">Thêm</MudButton>
-
-                </MudItem>
+                                    </MudSelect> *@
+                                    </MudGrid>
+                                </MudForm>
+                            }
+                        </MudPaper>
+                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Add" Color="Color.Secondary" OnClick="OpenAddAddressDialog" Class="mt-3">Thêm</MudButton>
+                    </MudItem>
+                </MudGrid>
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -154,6 +171,7 @@
         <MudButton Variant="Variant.Text" OnClick="CloseDialog">Hủy</MudButton>
     </DialogActions>
 </MudDialog>
+
 @code {
     [Parameter] public int customerId { get; set; } // Lấy ID từ URL
     private bool isDialogVisible = false; // Hiển thị dialog
