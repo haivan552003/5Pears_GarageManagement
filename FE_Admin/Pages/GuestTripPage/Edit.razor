@@ -1,0 +1,400 @@
+﻿@page "/edit_guest_trip/{id:int}"
+@inject HttpClient httpClient
+@inject IJSRuntime js
+@inject NavigationManager Navigation
+@inject IJSRuntime js
+@inject ISnackbar Snackbar
+
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" Class="mx-auto">
+            <MudPaper Elevation="0" Class="pa-3">
+                <MudItem xs="12">
+                    <MudPaper Elevation="4" Class="p-4">
+                        <MudText Typo="Typo.h6" Class="mb-5">Thông tin hóa đơn đặt vé xe</MudText>
+                        <MudForm @ref="form" Style="height:auto">
+                            <MudGrid>
+                                <MudItem xs="2" Class="mb-4">
+                                    <MudTextField ShrinkLabel Label="Mã hóa đơn" T="string" @bind-Value="@bill.guest_trip_code" ReadOnly="true" Variant="Variant.Outlined" />
+                                </MudItem>
+
+                                <MudItem xs="3" Class="mb-4">
+                                    <MudSelect Variant="Variant.Outlined" T="int" @bind-Value="@bill.trip_id" Label="Tuyến xe" ReadOnly="true">
+                                        @foreach (var item in trip)
+                                        {
+                                            <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+
+
+                                <MudItem xs="4" Class="mb-4">
+                                    <MudSelect Variant="Variant.Outlined" T="int" @bind-Value="@bill.trip_detail_id" Label="Chuyến xe" ReadOnly="true">
+                                        @foreach (var item in tripdetail)
+                                        {
+                                            <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+
+                                <MudItem xs="3" Class="mb-4">
+                                    <MudSelect Variant="Variant.Outlined" T="int" @bind-Value="@bill.cus_id" Label="Khách hàng" ReadOnly="true">
+                                        @foreach (var item in customer)
+                                        {
+                                            <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+                                <MudItem xs="2" Class="mb-4">
+                                    <MudTextField ShrinkLabel
+                                                  Label="Tổng tiền"
+                                                  @bind-Value="bill.price"
+                                                  Variant="Variant.Outlined"
+                                                  Required="true"
+                                                  ReadOnly="true" />
+                                </MudItem>
+
+                                @if (bill.status == 1)
+                                {
+                                    <MudItem xs="3" Class="mb-4">
+                                        <MudTextField ShrinkLabel
+                                                      Label="Trạng thái"
+                                                      T="string"
+                                                      @bind-Value="statusText"
+                                                      Variant="Variant.Outlined"
+                                                      ReadOnly="true" />
+                                    </MudItem>
+                                }
+                                else if (bill.status == 2)
+                                {
+                                    <MudItem xs="3" Class="mb-4">
+                                        <MudTextField ShrinkLabel
+                                                      Label="Trạng thái"
+                                                      T="string"
+                                                      @bind-Value="statusText"
+                                                      Variant="Variant.Outlined"
+                                                      ReadOnly="true" />
+                                    </MudItem>
+                                }
+                                else if (bill.status == 6)
+                                {
+                                    <MudItem xs="3" Class="mb-4">
+                                        <MudTextField ShrinkLabel
+                                                      Label="Trạng thái"
+                                                      T="string"
+                                                      @bind-Value="statusText"
+                                                      Variant="Variant.Outlined"
+                                                      ReadOnly="true" />
+                                    </MudItem>
+                                }
+                                else if (bill.status == 8)
+                                {
+                                    <MudItem xs="3" Class="mb-4">
+                                        <MudTextField ShrinkLabel
+                                                      Label="Trạng thái"
+                                                      T="string"
+                                                      @bind-Value="statusText"
+                                                      Variant="Variant.Outlined"
+                                                      ReadOnly="true" />
+                                    </MudItem>
+                                }
+                                else if (bill.status == 9)
+                                {
+                                    <MudItem xs="2" Class="mb-4">
+                                        <MudTextField ShrinkLabel
+                                                      Label="Hoàn tiền"
+                                                      T="float"
+                                                      @bind-Value="bill.return_money"
+                                                      Variant="Variant.Outlined"
+                                                      ReadOnly="true" />
+                                    </MudItem>
+                                    <MudItem xs="3" Class="mb-4">
+                                        <MudTextField ShrinkLabel
+                                                      Label="Trạng thái"
+                                                      T="string"
+                                                      @bind-Value="statusText"
+                                                      Variant="Variant.Outlined"
+                                                      ReadOnly="true" />
+                                    </MudItem>
+                                }
+
+                                <MudItem xs="2" Class="mb-4">
+                                    <MudSelect Variant="Variant.Outlined" T="bool" Label="Hình thức thanh toán" ReadOnly="true" @bind-Value="bill.payment_method">
+                                        <MudSelectItem Value="true">Tiền mặt</MudSelectItem>
+                                        <MudSelectItem Value="false">Chuyển khoản</MudSelectItem>
+                                    </MudSelect>
+                                </MudItem>
+
+                                <MudItem xs="3" Class="mb-4">
+                                    <MudSelect Variant="Variant.Outlined" T="int" @bind-Value="@bill.emp_id" Label="Người tạo" ReadOnly="true">
+                                        @foreach (var item in emp)
+                                        {
+                                            <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+                            </MudGrid>
+
+                            @if (bill.status == 1)
+                            {
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateStatusBill2" Class="mt-3">Thanh toán</MudButton>
+                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Warning" OnClick="UpdateStatusBill6" Class="mt-3">Hủy đơn</MudButton>
+                            }
+                            else if (bill.status == 8)
+                            {
+                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Tertiary" OnClick="UpdateStatusBill9" Class="mt-3">Hoàn tiền</MudButton>
+                            }
+
+                        </MudForm>
+                    </MudPaper>
+                </MudItem>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Elevation="4" Class="p-4">
+                <MudText Typo="Typo.h6" Class="mb-5">Chi tiết hóa đơn đặt vé</MudText>
+                <MudDataGrid Class="mx-auto pa-2" T="guest_trip_child" Dense="true" Hover="true" Bordered="true" Striped="true"
+                             MultiSelection="true" Items="@guest_trip_child" SortMode="SortMode.Multiple" Filterable="false"
+                             Hideable="true">
+
+                    <Columns>
+                        <PropertyColumn T="guest_trip_child" TProperty="string" Property="x => x.guest_trip_code" Class="fw-bold" Title="Mã Vé" Width="150px" />
+                        <PropertyColumn T="guest_trip_child" TProperty="string" Property="x => x.location_from" Class="fw-bold" Title="Điểm Đi" Width="150px" />
+                        <PropertyColumn T="guest_trip_child" TProperty="string" Property="x => x.location_to" Class="fw-bold" Title="Điểm Đến" Width="200px" />
+                        <PropertyColumn T="guest_trip_child" TProperty="string" Property="x => x.seat_name" Class="fw-bold" Title="Ghế" Width="150px" />
+                        <PropertyColumn T="guest_trip_child" TProperty="float" Property="x => x.price" Class="fw-bold" Title="Thành tiền" Width="150px" />
+                        <PropertyColumn T="guest_trip_child" TProperty="DateTime" Property="x => x.time_start" Class="fw-bold" Title="Bắt Đầu" Width="150px" />
+                        <PropertyColumn T="guest_trip_child" TProperty="DateTime" Property="x => x.time_end" Class="fw-bold" Title="Kết Thúc" Width="150px" />
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="guest_trip_child" />
+                    </PagerContent>
+                </MudDataGrid>
+
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+<script>
+    // Lấy token từ localStorage
+    function getAuthToken() {
+        return localStorage.getItem("authToken");
+    }
+
+    window.triggerSelectClick = () => {
+        const selectElements = document.querySelectorAll('.mud-select');
+
+        selectElements.forEach(select => {
+            select.click();
+        });
+    };
+
+</script>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private string statusText;
+    private guest_trip bill = new guest_trip();
+    private List<dropdown> trip = new List<dropdown>();
+    private List<dropdown> tripdetail = new List<dropdown>();
+    private trip_detail tripdetailID = new trip_detail();
+    private List<dropdown> carseat = new List<dropdown>();
+    private List<dropdown> customer = new List<dropdown>();
+    private List<dropdown> emp = new List<dropdown>();
+    private List<guest_trip_child> guest_trip_child = new List<guest_trip_child>();
+    private MudForm form;
+    private string LastSegment;
+
+    private string url = "http://localhost:49922/api/GuestTrip";
+    private string urlTrip = "http://localhost:49922/api/Dropdown/trip";
+    private string urlCustomer = "http://localhost:49922/api/Dropdown/customer";
+    private string urlEmp = "http://localhost:49922/api/Dropdown/emp";
+    private string urlStatus2 = "http://localhost:49922/api/GuestTrip/PutStatus2/";
+    private string urlStatus6 = "http://localhost:49922/api/GuestTrip/PutStatus6/";
+    private string urlStatus9 = "http://localhost:49922/api/GuestTrip/PutStatus9/";
+    private string urlTripDetail = "http://localhost:49922/api/Dropdown/tripdetail";
+
+    private int empId;
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Đặt vé", href: null, icon: @Icons.Material.Outlined.Payments),
+        new BreadcrumbItem("Danh sách hóa đơn", href: "/guesttrip", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Chỉnh sửa hóa đơn", href: "/edit_guest_trip/{id:int}", icon: @Icons.Material.Filled.Edit),
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+        var response = await httpClient.GetFromJsonAsync<guest_trip>(url + "/" + Id);
+        bill = response;
+        guest_trip_child = response.guest_trip_child.ToList();
+        var uri = Navigation.Uri;
+        LastSegment = GetLastSegment(uri);
+        await LoadTrip();
+        await LoadTripDetail();
+        await LoadCustomer();
+        await LoadEmp();
+        if (bill.status == 1)
+        {
+            statusText = "Tạo mới";
+        }
+        else if (bill.status == 2)
+        {
+            statusText = "Đã thanh toán";
+        }
+        else if (bill.status == 6)
+        {
+            statusText = "Đã hủy";
+        }
+        else if (bill.status == 8)  
+        {
+            statusText = "Khách hàng đề nghị hủy";
+        }
+        else if (bill.status == 9)
+        {
+            statusText = "Đã hoàn tiền";
+        }
+        await js.InvokeVoidAsync("triggerSelectClick");
+    }
+
+    private string GetLastSegment(string url)
+    {
+        var segments = url.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+        return segments.Length > 0 ? segments.Last() : string.Empty;
+    }
+    private async Task LoadTrip()
+    {
+
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<dropdown>>(urlTrip);
+            if (response != null)
+            {
+                trip = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Lỗi khi tải danh sách tuyến xe", Severity.Error);
+        }
+    }
+
+    private async Task LoadTripDetail()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<dropdown>>($"{urlTripDetail}");
+            if (response != null)
+            {
+                tripdetail = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Lỗi khi tải danh sách chuyến xe", Severity.Error);
+        }
+    }
+
+
+    private async Task LoadCustomer()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<dropdown>>($"{urlCustomer}");
+            if (response != null)
+            {
+                customer = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Lỗi khi tải danh sách khách hàng", Severity.Error);
+        }
+    }
+    private async Task LoadEmp()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<dropdown>>($"{urlEmp}");
+            if (response != null)
+            {
+                emp = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Lỗi khi tải danh sách nhân viên", Severity.Error);
+        }
+    }
+
+    private async Task UpdateStatusBill2()
+    {
+        try
+        {
+            var response = await httpClient.PutAsJsonAsync(urlStatus2 + Id, bill);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add($"Chỉnh sửa thành công", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Chỉnh sửa thất bại" + response, Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+
+     private async Task UpdateStatusBill6()
+    {
+        try
+        {
+            var response = await httpClient.PutAsJsonAsync(urlStatus6 + Id, bill);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add($"Chỉnh sửa thành công", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Chỉnh sửa thất bại" + response, Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+
+     private async Task UpdateStatusBill9()
+    {
+        try
+        {
+            var response = await httpClient.PutAsJsonAsync(urlStatus9 + Id, bill);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add($"Chỉnh sửa thành công", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Chỉnh sửa thất bại" + response, Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+
+}
