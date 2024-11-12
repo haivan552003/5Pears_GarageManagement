@@ -62,7 +62,7 @@
 
                                 @if (bill.status == 1)
                                 {
-                                    <MudItem xs="3" Class="mb-4">
+                                    <MudItem xs="4" Class="mb-4">
                                         <MudTextField ShrinkLabel
                                                       Label="Trạng thái"
                                                       T="string"
@@ -81,7 +81,7 @@
                                                       Variant="Variant.Outlined"
                                                       ReadOnly="true" />
                                     </MudItem> 
-                                    <MudItem xs="3" Class="mb-4">
+                                    <MudItem xs="2" Class="mb-4">
                                         <MudTextField ShrinkLabel
                                                       Label="Ngày thanh toán"
                                                       T="DateTime"
@@ -151,8 +151,17 @@
 
                             @if (bill.status == 1)
                             {
-                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateStatusBill2" Class="mt-3">Thanh toán</MudButton>
-                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Warning" OnClick="UpdateStatusBill6" Class="mt-3">Hủy đơn</MudButton>
+                                <MudGrid>
+                                    <MudItem xs="12" Class="d-flex justify-end">
+                                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateStatusBill2" Class="mt-3">
+                                            Thanh toán
+                                        </MudButton>
+                                        <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Warning" OnClick="UpdateStatusBill6" Class="mt-3 ms-2">
+                                            Hủy đơn
+                                        </MudButton>
+                                    </MudItem>
+                                </MudGrid>
+
                             }
                             else if (bill.status == 8)
                             {

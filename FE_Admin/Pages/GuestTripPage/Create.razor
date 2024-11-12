@@ -20,16 +20,15 @@
                             <MudGrid>
                                 <MudItem xs="4" Class="mb-4">
                                     <MudSelect Variant="Variant.Outlined" T="int" Label="Tuyến xe" ValueChanged="OnTripChanged">
-                                        @foreach (var item in trip)
+                                        @foreach (var item in trip) 
                                         {
                                             <MudSelectItem Value="item.id">@item.name</MudSelectItem>
                                         }
                                     </MudSelect>
                                 </MudItem>
-
-
                                 <MudItem xs="5" Class="mb-4">
-                                    <MudSelect Variant="Variant.Outlined" T="int" Label="Chuyến xe" ValueChanged="OnTripDetailChanged">
+                
+                                    <MudSelect Variant="Variant.Outlined" T="int" Label="Chuyến xe" Disabled="selectedTripId == 0" ValueChanged="OnTripDetailChanged">
                                         @foreach (var item in tripdetail)
                                         {
                                             <MudSelectItem Value="item.id">@item.name</MudSelectItem>
@@ -44,13 +43,13 @@
                                     <MudSelectItem Value="item.id">@item.name</MudSelectItem>
                                     }
                                     </MudSelect> *@
-
                                     <MudSelect MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))"
                                                MultiSelection="true"
                                                @bind-SelectedValues="selectedSeats"
                                                T="int"
                                                Label="Ghế"
-                                               Variant="Variant.Outlined">
+                                               Variant="Variant.Outlined"
+                                               Disabled="selectedTripDetailId == 0">
                                         @foreach (var item in carseat)
                                         {
                                             <MudSelectItem T="int" Value="item.id">@item.name</MudSelectItem>
@@ -86,7 +85,14 @@
                                 </MudItem>
                             </MudGrid>
 
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddBill" Class="mt-3">Lưu</MudButton>
+                            <MudGrid>
+                                <MudItem xs="12" class="d-flex justify-end">
+                                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddBill" Class="mt-3">
+                                        Lưu
+                                    </MudButton>
+                                </MudItem>
+                            </MudGrid>
+
                         </MudForm>
                     </MudPaper>
                 </MudItem>
@@ -142,29 +148,53 @@
 
     private async Task OnTripChanged(int id)
     {
+        // selectedTripId = id;
+        // if (selectedTripId != 0)
+        // {
+        //     await LoadTripDetail(id);
+        // }
+        // else
+        // {
+        //     Snackbar.Add("Vui lòng chọn tuyến xe", Severity.Warning);
+        // }
         selectedTripId = id;
+        selectedTripDetailId = 0; // Reset chuyến xe khi thay đổi tuyến xe
+        selectedSeats = new HashSet<int>(); // Reset ghế khi thay đổi tuyến xe
+
         if (selectedTripId != 0)
         {
             await LoadTripDetail(id);
         }
         else
         {
-            Snackbar.Add("Vui lòng chọn tuyến xe", Severity.Warning);
+            Snackbar.Add("Vui lòng chọn tuyến xe trước khi chọn chuyến xe.", Severity.Warning);
         }
     }
 
     private async Task OnTripDetailChanged(int id)
     {
+        // selectedTripDetailId = id;
+        // if (selectedTripDetailId != 0)
+        // {
+        //     await LoadCarSeat(id);
+        //     await LoadTripDetailID(id);
+        //     selectedSeats = new HashSet<int>();
+        // }
+        // else
+        // {
+        //     Snackbar.Add("Vui lòng chọn chuyến xe", Severity.Warning);
+        // }
         selectedTripDetailId = id;
+        selectedSeats = new HashSet<int>(); // Reset ghế khi thay đổi chuyến xe
+
         if (selectedTripDetailId != 0)
         {
             await LoadCarSeat(id);
             await LoadTripDetailID(id);
-            selectedSeats = new HashSet<int>();
         }
         else
         {
-            Snackbar.Add("Vui lòng chọn chuyến xe", Severity.Warning);
+            Snackbar.Add("Vui lòng chọn chuyến xe trước khi chọn ghế.", Severity.Warning);
         }
     }
 
@@ -354,3 +384,4 @@
         return $"{selectedValues.Count} ghế{(selectedValues.Count > 1 ? " đã" : " đã")} được chọn";
     }
 }
+

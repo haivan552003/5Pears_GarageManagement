@@ -31,8 +31,7 @@
                                     Hình ảnh
                                 </MudButton>
                                 <MudTextField ShrinkLabel @bind-Value="newBanner.title" Label="Tiêu đề"
-                                              Class="py-3"
-                                              Validation="@(new Func<string, IEnumerable<string>>(BannerValidate))"
+                                              Class="py-3"                                           
                                               Placeholder="Tên công việc" Variant="Variant.Outlined" Required="true" />
                                 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddBanner" Class="mt-3">Lưu</MudButton>
                             </MudForm>
@@ -69,13 +68,13 @@
         new BreadcrumbItem("Thêm mới", href: "/addbanner", icon: @Icons.Material.Filled.AddCircleOutline),
     };
 
-    private IEnumerable<string> BannerValidate(string title)
-    {
-        if (string.IsNullOrWhiteSpace(title))
-        {
-            yield return "Vui lòng điền thông tin";
-        }
-    }
+    // private IEnumerable<string> BannerValidate(string title)
+    // {
+    //     if (string.IsNullOrWhiteSpace(title))
+    //     {
+    //         yield return "Vui lòng điền thông tin";
+    //     }
+    // }
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
@@ -115,7 +114,6 @@
 
         if (!string.IsNullOrEmpty(token))
         {
-            // Giải mã token
             var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);
 
@@ -135,6 +133,10 @@
                 var imageUrl = await js.InvokeAsync<string>("uploadImage", selectedFile.Name, base64Data);
                 newBanner.img_banner = imageUrl;
                 newBanner.emp_id = empId;
+                if (string.IsNullOrEmpty(newBanner.title))
+                {
+                    newBanner.title = null; 
+                }
 
                 var response = await httpClient.PostAsJsonAsync(url, newBanner);
                 if (response.IsSuccessStatusCode)
@@ -158,11 +160,17 @@
             try
             {
                 newBanner.emp_id = empId;
+                
+                if (string.IsNullOrEmpty(newBanner.title))
+                {
+                    newBanner.title = null; 
+                }
+
                 var response = await httpClient.PostAsJsonAsync(url, newBanner);
                 if (response.IsSuccessStatusCode)
                 {
                     newBanner = new banner();
-                    imagePreviewUrl = null;
+                    imagePreviewUrl = null;   
                     Snackbar.Add("Thêm thành công!", Severity.Success);
                 }
                 else
@@ -174,8 +182,10 @@
             {
                 Snackbar.Add("Thêm thất bại: " + ex.Message, Severity.Error);
             }
+
         }
     }
+
 
     private async Task<string> GetBase64Image(IBrowserFile file)
     {
