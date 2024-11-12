@@ -1,12 +1,11 @@
 ﻿@inherits LayoutComponentBase
 <MudItem xs="3">
     <MudNavMenu Color="Color.Primary">
-        <MudNavLink Href="/dashboard" Icon="@Icons.Material.Filled.Face">Thông tin tài khoản</MudNavLink>
+        <MudNavLink Class="mt-5" Href="/dashboard" Icon="@Icons.Material.Filled.Face">Thông tin tài khoản</MudNavLink>
         <MudNavLink Href="/components/navmenu" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.History">Lịch sử mua vé</MudNavLink>
         <MudNavLink Href="/billing" Icon="@Icons.Material.Filled.LocationOn">Địa chỉ của bạn</MudNavLink>
         <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Password">Đặt lại mật khẩu</MudNavLink>
-        <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Logout">Đăng xuất</MudNavLink>
-        <MudNavLink Href="/about" Icon="@Icons.Material.Filled.DeleteForever">Xóa tài khoản</MudNavLink>
-
+        <MudNavLink Class="mb-5" Href="/about" Icon="@Icons.Material.Filled.Logout">Đăng xuất</MudNavLink>
+        <MudNavLink Class="rounded-3" Href="/about" Icon="@Icons.Material.Filled.DeleteForever" IconColor="Color.Surface" Style="background: #EF5350; color: #ffff;">Xóa tài khoản</MudNavLink>
     </MudNavMenu>
 </MudItem>
