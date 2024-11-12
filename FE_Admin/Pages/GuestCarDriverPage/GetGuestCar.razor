@@ -1,0 +1,165 @@
+﻿@page "/guestcar"
+@inject HttpClient httpClient
+@inject IJSRuntime js
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid Class="pa-0">
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+            <MudPaper Elevation="0">
+                <MudDataGrid Class="mx-auto pa-2"
+                             T="guest_car"
+                             Dense="true"
+                             Hover="true"
+                             Bordered="true"
+                             Striped="true"
+                             Items="@Elements"
+                             SortMode="SortMode.Multiple"
+                             Filterable="false"
+                             QuickFilter="@_quickFilter"
+                             Hideable="true"
+                             RowClick="@RowClicked"
+                             RowContextMenuClick="RowRightClicked"
+                             SelectedItemsChanged="@SelectedItemsChanged"
+                             HorizontalScrollbar="false">
+                    <ToolBarContent>
+                        <MudItem xs="4" Elevation="0" Class="pb-3">
+                            <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        </MudItem>
+
+                        <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
+                            <MudButton Href="/addbill" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                                Thêm mới
+                            </MudButton>
+                        </MudItem>
+                    </ToolBarContent>
+
+                    <Columns>
+                        <PropertyColumn T="guest_car" TProperty="string" Property="x => x.guest_car_code" SortBy="@_sortBy" Class="fw-bold" Title="Mã hóa đơn" />
+                        <PropertyColumn T="guest_car" TProperty="string" style="width:100px" Property="x => x.car_name" SortBy="@_sortBy" Class="fw-bold" Title="Tên xe" />
+                        <PropertyColumn T="guest_car" TProperty="string" style="width:100px" Property="x => x.cus_name" SortBy="@_sortBy" Class="fw-bold" Title="Khách hàng" />
+                        <PropertyColumn T="guest_car" TProperty="string" style="width:100px" Property="x => x.date_start.ToShortDateString()" SortBy="@_sortBy" Class="fw-bold" Title="Bắt đầu" />
+                        <PropertyColumn T="guest_car" TProperty="string" style="width:100px" Property="x => x.date_end.ToShortDateString()" SortBy="@_sortBy" Class="fw-bold" Title="Kết thúc" />
+                        <PropertyColumn T="guest_car" TProperty="string" style="width:100px" Property="x => x.date_create.ToShortDateString()" SortBy="@_sortBy" Class="fw-bold" Title="Ngày tạo" />
+                        <TemplateColumn T="guest_car" Class="fw-bold" style="width:100px" Title="Thanh toán">
+                            <CellTemplate Context="element">
+                                @if (element.Item.payment_method)
+                                {
+                                    <MudChip Color="Color.Surface" Size="Size.Small" Variant="Variant.Text">Tiền mặt</MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip Color="Color.Tertiary" Size="Size.Small" Variant="Variant.Text">Ngân hàng</MudChip>
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
+                        <PropertyColumn T="guest_car" style="width:100px" TProperty="float" Property="x => x.price" SortBy="@_sortBy" Class="fw-bold" Title="Tổng tiền" />
+                        <PropertyColumn T="guest_car" style="width:100px" TProperty="string" Property="x => x.emp_name" SortBy="@_sortBy" Class="fw-bold" Title="Người tạo" />
+                        <TemplateColumn T="guest_car" style="width:100px" Class="fw-bold" Title="Trạng Thái">
+                            <CellTemplate Context="element">
+                                @if (element.Item.status == 1)
+                                {
+                                    <MudChip Color="Color.Success" Size="Size.Small" Variant="Variant.Text">Tạo mới</MudChip>
+                                }
+                                else if (element.Item.status == 2)
+                                {
+                                    <MudChip Color="Color.Primary" Size="Size.Small" Variant="Variant.Text">Đã thanh toán</MudChip>
+                                }
+                                else if (element.Item.status == 6)
+                                {
+                                    <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Đã hủy</MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip Color="Color.Tertiary" Size="Size.Small" Variant="Variant.Text">Hoàn tiền</MudChip>
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
+                        <TemplateColumn T="guest_car" style="width:100px" Class="fw-bold" Title="Chức năng">
+                            <CellTemplate Context="element">
+                                <MudTooltip Text="Chi tiết">
+                                    <MudIconButton Href="@($"/edit_bill/{element.Item.id}")" Icon="far fa-eye" Color="Color.Primary" Size="Size.Small" />
+                                </MudTooltip>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="guest_car" />
+                    </PagerContent>
+                </MudDataGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private IEnumerable<guest_car> Elements = new List<guest_car>();
+    private Dictionary<int, string> CategoryDict = new Dictionary<int, string>();
+    private string _searchString;
+    private bool _sortNameByLength;
+    private List<string> _events = new();
+    private string url = "http://localhost:49922/api/GuestCars/GetAll";
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+            {
+            new BreadcrumbItem("Thuê", href: null, icon: @Icons.Material.Outlined.Payments),
+            new BreadcrumbItem("Danh sách hóa đơn", href: "/guestcar", icon: @Icons.Material.Outlined.List),
+            };
+
+
+    private Func<guest_car, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.guest_car_code.Length;
+        else
+            return x.guest_car_code;
+    };
+
+    private string GetRoleTaskName(int cateId)
+    {
+        return CategoryDict.TryGetValue(cateId, out var name) ? name : "Unknown";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Elements = await httpClient.GetFromJsonAsync<List<guest_car>>(url);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    void RowClicked(DataGridRowClickEventArgs<guest_car> args)
+    {
+        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void RowRightClicked(DataGridRowClickEventArgs<guest_car> args)
+    {
+        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void SelectedItemsChanged(HashSet<guest_car> items)
+    {
+        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+
+    private Func<guest_car, bool> _quickFilter => x =>
+      {
+          if (string.IsNullOrWhiteSpace(_searchString))
+              return true;
+
+          if ($"{x.guest_car_code} {x.id} {GetRoleTaskName(x.id)}".Contains(_searchString))
+              return true;
+
+          return false;
+      };
+}

@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using System;
-
-namespace BE_API.Models
+﻿namespace FE_Admin.Models
 {
     public class guest_car
     {
@@ -24,9 +21,10 @@ namespace BE_API.Models
         public bool payment_method { get; set; }
     }
 
+
     public class guest_car_create
     {
-        //public int id { get; set; }
+        public int id { get; set; }
         public int emp_id { get; set; }
         public int cus_id { get; set; }
         public int car_id { get; set; }
@@ -38,7 +36,7 @@ namespace BE_API.Models
         public DateTime? pay_date { get; set; }
         public string? transaction_no { get; set; }
         public bool payment_method { get; set; }
-        public DateTime date_start { get; set; }
-        public DateTime date_end { get; set; }
+        public DateTime? date_start { get; set; }
+        public DateTime? date_end { get; set; }
     }
 }
