@@ -6,6 +6,12 @@
 @inject ISnackbar Snackbar
 
 <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    @if (isLoading)
+    {
+        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+    }
+    else
+    {
     <MudGrid Class="pa-0">
         <MudItem xs="12">
             <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
@@ -72,9 +78,11 @@
             </MudPaper>
         </MudItem>
     </MudGrid>
+    }
 </MudContainer>
 
 @code {
+    private bool isLoading = true;
     private IEnumerable<car> Elements = new List<car>();
     private string _searchString;
     private List<string> _events = new();
@@ -117,6 +125,10 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 

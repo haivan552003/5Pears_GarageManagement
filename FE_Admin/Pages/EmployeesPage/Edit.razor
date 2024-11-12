@@ -340,13 +340,13 @@
     {
         if (!string.IsNullOrWhiteSpace(citizenIdentityNumber) && string.IsNullOrWhiteSpace(citizenIdentityImg))
         {
-            yield return "Nếu có số CMND thì hình ảnh CMND không được bỏ trống.";
+            yield return "Nếu có số CCCD thì hình ảnh CCCD không được bỏ trống.";
         }
         else if (string.IsNullOrWhiteSpace(citizenIdentityNumber) && !string.IsNullOrWhiteSpace(citizenIdentityImg))
         {
-            yield return "Nếu có hình ảnh CMND thì số CMND không được bỏ trống.";
+            yield return "Nếu có hình ảnh CCCD thì số CCCD không được bỏ trống.";
         }
-        else if (!string.IsNullOrWhiteSpace(citizenIdentityNumber) && citizenIdentityNumber.Length != 9 && citizenIdentityNumber.Length != 12)
+        else if (!string.IsNullOrWhiteSpace(citizenIdentityNumber) && citizenIdentityNumber.Length != 12 && citizenIdentityNumber.Length != 12)
         {
             yield return "Số CCCD không hợp lệ.";
         }

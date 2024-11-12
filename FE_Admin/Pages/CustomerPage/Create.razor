@@ -72,20 +72,30 @@
                                 <InputFile id="citizenIdInput1" OnChange="@((e) => LoadCitizenIdImage(e, 1))" hidden accept=".jpg,.jpeg,.png" />
                                 <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.CloudUpload" for="citizenIdInput1" FullWidth="true" Class="mud-button-small-text">CCCD (Trước)</MudButton>
                                 <ValidationMessage For="@(() => newDriver.citizen_identity_img1)" />
-                                @if (!string.IsNullOrEmpty(newDriver.citizen_identity_img1))
+                                @if (isUploadingCitizenImage)
+                                {
+                                    <MudProgressLinear Style="display: flex; justify-content: center; margin-top: 8px;" Color="Color.Primary" Size="Size.Small" Indeterminate="true" />
+                                }
+                                else if (!string.IsNullOrEmpty(newDriver.citizen_identity_img1))
                                 {
                                     <MudImage Src="@newDriver.citizen_identity_img1" Alt="CCCD (Mặt trước)" Width="100" Height="100" ObjectFit="ObjectFit.Cover" Class="mt-2" />
                                 }
                             </MudItem>
+
                             <MudItem xs="6">
                                 <InputFile id="licenseInput1" OnChange="@((e) => LoadLicenseImage(e, 1))" hidden accept=".jpg,.jpeg,.png" />
                                 <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.CloudUpload" for="licenseInput1" FullWidth="true" Class="mud-button-small-text">GPLX (Trước)</MudButton>
                                 <ValidationMessage For="@(() => newDriver.driver_license_img1)" />
-                                @if (!string.IsNullOrEmpty(newDriver.driver_license_img1))
+                                @if (isUploadingLicenseImage)
+                                {
+                                    <MudProgressLinear Style="display: flex; justify-content: center; margin-top: 8px;" Color="Color.Primary" Size="Size.Small" Indeterminate="true" />
+                                }
+                                else if (!string.IsNullOrEmpty(newDriver.driver_license_img1))
                                 {
                                     <MudImage Src="@newDriver.driver_license_img1" Alt="Bằng lái (Mặt trước)" Width="100" Height="100" ObjectFit="ObjectFit.Cover" Class="mt-2" />
                                 }
                             </MudItem>
+
                         </MudGrid>
                     </MudPaper>
                 </MudItem>
@@ -95,6 +105,8 @@
 </MudContainer>
 
 @code {
+    private bool isUploadingCitizenImage = false;
+    private bool isUploadingLicenseImage = false;
     private customers newDriver = new customers();
     private MudForm form;
     private DateTime? birthdayDate;
@@ -155,6 +167,7 @@
     {
         if (e.File != null)
         {
+            isUploadingCitizenImage = true;
             var base64Image = await GetBase64Image(e.File);
             if (!string.IsNullOrEmpty(base64Image))
             {
@@ -163,6 +176,7 @@
                     newDriver.citizen_identity_img1 = await UploadImageToFirebase($"citizen_id_front_{newDriver.cus_code}", base64Image);
                 }
             }
+            isUploadingCitizenImage = false;
         }
     }
 
@@ -170,6 +184,7 @@
     {
         if (e.File != null)
         {
+            isUploadingLicenseImage = true;
             var base64Image = await GetBase64Image(e.File);
             if (!string.IsNullOrEmpty(base64Image))
             {
@@ -178,6 +193,7 @@
                     newDriver.driver_license_img1 = await UploadImageToFirebase($"driver_license_front_{newDriver.cus_code}", base64Image);
                 }
             }
+            isUploadingLicenseImage = false;
         }
     }
 
