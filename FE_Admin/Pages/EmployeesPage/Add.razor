@@ -44,8 +44,43 @@
                                               Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidateFullName))"
                                               LabelStyle="font-weight: 600; color: #1976d2;" />
                             </MudItem>
+                        <MudItem xs="6" Class="mb-4">
+                            <InputFile id="empImageInput" OnChange="@LoadEmpImage" hidden accept=".jpg,.jpeg,.png" />
+                            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.CloudUpload" for="empImageInput"
+                                       FullWidth="true" Class="mb-3">
+                                Chọn hình ảnh nhân viên
+                            </MudButton>
+                            @if (!string.IsNullOrEmpty(newEmployee.img_emp))
+                            {
+                                <MudImage Src="@newEmployee.img_emp" Alt="Hình ảnh nhân viên" Width="100"
+                                          Height="100" ObjectFit="ObjectFit.Cover" Class="mb-3" />
+                            }
+                        </MudItem>
+
+                        <MudItem xs="6" Class="mb-4">
+                            <InputFile id="empIdentityImageInput" OnChange="@LoadEmpImage1" hidden accept=".jpg,.jpeg,.png" />
+                            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.CloudUpload" for="empIdentityImageInput"
+                                       FullWidth="true" Class="mb-3">
+                                Chọn hình ảnh CMND
+                            </MudButton>
+                            @if (!string.IsNullOrEmpty(newEmployee.citizen_identity_img))
+                            {
+                                <MudImage Src="@newEmployee.citizen_identity_img" Alt="Hình ảnh CMND" Width="100"
+                                          Height="100" ObjectFit="ObjectFit.Cover" Class="mb-3" />
+                            }
+                        </MudItem>
 
 
+                   
+
+                        <MudItem xs="6" Class="mb-4">
+                            <MudTextField Label="Họ và tên" @bind-Value="newEmployee.fullname" Placeholder="Họ Và Tên"
+                                          Variant="Variant.Outlined" Required="true"
+                                          Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidateFullName))"
+                                          LabelStyle="font-weight: 600; color: #1976d2;" />
+                        </MudItem>
                         <MudItem xs="4" Class="mb-4">
                             <MudTextField Label="Email" @bind-Value="newEmployee.email" Placeholder="Email"
                                           Variant="Variant.Outlined" Required="true"
@@ -54,6 +89,10 @@
                         </MudItem>
                         <MudItem xs="4" Class="mb-4">
                             <MudTextField Label="Số điện thoại" @bind-Value="newEmployee.phone_number" Placeholder="Số điện thoại "
+
+                        <MudItem xs="6" Class="mb-4">
+                            <MudTextField Label="Số điện thoại" @bind-Value="newEmployee.phone_number" Placeholder="Số điện thoại"
+
                                           Variant="Variant.Outlined" Required="true"
                                               Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidatephone))"
                                           LabelStyle="font-weight: 600; color: #1976d2;" />
@@ -69,6 +108,10 @@
                         <MudItem xs="4" Class="mb-4">
                             <MudDatePicker @bind-Date="birthdayDate" Label="Ngày sinh" Required="true"
                                            Placeholder="Ngày Sinh" Variant="Variant.Outlined"
+                        <MudItem xs="6" Class="mb-4">
+                            <MudDatePicker @bind-Date="birthdayDate" Label="Ngày sinh" For="@(() => newEmployee.birthday)" Required="true"
+                                           Placeholder="Ngày Sinh" Variant="Variant.Outlined" DateFormat="dd/MM/yyyy"
+                                           MaxDate="@DateTime.Now.AddYears(-18)"
                                            LabelStyle="font-weight: 600; color: #1976d2;" />
                         </MudItem>
 
@@ -89,7 +132,7 @@
 
 
 
-                        <MudItem xs="3" Class="mb-4">
+                        <MudItem xs="4" Class="mb-4">
                             <MudSelect @bind-Value="newEmployee.status" Label="Trạng thái" Required="true"
                                        Placeholder="Trạng Thái" Variant="Variant.Outlined"
                                        LabelStyle="font-weight: 600; color: #1976d2;">
@@ -116,6 +159,11 @@
                                     }
                                 }
                             </MudSelect>
+                        </MudItem>
+
+                        <MudItem xs="12" Class="d-flex justify-end">
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save"
+                                       Color="Color.Primary" OnClick="AddEmp" Class="mt-3">Lưu</MudButton>
                         </MudItem>
                     </MudGrid>
                 </MudForm>
@@ -147,7 +195,6 @@
     </MudGrid>
 </MudContainer>
 
-
 <script>
     // Lấy token từ localStorage
     function getAuthToken() {
@@ -155,21 +202,19 @@
     }
 </script>
 
-
 @code {
     private IBrowserFile selectedFile;
-    private IBrowserFile selectedFile1;
-    private employees newEmployee = new employees();
+    private employees_create newEmployee = new employees_create();
     private MudForm form;
     private DateTime? birthdayDate;
     private string url = "http://localhost:49922/api/Employees";
     private string roleUrl = "http://localhost:49922/api/Roles";
     private string imagePreviewUrl;
-    private string imagePreviewUrl1;
-    private int empId;
+    private bool isFormValid;
+    private bool showSuccess;
+    private bool showError;
+    private bool isLoading;
     private List<roles> roles = new List<roles>();
-
-
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -177,6 +222,7 @@
         new BreadcrumbItem("Danh sách nhân viên", href: "/getemp", icon: @Icons.Material.Outlined.List),
         new BreadcrumbItem("Thêm mới", href: "/addemp", icon: @Icons.Material.Filled.AddCircleOutline),
     };
+
     private bool isShowPassword = false;
     private InputType PasswordInput => isShowPassword ? InputType.Text : InputType.Password;
     private string PasswordInputIcon => isShowPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
@@ -190,167 +236,31 @@
     {
         var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
         await LoadRoles();
-        newEmployee = new employees { };
+        newEmployee = new employees_create { };
         birthdayDate = DateTime.Now.AddYears(-18);
     }
 
-
-    private async Task AddEmployee()
+    private async Task LoadRoles()
     {
-        try
+        var response = await httpClient.GetFromJsonAsync<List<roles>>(roleUrl);
+        if (response != null)
         {
-            var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
-
-            if (!string.IsNullOrEmpty(token))
-            {
-                // Giải mã token
-                var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-                var jwtToken = handler.ReadJwtToken(token);
-
-                var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "emp_id");
-
-                if (usernameClaim != null)
-                {
-                    empId = int.Parse(usernameClaim.Value);
-                }
-            }
-
-            // var citizenIdentityValidation = EmployeeValidateCitizenIdentity(newEmployee.citizen_identity_number, newEmployee.citizen_identity_img);
-            // if (citizenIdentityValidation.Any())
-            // {
-            //     foreach (var error in citizenIdentityValidation)
-            //     {
-            //         Snackbar.Add(error, Severity.Warning);
-            //     }
-            //     return;
-            // }
-
-            if (birthdayDate.HasValue)
-            {
-                newEmployee.birthday = birthdayDate.Value;
-            }
-            else
-            {
-                Snackbar.Add("Vui lòng chọn ngày sinh", Severity.Warning);
-                return;
-            }
-            if (selectedFile != null && selectedFile1 != null)
-            {
-                try
-                {
-                    var base64Data = await GetBase64Image(selectedFile);
-                    var imageUrl = await js.InvokeAsync<string>("uploadImage", selectedFile.Name, base64Data);
-                    var imageUrl2 = await js.InvokeAsync<string>("uploadImage2", selectedFile1.Name, base64Data);
-                    newEmployee.img_emp = imageUrl;
-                    newEmployee.citizen_identity_img = imageUrl2;
-
-                    var response = await httpClient.PostAsJsonAsync(url, newEmployee);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Snackbar.Add("Thêm nhân viên thành công!", Severity.Success);
-                        Navigation.NavigateTo("/getemp");
-                    }
-                    else
-                    {
-                        var errorMsg = await response.Content.ReadAsStringAsync();
-                        Snackbar.Add($"Lỗi: {errorMsg}", Severity.Error);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Snackbar.Add("Thêm thất bại: " + ex.Message, Severity.Error);
-                }
-            }
-            else
-            {
-                try
-                {
-                    var response = await httpClient.PostAsJsonAsync(url, newEmployee);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        newEmployee = new employees();
-                        imagePreviewUrl = null;
-                        imagePreviewUrl1 = null;
-                        Snackbar.Add("Thêm thành công!", Severity.Success);
-                    }
-                    else
-                    {
-                        Snackbar.Add("Lỗi khi thêm", Severity.Warning);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Snackbar.Add("Thêm thất bại: " + ex.Message, Severity.Error);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
-        }
-    }
-
-    private async Task HandleFileSelected(InputFileChangeEventArgs e)
-    {
-        selectedFile = e.File;
-
-        if (selectedFile != null)
-        {
-            var stream = selectedFile.OpenReadStream();
-            var buffer = new byte[selectedFile.Size];
-            await stream.ReadAsync(buffer, 0, buffer.Length);
-            stream.Close();
-
-            imagePreviewUrl = $"data:image/jpeg;base64,{Convert.ToBase64String(buffer)}";
-        }
-        else
-        {
-            Console.WriteLine("No file selected.");
+            roles = response;
         }
     }
 
     private async Task<string> GetBase64Image(IBrowserFile file)
     {
-        var buffer = new byte[file.Size];
-        await file.OpenReadStream().ReadAsync(buffer);
-        return Convert.ToBase64String(buffer);
-    }
-
-
-    private async Task<bool> IsEmailExists(string email)
-    {
-        var response = await httpClient.GetAsync($"{url}/exists?email={email}");
-        return response.IsSuccessStatusCode && bool.Parse(await response.Content.ReadAsStringAsync());
-    }
-
-    private async Task<IEnumerable<string>> EmployeeValidateEmail(string email)
-    {
-        var errors = new List<string>();
-
-        if (string.IsNullOrWhiteSpace(email))
+        try
         {
-            errors.Add("Vui lòng điền email.");
+            using var memoryStream = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(memoryStream);
+            return Convert.ToBase64String(memoryStream.ToArray());
         }
-        else if (email.Length < 20 || email.Length > 150)
+        catch (Exception ex)
         {
-            errors.Add("Email không hợp lệ.");
-        }
-        else
-        {
-            if (await IsEmailExists(email))
-            {
-                errors.Add("Email đã tồn tại trong cơ sở dữ liệu.");
-            }
-        }
-
-        return errors;
-    }
-
-    private IEnumerable<string> EmployeeValidateEmpCode(string empCode)
-    {
-        if (string.IsNullOrWhiteSpace(empCode))
-        {
-            yield return "Vui lòng điền mã nhân viên.";
+            Snackbar.Add($"Lỗi xử lý hình ảnh: {ex.Message}", Severity.Error);
+            return null;
         }
     }
     private async Task<IEnumerable<string>> EmployeeValidateCCCD(string citizenIdentityNumber)
@@ -437,21 +347,144 @@
             yield return "Vui lòng chọn giới tính.";
         }
     }
-
-    private async Task LoadRoles()
+    private async Task LoadEmpImage(InputFileChangeEventArgs e)
     {
         try
         {
-            var response = await httpClient.GetFromJsonAsync<List<roles>>(roleUrl);
-            if (response != null)
+            isLoading = true;
+            var file = e.File;
+            if (file != null)
             {
-                roles = response;
+                var base64Data = await GetBase64Image(file);
+                if (base64Data != null)
+                {
+                    var fileName = $"emp_images_avt/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                    var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
+                    newEmployee.img_emp = imageUrl;
+                    StateHasChanged();
+                }
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Lỗi khi tải danh sách vai trò: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Lỗi tải lên hình ảnh: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
+    private async Task LoadEmpImage1(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            isLoading = true;
+            var file = e.File;
+            if (file != null)
+            {
+                var base64Data = await GetBase64Image(file);
+                if (base64Data != null)
+                {
+                    var fileName = $"emp_images_cccd/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                    var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
+                    newEmployee.citizen_identity_img = imageUrl;
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi tải lên hình ảnh: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task AddEmp()
+    {
+        try
+        {
+            if (birthdayDate.HasValue)
+            {
+                newEmployee.birthday = birthdayDate.Value;
+            }
+
+            if (form.IsValid)
+            {
+                isLoading = true;
+                var response = await httpClient.PostAsJsonAsync(url, newEmployee);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Thêm nhân viên thành công", Severity.Success);
+                    Navigation.NavigateTo("/getemp");
+                }
+                else
+                {
+                    Snackbar.Add("Có lỗi xảy ra khi thêm nhân viên", Severity.Error);
+                    Console.WriteLine($"Error: {response.StatusCode}");
+                }
+            }
+            else
+            {
+                Snackbar.Add("Form không hợp lệ. Vui lòng kiểm tra lại các trường.", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+    private string[] EmployeeValidateFullName(string fullname)
+    {
+        if (string.IsNullOrEmpty(fullname))
+        {
+            return new string[] { "Họ tên không được để trống." };
+        }
+        return Array.Empty<string>();
+    }
+
+    private async Task<IEnumerable<string>> EmployeeValidateEmail(string email)
+    {
+        if (string.IsNullOrEmpty(email))
+        {
+            return new string[] { "Email không được để trống." };
+        }
+        // if (!new EmailAddressValidator().IsValid(email))
+        // {
+        //     return new string[] { "Email không hợp lệ." };
+        // }
+        return Array.Empty<string>();
+    }
+
+    private string[] EmployeeValidatePassword(string password)
+    {
+        if (string.IsNullOrEmpty(password))
+        {
+            return new string[] { "Mật khẩu không được để trống." };
+        }
+        if (password.Length < 6)
+        {
+            return new string[] { "Mật khẩu phải có ít nhất 6 ký tự." };
+        }
+        return Array.Empty<string>();
+    }
+
+    private string[] EmployeeValidateGender(string gender)
+    {
+        if (string.IsNullOrEmpty(gender))
+        {
+            return new string[] { "Giới tính không được để trống." };
+        }
+        return Array.Empty<string>();
+    }
 }
