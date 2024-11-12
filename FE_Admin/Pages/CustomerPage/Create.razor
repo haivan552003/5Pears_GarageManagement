@@ -50,6 +50,14 @@
                                 <MudTextField ShrinkLabel @bind-Value="newDriver.driver_license_number" For="@(() => newDriver.driver_license_number)" Label="Số bằng lái" Required="true" RequiredError="Vui lòng nhập số bằng lái" Variant="Variant.Outlined" />
                             </MudItem>
                             <MudItem xs="12" sm="6">
+                                <MudSelect @bind-Value="newDriver.id_role" Label="Vai trò" Variant="Variant.Outlined" Required="true">
+                                    @foreach (var roless in roles)
+                                    {
+                                        <MudSelectItem Value="@roless.id">@roless.name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
                                 <MudSelect @bind-Value="newDriver.status" For="@(() => newDriver.status)" Label="Trạng thái" Required="true" Variant="Variant.Outlined">
                                     <MudSelectItem Value="true">Đang Hoạt động</MudSelectItem>
                                     <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>

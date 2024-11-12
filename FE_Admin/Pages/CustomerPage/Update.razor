@@ -78,6 +78,14 @@
                                                   Variant="Variant.Outlined" />
                                 </MudItem>
 
+                                <MudItem xs="12" sm="6">
+                                    <MudSelect @bind-Value="newRoleTask.id_role" Label="Vai trò" Variant="Variant.Outlined" Required="true">
+                                        @foreach (var roless in roles)
+                                        {
+                                            <MudSelectItem Value="@roless.id">@roless.name</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
 
                                 <MudItem xs="12" sm="6">
                                     <MudSelect @bind-Value="newRoleTask.status" For="@(() => newRoleTask.status)"
@@ -273,7 +281,7 @@
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Lỗi khi tải ảnh: {ex.Message}", Severity.Error);
+            // Snackbar.Add($"Lỗi khi tải ảnh: {ex.Message}", Severity.Error);
         }
     }
 
@@ -338,7 +346,7 @@
         {
             var selectedRoleId = Convert.ToInt32(e.Value);
             var selectedRole = roles.FirstOrDefault(role => role.id == selectedRoleId);
-            selectedRoleName = selectedRole?.name ?? "Không tìm thấy vai trò"; // Gán tên vai trò đã chọn
+            selectedRoleName = selectedRole?.name ?? "Không tìm thấy vai trò";
 
             newRoleTask.id_role = selectedRoleId;
         }
@@ -383,7 +391,7 @@
             var response = await httpClient.PutAsJsonAsync($"{url}/{newRoleTask.Id}", newRoleTask);
             if (response.IsSuccessStatusCode)
             {
-                Snackbar.Add($"update thành công", Severity.Error);
+                Snackbar.Add($"update thành công", Severity.Success);
             }
             else
             {
@@ -403,7 +411,7 @@
         var response = await httpClient.PutAsJsonAsync($"{addressUrl}/{address.id}", address);
         if (response.IsSuccessStatusCode)
         {
-            Snackbar.Add($"cập nhật thông tin thành công", Severity.Error);
+            Snackbar.Add($"cập nhật thông tin thành công", Severity.Success);
 
         }
         else
