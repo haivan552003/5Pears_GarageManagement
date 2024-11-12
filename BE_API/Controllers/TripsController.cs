@@ -66,34 +66,30 @@ namespace BE_API.Controllers
 
         // POST: api/trips
         [HttpPost("trip")]
-        public async Task<ActionResult> AddTrip([FromBody] trip newTrip)
+        public async Task<ActionResult> AddEmployees(trip_create newEmployee)
         {
-            if (newTrip == null || string.IsNullOrEmpty(newTrip.img_trip) ||
-                string.IsNullOrEmpty(newTrip.from) || string.IsNullOrEmpty(newTrip.to) ||
-                string.IsNullOrEmpty(newTrip.trip_code))
+            try
             {
-                return BadRequest("Dữ liệu không hợp lệ.");
-            }
-
-            var parameters = new DynamicParameters();
-            parameters.Add("@img_trip", newTrip.img_trip);
-            parameters.Add("@from", newTrip.from);
-            parameters.Add("@to", newTrip.to);
-            parameters.Add("@emp_create", newTrip.emp_create);
-            parameters.Add("@status", newTrip.status);
-            parameters.Add("@is_return", newTrip.is_return);
-
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                var result = await connection.ExecuteAsync("sp_add_trip", parameters, commandType: CommandType.StoredProcedure);
-
-                if (result > 0)
+                var parameters = new DynamicParameters(newEmployee);
+                using (var connection = new SqlConnection(_connectionString))
                 {
-                    return Ok(new { message = "Chuyến đi đã được thêm thành công" });
-                }
+                    await connection.OpenAsync();
 
-                return BadRequest(new { message = "Thêm chuyến đi không thành công" });
+                    var result = await connection.ExecuteAsync("sp_add_trip", parameters, commandType: CommandType.StoredProcedure);
+
+                    if (result > 0)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi: {ex.Message}");
             }
         }
 
@@ -257,7 +253,20 @@ namespace BE_API.Controllers
         [HttpPut("tripdetail/{id}")]
         public async Task<IActionResult> UpdateTripDetail(int id, trip_detail_update trip)
         {
-            var parameters = new DynamicParameters(trip);
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id); 
+            parameters.Add("@time_start", trip.time_start);
+            parameters.Add("@time_end", trip.time_end);
+            parameters.Add("@price", trip.price);
+            parameters.Add("@voucher", trip.voucher);
+            parameters.Add("@trip_id", trip.trip_id);
+            parameters.Add("@car_id", trip.car_id);
+            parameters.Add("@location_from_id", trip.location_from_id);
+            parameters.Add("@driver_id", trip.driver_id);
+            parameters.Add("@location_to_id", trip.location_to_id);
+            parameters.Add("@distance", trip.distance);
+            parameters.Add("@status", trip.status);
+
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
@@ -274,6 +283,7 @@ namespace BE_API.Controllers
                 }
             }
         }
+
         [HttpDelete("tripdetail/{id}")]
         public async Task<IActionResult> DeleteTripDetail(int id)
         {
