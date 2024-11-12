@@ -190,5 +190,33 @@ namespace BE_API.Controllers
                 return Ok(dropdown);
             }
         }
+
+        [HttpGet("trip_detail_by_trip_id")]
+        public async Task<ActionResult<IEnumerable<dropdown>>> DropdownTripDetailByTripID(int id)
+        {
+            var procedureName = "sp_dropdown_tripdetail_by_tripid";
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Int32, ParameterDirection.Input);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var dropdown = await connection.QueryAsync<dropdown>(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                return Ok(dropdown);
+            }
+        }
+
+        [HttpGet("car_seart_by_trip_id")]
+        public async Task<ActionResult<IEnumerable<dropdown>>> DropdownCarSeartByTripID(int id)
+        {
+            var procedureName = "sp_dropdown_carseat_by_guesttrip_id";
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Int32, ParameterDirection.Input);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var dropdown = await connection.QueryAsync<dropdown>(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                return Ok(dropdown);
+            }
+        }
     }
 }

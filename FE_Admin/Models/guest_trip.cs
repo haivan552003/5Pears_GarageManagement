@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using System;
-using System.Collections.Generic;
-
-namespace BE_API.Models
+﻿namespace FE_Admin.Models
 {
     public class guest_trip
     {
@@ -25,6 +21,7 @@ namespace BE_API.Models
         public float price { get; set; }
         public float return_money { get; set; }
         public int status { get; set; }
+        public int car_seat_id { get; set; }
         public bool payment_method { get; set; }
         public DateTime date_create { get; set; }
         public List<guest_trip_child> guest_trip_child { get; set; }
@@ -44,6 +41,7 @@ namespace BE_API.Models
     }
     public class guest_trip_create
     {
+        public int id { get; set; }
         public int trip_detail_id { get; set; }
         public int emp_id { get; set; }
         public int cus_id { get; set; }
