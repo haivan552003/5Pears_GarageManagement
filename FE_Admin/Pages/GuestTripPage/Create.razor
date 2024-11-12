@@ -1,0 +1,356 @@
+﻿@page "/addguesttrip"
+@inject HttpClient httpClient
+@inject IJSRuntime js
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" Class="mx-auto">
+            <MudPaper Elevation="0" Class="pa-3">
+                <MudItem xs="12">
+                    <MudPaper Elevation="4" Class="p-4">
+                        <MudText Typo="Typo.h6" Class="mb-5">Thêm hóa đơn đặt vé xe</MudText>
+                        <MudForm @ref="form" Style="height:auto">
+                            <MudGrid>
+                                <MudItem xs="4" Class="mb-4">
+                                    <MudSelect Variant="Variant.Outlined" T="int" Label="Tuyến xe" ValueChanged="OnTripChanged">
+                                        @foreach (var item in trip)
+                                        {
+                                            <MudSelectItem Value="item.id">@item.name</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+
+
+                                <MudItem xs="5" Class="mb-4">
+                                    <MudSelect Variant="Variant.Outlined" T="int" Label="Chuyến xe" ValueChanged="OnTripDetailChanged">
+                                        @foreach (var item in tripdetail)
+                                        {
+                                            <MudSelectItem Value="item.id">@item.name</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+
+                                <MudItem xs="3" Class="mb-4">
+                                    @*   <MudSelect Variant="Variant.Outlined" T="int" Label="Ghế" @bind-Value="bill.car_seat_id">
+                                    @foreach (var item in carseat)
+                                    {
+                                    <MudSelectItem Value="item.id">@item.name</MudSelectItem>
+                                    }
+                                    </MudSelect> *@
+
+                                    <MudSelect MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))"
+                                               MultiSelection="true"
+                                               @bind-SelectedValues="selectedSeats"
+                                               T="int"
+                                               Label="Ghế"
+                                               Variant="Variant.Outlined">
+                                        @foreach (var item in carseat)
+                                        {
+                                            <MudSelectItem T="int" Value="item.id">@item.name</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+
+                                <MudItem xs="3" Class="mb-4">
+                                    <MudTextField ShrinkLabel Label="Mã hóa đơn" T="string" Variant="Variant.Outlined" ReadOnly="true" />
+                                </MudItem>
+                                <MudItem xs="3" Class="mb-4">
+                                    <MudSelect Variant="Variant.Outlined" T="int" Label="Khách hàng" @bind-Value="bill.cus_id">
+                                        @foreach (var item in customer)
+                                        {
+                                            <MudSelectItem Value="item.id">@item.name</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+                                <MudItem xs="3" Class="mb-4">
+                                    <MudTextField ShrinkLabel
+                                                  Label="Giá vé"
+                                                  @bind-Value="bill.price"
+                                                  Variant="Variant.Outlined"
+                                                  Required="true"
+                                                  ReadOnly="true" />
+                                </MudItem>
+
+                                <MudItem xs="3" Class="mb-4">
+                                    <MudSelect Variant="Variant.Outlined" T="bool" Label="Hình thức thanh toán" @bind-Value="bill.payment_method">
+                                        <MudSelectItem Value="true">Tiền mặt</MudSelectItem>
+                                        <MudSelectItem Value="false">Chuyển khoản</MudSelectItem>
+                                    </MudSelect>
+                                </MudItem>
+                            </MudGrid>
+
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddBill" Class="mt-3">Lưu</MudButton>
+                        </MudForm>
+                    </MudPaper>
+                </MudItem>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+<script>
+    // Lấy token từ localStorage
+    function getAuthToken() {
+        return localStorage.getItem("authToken");
+    }
+</script>
+
+@code {
+    private bool multiSelectionTextChoice;
+    private IEnumerable<int> selectedSeats { get; set; } = new HashSet<int>();
+
+    private guest_trip_create bill = new guest_trip_create();
+    private IEnumerable<guest_trip> topGuestTrip = new List<guest_trip>();
+    private List<dropdown> trip = new List<dropdown>();
+    private List<dropdown> tripdetail = new List<dropdown>();
+    private trip_detail tripdetailID = new trip_detail();
+    private List<dropdown> carseat = new List<dropdown>();
+    private List<dropdown> customer = new List<dropdown>();
+    private int selectedTripId = 0;
+    private int selectedTripDetailId = 0;
+    private MudForm form;
+
+    private string url = "http://localhost:49922/api/GuestTrip";
+    private string urlTrip = "http://localhost:49922/api/Dropdown/trip";
+    private string urlCustomer = "http://localhost:49922/api/Dropdown/customer";
+    private string urlTripDetail = "http://localhost:49922/api/Dropdown/trip_detail_by_trip_id?id=";
+    private string urlTripDetailID = "http://localhost:49922/api/Trips/tripdetail";
+    private string urlCarSeat = "http://localhost:49922/api/Dropdown/car_seart_by_trip_id?id=";
+    private string urlTopGuestTrip = "http://localhost:49922/api/GuestTrip/GetTop";
+
+    private int empId;
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Đặt vé", href: null, icon: @Icons.Material.Outlined.Payments),
+        new BreadcrumbItem("Danh sách hóa đơn", href: "/guesttrip", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Thêm mới", href: "/addguesttrip", icon: @Icons.Material.Filled.AddCircleOutline),
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+        await LoadTrip();
+        await LoadCustomer();
+    }
+
+    private async Task OnTripChanged(int id)
+    {
+        selectedTripId = id;
+        if (selectedTripId != 0)
+        {
+            await LoadTripDetail(id);
+        }
+        else
+        {
+            Snackbar.Add("Vui lòng chọn tuyến xe", Severity.Warning);
+        }
+    }
+
+    private async Task OnTripDetailChanged(int id)
+    {
+        selectedTripDetailId = id;
+        if (selectedTripDetailId != 0)
+        {
+            await LoadCarSeat(id);
+            await LoadTripDetailID(id);
+            selectedSeats = new HashSet<int>();
+        }
+        else
+        {
+            Snackbar.Add("Vui lòng chọn chuyến xe", Severity.Warning);
+        }
+    }
+
+    private async Task LoadTrip()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<dropdown>>(urlTrip);
+            if (response != null)
+            {
+                trip = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Lỗi khi tải danh sách tuyến xe", Severity.Error);
+        }
+    }
+
+    private async Task LoadTripDetail(int tripId)
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<dropdown>>($"{urlTripDetail}{tripId}");
+            if (response != null)
+            {
+                tripdetail = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Lỗi khi tải danh sách chuyến xe", Severity.Error);
+        }
+    }
+
+    private async Task LoadCarSeat(int tripDetailId)
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<dropdown>>($"{urlCarSeat}{tripDetailId}");
+            if (response != null)
+            {
+                carseat = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Lỗi khi tải danh sách ghế", Severity.Error);
+        }
+    }
+
+    private async Task LoadCustomer()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<dropdown>>($"{urlCustomer}");
+            if (response != null)
+            {
+                customer = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Lỗi khi tải danh sách khách hàng", Severity.Error);
+        }
+    }
+    private async Task LoadTripDetailID(int tripDetailID)
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<trip_detail>($"{urlTripDetailID}/{tripDetailID}");
+            tripdetailID = response;
+            bill.price = tripdetailID.price;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Lỗi khi tải giá vé", Severity.Error);
+        }
+    }
+
+    private async Task AddBill()
+    {
+        try
+        {
+            var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                // Giải mã token
+                var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+
+                var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "emp_id");
+
+                if (usernameClaim != null)
+                {
+                    empId = int.Parse(usernameClaim.Value);
+                }
+            }
+
+            await form.Validate();
+            if (form.IsValid)
+            {
+                // Trường hợp chỉ có 1 ghế
+                if (selectedSeats.Count() == 1)
+                {
+                    bill.emp_id = empId;
+                    bill.trip_detail_id = selectedTripDetailId;
+                    bill.car_seat_id = selectedSeats.First();
+                    bill.parent_id = 0;
+
+                    var response = await httpClient.PostAsJsonAsync(url, bill);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Snackbar.Add("Thêm thành công", Severity.Success);
+
+                        var responseTop = await httpClient.GetAsync(urlTopGuestTrip);
+                        var jsonResponse = await responseTop.Content.ReadAsStringAsync();
+                        var guestTrips = JsonSerializer.Deserialize<List<guest_trip>>(jsonResponse);
+                        var guestTripId = guestTrips.First().id;
+                        Navigation.NavigateTo($"/edit_guest_trip/{guestTripId}");
+                    }
+                    else
+                    {
+                        Snackbar.Add("Thêm thất bại", Severity.Warning);
+                    }
+                }
+                else
+                // Trường hợp nhiều ghế
+                {
+                    bill.emp_id = empId;
+                    bill.trip_detail_id = selectedTripDetailId;
+                    bill.parent_id = 0;
+                    bill.car_seat_id = null;
+
+                    var firstResponse = await httpClient.PostAsJsonAsync(url, bill);
+
+                    if (firstResponse.IsSuccessStatusCode)
+                    {
+                        var responseTop = await httpClient.GetAsync(urlTopGuestTrip);
+                        var jsonResponse = await responseTop.Content.ReadAsStringAsync();
+                        var guestTrips = JsonSerializer.Deserialize<List<guest_trip>>(jsonResponse);
+                        var guestTripId = guestTrips.First().id;
+
+                        bill.price = bill.price / selectedSeats.Count();
+                        foreach (var seatId in selectedSeats)
+                        {
+                            bill.emp_id = empId;
+                            bill.trip_detail_id = selectedTripDetailId;
+                            bill.car_seat_id = seatId;
+                            bill.parent_id = guestTripId;
+
+                            var response = await httpClient.PostAsJsonAsync(url, bill);
+
+                            // if (response.IsSuccessStatusCode)
+                            // {
+                            //     Snackbar.Add($"Thêm thành công", Severity.Success);
+                            // }
+                            // else
+                            // {
+                            //     Snackbar.Add($"Thêm thất bại", Severity.Warning);
+                            // }
+                        }
+
+                        Snackbar.Add("Thêm thành công", Severity.Success);
+                        Navigation.NavigateTo($"/edit_guest_trip/{guestTripId}");
+                    }
+                    else
+                    {
+                        Snackbar.Add("Thêm thất bại", Severity.Warning);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private string GetMultiSelectionText(List<string> selectedValues)
+    {
+        if (selectedSeats.Count() > 1)
+        {
+            bill.price = bill.price * selectedSeats.Count();
+        }
+        return $"{selectedValues.Count} ghế{(selectedValues.Count > 1 ? " đã" : " đã")} được chọn";
+    }
+}
