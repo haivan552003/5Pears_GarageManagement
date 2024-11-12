@@ -6,7 +6,7 @@ namespace BE_API.Models
     public class trip_create
     {
         public int id { get; set; }
-        public string img_trip { get; set; }
+        public string? img_trip { get; set; }
         public string from { get; set; }
         public string to { get; set; }
         public int emp_create { get; set; }
@@ -63,8 +63,8 @@ namespace BE_API.Models
         public float voucher { get; set; }
         public int trip_id { get; set; }
         public int car_id { get; set; }
-        public string location_from { get; set; }
-        public string location_to { get; set; }
+        //public string location_from { get; set; }
+        //public string location_to { get; set; }
         public int location_from_id { get; set; }
         public string trip_detail_code { get; set; }
         public int driver_id { get; set; }
@@ -80,8 +80,12 @@ namespace BE_API.Models
         public DateTime time_end { get; set; }
         public float price { get; set; }
         public float voucher { get; set; }
+        public int trip_id { get; set; }
         public int car_id { get; set; }
+        //public string location_from { get; set; }
+        //public string location_to { get; set; }
         public int location_from_id { get; set; }
+        public string trip_detail_code { get; set; }
         public int driver_id { get; set; }
         public int location_to_id { get; set; }
         public float distance { get; set; }
