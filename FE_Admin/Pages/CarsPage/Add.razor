@@ -17,7 +17,16 @@
                     <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.car_name" Label="Tên xe" Required="true" RequiredError="Tên xe là bắt buột" />
                 </MudItem>
                 <MudItem xs="4">
-                    <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.fuel" Label="Nhiên liệu" Required="true" RequiredError="Nhiên liệu là bắt buột" />
+                    <MudSelect Variant="Variant.Outlined" @bind-Value="newCar.fuel" Label="Nhiên liệu" Required="true" RequiredError="Trạng thái là bắt buộc">
+                        @*  <MudSelectItem Value="@("1")">Có sẵn</MudSelectItem>
+                        <MudSelectItem Value="@("2")">Đã thuê</MudSelectItem>
+                        <MudSelectItem Value="@("3")">Bảo trì</MudSelectItem> *@
+                        <MudSelectItem Value="1">Xăng Ron 92(E5)</MudSelectItem>
+                        <MudSelectItem Value="2">Ron 95(III)</MudSelectItem>
+                        <MudSelectItem Value="3">Ron 95(IV)</MudSelectItem>
+                        <MudSelectItem Value="4">Diesel</MudSelectItem>
+                        <MudSelectItem Value="5">Pin Lithium-ion</MudSelectItem>
+                    </MudSelect>
                 </MudItem>
                 <MudItem xs="4">
                     <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.description" Label="Mô tả" Required="true" RequiredError="Mô tả là bắt buột" />

@@ -28,7 +28,13 @@
                                 <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_name" Label="Tên xe" Required="true" RequiredError="Tên xe là bắt buột" />
                             </MudItem>
                             <MudItem xs="4">
-                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.fuel" Label="Nhiên liệu" Required="true" RequiredError="Nhiên liệu là bắt buột" />
+                                <MudSelect Variant="Variant.Outlined" @bind-Value="Car.fuel" Label="Nhiên liệu" Required="true" RequiredError="Trạng thái là bắt buộc">
+                                    <MudSelectItem Value="1">Xăng Ron 92(E5)</MudSelectItem>
+                                    <MudSelectItem Value="2">Ron 95(III)</MudSelectItem>
+                                    <MudSelectItem Value="3">Ron 95(IV)</MudSelectItem>
+                                    <MudSelectItem Value="4">Diesel</MudSelectItem>
+                                    <MudSelectItem Value="5">Pin Lithium-ion</MudSelectItem>
+                                </MudSelect>
                             </MudItem>
                             <MudItem xs="4">
                                 <MudTextField Variant="Variant.Outlined" @bind-Value="Car.description" Label="Mô tả" Required="true" RequiredError="Mô tả là bắt buột" />
@@ -59,7 +65,7 @@
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="4">
-                                <MudSelect @bind-Value="Car.type_id" Label="Vai trò" Required="true" Variant="Variant.Outlined">
+                                <MudSelect @bind-Value="Car.type_id" Label="Loại xe" Required="true" Variant="Variant.Outlined">
                                     @if (car_typess != null)
                                     {
                                         @foreach (var role in car_typess)
@@ -70,7 +76,7 @@
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="4">
-                                <MudSelect @bind-Value="Car.brand_id" Label="Vai trò" Required="true" Variant="Variant.Outlined">
+                                <MudSelect @bind-Value="Car.brand_id" Label="Hãng xe" Required="true" Variant="Variant.Outlined">
                                     @if (car_brandss != null)
                                     {
                                         @foreach (var role in car_brandss)
@@ -96,9 +102,9 @@
                             <MudItem xs="4">
                                 <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.odo" Label="Số km đã đi" Required="true" RequiredError="Số km đã đi là bắt buộc" />
                             </MudItem>
-                            <MudItem xs="4">
+@*                             <MudItem xs="4">
                                 <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.insurance_fee" Label="Phí bảo hiểm" Required="true" RequiredError="Phí bảo hiểm là bắt buộc" />
-                            </MudItem>
+                            </MudItem> *@
                             <MudItem xs="12" Class="d-flex justify-end mt-4">
                                 <MudButton Variant="Variant.Filled"
                                            Color="Color.Secondary"
