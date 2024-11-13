@@ -68,28 +68,48 @@ namespace BE_API.Controllers
         [HttpPost("trip")]
         public async Task<ActionResult> AddEmployees(trip_create newEmployee)
         {
-            try
+            //try
+            //{
+            //    var parameters = new DynamicParameters(newEmployee);
+            //    using (var connection = new SqlConnection(_connectionString))
+            //    {
+            //        await connection.OpenAsync();
+
+            //        var result = await connection.ExecuteAsync("sp_add_trip", parameters, commandType: CommandType.StoredProcedure);
+
+            //        if (result > 0)
+            //        {
+            //            return Ok();
+            //        }
+            //        else
+            //        {
+            //            return BadRequest();
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return StatusCode(500, $"Lỗi: {ex.Message}");
+            //}
+            var parameters = new DynamicParameters();
+            //parameters.Add("@img_trip", newEmployee.img_trip);
+            parameters.Add("@from", newEmployee.from);
+            parameters.Add("@to", newEmployee.to);
+            parameters.Add("@status", newEmployee.status);
+            parameters.Add("@emp_create", newEmployee.emp_create);
+            parameters.Add("@is_return", newEmployee.is_return);
+
+            using (var connection = new SqlConnection(_connectionString))
             {
-                var parameters = new DynamicParameters(newEmployee);
-                using (var connection = new SqlConnection(_connectionString))
+                await connection.OpenAsync();
+                var result = await connection.ExecuteAsync("sp_add_trip", parameters, commandType: CommandType.StoredProcedure);
+
+                if (result > 0)
                 {
-                    await connection.OpenAsync();
-
-                    var result = await connection.ExecuteAsync("sp_add_trip", parameters, commandType: CommandType.StoredProcedure);
-
-                    if (result > 0)
-                    {
-                        return Ok();
-                    }
-                    else
-                    {
-                        return BadRequest();
-                    }
+                    return Ok();
                 }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Lỗi: {ex.Message}");
+
+                return BadRequest();
             }
         }
 

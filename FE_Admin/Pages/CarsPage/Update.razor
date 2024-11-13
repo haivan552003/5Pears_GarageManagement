@@ -39,30 +39,30 @@
                             <MudItem xs="4">
                                 <MudTextField Variant="Variant.Outlined" @bind-Value="Car.color" Label="Màu xe" Required="true" RequiredError="Màu xe đi được là bắt buột" />
                             </MudItem>
-                            @*   <MudItem xs="4">
-                            <MudDatePicker @bind-Date="@vehicle_registration_start" Label="Ngày đăng ký" Required="true" RequiredError="Ngày đăng ký là bắt buộc" />
+                            <MudItem xs="4">
+                                <MudDatePicker @bind-Value="Car.vehicle_registration_start" Label="Ngày đăng ký" Variant="Variant.Outlined" DateFormat="dd/MM/yyyy" MaxDate="@DateTime.Now" />
                             </MudItem>
                             <MudItem xs="4">
-                            <MudDatePicker Date="@vehicle_registration_end" Label="Ngày hết hạn đăng ký" Required="true" RequiredError="Ngày hết hạn đăng ký là bắt buộc" />
-                            </MudItem> *@
+                                <MudDatePicker @bind-Value="Car.vehicle_registration_end" Label="Ngày hết hạn đăng ký" Variant="Variant.Outlined" DateFormat="dd/MM/yyyy" MaxDate="@DateTime.Now" />
+                            </MudItem>
                             <MudItem xs="4">
                                 <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.price" Label="Giá xe" Required="true" RequiredError="Giá xe là bắt buộc" />
                             </MudItem>
 
                             <MudItem xs="4">
                                 <MudSelect Variant="Variant.Outlined" @bind-Value="Car.status" Label="Trạng thái" Required="true" RequiredError="Trạng thái là bắt buộc">
-                                   @*  <MudSelectItem Value="@("1")">Có sẵn</MudSelectItem>
+                                    @*  <MudSelectItem Value="@("1")">Có sẵn</MudSelectItem>
                                     <MudSelectItem Value="@("2")">Đã thuê</MudSelectItem>
                                     <MudSelectItem Value="@("3")">Bảo trì</MudSelectItem> *@
-                                    <MudSelectItem Value="@("1")">Đang hoạt động</MudSelectItem>
-                                    <MudSelectItem Value="@("2")">Ngưng hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="1">Đang hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="2">Ngưng hoạt động</MudSelectItem>
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="4">
                                 <MudSelect @bind-Value="Car.type_id" Label="Vai trò" Required="true" Variant="Variant.Outlined">
-                                    @if (car_types != null)
+                                    @if (car_typess != null)
                                     {
-                                        @foreach (var role in car_types)
+                                        @foreach (var role in car_typess)
                                         {
                                             <MudSelectItem Value="role.id">@role.name</MudSelectItem>
                                         }
@@ -71,9 +71,9 @@
                             </MudItem>
                             <MudItem xs="4">
                                 <MudSelect @bind-Value="Car.brand_id" Label="Vai trò" Required="true" Variant="Variant.Outlined">
-                                    @if (car_brands != null)
+                                    @if (car_brandss != null)
                                     {
-                                        @foreach (var role in car_brands)
+                                        @foreach (var role in car_brandss)
                                         {
                                             <MudSelectItem Value="role.id">@role.name</MudSelectItem>
                                         }
@@ -81,7 +81,7 @@
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="4">
-                                <MudSelect @bind-Value="Car.is_auto"
+                                <MudSelect @bind-Value="Car.isAuto"
                                            Label="Loại hộp số"
                                            Required="true"
                                            RequiredError="Vui lòng chọn loại hộp số"
@@ -90,9 +90,9 @@
                                     <MudSelectItem Value="@((byte)1)">Số tự động</MudSelectItem>
                                 </MudSelect>
                             </MudItem>
-                            @*    <MudItem xs="4">
-                            <MudDatePicker Date="@year_production" Label="Năm sản xuất" Required="true" RequiredError="Năm sản xuất là bắt buộc" PickerVariant="PickerVariant.Dialog" />
-                            </MudItem> *@
+                            <MudItem xs="4">
+                                <MudDatePicker @bind-Value="Car.year_production" Label="Năm sản xuất" Variant="Variant.Outlined" DateFormat="dd/MM/yyyy" MaxDate="@DateTime.Now" />
+                            </MudItem>
                             <MudItem xs="4">
                                 <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.odo" Label="Số km đã đi" Required="true" RequiredError="Số km đã đi là bắt buộc" />
                             </MudItem>
@@ -206,7 +206,7 @@
 @code {
     [Parameter] public int id { get; set; }
 
-    private car Car = new car();
+    private car_create Car = new car_create();
     private List<car_seat> CarSeats = new List<car_seat>();
     private List<car_img> CarImages = new List<car_img>();
     private HashSet<int> SelectedImages = new HashSet<int>();
@@ -214,11 +214,17 @@
     private DateTime? registrationStartDate;
     private DateTime? registrationEndDate;
     private DateTime? productionDate;
-    private List<dropdown> car_types = new List<dropdown>();
-    private List<dropdown> car_brands = new List<dropdown>();
+    // private List<dropdown> car_types = new List<dropdown>();
+    // private List<dropdown> car_brands = new List<dropdown>();
 
-    private string typeUrl = "http://localhost:49922/api/Dropdown/car_type";
-    private string brandUrl = "http://localhost:49922/api/Dropdown/car_brand";
+    // private string typeUrl = "http://localhost:49922/api/Dropdown/car_type";
+    // private string brandUrl = "http://localhost:49922/api/Dropdown/car_brand";
+
+    private List<car_types> car_typess = new List<car_types>();
+    private List<car_brands> car_brandss = new List<car_brands>();
+
+    private string typeUrl = "http://localhost:49922/api/CarTypes";
+    private string brandUrl = "http://localhost:49922/api/CarBrands";
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -231,10 +237,10 @@
     {
         try
         {
-            var response = await httpClient.GetFromJsonAsync<List<dropdown>>(typeUrl);
+            var response = await httpClient.GetFromJsonAsync<List<car_types>>(typeUrl);
             if (response != null)
             {
-                car_types = response;
+                car_typess = response;
             }
         }
         catch (Exception ex)
@@ -246,10 +252,10 @@
     {
         try
         {
-            var response = await httpClient.GetFromJsonAsync<List<dropdown>>(brandUrl);
+            var response = await httpClient.GetFromJsonAsync<List<car_brands>>(brandUrl);
             if (response != null)
             {
-                car_brands = response;
+                car_brandss = response;
             }
         }
         catch (Exception ex)
@@ -315,7 +321,7 @@
     {
         try
         {
-            var carResponse = await httpClient.GetFromJsonAsync<car>($"{apiUrl}/Cars/{id}");
+            var carResponse = await httpClient.GetFromJsonAsync<car_create>($"{apiUrl}/Cars/{id}");
             if (carResponse != null)
             {
                 Car = carResponse;

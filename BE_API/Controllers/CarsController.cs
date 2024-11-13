@@ -100,7 +100,7 @@ namespace BE_API.Controllers
             }
         }
         [HttpPost("PostCars")]
-        public async Task<ActionResult<car>> PostCars(car cars)
+        public async Task<ActionResult<car_create>> PostCars(car_create cars)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -113,11 +113,14 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@price", cars.price);
                 cmd.Parameters.AddWithValue("@isAuto", cars.isAuto);
                 cmd.Parameters.AddWithValue("@status", cars.status);
-                cmd.Parameters.AddWithValue("@id_type", cars.type_id);
-                cmd.Parameters.AddWithValue("@id_brand", cars.brand_id);
+                cmd.Parameters.AddWithValue("@type_id", cars.type_id);
+                cmd.Parameters.AddWithValue("@brand_id", cars.brand_id);
                 cmd.Parameters.AddWithValue("@year_production", cars.year_production);
                 cmd.Parameters.AddWithValue("@odo", cars.odo);
                 cmd.Parameters.AddWithValue("@insurance_fee", cars.insurance_fee);
+                cmd.Parameters.AddWithValue("@description", cars.description);
+                cmd.Parameters.AddWithValue("@fuel", cars.fuel);
+                cmd.Parameters.AddWithValue("@car_name", cars.car_name);
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
@@ -142,7 +145,7 @@ namespace BE_API.Controllers
             return CreatedAtAction(nameof(GetAllCars), new { id = cs.id }, cs);
         }
         [HttpPut("putCars/{id}")]
-        public async Task<IActionResult> PutCars(int id, car cars)
+        public async Task<IActionResult> PutCars(int id, car_create cars)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -156,11 +159,14 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@price", cars.price);
                 cmd.Parameters.AddWithValue("@isAuto", cars.isAuto);
                 cmd.Parameters.AddWithValue("@status", cars.status);
-                cmd.Parameters.AddWithValue("@id_type", cars.type_id);
-                cmd.Parameters.AddWithValue("@id_brand", cars.brand_id);
+                cmd.Parameters.AddWithValue("@type_id", cars.type_id);
+                cmd.Parameters.AddWithValue("@brand_id", cars.brand_id);
                 cmd.Parameters.AddWithValue("@year_production", cars.year_production);
                 cmd.Parameters.AddWithValue("@odo", cars.odo);
                 cmd.Parameters.AddWithValue("@insurance_fee", cars.insurance_fee);
+                cmd.Parameters.AddWithValue("@description", cars.description);
+                cmd.Parameters.AddWithValue("@fuel", cars.fuel);
+                cmd.Parameters.AddWithValue("@car_name", cars.car_name);
                 await conn.OpenAsync();
 
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();

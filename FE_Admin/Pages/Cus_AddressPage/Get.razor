@@ -42,11 +42,11 @@
                         <TemplateColumn T="cus_address" Class="fw-bold" Title="Chức năng">
                             <CellTemplate Context="element">
                                 <MudTooltip Text="Chỉnh sửa">
-                                    <MudIconButton Href="@($"/editaddress/{element.Item.id_cus}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                    <MudIconButton Href="@($"/edit_customertask/{element.Item.id_cus}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
                                 </MudTooltip>
-                                <MudTooltip Text="Xóa">
+@*                                 <MudTooltip Text="Xóa">
                                     <MudIconButton Href="@($"/deletecustomer_address/{element.Item.id}")" Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
-                                </MudTooltip>
+                                </MudTooltip> *@
                             </CellTemplate>
                         </TemplateColumn>
                     </Columns>

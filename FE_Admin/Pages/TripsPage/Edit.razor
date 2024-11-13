@@ -185,7 +185,7 @@
            if (string.IsNullOrWhiteSpace(_searchString))
                return true;
 
-           return $"{x.trip_detail_code} {x.car_code} {x.car_name} {x.car_number} {x.fullname} {x.fullname} {x.location_from} {x.location_to} {x.time_start} {x.time_end}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
+           return $"{x.trip_detail_code} {x.time_start} {x.time_end}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
        };
 
     private async Task OpenDetailCreateDialog(trip_detail_create selectedTrip = null)

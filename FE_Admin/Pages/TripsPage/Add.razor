@@ -49,6 +49,7 @@
                                     <MudSelectItem Value="false">Không</MudSelectItem>
                                 </MudSelect>
                             </MudItem>
+                            
                             <MudItem xs="12" Class="d-flex justify-end">
                                 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save"
                                            Color="Color.Primary" OnClick="Addtrip">Lưu</MudButton>
@@ -66,12 +67,20 @@
     private bool isFormValid = false;
     private MudForm form;
     private string url = "http://localhost:49922/api/Trips/trip";
+
+    private List<employees> employees = new List<employees>();
+    private string urlemp = "http://localhost:49922/api/Employees";
+
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Chuyến đi", href: null, icon: @Icons.Material.Outlined.LocationOn),
         new BreadcrumbItem("Danh sách chuyến đi", href: "/gettrip", icon: @Icons.Material.Outlined.List),
         new BreadcrumbItem("Cập nhật", href: null, icon: @Icons.Material.Filled.Edit),
     };
+    protected override async Task OnInitializedAsync()
+    {
+        // await LoadEmp();
+    }
 
     private async Task Addtrip()
     {
@@ -104,4 +113,20 @@
             Snackbar.Add("Vui lòng kiểm tra lại các trường.", Severity.Warning);
         }
     }
+    // private async Task LoadEmp()
+    // {
+    //     try
+    //     {
+    //         var response = await httpClient.GetFromJsonAsync<List<employees>>(urlemp);
+    //         if (response != null)
+    //         {
+    //             employees = response;
+    //         }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Snackbar.Add($"Lỗi khi tải danh sách vai trò: {ex.Message}", Severity.Error);
+    //     }
+    // }
+
 }
