@@ -197,6 +197,7 @@
     private string urlTopGuestTrip = "http://localhost:49922/api/GuestTrip/GetTop";
     private string urlViewTrip = "http://localhost:49922/api/Trips/viewTrip/";
     private string urlSeatNotNull = "http://localhost:49922/api/GuestTrip/GetSeatNotNull/";
+    private string urlVNPayCreate = "http://localhost:49922/api/Payment/create-payment";
 
     private List<int> selectedSeats = new List<int>();
     private List<string> selectedSeatNames = new List<string>();
@@ -364,13 +365,30 @@
                 var jsonResponse = await responseTop.Content.ReadAsStringAsync();
                 var guestTrips = JsonSerializer.Deserialize<List<guest_trip>>(jsonResponse);
                 var guestTripId = guestTrips.First().id;
+                await js.InvokeVoidAsync("sessionStorage.setItem", "billId", guestTripId);
+                var paymentRequest = new PaymentRequestModel
+                    {
+                        OrderId = guestTripId.ToString(),
+                        Amount = (int)(bill.price),
+                        OrderInfo = guestTripId.ToString()
+                    };
 
-                if (hubConnection != null)
+
+                var paymentResponse = await httpClient.PostAsJsonAsync(urlVNPayCreate, paymentRequest);
+                if (paymentResponse.IsSuccessStatusCode)
                 {
-                    await hubConnection.SendAsync("OnCheckout");
-
-                    Navigation.NavigateTo($"/checkouttrip/{guestTripId}");
-                }
+                    var paymentData = await paymentResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                    if (paymentData != null && paymentData.ContainsKey("paymentUrl"))
+                    {
+                        if (hubConnection != null)
+                        {
+                            await hubConnection.SendAsync("OnCheckout");
+                        }
+                        var paymentUrl = paymentData["paymentUrl"];
+                        Navigation.NavigateTo(paymentUrl, forceLoad: true);
+                        return;
+                    }
+                }               
             }
             else
             {
@@ -395,6 +413,8 @@
                 var guestTrips = JsonSerializer.Deserialize<List<guest_trip>>(jsonResponse);
                 var guestTripId = guestTrips.First().id;
 
+                await js.InvokeVoidAsync("sessionStorage.setItem", "billId", guestTripId.ToString());
+
                 var seatPrice = TRIPDETAILS.sale / selectedSeats.Count();
 
                 foreach (var seatId in selectedSeats)
@@ -409,13 +429,30 @@
                         Console.WriteLine("Thêm ghế thất bại");
                     }
                 }
-                if (hubConnection != null)
+
+                var paymentRequest = new PaymentRequestModel
+                    {
+                        OrderId = guestTripId.ToString(),
+                        Amount = (int)(bill.price),
+                        OrderInfo = guestTripId.ToString()
+                    };
+
+
+                var paymentResponse = await httpClient.PostAsJsonAsync(urlVNPayCreate, paymentRequest);
+                if (paymentResponse.IsSuccessStatusCode)
                 {
-                    await hubConnection.SendAsync("OnCheckout");
-
-                    Navigation.NavigateTo($"/checkouttrip/{guestTripId}");
+                    var paymentData = await paymentResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                    if (paymentData != null && paymentData.ContainsKey("paymentUrl"))
+                    {
+                        if (hubConnection != null)
+                        {
+                            await hubConnection.SendAsync("OnCheckout");
+                        }
+                        var paymentUrl = paymentData["paymentUrl"];
+                        Navigation.NavigateTo(paymentUrl, forceLoad: true);
+                        return;
+                    }
                 }
-
             }
             else
             {

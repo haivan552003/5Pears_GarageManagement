@@ -1,4 +1,4 @@
-﻿@page "/checkouttrip/{id:int}"
+﻿@page "/checkouttrip"
 @inject HttpClient httpClient
 @inject IJSRuntime js
 @inject NavigationManager Navigation
@@ -86,15 +86,54 @@
 </MudContainer>
 
 @code {
-    [Parameter] public int id { get; set; }
-
     private guest_trip bill = new guest_trip();
     private string url = "http://localhost:49922/api/GuestTrip";
+    private string urlUpdateStatusBill = "http://localhost:49922/api/GuestTrip/PutStatus2";
+    private string billId;
 
     protected override async Task OnInitializedAsync()
     {
-        var Response = await httpClient.GetFromJsonAsync<guest_trip>($"{url}/{id}");
-        bill = Response;
+        billId = await js.InvokeAsync<string>("sessionStorage.getItem", "billId");
+
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<guest_trip>($"{url}/{billId}");
+
+            if (response != null)
+            {
+                bill = response;
+            }
+            else
+            {
+                Console.WriteLine("Không tìm thấy hóa đơn.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi khi gọi API: {ex.Message}");
+        }
+        await UpdateStatusBill2();
+
     }
 
+    private async Task UpdateStatusBill2()
+    {
+        try
+        {
+            var response = await httpClient.PutAsJsonAsync($"{urlUpdateStatusBill}/{billId}", bill);
+            // if (response.IsSuccessStatusCode)
+            // {
+            //     Console.WriteLine($"Cập nhật trạng thái hóa đơn {billId} thành công!");
+            // }
+            // else
+            // {
+            //     var errorMessage = await response.Content.ReadAsStringAsync();
+            //     Console.WriteLine($"Cập nhật trạng thái thất bại: {errorMessage}");
+            // }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
 }
