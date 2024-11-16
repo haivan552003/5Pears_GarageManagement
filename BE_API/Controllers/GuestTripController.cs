@@ -9,6 +9,8 @@ using System.Data;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using BE_API.ModelCustom;
+using Microsoft.AspNetCore.SignalR;
 
 namespace BE_API.Controllers
 {
@@ -17,7 +19,7 @@ namespace BE_API.Controllers
     public class GuestTripController : ControllerBase
     {
         private readonly string _connectionString;
-        public GuestTripController(IConfiguration configuration)
+        public GuestTripController(IConfiguration configuration )
         {
             _connectionString = configuration.GetConnectionString("SqlConnection");
         }
@@ -82,6 +84,7 @@ namespace BE_API.Controllers
             try
             {
                 var parameters = new DynamicParameters(request);
+
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
@@ -103,6 +106,7 @@ namespace BE_API.Controllers
                 return StatusCode(500, $"Lỗi: {ex.Message}");
             }
         }
+
 
         //update -> status = 2(nếu khách đã thanh toán)
         [HttpPut("PutStatus2/{id}")]
@@ -190,6 +194,32 @@ namespace BE_API.Controllers
             }
 
             return NoContent();
+        }//update -> status = 9(Đã hoàn tiền, hoàn tiền sẽ vào ví)
+
+        //check seat not null
+        [HttpGet("GetSeatNotNull/{id}")]
+        public async Task<IActionResult> GetSeatNotNull(int id)
+        {
+            var procedureName = "sp_get_seat_not_null";
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Int32, ParameterDirection.Input);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var seatsList = await connection.QueryAsync<car_seat_not_null>(
+                    procedureName,
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                if (seatsList == null)
+                {
+                    return NotFound();
+                }
+
+
+                return Ok(seatsList);
+            }
         }
     }
 }

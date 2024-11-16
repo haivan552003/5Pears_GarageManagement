@@ -35,6 +35,7 @@ namespace BE_API.Models
         public DateTime time_end { get; set; }
         public float price { get; set; }
         public float voucher { get; set; }
+        public float sale { get; set; }
         public int trip_id { get; set; }
         public int car_id { get; set; }
         public string location_from { get; set; }

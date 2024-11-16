@@ -23,5 +23,17 @@
         public string fullname { get; set; }
         public string from { get; set; }
         public string to { get; set; }
+        public float sale { get; set; }
+        public List<car_seat> car_seat { get; set; }
+    }
+
+    public class car_seat
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+        public int car_id { get; set; }
+        public int row { get; set; }
+        public int col { get; set; }
+        public string status { get; set; }
     }
 }
