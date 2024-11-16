@@ -41,6 +41,7 @@ namespace BE_API
             });
             //gọi lớp ánh xạ
             services.AddScoped<AppDbContext>();
+            services.AddHttpClient();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
