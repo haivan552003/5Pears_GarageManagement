@@ -64,5 +64,64 @@ namespace BE_API.Controllers
             );
             return Ok(result);
         }
+        [HttpGet("Driver_by_trip")]
+        public async Task<ActionResult<IEnumerable<statistics_driver_by_trip>>> statistics_driver_by_trip()
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var result = await connection.QueryAsync<statistics_driver_by_trip>(
+                "sp_statistics_driver_by_trip",
+                commandType: CommandType.StoredProcedure
+            );
+            return Ok(result);
+        }
+        [HttpGet("Driver_by_GCD")]
+        public async Task<ActionResult<IEnumerable<statistics_driver_by_GCD>>> statistics_driver_by_gcd()
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var result = await connection.QueryAsync<statistics_driver_by_GCD>(
+                "sp_statistics_driver_by_GCD",
+                commandType: CommandType.StoredProcedure
+            );
+            return Ok(result);
+        }
+        [HttpGet("Driver_monthly_trip/{driverId}")]
+        public async Task<ActionResult<IEnumerable<statistics_driver_by_trip_monly>>> GetDriverMonthlyTripStats(int driverId)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                var result = await connection.QueryAsync<statistics_driver_by_trip_monly>(
+                    "sp_statistics_driver_monthly_GCD", 
+                    new { DriverId = driverId },
+                    commandType: CommandType.StoredProcedure
+                );
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("Driver_monthly_GCD/{driverId}")]
+        public async Task<ActionResult<IEnumerable<statistics_driver_by_GCD_monly>>> GetDriverMonthlyGCDStats(int driverId)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                var result = await connection.QueryAsync<statistics_driver_by_GCD_monly>(
+                    "sp_statistics_driver_monthly", 
+                    new { DriverId = driverId },
+                    commandType: CommandType.StoredProcedure
+                );
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
     }
 }
