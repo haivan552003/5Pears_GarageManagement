@@ -4,89 +4,95 @@
 @inject NavigationManager Navigation
 
 
-<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8 mb-5">
-    <MudPaper Class="p-5 mud-elevation-2">
-        <MudStack Direction="StackDirection.Column" AlignItems="AlignItems.Center" JustifyContent="center" Spacing="1">
-            <MudIcon Icon="@Icons.Material.Outlined.Description" Size="Size.Large" Color="Color.Primary" />
-            <MudText Typo="Typo.h4" Align="Align.Center" Class="font-weight-bold">
-                THANH TOÁN
+<MudContainer Class="mt-8 mb-5" MaxWidth="MaxWidth.Medium">
+    <MudPaper Class="p-4" Elevation="0">
+        <MudText Typo="Typo.h5" Align="Align.Center" Color="Color.Primary">
+                THANH TOÁN THÀNH CÔNG
             </MudText>
-            <MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Secondary">
-                Vui lòng kiểm tra thông tin Khách hàng, thông tin vé xe trước khi đặt vé
-            </MudText>
-        </MudStack>
-        <MudGrid Spacing="4" Class="mt-4">
-            <MudItem xs="12" md="6">
-                <MudPaper Class="p-4 mud-elevation-1" Style="min-height: 300px;">
-                    <MudText Typo="Typo.h5" Class="mb-3 font-weight-bold">
-                        Thông Tin Khách Hàng
-                    </MudText>
+        <MudGrid Class="mt-4">
+            <MudItem xs="12">
+                <MudPaper Class="p-4" Elevation="4">
+                   <MudGrid>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6" Color="Color.Primary">THÔNG TIN KHÁCH HÀNG</MudText>
+                        </MudItem>
 
-                    <MudInputLabel Class="font-weight-bold">Họ Tên</MudInputLabel>
-                    <MudText Class="mt-1 font-weight-bold">@bill.cus_name</MudText>
+                        <MudItem xs="4" Class="mb-3">
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Tên khách hàng
+                            </MudText>
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Email
+                            </MudText>
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Số điện thoại
+                            </MudText>
+                        </MudItem>
 
-                    <MudInputLabel Class="font-weight-bold mt-2">Điện Thoại</MudInputLabel>
-                    <MudText Class="mt-1 font-weight-bold">@bill.phone_number</MudText>
-
-                       <MudInputLabel Class="font-weight-bold mt-2">Email</MudInputLabel>
-                    <MudText Class="mt-1 font-weight-bold">@bill.email</MudText>
+                        <MudItem xs="8" Class="mb-3">
+                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                @bill.cus_name
+                            </MudText>
+                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                @bill.email
+                            </MudText>
+                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                @bill.phone_number
+                            </MudText>
+                        </MudItem>
+                    </MudGrid>
                 </MudPaper>
             </MudItem>
 
-            <MudItem xs="12" md="6">
-                <MudPaper Class="p-4 mud-elevation-1" Style="min-height: 300px;">
-                    <MudText Typo="Typo.h5" Class="font-weight-bold mb-3" Color="Color.Primary">
-                        Thông tin vé
-                    </MudText>
+            <MudItem xs="12">
+                <MudPaper Class="p-4" Elevation="4">
+                     <MudGrid>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h6" Color="Color.Primary">THÔNG TIN VÉ</MudText>
+                    </MudItem>
 
-                    <MudStack Spacing="1">
-                        <MudGrid>
-                            <MudItem xs="6">
-                                <MudText Typo="Typo.body1"><b>Tuyến xe</b></MudText>
-                                <MudText Typo="Typo.body1"><b>Thời gian đi</b></MudText>
-                                <MudText Typo="Typo.body1"><b>Thời gian về</b></MudText>
-                                <MudText Typo="Typo.body1"><b>Số lượng ghế</b></MudText>
-                                <MudText Typo="Typo.body1"><b>Số ghế lượt đi</b></MudText>
-                                <MudText Typo="Typo.body1"><b>Số ghế lượt về</b></MudText>
-                                <MudText Typo="Typo.body1"><b>Điểm lên xe</b></MudText>
-                                <MudText Typo="Typo.body1"><b>Thời gian tới điểm lên xe</b></MudText>
-                                <MudText Typo="Typo.body1"><b>Điểm trả khách</b></MudText>
-                                <MudText Typo="Typo.body1"><b>Điểm quay về</b></MudText>
-                                <MudText Typo="Typo.body1"><b>Thời gian tới điểm lên xe</b></MudText>
-                                <MudText Typo="Typo.body1"><b>Điểm trả khách</b></MudText>
-                                <MudText Typo="Typo.body1"><b>Tổng tiền lượt đi</b></MudText>
-                            </MudItem>
-                            <MudItem xs="6">
-                                <MudText Typo="Typo.body1">@bill.location_from - @bill.location_to</MudText>
-                                <MudText Typo="Typo.body1">@bill.time_start</MudText>
-                                <MudText Typo="Typo.body1">@bill.time_end</MudText>
-                                <MudText Typo="Typo.body1"></MudText>
-                                <MudText Typo="Typo.body1">B08</MudText>
-                                <MudText Typo="Typo.body1">B10</MudText>
-                                <MudText Typo="Typo.body1">Đà Lạt</MudText>
-                                <MudText Typo="Typo.body1">Trước 21:15 16/09/2024</MudText>
-                                <MudText Typo="Typo.body1">Bến xe Miền Tây</MudText>
-                                <MudText Typo="Typo.body1">Bến xe Miền Tây</MudText>
-                                <MudText Typo="Typo.body1">Trước 20:15h 20/09/2024</MudText>
-                                <MudText Typo="Typo.body1">Đà Lạt</MudText>
-                                <MudText Typo="Typo.body1">290.000₫</MudText>
-                            </MudItem>
-                        </MudGrid>
-                    </MudStack>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Tuyến Xe</MudText>
+                    </MudItem>
+                    <MudItem xs="9">
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@bill.location_from (@bill.from) - @bill.location_to (@bill.to)</MudText>
+                    </MudItem>
 
-                    <MudStack Direction="Row" AlignItems="AlignItems.Center" JustifyContent="start" Class="mt-4">
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large">
-                            Thanh Toán
-                        </MudButton>
-                    </MudStack>
-                </MudPaper>
-            </MudItem>
-        </MudGrid>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Khởi Hành</MudText>
+                    </MudItem>
+                    <MudItem xs="9">
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@bill.time_start</MudText>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Tổng Tiền</MudText>
+                    </MudItem>
+                    <MudItem xs="9">
+                        <MudText Align="Align.End" Color="Color.Secondary" Class="fw-bold" Typo="Typo.subtitle1">@bill.price.ToString("#,##0") VNĐ</MudText>
+                    </MudItem>
+                </MudGrid>
+
+                 <MudDataGrid Class="mx-auto pa-2 mt-4" T="guest_trip_child" Dense="true" Hover="false" Bordered="true" Striped="false"
+                             MultiSelection="false" Items="@guest_trip_child" Elevation="0"
+                             Hideable="true">
+                    <Columns>
+                        <PropertyColumn T="guest_trip_child" TProperty="string" Property="x => x.guest_trip_code" Class="fw-bold" Title="Mã Vé" Width="150px" />
+                        <PropertyColumn T="guest_trip_child" TProperty="string" Property="x => x.seat_name" Class="fw-bold" Title="Ghế" Width="150px" />
+                        <PropertyColumn T="guest_trip_child" TProperty="float" Property="x => x.price" Class="fw-bold" Title="Giá vé" Width="150px">
+                                               </PropertyColumn>
+                        <PropertyColumn T="guest_trip_child" TProperty="DateTime" Property="x => x.time_start" Class="fw-bold" Title="Bắt Đầu" Width="150px" />
+                        <PropertyColumn T="guest_trip_child" TProperty="DateTime" Property="x => x.time_end" Class="fw-bold" Title="Kết Thúc" Width="150px" />
+                    </Columns>
+                </MudDataGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
     </MudPaper>
 </MudContainer>
 
 @code {
     private guest_trip bill = new guest_trip();
+    private List<guest_trip_child> guest_trip_child = new List<guest_trip_child>();
     private string url = "http://localhost:49922/api/GuestTrip";
     private string urlUpdateStatusBill = "http://localhost:49922/api/GuestTrip/PutStatus2";
     private string billId;
@@ -99,14 +105,8 @@
         {
             var response = await httpClient.GetFromJsonAsync<guest_trip>($"{url}/{billId}");
 
-            if (response != null)
-            {
-                bill = response;
-            }
-            else
-            {
-                Console.WriteLine("Không tìm thấy hóa đơn.");
-            }
+            bill = response;
+            guest_trip_child = response.guest_trip_child.ToList();
         }
         catch (Exception ex)
         {

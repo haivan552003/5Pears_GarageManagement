@@ -10,10 +10,10 @@
 <MudContainer Class="pt-5">
     <MudGrid>
         <MudItem xs="7">
-            <MudPaper Class="p-4 rounded-lg" Elevation="0" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #ffff; border: 1px solid #e5e7eb;">
+            <MudPaper Class="p-4" Elevation="1">
                 <MudGrid>
                     <MudItem xs="12" Class="mx-auto">
-                        <MudText Typo="Typo.h5"><b>Chọn Ghế</b></MudText>
+                        <MudText Typo="Typo.h6" Color="Color.Primary">CHỌN GHẾ</MudText>
                     </MudItem>
 
                     <MudItem xs="10">
@@ -37,139 +37,126 @@
 
                 </MudGrid>
             </MudPaper>
-            <MudPaper Class="p-4 rounded-lg mt-1" Elevation="0" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #ffff; border: 1px solid #e5e7eb;">
-                <MudGrid>
-                    <MudItem xs="6">
-                        <MudGrid>
-                            <MudItem xs="12">
-                                <MudText Typo="Typo.h5"><b>Thông Tin Khách Hàng</b></MudText>
-                            </MudItem>
-
-                            <MudItem xs="12" Class="mb-3">
-                                <MudInputLabel>Họ và tên</MudInputLabel>
-                                <MudTextField @bind-Value="@customer.fullname" Placeholder="Nhập họ và tên" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                            </MudItem>
-                            <MudItem xs="12" Class="mb-3">
-                                <MudInputLabel>Email</MudInputLabel>
-                                <MudTextField @bind-Value="@customer.email" Placeholder="Nhập email" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                            </MudItem>
-                            <MudItem xs="12" Class="mb-3">
-                                <MudInputLabel>Số điện thoại</MudInputLabel>
-                                <MudTextField @bind-Value="@customer.phone_number" Placeholder="Nhập số điện thoại" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                            </MudItem>
-                        </MudGrid>
-                    </MudItem>
-
-                    <MudItem xs="6">
-                        <MudGrid>
-                            <MudItem xs="12" Class="mb-3">
-                                <MudText Align="Align.Center" Typo="Typo.h6" Style="color: #ef5222; font-size: 18px;">ĐIỀU KHOẢN LƯU Ý</MudText>
-                            </MudItem>
-
-                            <MudItem xs="12" Class="mb-2">
-                                <span style="font-weight: bold;">
-                                    (*) Quý khách vui lòng có mặt tại bến xuất phát của xe trước ít nhất 30 phút giờ xe khởi hành, mang theo thông báo đã thanh toán vé thành công có chứa mã vé được gửi từ hệ thống FUTA BUS LINE. Vui lòng liên hệ Trung tâm tổng đài <a href="" style="color: #ef5222; text-decoration: none;">1900 6067</a> để được hỗ trợ.
-                                </span>
-                            </MudItem>
-                            <MudItem xs="12" Class="mb-2">
-                                <span style="font-weight: bold;">
-                                    (*) Nếu quý khách có nhu cầu trung chuyển, vui lòng liên hệ Tổng đài trung chuyển <a href="" style="color: #ef5222; text-decoration: none;">1900 6067</a> trước khi đặt vé. Chúng tôi không đón/trung chuyển tại những điểm xe trung chuyển không thể tới được.
-                                </span>
-                            </MudItem>
-
-
-                        </MudGrid>
-                    </MudItem>
-                </MudGrid>
+            <MudPaper Class="p-4 mt-4" Elevation="1">
+                <MudText Align="Align.Left" Typo="Typo.h6" Color="Color.Primary">ĐIỀU KHOẢN LƯU Ý</MudText>
+                <MudText Align="Align.Justify" Typo="Typo.subtitle1">
+                    Quý khách vui lòng có mặt tại bến xuất phát của xe trước ít nhất 30 phút giờ xe khởi hành, mang theo thông báo
+                    đã thanh toán vé thành công có chứa mã vé được gửi từ hệ thống BOXCARS.
+                </MudText>
             </MudPaper>
-
-            <MudPaper Class="p-4 rounded-lg mt-1" Elevation="0" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #ffff; border: 1px solid #e5e7eb;">
-                <MudGrid>
-                    <MudItem xs="6">
-                        <MudText Typo="Typo.h5"><b>@TRIPDETAILS.price.ToString("#,##0") VNĐ</b></MudText>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudGrid>
-                            <MudItem xs="6">
-                                <MudButton Variant="Variant.Outlined" Size="Size.Small">Hủy</MudButton>
-                            </MudItem>
-
-                            <MudItem xs="6">
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="@OnCheckout">Thanh Toán</MudButton>
-                            </MudItem>
-                        </MudGrid>
-
-                    </MudItem>
-                </MudGrid>
-            </MudPaper>
-
-
         </MudItem>
 
         <MudItem xs="5">
-            <MudPaper Class="p-4 rounded-lg" Elevation="0" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #fff; border: 1px solid #e5e7eb; box-shadow: none;">
+            <MudPaper Class="p-4" Elevation="1">
                 <MudGrid>
                     <MudItem xs="12">
-                        <MudText Style="font-size: 20px" Typo="Typo.h5"><b>Thông Tin Lượt Đi</b></MudText>
+                        <MudText Typo="Typo.h6" Color="Color.Primary">THÔNG TIN VÉ</MudText>
                     </MudItem>
 
                     <MudItem xs="3">
-                        <MudText Style="font-size: 15px; color: #637280;" Typo="Typo.h5">Tuyến Xe</MudText>
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Tuyến Xe</MudText>
                     </MudItem>
                     <MudItem xs="9">
-                        <MudText Align="Align.End" Style="font-size: 15px; font-weight: bold" Typo="Typo.h5">@TRIPDETAILS.from - @TRIPDETAILS.to</MudText>
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@TRIPDETAILS.from - @TRIPDETAILS.to</MudText>
                     </MudItem>
 
                     <MudItem xs="3">
-                        <MudText Style="font-size: 15px; color: #637280;" Typo="Typo.h5">Chuyến Xe</MudText>
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Chuyến Xe</MudText>
                     </MudItem>
                     <MudItem xs="9">
-                        <MudText Align="Align.End" Style="font-size: 15px; font-weight: bold" Typo="Typo.h5">@TRIPDETAILS.location_from - @TRIPDETAILS.location_to</MudText>
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@TRIPDETAILS.location_from - @TRIPDETAILS.location_to</MudText>
                     </MudItem>
 
                     <MudItem xs="3">
-                        <MudText Style="font-size: 15px; color: #637280;" Typo="Typo.h5">Khởi hành</MudText>
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Khởi hành</MudText>
                     </MudItem>
                     <MudItem xs="9">
-                        <MudText Align="Align.End" Style="font-size: 15px; font-weight: bold" Typo="Typo.h5">@TRIPDETAILS.time_start</MudText>
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@TRIPDETAILS.time_start</MudText>
                     </MudItem>
 
                     <MudItem xs="4">
-                        <MudText Style="font-size: 15px; color: #637280;" Typo="Typo.h5">Số Lượng Ghế</MudText>
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Số Lượng Ghế</MudText>
                     </MudItem>
                     <MudItem xs="8">
-                        <MudText Align="Align.End" Style="font-size: 15px; font-weight: bold" Typo="Typo.h5">@selectedSeats.Count</MudText>
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@selectedSeats.Count</MudText>
                     </MudItem>
 
                     <MudItem xs="3">
-                        <MudText Style="font-size: 15px; color: #637280;" Typo="Typo.h5">Tên ghế</MudText>
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Tên ghế</MudText>
                     </MudItem>
                     <MudItem xs="9">
-                        <MudText Align="Align.End" Style="font-size: 15px; font-weight: bold" Typo="Typo.h5"> @string.Join(", ", selectedSeatNames)</MudText>
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1"> @string.Join(", ", selectedSeatNames)</MudText>
                     </MudItem>
 
                     <MudItem xs="3">
-                        <MudText Style="font-size: 15px; color: #637280;" Typo="Typo.h5">Giá vé</MudText>
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Giá vé</MudText>
                     </MudItem>
                     <MudItem xs="9">
-                        <MudText Align="Align.End" Style="font-size: 15px; font-weight: bold" Typo="Typo.h5">@TRIPDETAILS.price.ToString("#,##0") VNĐ</MudText>
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@TRIPDETAILS.price.ToString("#,##0") VNĐ</MudText>
                     </MudItem>
 
                     <MudItem xs="3">
-                        <MudText Style="font-size: 15px; color: #637280;" Typo="Typo.h5">Voucher</MudText>
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Voucher</MudText>
                     </MudItem>
                     <MudItem xs="9">
-                        <MudText Align="Align.End" Style="font-size: 15px; font-weight: bold" Typo="Typo.h5">@TRIPDETAILS.voucher.ToString("#,##0") VNĐ/Vé</MudText>
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@TRIPDETAILS.voucher.ToString("#,##0") VNĐ/Vé</MudText>
                     </MudItem>
 
                     <MudItem xs="3">
-                        <MudText Style="font-size: 15px; color: #637280;" Typo="Typo.h5">Tổng Tiền</MudText>
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Tổng Tiền</MudText>
                     </MudItem>
                     <MudItem xs="9">
-                        <MudText Align="Align.End" Style="font-size: 15px; font-weight: bold" Typo="Typo.h5">@TRIPDETAILS.sale.ToString("#,##0") VNĐ</MudText>
+                        <MudText Align="Align.End" Color="Color.Secondary" Class="fw-bold" Typo="Typo.subtitle1">@TRIPDETAILS.sale.ToString("#,##0") VNĐ</MudText>
                     </MudItem>
+                    @if (cus_id != 0)
+                    {
+                        <MudItem xs="12">
+                            <MudButton Variant="Variant.Filled" Class="w-100" Color="Color.Primary" Size="Size.Medium" OnClick="@OnCheckout">Thanh Toán</MudButton>
+                        </MudItem>
+                    }
+                    else
+                    {
+                        <MudItem xs="12">
+                            <MudText Align="Align.Center" Typo="Typo.subtitle1" Color="Color.Error">Vui lòng đăng nhập để thanh toán</MudText>
+                        </MudItem>
+                    }
                 </MudGrid>
             </MudPaper>
+
+            @if (cus_id != 0)
+            {
+                <MudPaper Class="p-4 mt-4" Elevation="1">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6" Color="Color.Primary">THÔNG TIN KHÁCH HÀNG</MudText>
+                        </MudItem>
+
+                        <MudItem xs="4" Class="mb-3">
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Tên khách hàng
+                            </MudText>
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Email
+                            </MudText>
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Số điện thoại
+                            </MudText>
+                        </MudItem>
+
+                        <MudItem xs="8" Class="mb-3">
+                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                @customer.fullname
+                            </MudText>
+                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                @customer.email
+                            </MudText>
+                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                @customer.phone_number
+                            </MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            }
         </MudItem>
     </MudGrid>
 </MudContainer>
@@ -388,7 +375,7 @@
                         Navigation.NavigateTo(paymentUrl, forceLoad: true);
                         return;
                     }
-                }               
+                }
             }
             else
             {

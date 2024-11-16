@@ -31,6 +31,9 @@ namespace BE_API.Models
         public string email { get; set; }
         public string phone_number { get; set; }
         public string car_name { get; set; }
+        public string from { get; set; }
+        public string to { get; set; }
+
         public List<guest_trip_child> guest_trip_child { get; set; }
     }
     public class guest_trip_child
