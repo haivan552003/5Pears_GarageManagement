@@ -1,8 +1,11 @@
 ﻿using BE_API.Data;
+using BE_API.Hubs;
+using BE_API.ModelCustom;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,11 +33,16 @@ namespace BE_API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<VNPayService>(); // Đăng ký dịch vụ VNPay
-
+            services.AddSignalR();
+            services.AddResponseCompression(opts =>
+            {
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                   new[] { "application/octet-stream" });
+            });
             //gọi lớp ánh xạ
             services.AddScoped<AppDbContext>();
 
-            services.AddControllers();      
+            services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BE_API", Version = "v1" });
@@ -97,7 +105,7 @@ namespace BE_API
                     {
                         builder.AllowAnyOrigin()
                                .AllowAnyMethod()
-                               .AllowAnyHeader();  
+                               .AllowAnyHeader();
                     });
             });
         }
@@ -118,10 +126,13 @@ namespace BE_API
             app.UseAuthentication();
             app.UseCors("AllowAllOrigins");
             app.UseAuthorization();
+            app.UseResponseCompression();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chathub");
+                endpoints.MapHub<SeatHub>("/seatHub");
             });
         }
     }

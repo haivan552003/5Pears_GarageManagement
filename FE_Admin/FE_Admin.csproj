@@ -9,6 +9,8 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="FirebaseAdmin" Version="3.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.36" />
     <PackageReference Include="MudBlazor" Version="6.21.0" />
     <PackageReference Include="Nexmo.Csharp.Client" Version="5.2.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.36.0" />
