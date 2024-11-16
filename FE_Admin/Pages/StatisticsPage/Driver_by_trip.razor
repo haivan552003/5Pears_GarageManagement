@@ -1,0 +1,218 @@
+﻿@page "/driver-statistics"
+@using FE_Admin.Data
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <!-- GCD Statistics Card -->
+    <MudCard Class="mb-4">
+        <MudCardHeader>
+            <MudText Typo="Typo.h6">Thống kê số lần được thuê theo tài xế</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            @if (isLoadingGCD)
+            {
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4" />
+            }
+            else
+            {
+                <MudTable Items="@gcdStatistics" Dense="true" Hover="true" Striped="true" Bordered="true"
+                          Pagination="true" RowsPerPage="5" ServerData="@(new Func<TableState, Task<TableData<statistics_driver_by_GCD>>>(ServerReloadGCD))"
+                          @ref="gcdTable">
+                    <HeaderContent>
+                        <MudTh Style="text-align: center">Mã tài xế</MudTh>
+                        <MudTh Style="text-align: center">Tên tài xế</MudTh>
+                        <MudTh Style="text-align: center">Chi tiết</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Tên tài xế" Style="text-align: center">@context.Driver_code</MudTd>
+                        <MudTd DataLabel="Tên tài xế" Style="text-align: center">@context.FullName</MudTd>
+                        <MudTd Style="text-align: center">
+                            <MudIconButton Icon="@Icons.Material.Filled.Visibility"
+                                           Color="Color.Primary"
+                                           OnClick="@(() => ShowMonthlyGCDDetails(context.id, context.FullName))" />
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50 }" />
+                    </PagerContent>
+                </MudTable>
+            }
+        </MudCardContent>
+    </MudCard>
+
+    <MudCard>
+        <MudCardHeader>
+            <MudText Typo="Typo.h6">Thống kê số chuyến xe theo tài xế</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            @if (isLoadingTrips)
+            {
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4" />
+            }
+            else
+            {
+                <MudTable Items="@tripStatistics" Dense="true" Hover="true" Striped="true" Bordered="true"
+                          Pagination="true" RowsPerPage="5" ServerData="@(new Func<TableState, Task<TableData<statistics_driver_by_trip>>>(ServerReloadTrips))"
+                          @ref="tripTable">
+                    <HeaderContent>
+                        <MudTh Style="text-align: center">Mã tài xế</MudTh>
+                        <MudTh Style="text-align: center">Tên tài xế</MudTh>
+                        <MudTh Style="text-align: center">Số chuyến xe</MudTh>
+                        <MudTh Style="text-align: center">Chi tiết</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Mã tài xế" Style="text-align: center">@context.Driver_code</MudTd>
+                        <MudTd DataLabel="Tên tài xế" Style="text-align: center">@context.FullName</MudTd>
+                        <MudTd DataLabel="Số chuyến xe" Style="text-align: center">@context.TotalTrips</MudTd>
+                        <MudTd Style="text-align: center">
+                            <MudIconButton Icon="@Icons.Material.Filled.Visibility"
+                                           Color="Color.Primary"
+                                           OnClick="@(() => ShowMonthlyTripDetails(context.Id, context.FullName))" />
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50 }" />
+                    </PagerContent>
+                </MudTable>
+            }
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private bool isLoadingGCD = true;
+    private bool isLoadingTrips = true;
+    private List<statistics_driver_by_GCD> gcdStatistics = new();
+    private List<statistics_driver_by_trip> tripStatistics = new();
+    private MudTable<statistics_driver_by_GCD> gcdTable;
+    private MudTable<statistics_driver_by_trip> tripTable;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGCDStatistics();
+        await LoadTripStatistics();
+    }
+
+    private async Task<TableData<statistics_driver_by_GCD>> ServerReloadGCD(TableState state)
+    {
+        await LoadGCDStatistics();
+
+        // Apply pagination
+        var totalItems = gcdStatistics.Count;
+        var pagedData = gcdStatistics
+            .Skip(state.Page * state.PageSize)
+            .Take(state.PageSize)
+            .ToList();
+
+        return new TableData<statistics_driver_by_GCD>()
+            {
+                TotalItems = totalItems,
+                Items = pagedData
+            };
+    }
+
+    private async Task<TableData<statistics_driver_by_trip>> ServerReloadTrips(TableState state)
+    {
+        await LoadTripStatistics();
+
+        // Apply pagination
+        var totalItems = tripStatistics.Count;
+        var pagedData = tripStatistics
+            .Skip(state.Page * state.PageSize)
+            .Take(state.PageSize)
+            .ToList();
+
+        return new TableData<statistics_driver_by_trip>()
+            {
+                TotalItems = totalItems,
+                Items = pagedData
+            };
+    }
+
+    private async Task LoadGCDStatistics()
+    {
+        try
+        {
+            isLoadingGCD = true;
+            var response = await Http.GetAsync("http://localhost:49922/api/Statistics/Driver_by_GCD");
+            if (response.IsSuccessStatusCode)
+            {
+                gcdStatistics = await response.Content.ReadFromJsonAsync<List<statistics_driver_by_GCD>>() ?? new();
+            }
+            else
+            {
+                Snackbar.Add("Không thể tải dữ liệu thuê xe", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoadingGCD = false;
+        }
+    }
+
+    private async Task LoadTripStatistics()
+    {
+        try
+        {
+            isLoadingTrips = true;
+            var response = await Http.GetAsync("http://localhost:49922/api/Statistics/Driver_by_trip");
+            if (response.IsSuccessStatusCode)
+            {
+                tripStatistics = await response.Content.ReadFromJsonAsync<List<statistics_driver_by_trip>>() ?? new();
+            }
+            else
+            {
+                Snackbar.Add("Không thể tải dữ liệu chuyến xe", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoadingTrips = false;
+        }
+    }
+
+    private async Task ShowMonthlyGCDDetails(int driverId, string driverName)
+    {
+        var parameters = new DialogParameters
+        {
+            { "DriverId", driverId },
+            { "DriverName", driverName },
+            { "IsGCD", true }
+        };
+        await ShowDetailsDialog(parameters);
+    }
+
+    private async Task ShowMonthlyTripDetails(int driverId, string driverName)
+    {
+        var parameters = new DialogParameters
+        {
+            { "DriverId", driverId },
+            { "DriverName", driverName },
+            { "IsGCD", false }
+        };
+        await ShowDetailsDialog(parameters);
+    }
+
+    private async Task ShowDetailsDialog(DialogParameters parameters)
+    {
+        var options = new DialogOptions
+            {
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true,
+                CloseButton = true,
+                DisableBackdropClick = true
+            };
+        var dialog = await DialogService.ShowAsync<DetailDialog>("Chi tiết theo tháng", parameters, options);
+        await dialog.Result;
+    }
+}
