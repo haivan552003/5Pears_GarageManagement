@@ -102,13 +102,17 @@
                             @*    <MudItem xs="4">
                             <MudDatePicker Date="@year_production" Label="Năm sản xuất" Required="true" RequiredError="Năm sản xuất là bắt buộc" PickerVariant="PickerVariant.Dialog" />
                             </MudItem> *@
+
+                            <MudItem xs="4">
+                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.location_car" Label="Vị trí xe" Required="true" ReadOnly  />
+                            </MudItem>
                             <MudItem xs="4">
                                 <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.odo" Label="Số km đã đi" Required="true" RequiredError="Số km đã đi là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateOdo))" />
                             </MudItem>
-                            <MudItem xs="4">
+                            <MudItem xs="6">
                                 <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.insurance_fee" Label="Phí bảo hiểm" Required="true" RequiredError="Phí bảo hiểm là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateBh))" />
                             </MudItem>
-                            <MudItem xs="4">
+                            <MudItem xs="6">
                                 <MudSelect Variant="Variant.Outlined" @bind-Value="Car.status" Label="Trạng thái" Required="true" RequiredError="Trạng thái là bắt buộc">
                                     @*  <MudSelectItem Value="@("1")">Có sẵn</MudSelectItem>
                                     <MudSelectItem Value="@("2")">Đã thuê</MudSelectItem>

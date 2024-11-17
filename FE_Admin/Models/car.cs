@@ -14,6 +14,7 @@
         public float price { get; set; }
         public int type_id { get; set; }
         public int brand_id { get; set; }
+        public string location_car { get; set; }
         public DateTime year_production { get; set; }
         public float odo { get; set; }
         public float insurance_fee { get; set; }
