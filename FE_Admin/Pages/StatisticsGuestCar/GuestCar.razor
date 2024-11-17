@@ -1,5 +1,125 @@
-﻿<h3>GuestCar</h3>
+﻿@page "/statistics-car"
+@using FE_Admin.Data
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <!-- GCD Statistics Card -->
+    <MudCard Class="mb-4">
+        <MudCardHeader>
+            <MudText Typo="Typo.h6" Class="mb-4">
+                Thống kê chi tiết xe theo tháng
+            </MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            @if (isLoading)
+            {
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4" />
+            }
+            else
+            {
+                <MudTable Items="@gcStatistics" Dense="true" Hover="true" Striped="true" Bordered="true"
+                          Pagination="true" RowsPerPage="5" ServerData="@(new Func<TableState, Task<TableData<StatisticsCarResponse>>>(ServerReloadGCD))"
+                          @ref="gcTable">
+                    <HeaderContent>
+                        <MudTh Style="text-align: center">Mã xe</MudTh>
+                        <MudTh Style="text-align: center">Tên xe</MudTh>
+                        <MudTh Style="text-align: center">Chi tiết</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Tên tài xế" Style="text-align: center">@context.CarCode</MudTd>
+                        <MudTd DataLabel="Tên tài xế" Style="text-align: center">@context.CarName</MudTd>
+                        <MudTd Style="text-align: center">
+                            <MudIconButton Icon="@Icons.Material.Filled.Visibility"
+                                           Color="Color.Primary"
+                                           OnClick="@(() => ShowMonthlyGCDDetails(context.id, context.CarName))" />
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50 }" />
+                    </PagerContent>
+                </MudTable>
+            }
+        </MudCardContent>
+    </MudCard>
+
+</MudContainer>
 
 @code {
+    private bool isLoading = true;
+    private List<StatisticsCarResponse> gcStatistics = new();
+    private MudTable<StatisticsCarResponse> gcTable;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStatistics();
+    }
+
+    private async Task<TableData<StatisticsCarResponse>> ServerReloadGCD(TableState state)
+    {
+        await LoadStatistics();
+
+        // Apply pagination
+        var totalItems = gcStatistics.Count;
+        var pagedData = gcStatistics
+            .Skip(state.Page * state.PageSize)
+            .Take(state.PageSize)
+            .ToList();
+
+        return new TableData<StatisticsCarResponse>()
+            {
+                TotalItems = totalItems,
+                Items = pagedData
+            };
+    }
+
+    private async Task LoadStatistics()
+    {
+        try
+        {
+            isLoading = true;
+            var response = await Http.GetAsync("http://localhost:49922/api/StatisticsGuestCar/GetStatisticsByMonth");
+            if (response.IsSuccessStatusCode)
+            {
+                gcStatistics = await response.Content.ReadFromJsonAsync<List<StatisticsCarResponse>>() ?? new();
+            }
+            else
+            {
+                Snackbar.Add("Không thể tải dữ liệu thuê xe", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task ShowMonthlyGCDDetails(int carId, string carName)
+    {
+        var parameters = new DialogParameters
+        {
+            { "CarId", carId },
+            { "CarName", carName },
+            { "IsGC", true }
+        };
+        await ShowDetailsDialog(parameters);
+    }
+
+    private async Task ShowDetailsDialog(DialogParameters parameters)
+    {
+        var options = new DialogOptions
+            {
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true,
+                CloseButton = true,
+                DisableBackdropClick = true
+            };
+        var dialog = await DialogService.ShowAsync<DetailDialog>("Chi tiết theo tháng", parameters, options);
+        await dialog.Result;
+    }
 }
