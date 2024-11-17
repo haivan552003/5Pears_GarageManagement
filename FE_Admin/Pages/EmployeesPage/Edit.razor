@@ -35,7 +35,7 @@
                                                       Variant="Variant.Outlined"
                                                       Validation="@(new Func<string, IEnumerable<string>>(ValidateFullName))"
                                                       Immediate="true"
-                                                      LabelStyle="font-weight: 600; color: #1976d2;" />
+                                                        Placeholder="Họ và tên" />
                                     </MudItem>
 
                                     <MudItem xs="12" sm="6">
@@ -46,7 +46,7 @@
                                                       Variant="Variant.Outlined"
                                                       Validation="@(new Func<string, IEnumerable<string>>(ValidateEmail))"
                                                       Immediate="true"
-                                                      LabelStyle="font-weight: 600; color: #1976d2;" />
+                                                      Placeholder="Email" />
                                     </MudItem>
 
                                     <MudItem xs="12" sm="6">
@@ -57,7 +57,7 @@
                                                       Variant="Variant.Outlined"
                                                       Validation="@(new Func<string, IEnumerable<string>>(ValidatePhone))"
                                                       Immediate="true"
-                                                      LabelStyle="font-weight: 600; color: #1976d2;" />
+                                                      Placeholder="Số điện thoại" />
                                     </MudItem>
 
                                     <MudItem xs="12" sm="6">
@@ -68,7 +68,7 @@
                                                       Variant="Variant.Outlined"
                                                       Validation="@(new Func<string, IEnumerable<string>>(ValidateCCCD))"
                                                       Immediate="true"
-                                                      LabelStyle="font-weight: 600; color: #1976d2;" />
+                                                      Placeholder="Số CCCD" />
                                     </MudItem>
 
                                     <MudItem xs="12" sm="6">
@@ -80,7 +80,7 @@
                                                        DateFormat="dd/MM/yyyy"
                                                        MaxDate="@DateTime.Now.AddYears(-18)"
                                                        MinDate="@DateTime.Now.AddYears(-65)"
-                                                       LabelStyle="font-weight: 600; color: #1976d2;" />
+                                                       Placeholder="Ngày Sinh" />
                                     </MudItem>
 
                                     <MudItem xs="12" sm="6">
@@ -95,7 +95,7 @@
                                                       OnAdornmentClick="TogglePasswordVisibility"
                                                       Validation="@(new Func<string, IEnumerable<string>>(ValidatePassword))"
                                                       Immediate="true"
-                                                      LabelStyle="font-weight: 600; color: #1976d2;" />
+                                                      Placeholder="Mật khẩu" />
                                     </MudItem>
 
                                     <MudItem xs="12" sm="4">
@@ -104,7 +104,7 @@
                                                    Required="true"
                                                    RequiredError="Vui lòng chọn trạng thái"
                                                    Variant="Variant.Outlined"
-                                                   LabelStyle="font-weight: 600; color: #1976d2;">
+                                                   Placeholder="Trạng thái">
                                             <MudSelectItem Value="true">
                                                 <div class="d-flex align-center">
                                                     <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="mr-2" />
@@ -126,7 +126,7 @@
                                                    Required="true"
                                                    RequiredError="Vui lòng chọn giới tính"
                                                    Variant="Variant.Outlined"
-                                                   LabelStyle="font-weight: 600; color: #1976d2;">
+                                                   Placeholder="giới tính">
                                             <MudSelectItem Value="true">Nam</MudSelectItem>
                                             <MudSelectItem Value="false">Nữ</MudSelectItem>
                                         </MudSelect>
@@ -138,7 +138,7 @@
                                                    Required="true"
                                                    RequiredError="Vui lòng chọn vai trò"
                                                    Variant="Variant.Outlined"
-                                                   LabelStyle="font-weight: 600; color: #1976d2;">
+                                                   Placeholder="Vai trò">
                                             @if (roles != null)
                                             {
                                                 @foreach (var role in roles)
@@ -147,8 +147,25 @@
                                                 }
                                             }
                                         </MudSelect>
-                                    </MudItem>
+                                    </MudItem>                               
                                 </MudGrid>
+                            </MudPaper>
+                            <MudPaper Elevation="0" Class="d-flex justify-space-between mt-4 float-end">
+                                <MudButton Variant="Variant.Filled"
+                                           StartIcon="@Icons.Material.Filled.Save"
+                                           Color="Color.Primary"
+                                           ButtonType="ButtonType.Submit"
+                                           Disabled="@isLoading">
+                                    @if (isLoading)
+                                    {
+                                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                        <MudText Class="ms-2">Đang xử lý...</MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudText>Lưu thay đổi</MudText>
+                                    }
+                                </MudButton>
                             </MudPaper>
                         </MudItem>
 
@@ -219,24 +236,7 @@
                                 </MudGrid>
                             </MudPaper>
 
-                            <!-- Submit and Cancel Buttons -->
-                            <MudPaper Elevation="0" Class="d-flex justify-space-between mt-4">                              
-                                <MudButton Variant="Variant.Filled"
-                                           StartIcon="@Icons.Material.Filled.Save"
-                                           Color="Color.Primary"
-                                           ButtonType="ButtonType.Submit"
-                                           Disabled="@isLoading">
-                                    @if (isLoading)
-                                    {
-                                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                                        <MudText Class="ms-2">Đang xử lý...</MudText>
-                                    }
-                                    else
-                                    {
-                                        <MudText>Lưu thay đổi</MudText>
-                                    }
-                                </MudButton>
-                            </MudPaper>
+                         
                         </MudItem>
                     </MudGrid>
                 </EditForm>
