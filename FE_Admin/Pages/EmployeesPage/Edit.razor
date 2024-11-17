@@ -11,502 +11,565 @@
                 <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
             </MudPaper>
         </MudItem>
-        <EditForm Model="@Employee" Class="pa-3" OnValidSubmit="EditEmployee">
-            <MudGrid>
-                <MudItem xs="12" md="8">
+
+        <MudItem xs="12">
+            @if (Employee == null)
+            {
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            }
+            else
+            {
+                <EditForm Model="@Employee" OnValidSubmit="EditEmployee">
                     <DataAnnotationsValidator />
-                    <MudPaper Elevation="3" Class="pa-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Chỉnh Sửa Nhân Viên</MudText>
-                        <MudGrid>
-                            <MudItem xs="4">
-                                <MudTextField ShrinkLabel @bind-Value="Employee.fullname" Label="Họ và tên" Required="true" Variant="Variant.Outlined"
-                                              Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidateFullName))" />
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudTextField ShrinkLabel @bind-Value="Employee.phone_number" Label="Số điện thoại" Required="true" Variant="Variant.Outlined"
-                                              Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidatephone))" />
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudDatePicker @bind-Date="birthdayDate" Label="Ngày sinh" Required="true" Variant="Variant.Outlined" DateFormat="dd/MM/yyyy" MaxDate="@DateTime.Now.AddYears(-18)" />
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudSelect @bind-Value="Employee.gender" Label="Giới tính" Required="true" Variant="Variant.Outlined">
-                                    <MudSelectItem Value="true">Nam</MudSelectItem>
-                                    <MudSelectItem Value="false">Nữ</MudSelectItem>
-                                </MudSelect>
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudTextField ShrinkLabel @bind-Value="Employee.citizen_identity_number" Label="Số CCCD" Variant="Variant.Outlined"
-                                              Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidateCCCD))" />
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudTextField ShrinkLabel @bind-Value="Employee.email" Label="Email" Required="true" Variant="Variant.Outlined"
-                                              Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidateEmail))" />
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudTextField ShrinkLabel @bind-Value="Employee.password" Label="Mật khẩu" Required="true" Variant="Variant.Outlined"
-                                              InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon"
-                                              OnAdornmentClick="TogglePasswordVisibility"
-                                              Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidatePassword))" />
-                            </MudItem>
+                    <MudGrid>
+                        <MudItem xs="12" md="8">
+                            <MudPaper Elevation="3" Class="pa-4">
+                                <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-4">Chỉnh Sửa Thông Tin Nhân Viên</MudText>
+                                <MudGrid>
+                                    <!-- Personal Information -->
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField @bind-Value="Employee.fullname"
+                                                      Label="Họ và tên"
+                                                      Required="true"
+                                                      RequiredError="Vui lòng nhập họ tên"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, IEnumerable<string>>(ValidateFullName))"
+                                                      Immediate="true"
+                                                      LabelStyle="font-weight: 600; color: #1976d2;" />
+                                    </MudItem>
 
-                            <MudItem xs="4">
-                                <MudSelect ShrinkLabel @bind-Value="Employee.status" Label="Trạng thái" Required="true" Variant="Variant.Outlined">
-                                    <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
-                                    <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
-                                </MudSelect>
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudSelect ShrinkLabel @bind-Value="Employee.role_id" Label="Vai trò" Required="true" Variant="Variant.Outlined">
-                                    @if (roles != null)
-        <MudGrid xs="10" Class="mx-auto">
-            <MudPaper Class="mud-paper mud-elevation-4 p-8" Style="margin-right: 16px; padding: 30px">
-                <MudText Typo="Typo.h6" Class="mb-5">Chỉnh sửa thông tin nhân viên</MudText>
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField @bind-Value="Employee.email"
+                                                      Label="Email"
+                                                      Required="true"
+                                                      RequiredError="Vui lòng nhập email"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, IEnumerable<string>>(ValidateEmail))"
+                                                      Immediate="true"
+                                                      LabelStyle="font-weight: 600; color: #1976d2;" />
+                                    </MudItem>
 
-                <MudForm @ref="form">
-                    <MudGrid Gutter="true">
-                        <MudItem xs="6" Class="mb-4">
-                            <InputFile id="empImageInput" OnChange="@LoadEmpImage" hidden accept=".jpg,.jpeg,.png" />
-                            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.CloudUpload" for="empImageInput"
-                                       FullWidth="true" Class="mb-3">
-                                Chọn hình ảnh nhân viên
-                            </MudButton>
-                            @if (!string.IsNullOrEmpty(Employee.img_emp))
-                            {
-                                <MudImage Src="@Employee.img_emp" Alt="Hình ảnh nhân viên" Width="100"
-                                          Height="100" ObjectFit="ObjectFit.Cover" Class="mb-3" />
-                            }
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField @bind-Value="Employee.phone_number"
+                                                      Label="Số điện thoại"
+                                                      Required="true"
+                                                      RequiredError="Vui lòng nhập số điện thoại"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, IEnumerable<string>>(ValidatePhone))"
+                                                      Immediate="true"
+                                                      LabelStyle="font-weight: 600; color: #1976d2;" />
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField @bind-Value="Employee.citizen_identity_number"
+                                                      Label="Số CCCD"
+                                                      Required="true"
+                                                      RequiredError="Vui lòng nhập số CCCD"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, IEnumerable<string>>(ValidateCCCD))"
+                                                      Immediate="true"
+                                                      LabelStyle="font-weight: 600; color: #1976d2;" />
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="6">
+                                        <MudDatePicker @bind-Date="birthdayDate"
+                                                       Label="Ngày sinh"
+                                                       Required="true"
+                                                       RequiredError="Vui lòng chọn ngày sinh"
+                                                       Variant="Variant.Outlined"
+                                                       DateFormat="dd/MM/yyyy"
+                                                       MaxDate="@DateTime.Now.AddYears(-18)"
+                                                       MinDate="@DateTime.Now.AddYears(-65)"
+                                                       LabelStyle="font-weight: 600; color: #1976d2;" />
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField @bind-Value="Employee.password"
+                                                      Label="Mật khẩu"
+                                                      Required="true"
+                                                      RequiredError="Vui lòng nhập mật khẩu"
+                                                      Variant="Variant.Outlined"
+                                                      InputType="@PasswordInput"
+                                                      Adornment="Adornment.End"
+                                                      AdornmentIcon="@PasswordInputIcon"
+                                                      OnAdornmentClick="TogglePasswordVisibility"
+                                                      Validation="@(new Func<string, IEnumerable<string>>(ValidatePassword))"
+                                                      Immediate="true"
+                                                      LabelStyle="font-weight: 600; color: #1976d2;" />
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="4">
+                                        <MudSelect @bind-Value="Employee.status"
+                                                   Label="Trạng thái"
+                                                   Required="true"
+                                                   RequiredError="Vui lòng chọn trạng thái"
+                                                   Variant="Variant.Outlined"
+                                                   LabelStyle="font-weight: 600; color: #1976d2;">
+                                            <MudSelectItem Value="true">
+                                                <div class="d-flex align-center">
+                                                    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="mr-2" />
+                                                    Đang hoạt động
+                                                </div>
+                                            </MudSelectItem>
+                                            <MudSelectItem Value="false">
+                                                <div class="d-flex align-center">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Cancel" Color="Color.Error" Class="mr-2" />
+                                                    Ngưng hoạt động
+                                                </div>
+                                            </MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="4">
+                                        <MudSelect @bind-Value="Employee.gender"
+                                                   Label="Giới tính"
+                                                   Required="true"
+                                                   RequiredError="Vui lòng chọn giới tính"
+                                                   Variant="Variant.Outlined"
+                                                   LabelStyle="font-weight: 600; color: #1976d2;">
+                                            <MudSelectItem Value="true">Nam</MudSelectItem>
+                                            <MudSelectItem Value="false">Nữ</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="4">
+                                        <MudSelect @bind-Value="Employee.role_id"
+                                                   Label="Vai trò"
+                                                   Required="true"
+                                                   RequiredError="Vui lòng chọn vai trò"
+                                                   Variant="Variant.Outlined"
+                                                   LabelStyle="font-weight: 600; color: #1976d2;">
+                                            @if (roles != null)
+                                            {
+                                                @foreach (var role in roles)
+                                                {
+                                                    <MudSelectItem Value="@role.id">@role.name</MudSelectItem>
+                                                }
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudPaper>
                         </MudItem>
 
-                        <MudItem xs="6" Class="mb-4">
-                            <InputFile id="empIdentityImageInput" OnChange="@LoadEmpImage1" hidden accept=".jpg,.jpeg,.png" />
-                            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.CloudUpload" for="empIdentityImageInput"
-                                       FullWidth="true" Class="mb-3">
-                                Chọn hình ảnh CMND
-                            </MudButton>
-                            @if (!string.IsNullOrEmpty(Employee.citizen_identity_img))
-                            {
-                                <MudImage Src="@Employee.citizen_identity_img" Alt="Hình ảnh CMND" Width="100"
-                                          Height="100" ObjectFit="ObjectFit.Cover" Class="mb-3" />
-                            }
-                        </MudItem>
+                        <!-- Image Upload Section -->
+                        <MudItem xs="12" md="4">
+                            <MudPaper Elevation="3" Class="pa-4">
+                                <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-4">Hình ảnh</MudText>
+                                <MudGrid>
+                                    <MudItem xs="12">
+                                        <InputFile id="profileImageInput" OnChange="@LoadEmpImage" hidden accept=".jpg,.jpeg,.png" />
+                                        <MudCard Elevation="0" Class="mb-4">
+                                            @if (!string.IsNullOrEmpty(Employee.img_emp))
+                                            {
+                                                <MudCardMedia Image="@Employee.img_emp"
+                                                              Height="200"
+                                                              Class="rounded-lg" />
+                                            }
+                                            else
+                                            {
+                                                <MudCardMedia Class="d-flex justify-center align-center rounded-lg"
+                                                              Style="height: 200px; background-color: #f5f5f5;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.PersonOutline"
+                                                             Size="Size.Large"
+                                                             Color="Color.Default" />
+                                                </MudCardMedia>
+                                            }
+                                            <MudCardActions Class="pa-0 mt-2">
+                                                <MudButton HtmlTag="label"
+                                                           For="profileImageInput"
+                                                           Variant="Variant.Filled"
+                                                           Color="Color.Primary"
+                                                           StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                           FullWidth="true">
+                                                    Tải lên ảnh đại diện
+                                                </MudButton>
+                                            </MudCardActions>
+                                        </MudCard>
 
-                        <MudItem xs="6" Class="mb-4">
-                            <MudTextField Label="Họ và tên" @bind-Value="Employee.fullname" Placeholder="Họ Và Tên"
-                                          Variant="Variant.Outlined" Required="true"
-                                          Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidateFullName))"
-                                          LabelStyle="font-weight: 600; color: #1976d2;" />
-                        </MudItem>
+                                        <InputFile id="idCardImageInput" OnChange="@LoadEmpImage1" hidden accept=".jpg,.jpeg,.png" />
+                                        <MudCard Elevation="0">
+                                            @if (!string.IsNullOrEmpty(Employee.citizen_identity_img))
+                                            {
+                                                <MudCardMedia Image="@Employee.citizen_identity_img"
+                                                              Height="200"
+                                                              Class="rounded-lg" />
+                                            }
+                                            else
+                                            {
+                                                <MudCardMedia Class="d-flex justify-center align-center rounded-lg"
+                                                              Style="height: 200px; background-color: #f5f5f5;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Badge"
+                                                             Size="Size.Large"
+                                                             Color="Color.Default" />
+                                                </MudCardMedia>
+                                            }
+                                            <MudCardActions Class="pa-0 mt-2">
+                                                <MudButton HtmlTag="label"
+                                                           For="idCardImageInput"
+                                                           Variant="Variant.Filled"
+                                                           Color="Color.Secondary"
+                                                           StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                           FullWidth="true">
+                                                    Tải lên ảnh CCCD
+                                                </MudButton>
+                                            </MudCardActions>
+                                        </MudCard>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudPaper>
 
-                        <MudItem xs="6" Class="mb-4">
-                            <MudTextField Label="Email" @bind-Value="Employee.email" Placeholder="Email"
-                                          Variant="Variant.Outlined" Required="true"
-                                          Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidateEmail))"
-                                          LabelStyle="font-weight: 600; color: #1976d2;" />
-                        </MudItem>
-                        <MudItem xs="6" Class="mb-4">
-                            <MudTextField Label="Số điện thoại" @bind-Value="Employee.phone_number" Placeholder="Số điện thoại"
-                                          Variant="Variant.Outlined" Required="true"
-                                          LabelStyle="font-weight: 600; color: #1976d2;" />
-                        </MudItem>
-                        <MudItem xs="6" Class="mb-4">
-                            <MudTextField Label="Số CMND" @bind-Value="Employee.citizen_identity_number"
-                                          Placeholder="Số CMND" Variant="Variant.Outlined"
-                                          LabelStyle="font-weight: 600; color: #1976d2;" />
-                        </MudItem>
-
-                        <MudItem xs="6" Class="mb-4">
-                            <MudDatePicker @bind-Date="birthdayDate" Label="Ngày sinh" Required="true"
-                                           Placeholder="Ngày Sinh" Variant="Variant.Outlined" DateFormat="dd/MM/yyyy"
-                                           MaxDate="@DateTime.Now.AddYears(-18)"
-                                           LabelStyle="font-weight: 600; color: #1976d2;" />
-                        </MudItem>
-
-                        <MudItem xs="6" Class="mb-4">
-                            <MudTextField Label="Mật khẩu"
-                                          @bind-Value="Employee.password"
-                                          Placeholder="Mật Khẩu"
-                                          Variant="Variant.Outlined"
-                                          Required="true"
-                                          InputType="@PasswordInput"
-                                          Adornment="Adornment.End"
-                                          AdornmentIcon="@PasswordInputIcon"
-                                          OnAdornmentClick="TogglePasswordVisibility"
-                                          AdornmentAriaLabel="Show Password"
-                                          Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidatePassword))"
-                                          LabelStyle="font-weight: 600; color: #1976d2;" />
-                        </MudItem>
-
-                        <MudItem xs="4" Class="mb-4">
-                            <MudSelect @bind-Value="Employee.status" Label="Trạng thái" Required="true"
-                                       Placeholder="Trạng Thái" Variant="Variant.Outlined"
-                                       LabelStyle="font-weight: 600; color: #1976d2;">
-                                <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
-                                <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
-                            </MudSelect>
-                        </MudItem>
-                        <MudItem xs="4" Class="mb-4">
-                            <MudSelect Label="Giới tính" @bind-Value="Employee.gender" Placeholder="Giới Tính"
-                                       Variant="Variant.Outlined" Required="true"
-                                       Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidateGender))"
-                                       LabelStyle="font-weight: 600; color: #1976d2;">
-                                <MudSelectItem Value="true">Nam</MudSelectItem>
-                                <MudSelectItem Value="false">Nữ</MudSelectItem>
-                            </MudSelect>
-                        </MudItem>
-                        <MudItem xs="4">
-                            <MudSelect @bind-Value="Employee.role_id" Label="Vai trò" Required="true" Variant="Variant.Outlined">
-                                @if (roles != null)
-                                {
-                                    @foreach (var role in roles)
+                            <!-- Submit and Cancel Buttons -->
+                            <MudPaper Elevation="0" Class="d-flex justify-space-between mt-4">                              
+                                <MudButton Variant="Variant.Filled"
+                                           StartIcon="@Icons.Material.Filled.Save"
+                                           Color="Color.Primary"
+                                           ButtonType="ButtonType.Submit"
+                                           Disabled="@isLoading">
+                                    @if (isLoading)
                                     {
-                                        @foreach (var role in roles)
-                                        {
-                                            <MudSelectItem Value="role.id">@role.name</MudSelectItem>
-                                        }
+                                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                        <MudText Class="ms-2">Đang xử lý...</MudText>
                                     }
-                                </MudSelect>
-                            </MudItem>
-                           
-                        </MudGrid>
-                    </MudPaper>
-                   
-                </MudItem>
-                <MudItem xs="12" md="4">
-                    <MudPaper Elevation="3" Class="pa-4">
-                        <MudText Typo="Typo.h6" Class="mb-4">Hình ảnh</MudText>
-                        <MudGrid>
-                            <MudItem xs="12" md="12">
-                                <InputFile id="licenseInput2" OnChange="HandleFileSelected" accept="image/*" style="display: none;" />
-                                @if (!string.IsNullOrEmpty(Employee.img_emp))
-                                {
-                                    <MudImage Fluid="false" Src="@Employee.img_emp" Class="rounded-lg mb-2 w-100 mx-auto d-block" Height="260" />
-                                }
-                                <MudButton HtmlTag="label" For="licenseInput2" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary"
-                                           StartIcon="@Icons.Material.Outlined.CloudUpload"
-                                           FullWidth="true" Class="mud-button-small-text">
-                                    Ảnh đại diện
+                                    else
+                                    {
+                                        <MudText>Lưu thay đổi</MudText>
+                                    }
                                 </MudButton>
-                            </MudItem>
-
-                        </MudGrid>
-                    </MudPaper>
-                    <MudItem xs="12" Class="d-flex justify-end">
-                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="EditEmployee" Class="mt-3">Lưu</MudButton>
-                    </MudItem>
-                </MudItem>
-            </MudGrid>
-        </EditForm>
+                            </MudPaper>
+                        </MudItem>
+                    </MudGrid>
+                </EditForm>
+            }
+        </MudItem>
     </MudGrid>
 </MudContainer>
 
 
 @code {
-    [Parameter] public int Id { get; set; }
-    private IBrowserFile selectedFile;
-    private IBrowserFile selectedFile1;
-    private string imagePreviewUrl;
-    private string imagePreviewUrl1;
-    private string roleUrl = "http://localhost:49922/api/Roles";
-    private List<roles> roles = new List<roles>();
-    private employees_create Employee = new employees_create();
-    private bool isFormValid;
-    private DateTime? birthdayDate;
-    private MudForm form;
+        [Parameter] public int Id { get; set; }
+        private IBrowserFile selectedFile;
+        private IBrowserFile selectedFile1;
+        private string imagePreviewUrl;
+        private string imagePreviewUrl1;
+        private string roleUrl = "http://localhost:49922/api/Roles";
+        private List<roles> roles = new List<roles>();
+        private employees_create Employee = new employees_create();
+        private bool isFormValid;
+        private DateTime? birthdayDate;
+        private MudForm form;
 
-    private bool showSuccess;
-    private bool showError;
-    private bool isLoading;
-    private string url = "http://localhost:49922/api/Employees";
+        private bool showSuccess;
+        private bool showError;
+        private bool isLoading;
+        private string url = "http://localhost:49922/api/Employees";
 
-    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+        private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Nhân viên", href: "/getemp", icon: @Icons.Material.Outlined.PeopleOutline),
         new BreadcrumbItem("Danh sách nhân viên", href: "/getemp", icon: @Icons.Material.Outlined.List),
         new BreadcrumbItem("Chỉnh sửa nhân viên", href: "", icon: @Icons.Material.Filled.Edit),
     };
 
-    private bool isShowPassword = false;
-    private InputType PasswordInput => isShowPassword ? InputType.Text : InputType.Password;
-    private string PasswordInputIcon => isShowPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
+        private bool isShowPassword = false;
+        private InputType PasswordInput => isShowPassword ? InputType.Text : InputType.Password;
+        private string PasswordInputIcon => isShowPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
 
-    private void TogglePasswordVisibility()
-    {
-        isShowPassword = !isShowPassword; // Đảo giá trị hiển thị mật khẩu
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        var response = await httpClient.GetFromJsonAsync<employees_create>(url + "/" + Id);
-        Employee = response;
-        await LoadDriver();
-        await LoadRoles();
-        birthdayDate = DateTime.Now.AddYears(-18);
-    }
-
-    private async Task LoadDriver()
-    {
-        try
+        private void TogglePasswordVisibility()
         {
-            Employee = await httpClient.GetFromJsonAsync<employees_create>($"{url}/{Id}");
-            if (Employee != null)
+            isShowPassword = !isShowPassword; // Đảo giá trị hiển thị mật khẩu
+        }
+
+        protected override async Task OnInitializedAsync()
+        {
+            var response = await httpClient.GetFromJsonAsync<employees_create>(url + "/" + Id);
+            Employee = response;
+            await LoadDriver();
+            await LoadRoles();
+            birthdayDate = DateTime.Now.AddYears(-18);
+        }
+
+        private async Task LoadDriver()
+        {
+            try
             {
-                birthdayDate = Employee.birthday;
+                Employee = await httpClient.GetFromJsonAsync<employees_create>($"{url}/{Id}");
+                if (Employee != null)
+                {
+                    birthdayDate = Employee.birthday;
+                }
+                else
+                {
+                    Snackbar.Add("Không tìm thấy thông tin nhân viên", Severity.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Lỗi khi tải thông tin nhân viên: {ex.Message}", Severity.Error);
+            }
+        }
+        private async Task<string> GetBase64Image(IBrowserFile file)
+        {
+            try
+            {
+                using var memoryStream = new MemoryStream();
+                await file.OpenReadStream().CopyToAsync(memoryStream);
+                return Convert.ToBase64String(memoryStream.ToArray());
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Lỗi xử lý hình ảnh: {ex.Message}", Severity.Error);
+                return null;
+            }
+        }
+
+        private async Task LoadEmpImage(InputFileChangeEventArgs e)
+        {
+            try
+            {
+                isLoading = true;
+                var file = e.File;
+                if (file != null)
+                {
+                    var base64Data = await GetBase64Image(file);
+                    if (base64Data != null)
+                    {
+                        var fileName = $"emp_images_avt/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                        var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
+                        Employee.img_emp = imageUrl;
+                        StateHasChanged();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Lỗi tải lên hình ảnh: {ex.Message}", Severity.Error);
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+
+        private async Task LoadEmpImage1(InputFileChangeEventArgs e)
+        {
+            try
+            {
+                isLoading = true;
+                var file = e.File;
+                if (file != null)
+                {
+                    var base64Data = await GetBase64Image(file);
+                    if (base64Data != null)
+                    {
+                        var fileName = $"emp_images_cccd/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                        var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
+                        Employee.citizen_identity_img = imageUrl;
+                        StateHasChanged();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Lỗi tải lên hình ảnh: {ex.Message}", Severity.Error);
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+
+        private async Task EditEmployee()
+        {
+            try
+            {
+                if (birthdayDate.HasValue)
+                {
+                    Employee.birthday = birthdayDate.Value;
+                }
+                var response = await httpClient.PutAsJsonAsync(url + "/" + Id, Employee);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add($"Chỉnh sửa nhân viên {Employee.fullname} thành công", Severity.Success);
+                    Navigation.NavigateTo("/getemp");
+                }
+                else
+                {
+                    Snackbar.Add($"Chỉnh sửa {Employee.fullname} thất bại" + response, Severity.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Có lỗi xảy ra: {ex.Message}", Severity.Error);
+            }
+        }
+
+        private async Task<bool> IsEmailExists(string email)
+        {
+            var response = await httpClient.GetAsync($"{url}/exists?email={email}");
+            return response.IsSuccessStatusCode && bool.Parse(await response.Content.ReadAsStringAsync());
+        }
+
+        private async Task<IEnumerable<string>> EmployeeValidateEmail(string email)
+        {
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                errors.Add("Vui lòng điền email.");
+            }
+            else if (email.Length < 20 || email.Length > 150)
+            {
+                errors.Add("Email không hợp lệ.");
             }
             else
             {
-                Snackbar.Add("Không tìm thấy thông tin nhân viên", Severity.Warning);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Lỗi khi tải thông tin nhân viên: {ex.Message}", Severity.Error);
-        }
-    }
-    private async Task<string> GetBase64Image(IBrowserFile file)
-    {
-        try
-        {
-            using var memoryStream = new MemoryStream();
-            await file.OpenReadStream().CopyToAsync(memoryStream);
-            return Convert.ToBase64String(memoryStream.ToArray());
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Lỗi xử lý hình ảnh: {ex.Message}", Severity.Error);
-            return null;
-        }
-    }
-
-    private async Task LoadEmpImage(InputFileChangeEventArgs e)
-    {
-        try
-        {
-            isLoading = true;
-            var file = e.File;
-            if (file != null)
-            {
-                var base64Data = await GetBase64Image(file);
-                if (base64Data != null)
+                if (await IsEmailExists(email))
                 {
-                    var fileName = $"emp_images_avt/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
-                    var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
-                    Employee.img_emp = imageUrl;
-                    StateHasChanged();
+                    errors.Add("Email đã tồn tại trong cơ sở dữ liệu.");
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Lỗi tải lên hình ảnh: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isLoading = false;
-        }
-    }
 
-    private async Task LoadEmpImage1(InputFileChangeEventArgs e)
-    {
-        try
+            return errors;
+        }
+
+
+        private async Task<IEnumerable<string>> EmployeeValidatePassword(string password)
         {
-            isLoading = true;
-            var file = e.File;
-            if (file != null)
+            var errorMessages = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(password))
             {
-                var base64Data = await GetBase64Image(file);
-                if (base64Data != null)
+                errorMessages.Add("Vui lòng điền mật khẩu.");
+            }
+            else if (password.Length < 8 || password.Length > 15)
+            {
+                errorMessages.Add("Mật khẩu không hợp lệ.");
+            }
+            else if (!password.Any(char.IsUpper) || !password.Any(char.IsLower) ||
+                     !password.Any(char.IsDigit) || !password.Any(ch => "!@#$%^&*()_+[]{}|;':\",.<>?/`~".Contains(ch)))
+            {
+                errorMessages.Add("Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.");
+            }
+            return errorMessages.Any() ? errorMessages : Enumerable.Empty<string>();
+        }
+
+
+        private async Task<IEnumerable<string>> EmployeeValidateFullName(string fullName)
+        {
+            if (string.IsNullOrWhiteSpace(fullName))
+            {
+                return new List<string> { "Vui lòng điền họ và tên." };
+            }
+            else if (fullName.Length < 5 || fullName.Length > 150)
+            {
+                return new List<string> { "Họ và tên không hợp lệ." };
+            }
+            else if (fullName.Any(ch => !char.IsLetter(ch) && !char.IsWhiteSpace(ch)))
+            {
+                return new List<string> { "Họ và tên không được chứa ký tự đặc biệt." };
+            }
+            return Enumerable.Empty<string>();
+        }
+
+        private IEnumerable<string> EmployeeValidateRoleID(string roleId)
+        {
+            if (string.IsNullOrWhiteSpace(roleId))
+            {
+                yield return "Vui lòng điền ID vai trò.";
+            }
+            else if (!int.TryParse(roleId, out _))
+            {
+                yield return "ID vai trò không hợp lệ .";
+            }
+        }
+
+        private IEnumerable<string> EmployeeValidateGender(string gender)
+        {
+            if (string.IsNullOrWhiteSpace(gender))
+            {
+                yield return "Vui lòng chọn giới tính.";
+            }
+        }
+
+        private IEnumerable<string> EmployeeValidateCitizenIdentity(string citizenIdentityNumber, string citizenIdentityImg)
+        {
+            if (!string.IsNullOrWhiteSpace(citizenIdentityNumber) && string.IsNullOrWhiteSpace(citizenIdentityImg))
+            {
+                yield return "Nếu có số CCCD thì hình ảnh CCCD không được bỏ trống.";
+            }
+            else if (string.IsNullOrWhiteSpace(citizenIdentityNumber) && !string.IsNullOrWhiteSpace(citizenIdentityImg))
+            {
+                yield return "Nếu có hình ảnh CCCD thì số CCCD không được bỏ trống.";
+            }
+            else if (!string.IsNullOrWhiteSpace(citizenIdentityNumber) && citizenIdentityNumber.Length != 12 && citizenIdentityNumber.Length != 12)
+            {
+                yield return "Số CCCD không hợp lệ.";
+            }
+        }
+
+        private async Task LoadRoles()
+        {
+            try
+            {
+                var response = await httpClient.GetFromJsonAsync<List<roles>>(roleUrl);
+                if (response != null)
                 {
-                    var fileName = $"emp_images_cccd/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
-                    var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
-                    Employee.citizen_identity_img = imageUrl;
-                    StateHasChanged();
+                    roles = response;
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Lỗi tải lên hình ảnh: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isLoading = false;
-        }
-    }
-
-    private async Task EditEmployee()
-    {
-        try
-        {
-            if (birthdayDate.HasValue)
+            catch (Exception ex)
             {
-                Employee.birthday = birthdayDate.Value;
-            }
-            var response = await httpClient.PutAsJsonAsync(url + "/" + Id, Employee);
-            if (response.IsSuccessStatusCode)
-            {
-                Snackbar.Add($"Chỉnh sửa nhân viên {Employee.fullname} thành công", Severity.Success);
-                Navigation.NavigateTo("/getemp");
-            }
-            else
-            {
-                Snackbar.Add($"Chỉnh sửa {Employee.fullname} thất bại" + response, Severity.Warning);
+                Snackbar.Add($"Lỗi khi tải danh sách vai trò: {ex.Message}", Severity.Error);
             }
         }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Có lỗi xảy ra: {ex.Message}", Severity.Error);
-        }
+    private IEnumerable<string> ValidatePhone(string phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+            yield return "Số điện thoại không được để trống";
+        else if (!System.Text.RegularExpressions.Regex.IsMatch(phone, @"^(0[3|5|7|8|9])+([0-9]{8})\b"))
+            yield return "Số điện thoại không hợp lệ (phải có 10 số và bắt đầu bằng 03, 05, 07, 08, 09)";
     }
 
-    private async Task<bool> IsEmailExists(string email)
+    private IEnumerable<string> ValidateFullName(string name)
     {
-        var response = await httpClient.GetAsync($"{url}/exists?email={email}");
-        return response.IsSuccessStatusCode && bool.Parse(await response.Content.ReadAsStringAsync());
+        if (string.IsNullOrWhiteSpace(name))
+            yield return "Họ tên không được để trống";
+        else if (name.Length < 2)
+            yield return "Họ tên phải có ít nhất 2 ký tự";
+        else if (name.Length > 50)
+            yield return "Họ tên không được vượt quá 50 ký tự";
+        else if (!System.Text.RegularExpressions.Regex.IsMatch(name, @"^[\p{L}\s]+$"))
+            yield return "Họ tên chỉ được chứa chữ cái và khoảng trắng";
     }
 
-    private async Task<IEnumerable<string>> EmployeeValidateEmail(string email)
+    private IEnumerable<string> ValidateEmail(string email)
     {
-        var errors = new List<string>();
-
         if (string.IsNullOrWhiteSpace(email))
-        {
-            errors.Add("Vui lòng điền email.");
-        }
-        else if (email.Length < 20 || email.Length > 150)
-        {
-            errors.Add("Email không hợp lệ.");
-        }
-        else
-        {
-            if (await IsEmailExists(email))
-            {
-                errors.Add("Email đã tồn tại trong cơ sở dữ liệu.");
-            }
-        }
-
-        return errors;
+            yield return "Email không được để trống";
+        else if (!System.Text.RegularExpressions.Regex.IsMatch(email,
+            @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
+            yield return "Email không hợp lệ";
     }
 
-
-    private async Task<IEnumerable<string>> EmployeeValidatePassword(string password)
+    private IEnumerable<string> ValidateCCCD(string cccd)
     {
-        var errorMessages = new List<string>();
+        if (string.IsNullOrWhiteSpace(cccd))
+            yield return "Số CCCD không được để trống";
+        else if (!System.Text.RegularExpressions.Regex.IsMatch(cccd, @"^[0-9]{12}$"))
+            yield return "Số CCCD phải có đúng 12 số";
+    }
 
+    private IEnumerable<string> ValidatePassword(string password)
+    {
         if (string.IsNullOrWhiteSpace(password))
-        {
-            errorMessages.Add("Vui lòng điền mật khẩu.");
-        }
-        else if (password.Length < 8 || password.Length > 15)
-        {
-            errorMessages.Add("Mật khẩu không hợp lệ.");
-        }
-        else if (!password.Any(char.IsUpper) || !password.Any(char.IsLower) ||
-                 !password.Any(char.IsDigit) || !password.Any(ch => "!@#$%^&*()_+[]{}|;':\",.<>?/`~".Contains(ch)))
-        {
-            errorMessages.Add("Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.");
-        }
-        return errorMessages.Any() ? errorMessages : Enumerable.Empty<string>();
-    }
-
-
-    private async Task<IEnumerable<string>> EmployeeValidateFullName(string fullName)
-    {
-        if (string.IsNullOrWhiteSpace(fullName))
-        {
-            return new List<string> { "Vui lòng điền họ và tên." };
-        }
-        else if (fullName.Length < 5 || fullName.Length > 150)
-        {
-            return new List<string> { "Họ và tên không hợp lệ." };
-        }
-        else if (fullName.Any(ch => !char.IsLetter(ch) && !char.IsWhiteSpace(ch)))
-        {
-            return new List<string> { "Họ và tên không được chứa ký tự đặc biệt." };
-        }
-        return Enumerable.Empty<string>();
-    }
-
-    private IEnumerable<string> EmployeeValidateRoleID(string roleId)
-    {
-        if (string.IsNullOrWhiteSpace(roleId))
-        {
-            yield return "Vui lòng điền ID vai trò.";
-        }
-        else if (!int.TryParse(roleId, out _))
-        {
-            yield return "ID vai trò không hợp lệ .";
-        }
-    }
-
-    private IEnumerable<string> EmployeeValidateGender(string gender)
-    {
-        if (string.IsNullOrWhiteSpace(gender))
-        {
-            yield return "Vui lòng chọn giới tính.";
-        }
-    }
-
-    private IEnumerable<string> EmployeeValidateCitizenIdentity(string citizenIdentityNumber, string citizenIdentityImg)
-    {
-        if (!string.IsNullOrWhiteSpace(citizenIdentityNumber) && string.IsNullOrWhiteSpace(citizenIdentityImg))
-        {
-            yield return "Nếu có số CCCD thì hình ảnh CCCD không được bỏ trống.";
-        }
-        else if (string.IsNullOrWhiteSpace(citizenIdentityNumber) && !string.IsNullOrWhiteSpace(citizenIdentityImg))
-        {
-            yield return "Nếu có hình ảnh CCCD thì số CCCD không được bỏ trống.";
-        }
-        else if (!string.IsNullOrWhiteSpace(citizenIdentityNumber) && citizenIdentityNumber.Length != 12 && citizenIdentityNumber.Length != 12)
-        {
-            yield return "Số CCCD không hợp lệ.";
-        }
-    }
-
-    private async Task LoadRoles()
-    {
-        try
-        {
-            var response = await httpClient.GetFromJsonAsync<List<roles>>(roleUrl);
-            if (response != null)
-            {
-                roles = response;
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Lỗi khi tải danh sách vai trò: {ex.Message}", Severity.Error);
-        }
-    }
-    private async Task<IEnumerable<string>> EmployeeValidatephone(string citizenIdentityNumber)
-    {
-        if (string.IsNullOrWhiteSpace(citizenIdentityNumber))
-        {
-            return new List<string> { "Vui lòng điền Số điện thoại." };
-        }
-        if (citizenIdentityNumber.Length != 12)
-        {
-            return new List<string> { "Số số điện thoại phải có 10 ký tự." };
-        }
-        return Enumerable.Empty<string>();
-    }
-    private async Task<IEnumerable<string>> EmployeeValidateCCCD(string citizenIdentityNumber)
-    {
-        if (string.IsNullOrWhiteSpace(citizenIdentityNumber))
-        {
-            return new List<string> { "Vui lòng điền CCCD." };
-        }
-        if (citizenIdentityNumber.Length != 12)
-        {
-            return new List<string> { "Số CCCD phải có 12 ký tự." };
-        }
-        if (!citizenIdentityNumber.All(char.IsDigit))
-        {
-            return new List<string> { "Số CCCD phải chỉ chứa các chữ số." };
-        }
-        return Enumerable.Empty<string>();
+            yield return "Mật khẩu không được để trống";
+        else if (password.Length < 6)
+            yield return "Mật khẩu phải có ít nhất 6 ký tự";
+        else if (password.Length > 20)
+            yield return "Mật khẩu không được vượt quá 20 ký tự";
+        else if (!System.Text.RegularExpressions.Regex.IsMatch(password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$"))
+            yield return "Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường và 1 số";
     }
 }
-    }
+                                                            }
