@@ -9,6 +9,7 @@ using System.Collections.Concurrent;
 using Microsoft.Data.SqlClient;
 using Dapper;
 using System.Security.Cryptography;
+using BE_API.ModelCustom;
 
 namespace BE_API.Controllers
 {
@@ -171,24 +172,5 @@ namespace BE_API.Controllers
             }
         }
     }
-
-    // Request model để yêu cầu gửi OTP
-    public class EmailOtpRequest
-    {
-        public string Email { get; set; }
-    }
-
-    // Request model để xác minh OTP
-    public class VerifyOtpRequest
-    {
-        public string Email { get; set; }
-        public string Otp { get; set; }
-    }
-
-    // Request model để đặt lại mật khẩu
-    public class ResetPasswordRequest
-    {
-        public string Email { get; set; }
-        public string NewPassword { get; set; }
-    }
+   
 }
