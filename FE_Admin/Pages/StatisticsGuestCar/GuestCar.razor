@@ -1,4 +1,4 @@
-﻿@page "/statistics-car"
+﻿@page "/car-statistics"
 @using FE_Admin.Data
 @inject HttpClient Http
 @inject ISnackbar Snackbar
@@ -8,9 +8,7 @@
     <!-- GCD Statistics Card -->
     <MudCard Class="mb-4">
         <MudCardHeader>
-            <MudText Typo="Typo.h6" Class="mb-4">
-                Thống kê chi tiết xe theo tháng
-            </MudText>
+            <MudText Typo="Typo.h6">Thống kê số lần được thuê theo tài xế</MudText>
         </MudCardHeader>
         <MudCardContent>
             @if (isLoading)
@@ -19,21 +17,23 @@
             }
             else
             {
-                <MudTable Items="@gcStatistics" Dense="true" Hover="true" Striped="true" Bordered="true"
-                          Pagination="true" RowsPerPage="5" ServerData="@(new Func<TableState, Task<TableData<StatisticsCarResponse>>>(ServerReloadGCD))"
-                          @ref="gcTable">
+                <MudTable Items="@gcdStatistics" Dense="true" Hover="true" Striped="true" Bordered="true"
+                          Pagination="true" RowsPerPage="5" ServerData="@(new Func<TableState, Task<TableData<statistics_car>>>(ServerReloadGCD))"
+                          @ref="gcdTable">
                     <HeaderContent>
                         <MudTh Style="text-align: center">Mã xe</MudTh>
                         <MudTh Style="text-align: center">Tên xe</MudTh>
+                        <MudTh Style="text-align: center">Biển số xe</MudTh>
                         <MudTh Style="text-align: center">Chi tiết</MudTh>
                     </HeaderContent>
                     <RowTemplate>
-                        <MudTd DataLabel="Tên tài xế" Style="text-align: center">@context.CarCode</MudTd>
-                        <MudTd DataLabel="Tên tài xế" Style="text-align: center">@context.CarName</MudTd>
+                        <MudTd DataLabel="Mã xe" Style="text-align: center">@context.car_code</MudTd>
+                        <MudTd DataLabel="Tên tài xế" Style="text-align: center">@context.car_name</MudTd>
+                        <MudTd DataLabel="Biển số xe" Style="text-align: center">@context.car_number</MudTd>
                         <MudTd Style="text-align: center">
                             <MudIconButton Icon="@Icons.Material.Filled.Visibility"
                                            Color="Color.Primary"
-                                           OnClick="@(() => ShowMonthlyGCDDetails(context.id, context.CarName))" />
+                                           OnClick="@(() => ShowMonthlyGCDDetails(context.id, context.car_name, context.car_number))" />
                         </MudTd>
                     </RowTemplate>
                     <PagerContent>
@@ -43,46 +43,45 @@
             }
         </MudCardContent>
     </MudCard>
-
 </MudContainer>
 
 @code {
     private bool isLoading = true;
-    private List<StatisticsCarResponse> gcStatistics = new();
-    private MudTable<StatisticsCarResponse> gcTable;
+    private List<statistics_car> gcdStatistics = new();
+    private MudTable<statistics_car> gcdTable;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadStatistics();
+        await LoadGCDStatistics();
     }
 
-    private async Task<TableData<StatisticsCarResponse>> ServerReloadGCD(TableState state)
+    private async Task<TableData<statistics_car>> ServerReloadGCD(TableState state)
     {
-        await LoadStatistics();
+        await LoadGCDStatistics();
 
         // Apply pagination
-        var totalItems = gcStatistics.Count;
-        var pagedData = gcStatistics
+        var totalItems = gcdStatistics.Count;
+        var pagedData = gcdStatistics
             .Skip(state.Page * state.PageSize)
             .Take(state.PageSize)
             .ToList();
 
-        return new TableData<StatisticsCarResponse>()
+        return new TableData<statistics_car>()
             {
                 TotalItems = totalItems,
                 Items = pagedData
             };
     }
 
-    private async Task LoadStatistics()
+    private async Task LoadGCDStatistics()
     {
         try
         {
             isLoading = true;
-            var response = await Http.GetAsync("http://localhost:49922/api/StatisticsGuestCar/GetStatisticsByMonth");
+            var response = await Http.GetAsync("http://localhost:49922/api/StatisticsGuestCar/CarMonthly");
             if (response.IsSuccessStatusCode)
             {
-                gcStatistics = await response.Content.ReadFromJsonAsync<List<StatisticsCarResponse>>() ?? new();
+                gcdStatistics = await response.Content.ReadFromJsonAsync<List<statistics_car>>() ?? new();
             }
             else
             {
@@ -99,13 +98,14 @@
         }
     }
 
-    private async Task ShowMonthlyGCDDetails(int carId, string carName)
+    private async Task ShowMonthlyGCDDetails(int carId, string carName, string carNumber)
     {
         var parameters = new DialogParameters
         {
             { "CarId", carId },
             { "CarName", carName },
-            { "IsGC", true }
+            { "CarNumber", carNumber },
+            { "IsGCD", true }
         };
         await ShowDetailsDialog(parameters);
     }
