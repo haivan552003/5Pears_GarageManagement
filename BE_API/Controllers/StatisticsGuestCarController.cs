@@ -46,32 +46,37 @@ namespace BE_API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("GetStatisticsByMonth")]
-        public async Task<IActionResult> GetStatisticsByMonth()
+        [HttpGet("CarMonthly")]
+        public async Task<ActionResult<IEnumerable<statistics_car>>> statistics_car()
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var result = await connection.QueryAsync<statistics_car>(
+                "sp_statistics_car_year",
+                commandType: CommandType.StoredProcedure
+            );
+            return Ok(result);
+        }
+
+        [HttpGet("Car_monthly/{carId}")]
+        public async Task<ActionResult<IEnumerable<statistics_car_monthly>>> GetCarMonthlyStats(int carId)
         {
             try
             {
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    
-                    var result = await connection.QueryAsync<StatisticsGuestCarResponse>(
-                        "sp_statistics_car_year",
-                        commandType: CommandType.StoredProcedure
-                    );
-
-                    return Ok(result);
-                }
+                using var connection = new SqlConnection(_connectionString);
+                var result = await connection.QueryAsync<statistics_car_monthly>(
+                    "sp_statistics_car_year_monthly",
+                    new { CarId = carId },
+                    commandType: CommandType.StoredProcedure
+                );
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                
-                return StatusCode(StatusCodes.Status500InternalServerError, new
-                {
-                    Message = "Xãy ra lỗi khi truy xuất dữ liệu.",
-                    Details = ex.Message
-                });
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+
 
     }
 }
