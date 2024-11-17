@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using System;
 using System.Collections.Generic;
+using System.Transactions;
 
 namespace BE_API.Models
 {
@@ -63,5 +64,14 @@ namespace BE_API.Models
         public bool payment_method { get; set; }
         public int? parent_id { get; set; }
         public int? car_seat_id { get; set; }
+    }
+    public class guest_trip_update
+    {
+        public bool? payment_method { get; set; }
+        public float? pay_amount { get; set; }
+        public string bank_code { get; set; }
+        public string card_type { get; set; }
+        public string? transaction_no { get; set; }
+        public string? transaction_status { get; set; }
     }
 }

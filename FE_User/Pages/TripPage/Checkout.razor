@@ -7,12 +7,12 @@
 <MudContainer Class="mt-8 mb-5" MaxWidth="MaxWidth.Medium">
     <MudPaper Class="p-4" Elevation="0">
         <MudText Typo="Typo.h5" Align="Align.Center" Color="Color.Primary">
-                THANH TOÁN THÀNH CÔNG
-            </MudText>
+            THANH TOÁN THÀNH CÔNG
+        </MudText>
         <MudGrid Class="mt-4">
             <MudItem xs="12">
                 <MudPaper Class="p-4" Elevation="4">
-                   <MudGrid>
+                    <MudGrid>
                         <MudItem xs="12">
                             <MudText Typo="Typo.h6" Color="Color.Primary">THÔNG TIN KHÁCH HÀNG</MudText>
                         </MudItem>
@@ -46,52 +46,53 @@
 
             <MudItem xs="12">
                 <MudPaper Class="p-4" Elevation="4">
-                     <MudGrid>
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.h6" Color="Color.Primary">THÔNG TIN VÉ</MudText>
-                    </MudItem>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6" Color="Color.Primary">THÔNG TIN VÉ</MudText>
+                        </MudItem>
 
-                    <MudItem xs="3">
-                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Tuyến Xe</MudText>
-                    </MudItem>
-                    <MudItem xs="9">
-                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@bill.location_from (@bill.from) - @bill.location_to (@bill.to)</MudText>
-                    </MudItem>
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Default">Tuyến Xe</MudText>
+                        </MudItem>
+                        <MudItem xs="9">
+                            <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@bill.location_from (@bill.from) - @bill.location_to (@bill.to)</MudText>
+                        </MudItem>
 
-                    <MudItem xs="3">
-                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Khởi Hành</MudText>
-                    </MudItem>
-                    <MudItem xs="9">
-                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@bill.time_start</MudText>
-                    </MudItem>
-                    <MudItem xs="3">
-                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Tổng Tiền</MudText>
-                    </MudItem>
-                    <MudItem xs="9">
-                        <MudText Align="Align.End" Color="Color.Secondary" Class="fw-bold" Typo="Typo.subtitle1">@bill.price.ToString("#,##0") VNĐ</MudText>
-                    </MudItem>
-                </MudGrid>
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Default">Khởi Hành</MudText>
+                        </MudItem>
+                        <MudItem xs="9">
+                            <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@bill.time_start</MudText>
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Default">Tổng Tiền</MudText>
+                        </MudItem>
+                        <MudItem xs="9">
+                            <MudText Align="Align.End" Color="Color.Secondary" Class="fw-bold" Typo="Typo.subtitle1">@bill.price.ToString("#,##0") VNĐ</MudText>
+                        </MudItem>
+                    </MudGrid>
 
-                 <MudDataGrid Class="mx-auto pa-2 mt-4" T="guest_trip_child" Dense="true" Hover="false" Bordered="true" Striped="false"
-                             MultiSelection="false" Items="@guest_trip_child" Elevation="0"
-                             Hideable="true">
-                    <Columns>
-                        <PropertyColumn T="guest_trip_child" TProperty="string" Property="x => x.guest_trip_code" Class="fw-bold" Title="Mã Vé" Width="150px" />
-                        <PropertyColumn T="guest_trip_child" TProperty="string" Property="x => x.seat_name" Class="fw-bold" Title="Ghế" Width="150px" />
-                        <PropertyColumn T="guest_trip_child" TProperty="float" Property="x => x.price" Class="fw-bold" Title="Giá vé" Width="150px">
-                                               </PropertyColumn>
-                        <PropertyColumn T="guest_trip_child" TProperty="DateTime" Property="x => x.time_start" Class="fw-bold" Title="Bắt Đầu" Width="150px" />
-                        <PropertyColumn T="guest_trip_child" TProperty="DateTime" Property="x => x.time_end" Class="fw-bold" Title="Kết Thúc" Width="150px" />
-                    </Columns>
-                </MudDataGrid>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
+                    <MudDataGrid Class="mx-auto pa-2 mt-4" T="guest_trip_child" Dense="true" Hover="false" Bordered="true" Striped="false"
+                                 MultiSelection="false" Items="@guest_trip_child" Elevation="0"
+                                 Hideable="true">
+                        <Columns>
+                            <PropertyColumn T="guest_trip_child" TProperty="string" Property="x => x.guest_trip_code" Class="fw-bold" Title="Mã Vé" Width="150px" />
+                            <PropertyColumn T="guest_trip_child" TProperty="string" Property="x => x.seat_name" Class="fw-bold" Title="Ghế" Width="150px" />
+                            <PropertyColumn T="guest_trip_child" TProperty="float" Property="x => x.price" Class="fw-bold" Title="Giá vé" Width="150px">
+                            </PropertyColumn>
+                            <PropertyColumn T="guest_trip_child" TProperty="DateTime" Property="x => x.time_start" Class="fw-bold" Title="Bắt Đầu" Width="150px" />
+                            <PropertyColumn T="guest_trip_child" TProperty="DateTime" Property="x => x.time_end" Class="fw-bold" Title="Kết Thúc" Width="150px" />
+                        </Columns>
+                    </MudDataGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
     </MudPaper>
 </MudContainer>
 
 @code {
     private guest_trip bill = new guest_trip();
+    private guest_trip_update bill_update = new guest_trip_update();
     private List<guest_trip_child> guest_trip_child = new List<guest_trip_child>();
     private string url = "http://localhost:49922/api/GuestTrip";
     private string urlUpdateStatusBill = "http://localhost:49922/api/GuestTrip/PutStatus2";
@@ -112,15 +113,42 @@
         {
             Console.WriteLine($"Lỗi khi gọi API: {ex.Message}");
         }
-        await UpdateStatusBill2();
 
+        string currentUrl = Navigation.Uri;
+
+        var uri = new Uri(currentUrl);
+        var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+
+        string responseCode = queryParams["vnp_ResponseCode"];
+
+        if (responseCode == "00")
+        {
+            await UpdateStatusBill2();
+        }
     }
 
     private async Task UpdateStatusBill2()
     {
         try
         {
-            var response = await httpClient.PutAsJsonAsync($"{urlUpdateStatusBill}/{billId}", bill);
+            string currentUrl = Navigation.Uri;
+
+            var uri = new Uri(currentUrl);
+            var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+
+            string amount = queryParams["vnp_Amount"];
+            string transactionStatus = queryParams["vnp_TransactionStatus"];
+            string bankCode = queryParams["vnp_BankCode"];
+            string cardType = queryParams["vnp_CardType"];
+            string transactionNo = queryParams["vnp_TransactionNo"];
+
+            bill_update.payment_method = false;
+            bill_update.transaction_status = transactionStatus;
+            bill_update.bank_code = bankCode;
+            bill_update.card_type = cardType;
+            bill_update.transaction_no = transactionNo;
+
+            var response = await httpClient.PutAsJsonAsync($"{urlUpdateStatusBill}/{billId}", bill_update);
             // if (response.IsSuccessStatusCode)
             // {
             //     Console.WriteLine($"Cập nhật trạng thái hóa đơn {billId} thành công!");

@@ -219,7 +219,7 @@
              .Build();
 
         // Xử lý chọn ghế từ các client khác
-        hubConnection.On<int, int>("ReceiveSeatSelection", (seatId, id) =>
+        hubConnection.On<int>("ReceiveSeatSelection", (seatId) =>
         {
             if (!takenSeats.Contains(seatId.ToString()))
             {
@@ -229,7 +229,7 @@
         });
 
         // Xử lý bỏ chọn ghế từ các client khác
-        hubConnection.On<int, int>("ReceiveSeatDeselection", (seatId, id) =>
+        hubConnection.On<int>("ReceiveSeatDeselection", (seatId) =>
         {
             if (takenSeats.Contains(seatId.ToString()))
             {
@@ -313,7 +313,7 @@
 
             if (hubConnection?.State == HubConnectionState.Connected)
             {
-                await hubConnection.SendAsync("UnselectSeat", seatId, id);
+                await hubConnection.SendAsync("UnselectSeat", seatId);
             }
         }
         else
@@ -325,12 +325,11 @@
 
                 if (hubConnection?.State == HubConnectionState.Connected)
                 {
-                    await hubConnection.SendAsync("SelectSeat", seatId, id);
+                    await hubConnection.SendAsync("SelectSeat", seatId);
                 }
             }
         }
-
-        TRIPDETAILS.sale = TRIPDETAILS.sale * selectedSeats.Count();
+        TRIPDETAILS.sale = (TRIPDETAILS.price - TRIPDETAILS.voucher) * selectedSeats.Count();
     }
 
     private async Task OnCheckout()
