@@ -110,7 +110,7 @@ namespace BE_API.Controllers
 
         //update -> status = 2(nếu khách đã thanh toán)
         [HttpPut("PutStatus2/{id}")]
-        public async Task<IActionResult> PutStatus2(int id)
+        public async Task<IActionResult> PutStatus2(int id, guest_trip_update employee)
         {
             var parameters = new DynamicParameters();
             parameters.Add("@id", id);

@@ -8,28 +8,27 @@ namespace BE_API.Hubs
 {
     public class SeatHub:Hub
     {
-        private static ConcurrentDictionary<(int seatId, int tripDetailID), string> selectedSeats = new();
+        private static ConcurrentDictionary<int, string> selectedSeats = new();
         private static ConcurrentDictionary<string, bool> userCheckoutStatus = new ConcurrentDictionary<string, bool>();
-        private int tripDetailID;
 
         // Hàm chọn ghế
-        public async Task SelectSeat(int seatId, int tripDetailID)
+        public async Task SelectSeat(int seatId)
         {
             // Kiểm tra nếu ghế đã được chọn cho tripDetailID này
-            if (!selectedSeats.ContainsKey((seatId, tripDetailID)))
+            if (!selectedSeats.ContainsKey(seatId))
             {
-                selectedSeats[(seatId, tripDetailID)] = Context.ConnectionId;  // Lưu trữ ghế đã chọn với kết nối
-                await Clients.Others.SendAsync("ReceiveSeatSelection", seatId, tripDetailID);  // Gửi thông báo cho các client khác
+                selectedSeats[seatId] = Context.ConnectionId;  // Lưu trữ ghế đã chọn với kết nối
+                await Clients.Others.SendAsync("ReceiveSeatSelection", seatId);  // Gửi thông báo cho các client khác
             }
         }
 
         // Hàm bỏ chọn ghế
-        public async Task UnselectSeat(int seatId, int tripDetailID)
+        public async Task UnselectSeat(int seatId)
         {
-            if (selectedSeats.TryGetValue((seatId, tripDetailID), out string connectionId) && connectionId == Context.ConnectionId)
+            if (selectedSeats.TryGetValue(seatId, out string connectionId) && connectionId == Context.ConnectionId)
             {
-                selectedSeats.TryRemove((seatId, tripDetailID), out _);  // Xóa ghế khỏi danh sách đã chọn
-                await Clients.Others.SendAsync("ReceiveSeatDeselection", seatId, tripDetailID);  // Gửi thông báo cho các client khác
+                selectedSeats.TryRemove(seatId, out _);  // Xóa ghế khỏi danh sách đã chọn
+                await Clients.Others.SendAsync("ReceiveSeatDeselection", seatId);  // Gửi thông báo cho các client khác
             }
         }
 
