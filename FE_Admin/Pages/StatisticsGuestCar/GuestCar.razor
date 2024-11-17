@@ -6,19 +6,19 @@
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
     <!-- GCD Statistics Card -->
-    <MudCard Class="mb-4">
+    <MudCard>
         <MudCardHeader>
             <MudText Typo="Typo.h6">Thống kê số lần được thuê theo tài xế</MudText>
         </MudCardHeader>
         <MudCardContent>
-            @if (isLoading)
+            @if (isLoadingGCD)
             {
                 <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4" />
             }
             else
             {
                 <MudTable Items="@gcdStatistics" Dense="true" Hover="true" Striped="true" Bordered="true"
-                          Pagination="true" RowsPerPage="5" ServerData="@(new Func<TableState, Task<TableData<statistics_car>>>(ServerReloadGCD))"
+                          Pagination="true" RowsPerPage="5" ServerData="@(new Func<TableState, Task<TableData<static_car>>>(ServerReloadGCD))"
                           @ref="gcdTable">
                     <HeaderContent>
                         <MudTh Style="text-align: center">Mã xe</MudTh>
@@ -28,7 +28,7 @@
                     </HeaderContent>
                     <RowTemplate>
                         <MudTd DataLabel="Mã xe" Style="text-align: center">@context.car_code</MudTd>
-                        <MudTd DataLabel="Tên tài xế" Style="text-align: center">@context.car_name</MudTd>
+                        <MudTd DataLabel="Tên xe" Style="text-align: center">@context.car_name</MudTd>
                         <MudTd DataLabel="Biển số xe" Style="text-align: center">@context.car_number</MudTd>
                         <MudTd Style="text-align: center">
                             <MudIconButton Icon="@Icons.Material.Filled.Visibility"
@@ -46,16 +46,16 @@
 </MudContainer>
 
 @code {
-    private bool isLoading = true;
-    private List<statistics_car> gcdStatistics = new();
-    private MudTable<statistics_car> gcdTable;
+    private bool isLoadingGCD = true;
+    private List<static_car> gcdStatistics = new();
+    private MudTable<static_car> gcdTable;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadGCDStatistics();
     }
 
-    private async Task<TableData<statistics_car>> ServerReloadGCD(TableState state)
+    private async Task<TableData<static_car>> ServerReloadGCD(TableState state)
     {
         await LoadGCDStatistics();
 
@@ -66,7 +66,7 @@
             .Take(state.PageSize)
             .ToList();
 
-        return new TableData<statistics_car>()
+        return new TableData<static_car>
             {
                 TotalItems = totalItems,
                 Items = pagedData
@@ -77,11 +77,11 @@
     {
         try
         {
-            isLoading = true;
+            isLoadingGCD = true;
             var response = await Http.GetAsync("http://localhost:49922/api/StatisticsGuestCar/CarMonthly");
             if (response.IsSuccessStatusCode)
             {
-                gcdStatistics = await response.Content.ReadFromJsonAsync<List<statistics_car>>() ?? new();
+                gcdStatistics = await response.Content.ReadFromJsonAsync<List<static_car>>() ?? new();
             }
             else
             {
@@ -94,7 +94,7 @@
         }
         finally
         {
-            isLoading = false;
+            isLoadingGCD = false;
         }
     }
 
@@ -104,14 +104,9 @@
         {
             { "CarId", carId },
             { "CarName", carName },
-            { "CarNumber", carNumber },
-            { "IsGCD", true }
+            { "CarNumber", carNumber }
         };
-        await ShowDetailsDialog(parameters);
-    }
 
-    private async Task ShowDetailsDialog(DialogParameters parameters)
-    {
         var options = new DialogOptions
             {
                 MaxWidth = MaxWidth.Medium,
@@ -119,6 +114,7 @@
                 CloseButton = true,
                 DisableBackdropClick = true
             };
+
         var dialog = await DialogService.ShowAsync<DetailDialog>("Chi tiết theo tháng", parameters, options);
         await dialog.Result;
     }
