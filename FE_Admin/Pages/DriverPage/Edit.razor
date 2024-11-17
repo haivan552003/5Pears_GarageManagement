@@ -22,7 +22,7 @@
 
                         <MudGrid>
                             <MudItem xs="3">
-                                <MudTextField ShrinkLabel @bind-Value="Driver.driver_code" For="@(() => Driver.driver_code)"
+                                <MudTextField ReadOnly ShrinkLabel @bind-Value="Driver.driver_code" For="@(() => Driver.driver_code)"
                                               Label="Mã tài xế" Required="true" RequiredError="Vui lòng nhập mã tài xế"
                                               Variant="Variant.Outlined" />
                             </MudItem>
@@ -74,7 +74,7 @@
 
                             <MudItem xs="4">
                                 <MudTextField @bind-Value="Driver.email" For="@(() => Driver.email)"
-                                              Label="Email" Variant="Variant.Outlined" RequiredError="Vui lòng nhập Email" />
+                                              Label="Email" Variant="Variant.Outlined" Placeholder="Email" RequiredError="Vui lòng nhập Email" />
                             </MudItem>
                             <MudItem xs="4">
                                 <MudTextField ShrinkLabel @bind-Value="Driver.password" Label="Mật khẩu" Required="true"
@@ -110,6 +110,12 @@
                         </MudGrid>
                        
                     </MudPaper>
+                    <MudItem xs="12" Class="d-flex justify-end mt-6">
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mr-2"
+                                   OnClick="@Cancel">Hủy</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                                   StartIcon="@Icons.Material.Outlined.Save" Disabled="@isLoading" Color="Color.Primary">Lưu</MudButton>
+                    </MudItem>              
                 </MudItem>
 
                @*  <MudItem xs="12" md="4">
@@ -227,21 +233,14 @@
                                 }
                             </MudItem>
                         </MudGrid>
-
+                        <MudItem xs="12" Class="d-flex justify-center mt-4">
+                            @if (isLoading)
+                            {
+                                <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+                            }
+                        </MudItem>
                     </MudPaper>
-                </MudItem>
-                <MudItem xs="12" Class="d-flex justify-end mt-6">
-                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mr-2"
-                               OnClick="@Cancel">Hủy</MudButton>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                               StartIcon="@Icons.Material.Outlined.Save" Disabled="@isLoading" Color="Color.Primary">Lưu</MudButton>
-                </MudItem>
-                <MudItem xs="12" Class="d-flex justify-center mt-4">
-                    @if (isLoading)
-                    {
-                        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
-                    }
-                </MudItem>
+                </MudItem>            
             </MudGrid>
         </EditForm>
     </MudGrid>

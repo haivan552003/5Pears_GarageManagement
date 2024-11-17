@@ -14,7 +14,7 @@
         </MudItem>
         <EditForm Model="@newDriver" Class="pa-3" OnValidSubmit="AddDriver">
             <MudGrid>
-                <MudItem xs="12" md="12">
+                <MudItem xs="12" md="8">
                     <DataAnnotationsValidator />
                     <MudPaper Elevation="3" Class="pa-4">
                         <MudText Typo="Typo.h6" Class="mb-5">Thêm khách hàng</MudText>
@@ -68,34 +68,69 @@
                     <MudPaper Elevation="3" Class="pa-4">
                         <MudText Typo="Typo.h6" Class="mb-4">Hình ảnh</MudText>
                         <MudGrid>
-                            <MudItem xs="6">
+                            <MudItem xs="12">
+                                <!-- CCCD Image -->
                                 <InputFile id="citizenIdInput1" OnChange="@((e) => LoadCitizenIdImage(e, 1))" hidden accept=".jpg,.jpeg,.png" />
-                                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.CloudUpload" for="citizenIdInput1" FullWidth="true" Class="mud-button-small-text">CCCD (Trước)</MudButton>
+                                <MudButton HtmlTag="label"
+                                           Variant="Variant.Filled"
+                                           Color="Color.Secondary"
+                                           StartIcon="@Icons.Material.Filled.CloudUpload"
+                                           for="citizenIdInput1"
+                                           FullWidth="true"
+                                           Class="mud-button-small-text">
+                                    CCCD (Trước)
+                                </MudButton>
                                 <ValidationMessage For="@(() => newDriver.citizen_identity_img1)" />
                                 @if (isUploadingCitizenImage)
                                 {
-                                    <MudProgressLinear Style="display: flex; justify-content: center; margin-top: 8px;" Color="Color.Primary" Size="Size.Small" Indeterminate="true" />
+                                    <MudProgressLinear Style="display: flex; justify-content: center; margin-top: 8px;"
+                                                       Color="Color.Primary"
+                                                       Size="Size.Small"
+                                                       Indeterminate="true" />
                                 }
                                 else if (!string.IsNullOrEmpty(newDriver.citizen_identity_img1))
                                 {
-                                    <MudImage Src="@newDriver.citizen_identity_img1" Alt="CCCD (Mặt trước)" Width="100" Height="100" ObjectFit="ObjectFit.Cover" Class="mt-2" />
+                                    <MudImage Src="@newDriver.citizen_identity_img1"
+                                              Alt="CCCD (Mặt trước)"
+                                              Width="100"
+                                              Height="100"
+                                              ObjectFit="ObjectFit.Cover"
+                                              Class="mt-2" />
                                 }
-                            </MudItem>
 
-                            <MudItem xs="6">
-                                <InputFile id="licenseInput1" OnChange="@((e) => LoadLicenseImage(e, 1))" hidden accept=".jpg,.jpeg,.png" />
-                                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.CloudUpload" for="licenseInput1" FullWidth="true" Class="mud-button-small-text">GPLX (Trước)</MudButton>
+                                <!-- License Image -->
+                                <InputFile id="licenseInput1"
+                                           OnChange="@((e) => LoadLicenseImage(e, 1))"
+                                           hidden
+                                           accept=".jpg,.jpeg,.png"
+                                           Class="mt-4" />
+                                <MudButton HtmlTag="label"
+                                           Variant="Variant.Filled"
+                                           Color="Color.Secondary"
+                                           StartIcon="@Icons.Material.Filled.CloudUpload"
+                                           for="licenseInput1"
+                                           FullWidth="true"
+                                           Class="mud-button-small-text mt-4">
+                                    GPLX (Trước)
+                                </MudButton>
                                 <ValidationMessage For="@(() => newDriver.driver_license_img1)" />
                                 @if (isUploadingLicenseImage)
                                 {
-                                    <MudProgressLinear Style="display: flex; justify-content: center; margin-top: 8px;" Color="Color.Primary" Size="Size.Small" Indeterminate="true" />
+                                    <MudProgressLinear Style="display: flex; justify-content: center; margin-top: 8px;"
+                                                       Color="Color.Primary"
+                                                       Size="Size.Small"
+                                                       Indeterminate="true" />
                                 }
                                 else if (!string.IsNullOrEmpty(newDriver.driver_license_img1))
                                 {
-                                    <MudImage Src="@newDriver.driver_license_img1" Alt="Bằng lái (Mặt trước)" Width="100" Height="100" ObjectFit="ObjectFit.Cover" Class="mt-2" />
+                                    <MudImage Src="@newDriver.driver_license_img1"
+                                              Alt="Bằng lái (Mặt trước)"
+                                              Width="100"
+                                              Height="100"
+                                              ObjectFit="ObjectFit.Cover"
+                                              Class="mt-2" />
                                 }
                             </MudItem>
-
                         </MudGrid>
                     </MudPaper>
                 </MudItem>
