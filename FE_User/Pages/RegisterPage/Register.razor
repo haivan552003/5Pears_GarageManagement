@@ -1,5 +1,6 @@
 ﻿@page "/register"
 @using System.ComponentModel.DataAnnotations
+@using System.Text.Json
 @inject HttpClient httpClient
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
@@ -13,80 +14,161 @@
                 <MudGrid>
                     <MudItem xs="12">
                         <MudCard Class="mud-elevation-12 rounded pa-6" Style="border-radius: 12px;">
-                            <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center pt-5">Đăng ký tài khoản</MudText>
-                            <MudCardContent Class="pa-4">
-                                <MudTextField Label="Email" Class="mt-3"
-                                              @bind-Value="model.email"
-                                              For="@(() => model.email)"
-                                              Variant="Variant.Outlined"
-                                              Placeholder="Email"
-                                              Required="true"
-                                              RequiredError="Email là bắt buộc"
-                                              Adornment="Adornment.Start"
-                                              AdornmentIcon="@Icons.Material.Filled.Email" />
+                            @if (!isOtpSent)
+                            {
+                                <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center pt-5">Đăng ký tài khoản</MudText>
+                                <MudCardContent Class="pa-4">
+                                    <MudTextField Label="Email" Class="mt-3"
+                                                @bind-Value="model.email"
+                                                For="@(() => model.email)"
+                                                Variant="Variant.Outlined"
+                                                Placeholder="Email"
+                                                Required="true"
+                                                RequiredError="Email là bắt buộc"
+                                                Adornment="Adornment.Start"
+                                                AdornmentIcon="@Icons.Material.Filled.Email" 
+                                                Disabled="@isProcessing"/>
 
-                                <MudTextField Label="Mật khẩu" Class="mt-3"
-                                              @bind-Value="model.pass_word"
-                                              For="@(() => model.pass_word)"
-                                              Variant="Variant.Outlined"
-                                              Placeholder="Mật khẩu"
-                                              Required="true"
-                                              RequiredError="Mật khẩu là bắt buộc"
-                                              InputType="InputType.Password"
-                                              Adornment="Adornment.Start"
-                                              AdornmentIcon="@Icons.Material.Filled.Lock" />
+                                    <MudTextField Label="Mật khẩu" Class="mt-3"
+                                                @bind-Value="model.pass_word"
+                                                For="@(() => model.pass_word)"
+                                                Variant="Variant.Outlined"
+                                                Placeholder="Mật khẩu"
+                                                Required="true"
+                                                RequiredError="Mật khẩu là bắt buộc"
+                                                InputType="InputType.Password"
+                                                Adornment="Adornment.Start"
+                                                AdornmentIcon="@Icons.Material.Filled.Lock" 
+                                                Disabled="@isProcessing"/>
 
-                                <MudTextField Label="Họ tên" Class="mt-3"
-                                              @bind-Value="model.full_name"
-                                              For="@(() => model.full_name)"
-                                              Variant="Variant.Outlined"
-                                              Placeholder="Họ tên"
-                                              Required="true"
-                                              RequiredError="Họ tên là bắt buộc"
-                                              Adornment="Adornment.Start"
-                                              AdornmentIcon="@Icons.Material.Filled.Person" />
+                                    <MudTextField Label="Họ tên" Class="mt-3"
+                                                @bind-Value="model.full_name"
+                                                For="@(() => model.full_name)"
+                                                Variant="Variant.Outlined"
+                                                Placeholder="Họ tên"
+                                                Required="true"
+                                                RequiredError="Họ tên là bắt buộc"
+                                                Adornment="Adornment.Start"
+                                                AdornmentIcon="@Icons.Material.Filled.Person" 
+                                                Disabled="@isProcessing"/>
 
-                                <MudDatePicker Label="Ngày sinh" Class="mt-3"
-                                               @bind-Date="model.birthday"
-                                               For="@(() => model.birthday)"
-                                               Variant="Variant.Outlined"
-                                               Required="true"
-                                               RequiredError="Ngày sinh là bắt buộc" />
+                                    <MudDatePicker Label="Ngày sinh" Class="mt-3"
+                                                 @bind-Date="model.birthday"
+                                                 For="@(() => model.birthday)"
+                                                   Placeholder="Số điện thoại"
+                                                 Variant="Variant.Outlined"
+                                                 Required="true"
+                                                 RequiredError="Ngày sinh là bắt buộc" 
+                                                 Disabled="@isProcessing"/>
 
-                                <MudTextField Label="Số điện thoại" Class="mt-3"
-                                              @bind-Value="model.phone_number"
-                                              For="@(() => model.phone_number)"
-                                              Variant="Variant.Outlined"
-                                              Placeholder="Số điện thoại"
-                                              Required="true"
-                                              RequiredError="Số điện thoại là bắt buộc"
-                                              Adornment="Adornment.Start"
-                                              AdornmentIcon="@Icons.Material.Filled.Phone" />
+                                    <MudTextField Label="Số điện thoại" Class="mt-3"
+                                                @bind-Value="model.phone_number"
+                                                For="@(() => model.phone_number)"
+                                                Variant="Variant.Outlined"
+                                                Placeholder="Số điện thoại"
+                                                Required="true"
+                                                RequiredError="Số điện thoại là bắt buộc"
+                                                Adornment="Adornment.Start"
+                                                AdornmentIcon="@Icons.Material.Filled.Phone" 
+                                                Disabled="@isProcessing"/>
 
-                                <MudRadioGroup T="byte"
-                                               @bind-Value="model.gender"
-                                               For="@(() => model.gender)"
-                                               Required="true"
-                                               RequiredError="Vui lòng chọn giới tính">
-                                    <MudRadio Value="@((byte)0)" Color="Color.Primary">Nam</MudRadio>
-                                    <MudRadio Value="@((byte)1)" Color="Color.Secondary">Nữ</MudRadio>
-                                </MudRadioGroup>
+                                    <MudRadioGroup T="byte"
+                                                 @bind-Value="model.gender"
+                                                 For="@(() => model.gender)"
+                                                 Required="true"
+                                                 RequiredError="Vui lòng chọn giới tính"
+                                                 Disabled="@isProcessing">
+                                        <MudRadio Value="@((byte)0)" Color="Color.Primary">Nam</MudRadio>
+                                        <MudRadio Value="@((byte)1)" Color="Color.Secondary">Nữ</MudRadio>
+                                    </MudRadioGroup>
 
-                                <MudButton OnClick="OnValidSubmit" Variant="Variant.Filled"
-                                           Color="Color.Primary" Class="mx-auto w-100 mt-7 mb-3"
-                                           Style="border-radius: 20px;">
-                                    Đăng ký
-                                </MudButton>
+                                    <MudButton OnClick="ValidateRegistration" 
+                                             Variant="Variant.Filled"
+                                             Color="Color.Primary" 
+                                             Class="mx-auto w-100 mt-7 mb-3"
+                                            
+                                             Disabled="@isProcessing">
+                                        @if (isProcessing)
+                                        {
+                                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                                            <MudText Class="ms-2">Đang xử lý...</MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudText>Tiếp tục</MudText>
+                                        }
+                                    </MudButton>
 
-                                <MudGrid Class="mt-3 mb-5">
-                                    <MudItem xs="6" Class="text-center pa-0">
-                                        <MudLink Href="/" Underline="Underline.Hover">Trang chủ</MudLink>
-                                    </MudItem>
-                                    <MudItem xs="6" Class="text-center pa-0">
-                                        <MudLink Href="/login" Underline="Underline.Hover">Đã có tài khoản? Đăng nhập</MudLink>
-                                    </MudItem>
-                                </MudGrid>
-                            </MudCardContent>
+                                    <MudGrid Class="mt-3 mb-5">
+                                        <MudItem xs="6" Class="text-center pa-0">
+                                            <MudLink Href="/" Underline="Underline.Hover">Trang chủ</MudLink>
+                                        </MudItem>
+                                        <MudItem xs="6" Class="text-center pa-0">
+                                            <MudLink Href="/login" Underline="Underline.Hover">Đã có tài khoản? Đăng nhập</MudLink>
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudCardContent>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center pt-5">Xác thực OTP</MudText>
+                                <MudCardContent Class="pa-4">
+                                    <MudText Class="mb-4">Mã xác thực đã được gửi đến email: @model.email</MudText>
+
+                                    <MudTextField Label="Nhập mã OTP" Class="mt-3"
+                                                @bind-Value="otpCode"
+                                                Variant="Variant.Outlined"
+                                                Placeholder="Nhập mã 6 số"
+                                                Required="true"
+                                                MaxLength="6"
+                                                Adornment="Adornment.Start"
+                                                AdornmentIcon="@Icons.Material.Filled.Key" 
+                                                Disabled="@isProcessing"/>
+
+                                    <MudButton OnClick="VerifyOTP" 
+                                             Variant="Variant.Filled"
+                                             Color="Color.Primary" 
+                                             Class="mx-auto w-100 mt-7 mb-3"                                      
+                                             Disabled="@isProcessing">
+                                        @if (isProcessing)
+                                        {
+                                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                                            <MudText Class="ms-2">Đang xử lý...</MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudText>Xác nhận</MudText>
+                                        }
+                                    </MudButton>
+
+                                    <MudButton OnClick="ResendOTP" 
+                                             Variant="Variant.Text"
+                                             Color="Color.Secondary" 
+                                             Class="mx-auto w-100 mb-3"
+                                             Disabled="@(!canResendOTP || isProcessing)">
+                                        @if (canResendOTP && !isProcessing)
+                                        {
+                                            <span>Gửi lại mã OTP</span>
+                                        }
+                                        else if (isProcessing)
+                                        {
+                                            <span>Đang gửi...</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Gửi lại sau @remainingTime giây</span>
+                                        }
+                                    </MudButton>
+
+                                    <MudButton OnClick="@(() => { isOtpSent = false; otpCode = string.Empty; })" 
+                                             Variant="Variant.Text"
+                                             Color="Color.Default" 
+                                             Class="mx-auto w-100"
+                                             Disabled="@isProcessing">
+                                        Quay lại
+                                    </MudButton>
+                                </MudCardContent>
+                            }
                         </MudCard>
                     </MudItem>
                 </MudGrid>
@@ -98,6 +180,12 @@
 @code {
     private add_model_customer model = new();
     private MudForm form;
+    private bool isOtpSent = false;
+    private string otpCode = "";
+    private bool canResendOTP = false;
+    private int remainingTime = 0;
+    private System.Threading.Timer otpTimer;
+    private bool isProcessing = false;
 
     public class add_model_customer
     {
@@ -123,51 +211,195 @@
         [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
         [RegularExpression(@"^(03|05|07|08|09)\d{8}$", ErrorMessage = "Số điện thoại không hợp lệ")]
         public string phone_number { get; set; }
-
-        public byte is_delete { get; set; } = 0;
-        public int id_role { get; set; } = 2;
     }
 
-    private async Task OnValidSubmit()
+    private async Task ValidateRegistration()
     {
-        await form.Validate();
-
-        if (form.IsValid)
+        try
         {
-            // Validate tuổi
-            if (model.birthday.HasValue)
-            {
-                var today = DateTime.Today;
-                var age = today.Year - model.birthday.Value.Year;
-                if (model.birthday.Value.Date > today.AddYears(-age))
-                {
-                    age--;
-                }
-                if (age < 18)
-                {
-                    Snackbar.Add("Bạn phải đủ 18 tuổi để đăng ký", Severity.Error);
-                    return;
-                }
-            }
+            await form.Validate();
 
-            try
+            if (form.IsValid)
             {
-                var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Register", model);
+                // Validate tuổi
+                if (model.birthday.HasValue)
+                {
+                    var today = DateTime.Today;
+                    var age = today.Year - model.birthday.Value.Year;
+                    if (model.birthday.Value.Date > today.AddYears(-age))
+                    {
+                        age--;
+                    }
+                    if (age < 18)
+                    {
+                        Snackbar.Add("Bạn phải đủ 18 tuổi để đăng ký", Severity.Error);
+                        return;
+                    }
+                }
+
+                isProcessing = true;
+                StateHasChanged();
+
+                var request = new
+                {
+                    Email = model.email,
+                    Password = model.pass_word,
+                    FullName = model.full_name,
+                    Birthday = model.birthday,
+                    Gender = model.gender,
+                    PhoneNumber = model.phone_number
+                };
+
+                var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Register/validate-registration", request);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
                 if (response.IsSuccessStatusCode)
                 {
-                    Snackbar.Add("Đăng ký thành công!", Severity.Success);
-                    NavigationManager.NavigateTo("/login");
+                    var successResponse = await response.Content.ReadFromJsonAsync<ApiResponse>();
+                    isOtpSent = true;
+                    StartOtpTimer();
+                    Snackbar.Add(successResponse?.message ?? "Mã OTP đã được gửi đến email của bạn", Severity.Success);
                 }
                 else
                 {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    Snackbar.Add($"Đăng ký không thành công! {errorContent}", Severity.Error);
+                    var errorResponse = await response.Content.ReadFromJsonAsync<ApiResponse>();
+                    Snackbar.Add(errorResponse?.message ?? "Có lỗi xảy ra", Severity.Error);
                 }
             }
-            catch (Exception ex)
-            {
-                Snackbar.Add($"Lỗi kết nối: {ex.Message}", Severity.Error);
-            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isProcessing = false;
+            StateHasChanged();
         }
     }
-}
+
+    private async Task VerifyOTP()
+    {
+        if (string.IsNullOrWhiteSpace(otpCode))
+        {
+            Snackbar.Add("Vui lòng nhập mã OTP", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            isProcessing = true;
+            StateHasChanged();
+
+            var request = new
+            {
+                Email = model.email,
+                Otp = otpCode
+            };
+
+            var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Register/verify-otp", request);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var successResponse = await response.Content.ReadFromJsonAsync<ApiResponse>();
+                Snackbar.Add(successResponse?.message ?? "Đăng ký thành công!", Severity.Success);
+                NavigationManager.NavigateTo("/login");
+            }
+            else
+            {
+                var errorResponse = await response.Content.ReadFromJsonAsync<ApiResponse>();
+                Snackbar.Add(errorResponse?.message ?? "Xác thực OTP thất bại", Severity.Error);
+
+                if (errorResponse?.requireNewOtp == true)
+                {
+                    StartOtpTimer();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private class ApiResponse
+    {
+        public string message { get; set; }
+        public bool requireNewOtp { get; set; }
+        public int remainingAttempts { get; set; }
+    }
+
+    private void StartOtpTimer()
+    {
+        remainingTime = 60; // 60 giây chờ để gửi lại OTP
+        canResendOTP = false;
+
+        otpTimer?.Dispose();
+        otpTimer = new System.Threading.Timer(async _ =>
+        {
+            await InvokeAsync(() =>
+            {
+                if (remainingTime > 0)
+                {
+                    remainingTime--;
+                    if (remainingTime == 0)
+                    {
+                        canResendOTP = true;
+                    }
+                    StateHasChanged();
+                }
+            });
+        }, null, 0, 1000);
+    }
+
+    private async Task ResendOTP()
+    {
+        if (!canResendOTP) return;
+
+        try
+        {
+            isProcessing = true;
+            StateHasChanged();
+
+            var request = new
+            {
+                Email = model.email
+            };
+
+            var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Register/resend-otp", request);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var successResponse = await response.Content.ReadFromJsonAsync<ApiResponse>();
+                StartOtpTimer();
+                Snackbar.Add(successResponse?.message ?? "Mã OTP mới đã được gửi", Severity.Success);
+            }
+            else
+            {
+                var errorResponse = await response.Content.ReadFromJsonAsync<ApiResponse>();
+                Snackbar.Add(errorResponse?.message ?? "Không thể gửi lại mã OTP", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        otpTimer?.Dispose();
+    }
+    }
