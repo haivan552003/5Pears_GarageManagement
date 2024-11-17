@@ -46,5 +46,32 @@ namespace BE_API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("GetStatisticsByMonth")]
+        public async Task<IActionResult> GetStatisticsByMonth()
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    
+                    var result = await connection.QueryAsync<StatisticsGuestCarResponse>(
+                        "sp_statistics_car_year",
+                        commandType: CommandType.StoredProcedure
+                    );
+
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Message = "Xãy ra lỗi khi truy xuất dữ liệu.",
+                    Details = ex.Message
+                });
+            }
+        }
+
     }
 }
