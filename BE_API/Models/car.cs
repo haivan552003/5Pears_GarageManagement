@@ -19,7 +19,7 @@ namespace BE_API.Models
         public float price { get; set; }
         public int type_id { get; set; }
         public string type_name { get; set; }
-
+        public string location_car { get; set; }
         public int brand_id { get; set; }
         public string brand_name { get; set; }
 
@@ -49,5 +49,6 @@ namespace BE_API.Models
         public int fuel { get; set; }
         public string description { get; set; }
         public string car_name { get; set; }
+        public string location_car { get; set; }
     }
 }

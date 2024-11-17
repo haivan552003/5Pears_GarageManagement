@@ -118,6 +118,8 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@year_production", cars.year_production);
                 cmd.Parameters.AddWithValue("@odo", cars.odo);
                 cmd.Parameters.AddWithValue("@insurance_fee", cars.insurance_fee);
+                cmd.Parameters.AddWithValue("@location_car", cars.location_car);
+
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
@@ -161,6 +163,8 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@year_production", cars.year_production);
                 cmd.Parameters.AddWithValue("@odo", cars.odo);
                 cmd.Parameters.AddWithValue("@insurance_fee", cars.insurance_fee);
+                cmd.Parameters.AddWithValue("@location_car", cars.location_car);
+
                 await conn.OpenAsync();
 
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
