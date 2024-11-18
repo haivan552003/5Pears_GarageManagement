@@ -1,0 +1,125 @@
+﻿@page "/trip-statistics"
+@using FE_Admin.Data
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <!-- GCD Statistics Card -->
+    <MudCard>
+        <MudCardHeader>
+            <MudText Typo="Typo.h6">Thống kê số lần được thuê theo tài xế</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            @if (isLoadingGCD)
+            {
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4" />
+            }
+            else
+            {
+                <MudTable Items="@gcdStatistics" Dense="true" Hover="true" Striped="true" Bordered="true"
+                          Pagination="true" RowsPerPage="5" ServerData="@(new Func<TableState, Task<TableData<DetailedTripStatistics>>>(ServerReloadGCD))"
+                          @ref="gcdTable">
+                    <HeaderContent>
+                        <MudTh Style="text-align: center">Mã xe</MudTh>
+                        <MudTh Style="text-align: center">Điểm đi</MudTh>
+                        <MudTh Style="text-align: center">Điểm đến</MudTh>
+                        <MudTh Style="text-align: center">Số vé</MudTh>
+                        <MudTh Style="text-align: center">Tháng</MudTh>
+                        <MudTh Style="text-align: center">Chi tiết</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Mã xe" Style="text-align: center">@context.TripCode</MudTd>
+                        <MudTd DataLabel="Điểm đi" Style="text-align: center">@context.LocationFrom</MudTd>
+                        <MudTd DataLabel="Điểm đến" Style="text-align: center">@context.LocationTo</MudTd>
+                        <MudTd DataLabel="Số vé" Style="text-align: center">@context.TicketsSold</MudTd>  
+                        <MudTd DataLabel="Số vé" Style="text-align: center">@context.Month</MudTd>
+                        <MudTd Style="text-align: center">
+                            <MudIconButton Icon="@Icons.Material.Filled.Visibility"
+                                           Color="Color.Primary"
+                                           OnClick="@(() => ShowMonthlyGCDDetails(context.TripID, context.LocationFrom, context.LocationTo))" />
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50 }" />
+                    </PagerContent>
+                </MudTable>
+            }
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private bool isLoadingGCD = true;
+    private List<DetailedTripStatistics> gcdStatistics = new();
+    private MudTable<DetailedTripStatistics> gcdTable;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGCDStatistics();
+    }
+
+    private async Task<TableData<DetailedTripStatistics>> ServerReloadGCD(TableState state)
+    {
+        await LoadGCDStatistics();
+
+        // Apply pagination
+        var totalItems = gcdStatistics.Count;
+        var pagedData = gcdStatistics
+            .Skip(state.Page * state.PageSize)
+            .Take(state.PageSize)
+            .ToList();
+
+        return new TableData<DetailedTripStatistics>
+            {
+                TotalItems = totalItems,
+                Items = pagedData
+            };
+    }
+
+    private async Task LoadGCDStatistics()
+    {
+        try
+        {
+            isLoadingGCD = true;
+            var response = await Http.GetAsync("http://localhost:49922/api/DetailedTripStatistics/TripMonthly");
+            if (response.IsSuccessStatusCode)
+            {
+                gcdStatistics = await response.Content.ReadFromJsonAsync<List<DetailedTripStatistics>>() ?? new();
+            }
+            else
+            {
+                Snackbar.Add("Không thể tải dữ liệu chuyến xe", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoadingGCD = false;
+        }
+    }
+
+    private async Task ShowMonthlyGCDDetails(int tripId, string locationFrom, string locationTo)
+    {
+        var parameters = new DialogParameters
+        {
+            { "TripId", tripId },
+            { "LocationFrom", locationFrom },
+            { "LocationTo", locationTo }
+        };
+
+        var options = new DialogOptions
+            {
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true,
+                CloseButton = true,
+                DisableBackdropClick = true
+            };
+
+        var dialog = await DialogService.ShowAsync<DetailDialog>("Chi tiết theo tháng", parameters, options);
+        await dialog.Result;
+    }
+}

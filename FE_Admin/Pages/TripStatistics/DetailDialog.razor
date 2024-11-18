@@ -1,0 +1,137 @@
+﻿@using FE_Admin.Data
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 500px; overflow-y: auto">
+            @if (isLoading)
+            {
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4" />
+            }
+            else
+            {
+                <MudText Typo="Typo.h6" Class="mb-4">
+                    Thống kê thuê xe theo tháng của xe <strong>@LocationFrom</strong> (@LocationFrom)
+                </MudText>
+                @if (monthlyStatistics.Any())
+                {
+                    <MudChart ChartType="ChartType.Line"
+                              ChartSeries="@(new List<ChartSeries> {
+                                  new ChartSeries {
+                                      Name = "Doanh thu (VNĐ)",
+                                      Data = monthlyData
+                                  }
+                              })"
+                              XAxisLabels="@monthlyLabels"
+                              Width="100%"
+                              Height="300px"
+                              XAxisLines="true"
+                              YAxisLines="true"
+                              Class="mb-4" />
+
+                    <MudTable Items="@monthlyStatistics" Dense="true" Hover="true" Striped="true">
+                        <HeaderContent>
+                            <MudTh>Tháng</MudTh>
+                            <MudTh Style="text-align: right">Số lần thuê</MudTh>
+                            <MudTh Style="text-align: right">Doanh thu (VNĐ)</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>Tháng @context.Month</MudTd>
+                            <MudTd Style="text-align: right">@context.TicketsSold</MudTd>
+                            <MudTd Style="text-align: right">@string.Format("{0:N0}", context.Revenue)</MudTd>
+                        </RowTemplate>
+                        <FooterContent>
+                            <MudTd></MudTd>
+                            <MudTd Style="text-align: right">
+                                <strong>Tổng: @monthlyStatistics.Sum(x => x.TicketsSold)</strong>
+                            </MudTd>
+                            <MudTd Style="text-align: right">
+                                <strong>Tổng: @string.Format("{0:N0}", monthlyStatistics.Sum(x => x.Revenue)) VNĐ</strong>
+                            </MudTd>
+                        </FooterContent>
+                    </MudTable>
+                }
+                else
+                {
+                    <MudText Class="mt-4">Không có dữ liệu thống kê cho xe này.</MudText>
+                }
+            }
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Cancel">Đóng</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public int TripID { get; set; }
+    [Parameter] public int TripCode { get; set; }
+    [Parameter] public string LocationFrom { get; set; } = string.Empty;
+    [Parameter] public string LocationTo { get; set; } = string.Empty;
+    [Parameter] public string TicketsSold { get; set; } = string.Empty;
+    [Parameter] public string Year { get; set; } = string.Empty;
+    [Parameter] public string Month { get; set; } = string.Empty;
+
+    private bool isLoading = true;
+    private double[] monthlyData = Array.Empty<double>();
+    private string[] monthlyLabels = Array.Empty<string>();
+    private List<MonthlyTripStatistics> monthlyStatistics = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMonthlyData();
+    }
+
+    private async Task LoadMonthlyData()
+    {
+        try
+        {
+            isLoading = true;
+            string endpoint = $"http://localhost:49922/api/DetailedTripStatistics/Trip_monthly/{TripID}";
+
+            var response = await Http.GetAsync(endpoint);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadFromJsonAsync<List<MonthlyTripStatistics>>();
+                if (data != null && data.Any())
+                {
+                    monthlyStatistics = Enumerable.Range(1, 12)
+                        .Select(month => new MonthlyTripStatistics
+                            {
+                                Month = month,
+                                TicketsSold = data.FirstOrDefault(m => m.Month == month)?.TicketsSold ?? 0,
+                                Revenue = data.FirstOrDefault(m => m.Month == month)?.Revenue ?? 0
+                            })
+                        .ToList();
+
+                    var dataPoints = data.OrderBy(m => m.Month).ToList();
+                    monthlyData = monthlyStatistics.Select(x => (double)x.Revenue).ToArray();
+                    monthlyLabels = monthlyStatistics.Select(x => $"Tháng {x.Month}").ToArray();
+                }
+                else
+                {
+                    monthlyData = new double[] { 0 };
+                    monthlyLabels = new string[] { "Không có dữ liệu" };
+                }
+            }
+            else
+            {
+                Snackbar.Add($"Không thể tải dữ liệu. Mã lỗi: {response.StatusCode}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}
