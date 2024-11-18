@@ -109,6 +109,8 @@ namespace BE_API
                                .AllowAnyHeader();
                     });
             });
+            services.AddMemoryCache();
+
         }
 
 

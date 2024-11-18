@@ -28,6 +28,56 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
             integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
             crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+
+    <script>
+        // Khởi tạo Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMxGYR1UYvkfX_M7GU2XT0xGK_EQwziQQ",
+            authDomain: "management-c91fe.firebaseapp.com",
+            projectId: "management-c91fe",
+            storageBucket: "management-c91fe.firebasestorage.app",
+            messagingSenderId: "565045131532",
+            appId: "1:565045131532:web:2960f59875e2190866f129",
+            measurementId: "G-7C7TDVQXQ1"
+        };
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Tạo recaptcha để xác thực người dùng
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+            size: 'invisible',
+            callback: (response) => {
+                // Recaptcha đã được giải quyết, cho phép gửi OTP
+            }
+        }, auth);
+
+        // Gửi OTP
+        function sendOTP(phoneNumber) {
+            const appVerifier = window.recaptchaVerifier;
+            auth.signInWithPhoneNumber(phoneNumber, appVerifier)
+                .then((confirmationResult) => {
+                    window.confirmationResult = confirmationResult;
+                }).catch((error) => {
+                    console.error("Có lỗi xảy ra khi gửi mã OTP", error);
+                });
+        }
+
+        // Xác thực OTP
+        function verifyOTP(otp) {
+            const confirmationResult = window.confirmationResult;
+            confirmationResult.confirm(otp).then((result) => {
+                // Đăng nhập thành công
+                const user = result.user;
+                console.log("Đăng nhập thành công với UID:", user.uid);
+            }).catch((error) => {
+                console.error("Xác thực OTP thất bại", error);
+            });
+        }
+    </script>
+
 </body>
 
 </html>
+
