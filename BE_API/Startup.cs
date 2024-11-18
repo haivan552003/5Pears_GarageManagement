@@ -97,9 +97,11 @@ namespace BE_API
                     {
                         builder.AllowAnyOrigin()
                                .AllowAnyMethod()
-                               .AllowAnyHeader();  
+                               .AllowAnyHeader();
                     });
             });
+            services.AddMemoryCache();
+
         }
 
 

@@ -1,0 +1,121 @@
+﻿@page "/login_phone"
+@inject HttpClient Http
+@inject IJSRuntime js
+@inject NavigationManager NavigationManager
+@layout EmptyLayout
+
+<MudContainer Class="mt-16 pa-0" MaxWidth="MaxWidth.False">
+    <MudGrid Class="pa-0">
+        <MudItem xs="3" Class="mx-auto">
+            <EditForm Model="@model" OnValidSubmit="OnSendOtp">
+                <DataAnnotationsValidator />
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudCard>
+                            <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center pt-5">BOXCARS</MudText>
+                            <MudCardContent>
+                                @if (!OtpSent)
+                                {
+                                    <!-- Input for phone number -->
+                                    <MudTextField Label="Số điện thoại" Class="mt-3"
+                                                  Variant="Variant.Outlined"
+                                                  Placeholder="Số điện thoại"
+                                                  @bind-Value="model.PhoneNumber" For="@(() => model.PhoneNumber)" />
+
+                                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mx-auto w-100 mt-7">Gửi mã OTP</MudButton>
+                                }
+                                else
+                                {
+                                    <!-- Input for OTP -->
+                                    <MudTextField Label="Mã OTP" Class="mt-3"
+                                                  Variant="Variant.Outlined"
+                                                  Placeholder="Nhập mã OTP"
+                                                  @bind-Value="model.Otp" For="@(() => model.Otp)" />
+
+                                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mx-auto w-100 mt-7" OnClick="OnVerifyOtp">Xác minh OTP</MudButton>
+                                }
+
+                                @if (LoginFailed)
+                                {
+                                    <MudAlert Severity="Severity.Error" Class="mt-2">Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.</MudAlert>
+                                }
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                </MudGrid>
+            </EditForm>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    // Model to hold phone number and OTP
+    private OtpLoginModel model = new OtpLoginModel();
+    private bool OtpSent = false;
+    private bool LoginFailed = false;
+
+    private async Task OnSendOtp()
+    {
+        try
+        {
+            // var response = await Http.PostAsJsonAsync("http://localhost:49922/api/PhoneNumber/send-otp", new { PhoneNumber = model.PhoneNumber }); //url real
+            var response = await Http.PostAsJsonAsync("http://localhost:49922/api/OTPFake/send-otp1", new { PhoneNumber = model.PhoneNumber }); //url fake
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                OtpSent = true;
+                LoginFailed = false;
+            }
+            else
+            {
+                LoginFailed = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error: " + ex.Message);
+            LoginFailed = true;
+        }
+    }
+
+    private async Task OnVerifyOtp()
+    {
+        try
+        {
+            // var response = await Http.PostAsJsonAsync("http://localhost:49922/api/PhoneNumber/verify-otp", new url real
+            var response = await Http.PostAsJsonAsync("http://localhost:49922/api/OTPFake/verify-otp1", new //url API Fake
+
+            {
+                PhoneNumber = model.PhoneNumber,
+                Otp = model.Otp,
+                // RequestId = model.RequestId
+            });
+
+            if (response.IsSuccessStatusCode)
+            {
+                var token = await response.Content.ReadAsStringAsync();
+
+                await js.InvokeVoidAsync("localStorage.setItem", "authToken", token);
+                StateHasChanged();
+                NavigationManager.NavigateTo("/", true);
+            }
+            else
+            {
+                LoginFailed = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error: " + ex.Message);
+            LoginFailed = true;
+        }
+    }
+
+    public class OtpLoginModel
+    {
+        public string PhoneNumber { get; set; }
+        public string Otp { get; set; }
+        // public string RequestId { get; set; } // This can be fetched from the OTP response if required
+    }
+}
