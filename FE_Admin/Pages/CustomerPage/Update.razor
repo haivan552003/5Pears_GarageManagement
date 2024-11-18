@@ -29,7 +29,7 @@
                                     <MudTextField ShrinkLabel @bind-Value="newRoleTask.cus_code" For="@(() => newRoleTask.cus_code)"
                                                   Label="Mã khách hàng"
                                                   Variant="Variant.Outlined"
-                                                  ReadOnly = "true"/>
+                                                  ReadOnly = "true" Disabled/>
                                 </MudItem>
 
                                 <MudItem xs="12" sm="6">
@@ -62,7 +62,7 @@
                                     <MudDatePicker @bind-Date="birthdayDate" For="@(() => newRoleTask.birthday)"
                                                    Label="Ngày sinh" Required="true" RequiredError="Vui lòng chọn ngày sinh"
                                                    Variant="Variant.Outlined" DateFormat="dd/MM/yyyy"
-                                                   MaxDate="@DateTime.Now.AddYears(-18)" 
+                                                   MaxDate="@DateTime.Now" 
                                                    Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateBirthday))" />
                                 </MudItem>
                                 <MudItem xs="12" sm="6">
