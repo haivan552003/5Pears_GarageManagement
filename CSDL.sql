@@ -2441,3 +2441,59 @@ BEGIN
         id = @id 
     And is_delete = 'False'
     END
+
+
+	--thinh
+	CREATE PROCEDURE sp_GetDetailedTripStatistics
+AS
+BEGIN
+    -- Lấy thông tin cụ thể chuyến xe và số vé đã bán
+    SELECT 
+        t.id AS TripID,
+        t.trip_code AS TripCode,
+        t.[from] AS LocationFrom,
+        t.[to] AS LocationTo,
+        COUNT(td.id) AS TicketsSold,
+        DATEPART(YEAR, t.date_create) AS [Year],
+        DATEPART(MONTH, t.date_create) AS [Month]
+    FROM 
+        dbo.trips t
+        LEFT JOIN dbo.trip_details td ON t.id = td.trip_id
+    WHERE 
+        t.is_delete = 0  -- Lọc các chuyến chưa bị xoá
+        AND td.is_delete = 0  -- Lọc các vé chưa bị xoá
+    GROUP BY 
+        t.id, t.trip_code, t.[from], t.[to],
+        DATEPART(YEAR, t.date_create),
+        DATEPART(MONTH, t.date_create)
+    ORDER BY 
+        [Year] DESC, [Month] DESC, TripID;
+END
+
+EXEC sp_GetDetailedTripStatistics;
+
+
+--monthlyyy
+CREATE PROCEDURE sp_GetMonthlyTripStatistics
+    @TripID INT
+AS
+BEGIN
+   
+    SELECT 
+        DATEPART(MONTH, t.date_create) AS [Month],
+        COUNT(td.id) AS TicketsSold,  
+        SUM(td.price) AS Revenue  
+    FROM 
+        dbo.trips t
+        LEFT JOIN dbo.trip_details td ON t.id = td.trip_id
+    WHERE 
+        t.is_delete = 0  
+        AND td.is_delete = 0  
+        AND t.id = @TripID 
+    GROUP BY 
+        DATEPART(MONTH, t.date_create) 
+    ORDER BY 
+        [Month] ASC; 
+END
+
+EXEC sp_GetMonthlyTripStatistics @TripID = 2;
