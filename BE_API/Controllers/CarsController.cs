@@ -100,7 +100,7 @@ namespace BE_API.Controllers
             }
         }
         [HttpPost("PostCars")]
-        public async Task<ActionResult<car>> PostCars(car cars)
+        public async Task<ActionResult<car_create>> PostCars(car_create cars)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -108,19 +108,23 @@ namespace BE_API.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@car_number", cars.car_number);
                 cmd.Parameters.AddWithValue("@color", cars.color);
-                cmd.Parameters.AddWithValue("@vehical_registration_start", cars.vehicle_registration_start);
-                cmd.Parameters.AddWithValue("@vehical_registration_end", cars.vehicle_registration_end);
+                cmd.Parameters.AddWithValue("@v_registration_start", cars.vehicle_registration_start);
+                cmd.Parameters.AddWithValue("@v_registration_end", cars.vehicle_registration_end);
                 cmd.Parameters.AddWithValue("@price", cars.price);
                 cmd.Parameters.AddWithValue("@isAuto", cars.isAuto);
-                cmd.Parameters.AddWithValue("@status", cars.status);
-                cmd.Parameters.AddWithValue("@id_type", cars.type_id);
-                cmd.Parameters.AddWithValue("@id_brand", cars.brand_id);
+                cmd.Parameters.AddWithValue("@is_retail", cars.isRetail);
+                cmd.Parameters.AddWithValue("@type_id", cars.type_id);
+
+                cmd.Parameters.AddWithValue("@brand_id", cars.brand_id);
                 cmd.Parameters.AddWithValue("@year_production", cars.year_production);
                 cmd.Parameters.AddWithValue("@odo", cars.odo);
                 cmd.Parameters.AddWithValue("@insurance_fee", cars.insurance_fee);
-                cmd.Parameters.AddWithValue("@location_car", cars.location_car);
-
-
+                cmd.Parameters.AddWithValue("@fuel", cars.fuel);
+                //cmd.Parameters.AddWithValue("@location_car", cars.location_car);
+                cmd.Parameters.AddWithValue("@description", cars.description);
+                cmd.Parameters.AddWithValue("@car_name", cars.car_name);
+                cmd.Parameters.AddWithValue("@voucher", cars.voucher);
+                cmd.Parameters.AddWithValue("@number_seat", cars.number_seat);
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
@@ -144,7 +148,7 @@ namespace BE_API.Controllers
             return CreatedAtAction(nameof(GetAllCars), new { id = cs.id }, cs);
         }
         [HttpPut("putCars/{id}")]
-        public async Task<IActionResult> PutCars(int id, car cars)
+        public async Task<IActionResult> PutCars(int id, car_create cars)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -153,17 +157,22 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.Parameters.AddWithValue("@car_number", cars.car_number);
                 cmd.Parameters.AddWithValue("@color", cars.color);
-                cmd.Parameters.AddWithValue("@vehical_registration_start", cars.vehicle_registration_start);
-                cmd.Parameters.AddWithValue("@vehical_registration_end", cars.vehicle_registration_end);
+                cmd.Parameters.AddWithValue("@v_registration_start", cars.vehicle_registration_start);
+                cmd.Parameters.AddWithValue("@v_registration_end", cars.vehicle_registration_end);
                 cmd.Parameters.AddWithValue("@price", cars.price);
                 cmd.Parameters.AddWithValue("@isAuto", cars.isAuto);
-                cmd.Parameters.AddWithValue("@status", cars.status);
-                cmd.Parameters.AddWithValue("@id_type", cars.type_id);
-                cmd.Parameters.AddWithValue("@id_brand", cars.brand_id);
+                cmd.Parameters.AddWithValue("@isRetail", cars.isRetail);
+                cmd.Parameters.AddWithValue("@type_id", cars.type_id);
+                cmd.Parameters.AddWithValue("@brand_id", cars.brand_id);
                 cmd.Parameters.AddWithValue("@year_production", cars.year_production);
                 cmd.Parameters.AddWithValue("@odo", cars.odo);
                 cmd.Parameters.AddWithValue("@insurance_fee", cars.insurance_fee);
-                cmd.Parameters.AddWithValue("@location_car", cars.location_car);
+                cmd.Parameters.AddWithValue("@fuel", cars.fuel);
+                //cmd.Parameters.AddWithValue("@location_car", cars.location_car);
+                cmd.Parameters.AddWithValue("@description", cars.description);
+                cmd.Parameters.AddWithValue("@car_name", cars.car_name);
+                cmd.Parameters.AddWithValue("@voucher", cars.voucher);
+                cmd.Parameters.AddWithValue("@number_seat", cars.number_seat);
 
                 await conn.OpenAsync();
 
