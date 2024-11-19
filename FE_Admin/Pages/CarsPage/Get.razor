@@ -46,10 +46,10 @@
                         <PropertyColumn T="car" TProperty="string" Class="fw-bold" Property="x => x.car_name" Title="Tên xe" />
                         <PropertyColumn T="car" TProperty="string" Class="fw-bold" Property="x => x.car_number" Title="Biển số xe" />
                         <PropertyColumn T="car" TProperty="string" Class="fw-bold" Property="x => x.color" Title="Màu sắc" />
-                        <PropertyColumn T="car" TProperty="DateTime" Class="fw-bold" Property="x => x.vehicle_registration_start" Title="Ngày đăng kiểm" Format="dd/MM/yyyy" />
+                        <PropertyColumn T="car" TProperty="DateTime" Class="fw-bold" Property="x => x.year_production" Title="Năm sản xuất" Format="yyyy" />
                         <PropertyColumn T="car" TProperty="float" Class="fw-bold" Property="x => x.price" Title="Giá" />
                         <TemplateColumn T="car" Style="width: 80%;" Class="fw-bold" Title="Trạng Thái">
-                            <CellTemplate Context="element">
+                          @*   <CellTemplate Context="element">
                                 @if (element.Item.status == "1")
                                 {
                                     <MudChip Color="Color.Success" Size="Size.Small" Variant="Variant.Text">Đang hoạt động</MudChip>
@@ -58,7 +58,7 @@
                                 {
                                     <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Ngưng hoạt động</MudChip>
                                 }
-                            </CellTemplate>
+                            </CellTemplate> *@
                         </TemplateColumn>
                         <TemplateColumn T="car" Title="Chức năng">
                             <CellTemplate Context="car">
