@@ -25,6 +25,8 @@ namespace BE_API.Models
         public float insurance_fee { get; set; }
         public int fuel { get; set; }
         public string description { get; set; }
+        public float voucher { get; set; }
+        public int number_seat { get; set; }
 
         public float voucher { get; set; }
         public int number_seat { get; set; }

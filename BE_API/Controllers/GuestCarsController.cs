@@ -1,4 +1,5 @@
-﻿using BE_API.Models;
+﻿using BE_API.ModelCustom;
+using BE_API.Models;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -161,6 +162,32 @@ namespace BE_API.Controllers
             }
 
             return NoContent();
+        }
+
+        // POST: api/Products/CheckDateRetailCar
+        [HttpPost("CheckDateRetailCar")]
+        public async Task<ActionResult<bool>> CheckDateRetailCar([FromBody] CarRentalRequest request)
+        {
+            var procedureName = "sp_check_date_retail_car";
+            var parameters = new DynamicParameters();
+            parameters.Add("@date_start", request.DateStart, DbType.Date, ParameterDirection.Input);
+            parameters.Add("@car_id", request.CarId, DbType.Int32, ParameterDirection.Input);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                var result = await connection.ExecuteScalarAsync<int>(
+                    procedureName, parameters, commandType: CommandType.StoredProcedure);
+
+                if (result == 1)
+                {
+                    return Ok(true);
+                }
+                else
+                {
+                    return Ok(false);
+                }
+            }
         }
     }
 }

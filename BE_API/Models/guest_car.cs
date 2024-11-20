@@ -32,7 +32,6 @@ namespace BE_API.Models
         public int cus_id { get; set; }
         public int car_id { get; set; }
         public float price { get; set; }
-        public float deposit { get; set; }
         public float? pay_amount { get; set; }
         public string? bank_code { get; set; }
         public string? card_type { get; set; }

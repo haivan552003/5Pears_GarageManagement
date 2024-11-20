@@ -29,6 +29,7 @@ namespace FE_User.Models
         public int fuel {  get; set; }
         public string description {  get; set; }
         public float voucher {  get; set; }
+        public int number_seat {  get; set; }
         public List<car_img> car_img { get; set; }
 
 
