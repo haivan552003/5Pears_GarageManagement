@@ -27,9 +27,12 @@ namespace BE_API.Models
         public string description { get; set; }
         public float voucher { get; set; }
         public int number_seat { get; set; }
+        public string img_name { get; set; }
+        public string type_name { get; set; }
+        public string brand_name { get; set; }
 
-        public float voucher { get; set; }
-        public int number_seat { get; set; }
+        //public float voucher { get; set; }
+        //public int number_seat { get; set; }
         public List<car_img> car_img { get; set; }
     }
     public class car_create
