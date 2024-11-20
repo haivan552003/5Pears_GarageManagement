@@ -25,7 +25,7 @@
                             <MudButton Href="/addDriver" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
                                 Thêm mới
                             </MudButton>
-
+                            <a href="d:\fpt polytecnic\dự án tốt ngiệp\5pears_garagemanagement\fe_admin\pages\driverpage\get.razor">d:\fpt polytecnic\dự án tốt ngiệp\5pears_garagemanagement\fe_admin\pages\driverpage\get.razor</a>
                             <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
                                 Nhập file
                             </MudButton>
@@ -145,7 +145,7 @@
             var response = await httpClient.DeleteAsync($"{url}/{driver.id}");
             if (response.IsSuccessStatusCode)
             {
-                Snackbar.Add($"Đã xóa tài xế {driver.fullname} thành công", Severity.Success);
+                Snackbar.Add($"Đã xóa tài xế thành công", Severity.Success);
                 await LoadDrivers(); 
             }
             else

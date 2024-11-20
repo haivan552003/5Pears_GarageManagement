@@ -39,8 +39,7 @@
                             </MudButton>
                         </MudItem>
                     </ToolBarContent>
-                    <Columns>
-                        <SelectColumn T="location" />
+                    <Columns>                
                         @* <PropertyColumn T="role_task" TProperty="int" Property="x => x.id_role_task" /> *@
                         <PropertyColumn T="location" Style="width: 80%;" TProperty="string" Property="x => x.name" SortBy="@_sortBy" Class="fw-bold" Title="Địa Chỉ" />
                         <PropertyColumn T="location" Style="width: 80%;" TProperty="string" Property="x => x.address" SortBy="@_sortBy" Class="fw-bold" Title="Thành Phố" />

@@ -88,11 +88,11 @@
                 var response = await httpClient.PutAsJsonAsync(url + "/" + Id, Location);
                 if (response.IsSuccessStatusCode)
                 {
-                    Snackbar.Add($"Chỉnh sửa {Id} thành công", Severity.Success);
+                    Snackbar.Add($"Chỉnh sửa thành công", Severity.Success);
                 }
                 else
                 {
-                    Snackbar.Add($"Chỉnh sửa {Id} thất bại {response.ReasonPhrase}", Severity.Warning);
+                    Snackbar.Add($"Chỉnh sửa thất bại {response.ReasonPhrase}", Severity.Warning);
                 }
             }
         }

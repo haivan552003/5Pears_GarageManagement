@@ -325,6 +325,7 @@
 
         private async Task LoadEmpImage(InputFileChangeEventArgs e)
         {
+
             try
             {
                 isLoading = true;
@@ -381,6 +382,7 @@
 
         private async Task EditEmployee()
         {
+
             try
             {
                 if (birthdayDate.HasValue)
@@ -390,7 +392,7 @@
                 var response = await httpClient.PutAsJsonAsync(url + "/" + Id, Employee);
                 if (response.IsSuccessStatusCode)
                 {
-                    Snackbar.Add($"Chỉnh sửa nhân viên {Employee.fullname} thành công", Severity.Success);
+                Snackbar.Add($"Chỉnh sửa nhân viên thành công", Severity.Success);
                     Navigation.NavigateTo("/getemp");
                 }
                 else

@@ -69,12 +69,13 @@
                             </MudItem>
 
                             <MudItem xs="4">
-                                <MudTextField @bind-Value="newDriver.email" For="@(() => newDriver.email)"
-                                              Label="Email" Variant="Variant.Outlined" RequiredError="Vui lòng nhập Email" />
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.email" For="@(() => newDriver.email)"
+                                              Label="Email" Variant="Variant.Outlined" Required="true" />
                             </MudItem>
                             <MudItem xs="4">
                                 <MudTextField ShrinkLabel @bind-Value="newDriver.password" Label="Mật khẩu" Required="true"
                                               Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End"
+                                              Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidatePassword))"
                                               AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
                             </MudItem>
 
@@ -280,6 +281,31 @@
         }
         return null;
     }
+    private IEnumerable<string> EmployeeValidatePassword(string password)
+    {
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            yield return "Vui lòng điền mật khẩu.";
+        }
+        else if (password.Length < 8 || password.Length > 15)
+        {
+            yield return "Mật khẩu không hợp lệ.";
+        }
+        else if (!password.Any(char.IsUpper) || !password.Any(char.IsLower) ||
+                 !password.Any(char.IsDigit) || !password.Any(ch => "!@#$%^&*()_+[]{}|;':\",.<>?/`~".Contains(ch)))
+        {
+            yield return "Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.";
+        }
+    }
+    // private async Task<IEnumerable<string>> EmployeeValidateEmail(string email)
+    // {
+    //     if (string.IsNullOrEmpty(email))
+    //     {
+    //         return new string[] { "Email không được để trống." };
+    //     }
+     
+    //     return Array.Empty<string>();
+    // }
     private IEnumerable<string> ValidateFullName(string fullname)
     {
         if (string.IsNullOrWhiteSpace(fullname))

@@ -67,9 +67,9 @@
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Banner", href: null, icon: @Icons.Material.Outlined.Image),
+        new BreadcrumbItem("Banner", href:  "/getbanner", icon: @Icons.Material.Outlined.Image),
         new BreadcrumbItem("Danh sách banner", href: "/getbanner", icon: @Icons.Material.Outlined.List),
-        new BreadcrumbItem("Chỉnh sửa banner", href: null, icon: @Icons.Material.Filled.Edit),
+        new BreadcrumbItem("Chỉnh sửa banner", href: "/getbanner", icon: @Icons.Material.Filled.Edit),
     };
 
     private IEnumerable<string> BannerValidate(string title)
@@ -172,16 +172,16 @@
                 var response = await httpClient.PutAsJsonAsync(url + "/" + Id, Banner);
                 if (response.IsSuccessStatusCode)
                 {
-                    Snackbar.Add($"Chỉnh sửa {Id} thành công", Severity.Success);
+                    Snackbar.Add($"Chỉnh sửa thành công", Severity.Success);
                 }
                 else
                 {
-                    Snackbar.Add($"Chỉnh sửa {Id} thất bại", Severity.Warning);
+                    Snackbar.Add($"Chỉnh sửa thất bại", Severity.Warning);
                 }
             }
             else
             {
-                Snackbar.Add($"Chỉnh sửa {Id} thất bại", Severity.Warning);
+                Snackbar.Add($"Chỉnh sửa thất bại", Severity.Warning);
             }
         }
         catch (Exception ex)

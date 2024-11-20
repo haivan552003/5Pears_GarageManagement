@@ -41,7 +41,7 @@
                                 </MudButton>
                                 @if (!string.IsNullOrEmpty(newEmployee.img_emp))
                                 {
-                                    <MudImage Src="@newEmployee.img_emp" Alt="Hình ảnh nhân viên" Width="100"
+                                    <MudImage Src="@newEmployee.img_emp" Alt="Hình ảnh nhân viên" Width="100" 
                                               Height="100" ObjectFit="ObjectFit.Cover" Class="mb-3" />
                                 }
                             </MudItem>
@@ -50,6 +50,7 @@
                                 <InputFile id="empIdentityImageInput" OnChange="@LoadEmpImage1" hidden accept=".jpg,.jpeg,.png" />
                                 <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary"
                                            StartIcon="@Icons.Material.Filled.CloudUpload" for="empIdentityImageInput"
+                                           Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidateimg))"
                                            FullWidth="true" Class="mb-3">
                                     Chọn hình ảnh CMND
                                 </MudButton>
@@ -321,6 +322,13 @@
         if (string.IsNullOrWhiteSpace(gender))
         {
             yield return "Vui lòng chọn giới tính.";
+        }
+    }
+    private IEnumerable<string> EmployeeValidateimg(string img)
+    {
+        if (string.IsNullOrWhiteSpace(img))
+        {
+            yield return "hình ảnh là bắt buộc.";
         }
     }
     private async Task LoadEmpImage(InputFileChangeEventArgs e)

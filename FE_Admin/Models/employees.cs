@@ -1,4 +1,6 @@
-﻿namespace FE_Admin.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FE_Admin.Models
 {
     public class employees
     {
@@ -7,12 +9,14 @@
         public string emp_code { get; set; }
         public bool status { get; set; }
         public string img_emp { get; set; }
+        [Required(ErrorMessage = "Ảnh nhân viên là bắt buộc.")]
         public string password { get; set; }
         public string fullname { get; set; }
         public string role_name { get; set; }
         public string phone_number { get; set; }
         public DateTime birthday { get; set; }
         public string citizen_identity_img { get; set; }
+        [Required(ErrorMessage = "Ảnh CCCD là bắt buộc.")]
         public string citizen_identity_number { get; set; }
         public bool gender { get; set; }
         public DateTime date_create { get; set; }

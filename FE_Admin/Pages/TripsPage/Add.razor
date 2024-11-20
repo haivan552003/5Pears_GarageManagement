@@ -68,9 +68,9 @@
     private string url = "http://localhost:49922/api/Trips/trip";
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Chuyến đi", href: null, icon: @Icons.Material.Outlined.LocationOn),
+        new BreadcrumbItem("Chuyến đi", href:"/gettrip", icon: @Icons.Material.Outlined.LocationOn),
         new BreadcrumbItem("Danh sách chuyến đi", href: "/gettrip", icon: @Icons.Material.Outlined.List),
-        new BreadcrumbItem("Cập nhật", href: null, icon: @Icons.Material.Filled.Edit),
+        new BreadcrumbItem("Cập nhật", href:"/gettrip", icon: @Icons.Material.Filled.Edit),
     };
 
     private async Task Addtrip()

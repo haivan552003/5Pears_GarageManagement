@@ -18,7 +18,7 @@
                             <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
                                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                         </MudItem>
-
+                        
                         <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
                             <MudButton Href="/addbanner" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
                                 Thêm mới
@@ -26,7 +26,7 @@
                         </MudItem>
                     </ToolBarContent>
                     <Columns>
-                        <SelectColumn T="banner" />
+ 
                         <PropertyColumn T="banner" TProperty="string" Property="x => x.title" SortBy="@_sortBy" Class="fw-bold text-center" Title="Tiêu đề" />
                         <PropertyColumn T="banner" TProperty="string" Property="x => x.fullname" SortBy="@_sortBy" Class="fw-bold text-center" Title="Người tạo" />
                         <TemplateColumn T="banner" Class="fw-bold text-center" Style="width: 10px" Title="Chức năng">
