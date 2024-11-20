@@ -1,6 +1,7 @@
 ﻿@page "/getidcar/{id:int}"
 @using MudBlazor
 @inject HttpClient httpClient
+@inject IDialogService Dialog
 
 
 <MudContainer Class="pt-5">
@@ -211,8 +212,11 @@
                         <MudDivider Style="height: 2px; background-color: #333;" />
                     </MudItem>
 
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.h6"><b>Giấy Tờ Thuê Xe</b></MudText>
+                    <MudItem xs="12" Class="d-flex align-center">
+                        <MudText Typo="Typo.h5" Class="me-2"><b>Giấy Tờ Thuê Xe</b></MudText>
+                        <MudButton OnClick="@(() => OpenDialogAsyncPapers(_maxWidth))" Class="p-0" Color="Color.Inherit" Style="min-width: 0;">
+                            <MudIcon Icon="far fa-question-circle" Color="Color.Default" Size="Size.Medium" />
+                        </MudButton>
                     </MudItem>
                     <MudPaper Elevation="1" Class="p-4 rounded-lg" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #fef7f4; border-left: 8px solid #f26a2b; margin-left:50px;">
                         <MudItem xs="12" Class="d-flex align-center mb-3">
@@ -229,6 +233,44 @@
                         <MudDivider Style="height: 2px; background-color: #333;" />
                     </MudItem>
 
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h5"><b>Chính sách hủy chuyến</b></MudText>
+                    </MudItem>
+
+                    <MudPaper Elevation="0" Class="p-4 rounded-lg" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #ffff; margin-left:50px; border: 1px solid #c6c6c6;">
+                        <MudContainer Class="pt-5">
+                            <MudGrid>
+                                <MudItem xs="6">
+                                    <MudText Style="font-size: 16px"  Typo="Typo.h6"><b>Thời điểm hủy chuyến</b></MudText>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudText Style="font-size: 16px" Align="Align.Center" Typo="Typo.h6"><b>Phí hủy chuyến</b></MudText>
+                                </MudItem>
+
+                                <MudItem xs="6">
+                                    <MudText Style="font-size: 16px"  Typo="Typo.subtitle1">Trong Vòng 1h Sau Giữ Chỗ</MudText>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudText Style="font-size: 16px" Align="Align.Center" Typo="Typo.subtitle1">Miễn phí</MudText>
+                                </MudItem>
+
+                                <MudItem xs="6">
+                                    <MudText Style="font-size: 16px"  Typo="Typo.subtitle1">Trước Chuyến Đi 7 Ngày</MudText>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudText Style="font-size: 16px" Align="Align.Center" Typo="Typo.subtitle1">10% giá trị chuyến đi</MudText>
+                                </MudItem>
+
+                                <MudItem xs="6">
+                                    <MudText Style="font-size: 16px"  Typo="Typo.subtitle1">Trong Vòng 7 Ngày Trước Chuyến Đi</MudText>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudText Style="font-size: 16px" Align="Align.Center" Typo="Typo.subtitle1">30% giá trị chuyến đi</MudText>
+                                </MudItem>
+                            </MudGrid>
+                        </MudContainer>
+                    </MudPaper>
+                    
 
 
                 </MudGrid>
@@ -280,12 +322,16 @@
                         <MudItem xs="6">
                             <MudText Style="font-size: 16px" Typo="Typo.subtitle1">Đơn giá thuê</MudText>
                         </MudItem>
+
                         <MudItem xs="6">
                             <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>500 500đ/ ngày</b></MudText>
                         </MudItem>
 
-                        <MudItem xs="6">
-                            <MudText Style="font-size: 16px" Typo="Typo.subtitle1">Bảo hiểm thuê xe</MudText>
+                        <MudItem xs="6" Class="d-flex align-center">
+                            <MudText Style="font-size: 16px" Typo="Typo.subtitle1" Class="me-1">Bảo hiểm thuê xe</MudText>
+                            <MudButton OnClick="@(() => OpenDialogAsyncInsurance(_maxWidth))" Class="p-0" Color="Color.Inherit" Style="min-width: 0;">
+                                <MudIcon Icon="far fa-question-circle" Color="Color.Default" Size="Size.Small" />
+                            </MudButton>
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>50 500đ/ ngày</b></MudText>
@@ -329,6 +375,7 @@
 
 
 @code {
+    private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Small, FullWidth = true };
     [Parameter] public int id { get; set; }
     private car cars;
     private List<car_img> latestImages;
@@ -351,6 +398,16 @@
         {
             Console.WriteLine($"Error: {ex.Message}");
         }
+    }
+
+    private Task OpenDialogAsyncInsurance(DialogOptions options)
+    {
+        return Dialog.ShowAsync<DialogInsurance>("Bảo hiểm thuê xe tự lái", options);
+    }
+
+    private Task OpenDialogAsyncPapers(DialogOptions options)
+    {
+        return Dialog.ShowAsync<DialogPapers>("Giấy tờ thuê xe", options);
     }
 
 

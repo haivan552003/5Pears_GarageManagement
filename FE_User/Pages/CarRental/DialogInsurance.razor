@@ -1,0 +1,45 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudDivider Class="mb-4" Style="height: 0.09375rem; background-color: #333;" />
+        <MudText Style="font-size: 16px" Align="Align.Justify" Typo="Typo.h6" Class="mb-3">
+            An tâm tận hưởng hành trình vì chuyến đi của bạn trên Mioto đã được mua
+            <b style="font-weight: 800;">Bảo hiểm thuê xe tự lái</b>
+        </MudText>
+        <MudText Style="font-size: 16px" Align="Align.Justify" Typo="Typo.h6" Class="mb-3">
+            ❌ Hầu hết rủi ro phát sinh trong quá trình thuê xe tự lái, đặc biệt với những tổn thất lớn trong các sự vụ đâm đụng, thủy kích, cháy nổ (có thể lên đến hàng trăm triệu vượt khả năng chi trả) sẽ
+            <u class="text-danger fontWeight-6">không thuộc phạm vi</u>
+            của
+            <b style="font-weight: 800;">Bảo hiểm thân vỏ xe theo năm</b>
+            trên Mioto để phòng khi có sự cố xảy ra trong quá trình thuê xe.
+        </MudText>
+        <MudText Style="font-size: 16px" Align="Align.Justify" Typo="Typo.h6" Class="mb-1">
+            •Gói Bảo hiểm thuê xe tự lái, với mức phí tiết kiệm & số tiền bảo hiểm lớn (đến 100% giá trị xe) sẽ giúp bạn không còn lo lắng khi thuê xe. Các phạm vi bảo hiểm chính:
+        </MudText>
+        <MudText Style="font-size: 16px" Align="Align.Justify" Typo="Typo.h6" Class="mb-1">
+            - Đâm va, cháy nổ, hỏa hoạn.
+        </MudText>
+        <MudText Style="font-size: 16px" Align="Align.Justify" Typo="Typo.h6" Class="mb-1">
+            - Thủy kích.
+        </MudText>
+        <MudText Style="font-size: 16px" Align="Align.Justify" Typo="Typo.h6" Class="mb-3">
+            - Hỗ trợ dịch vụ cứu hộ, cứu nạn.
+        </MudText>
+        <MudText Style="font-size: 16px" Align="Align.Justify" Typo="Typo.h6" Class="mb-3">
+            Số tiền tối đa bạn chi trả cho các thiệt hại & tổn thất về xe là
+            <b style="font-weight: 800;">2,000,000đ</b>
+            (chưa gồm thiệt hại do xe không cho thuê được trong thời gian sửa chữa và các chế tài khác ngoài phạm vi bảo hiểm).
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}
