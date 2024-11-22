@@ -190,6 +190,8 @@
     private List<string> selectedSeatNames = new List<string>();
     private static ConcurrentDictionary<string, bool> userCheckoutStatus = new ConcurrentDictionary<string, bool>();
 
+    private Timer? inactivityTimer;
+
     private guest_trip_create bill = new guest_trip_create();
 
     private bool isHubConnected = false;
@@ -252,8 +254,47 @@
          });
 
         await hubConnection.StartAsync();
+
+        InitializeInactivityTimer();
     }
 
+    private void InitializeInactivityTimer()
+    {
+        inactivityTimer = new Timer(async _ =>
+        {
+            if (hubConnection != null && hubConnection.State == HubConnectionState.Connected)
+            {
+                await hubConnection.StopAsync();
+            }
+
+            await InvokeAsync(() =>
+            {
+                Navigation.NavigateTo("http://localhost:5112/getTrip");
+            });
+        }, null, TimeSpan.FromMinutes(5), Timeout.InfiniteTimeSpan);
+
+        InterceptUserActivity();
+    }
+
+    private async Task ResetInactivityTimer()
+    {
+        if (inactivityTimer != null)
+        {
+            inactivityTimer.Change(TimeSpan.FromSeconds(10), Timeout.InfiniteTimeSpan);
+        }
+    }
+
+    private void InterceptUserActivity()
+    {
+        var dotNetRef = DotNetObjectReference.Create(this);
+        js.InvokeVoidAsync("addEventListenersForActivity", dotNetRef);
+    }
+
+    [JSInvokable]
+    public async Task UserActivityDetected()
+    {
+        await ResetInactivityTimer();
+    }
     public bool IsConnected =>
         hubConnection?.State == HubConnectionState.Connected;
 
