@@ -63,7 +63,7 @@
 
 
 
-                            <MudItem xs="6" Class="mb-4">
+                            <MudItem xs="4" Class="mb-4">
                                 <MudTextField Label="Họ và tên" @bind-Value="newEmployee.fullname" Placeholder="Họ Và Tên"
                                               Variant="Variant.Outlined" Required="true"
                                               Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidateFullName))" />
@@ -73,7 +73,7 @@
                                               Variant="Variant.Outlined" Required="true"
                                               Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidateEmail))" />
                             </MudItem>
-                            <MudItem xs="6" Class="mb-4">
+                            <MudItem xs="4" Class="mb-4">
                                 <MudTextField Label="Số điện thoại" @bind-Value="newEmployee.phone_number" Placeholder="Số điện thoại"
                                               Variant="Variant.Outlined" Required="true"
                                               Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidatephone))" />
@@ -89,7 +89,7 @@
                                 <MudDatePicker @bind-Date="birthdayDate" Label="Ngày sinh" Required="true"
                                                Placeholder="Ngày Sinh" Variant="Variant.Outlined"></MudDatePicker>
                             </MudItem>
-                            <MudItem xs="6" Class="mb-4">
+                            <MudItem xs="4" Class="mb-4">
                                 <MudDatePicker @bind-Date="birthdayDate" Label="Ngày sinh" For="@(() => newEmployee.birthday)" Required="true"
                                                Placeholder="Ngày Sinh" Variant="Variant.Outlined" DateFormat="dd/MM/yyyy"
                                                MaxDate="@DateTime.Now.AddYears(-18)" />
@@ -111,7 +111,7 @@
 
 
 
-                            <MudItem xs="4" Class="mb-4">
+                            <MudItem xs="3" Class="mb-4">
                                 <MudSelect @bind-Value="newEmployee.status" Label="Trạng thái" Required="true"
                                            Placeholder="Trạng Thái" Variant="Variant.Outlined">
                                     <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>

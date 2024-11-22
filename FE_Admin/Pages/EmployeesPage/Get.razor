@@ -37,7 +37,7 @@
 
                     <!-- DataGrid Columns -->
                     <Columns>
-                        
+
                         <PropertyColumn T="employees" Class="fw-bold" TProperty="string" Property="x => x.emp_code" Title="Mã nhân viên"
                                         Style="width: 15%; white-space: nowrap;" />
                         <PropertyColumn T="employees" Class="fw-bold" TProperty="string" Property="x => x.fullname" Title="Họ và Tên"
@@ -50,7 +50,7 @@
                         </TemplateColumn>
                         <PropertyColumn T="employees" Class="fw-bold" TProperty="string" Property="x => x.citizen_identity_number" Title="Số CCCD"
                                         Style="width: 15%; white-space: nowrap;" />
-                        <TemplateColumn T="employees"  Style="width: 80%; white-space: nowrap;" Class="fw-bold" Title="Trạng Thái">
+                        <TemplateColumn T="employees" Style="width: 80%; white-space: nowrap;" Class="fw-bold" Title="Trạng Thái">
                             <CellTemplate Context="element">
                                 @if (element.Item.status)
                                 {
@@ -100,16 +100,16 @@
 
     private Func<employees, bool> _quickFilter => x =>
      {
-     if (string.IsNullOrWhiteSpace(_searchString))
-         return true;
+         if (string.IsNullOrWhiteSpace(_searchString))
+             return true;
 
-     return $"{x.email} {x.emp_code} {x.fullname} {x.citizen_identity_number}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
+         return $"{x.email} {x.emp_code} {x.fullname} {x.citizen_identity_number}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
      };
 
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadRoles(); 
+        await LoadRoles();
         await LoadEmployees();
     }
 
@@ -189,7 +189,7 @@
         if (response.IsSuccessStatusCode)
         {
             Snackbar.Add("Xóa nhân viên thành công!", Severity.Success);
-            await LoadEmployees(); 
+            await LoadEmployees();
         }
         else
         {
