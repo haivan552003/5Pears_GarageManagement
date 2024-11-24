@@ -1,6 +1,10 @@
 ﻿@page "/getIdDriver/{id:int}"
 @using MudBlazor
+@using System.Text.Json
 @inject HttpClient httpClient
+@inject IJSRuntime js
+@inject NavigationManager Navigation
+
 
 
 <MudContainer Class="pt-5">
@@ -110,83 +114,105 @@
                 </MudGrid>
             </MudItem>
             <MudItem xs="4">
-                <MudPaper Class="p-4 rounded-lg" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #E3F2FD; box-shadow: none; border: 1px solid #f4f4f4;">
+                <MudPaper Class="p-4" MaxWidth="MaxWidth.Medium" Elevation="1">
                     <MudGrid>
-                        <MudItem xs="2">
-                            <MudText Typo="Typo.h6" Style="text-decoration: line-through; color:#c6c6c6;">505K</MudText>
-                        </MudItem>
-                        <MudItem xs="10">
-                            <MudPaper Style="background: #f26a2b; border-radius: 100px; padding: 0 4px; width: fit-content; margin-top: 5px;">
-                                <MudText Typo="Typo.h6" Style="color: #fff!important; font-size: 12px; ">-23%</MudText>
-                            </MudPaper>
-                        </MudItem>
-                        <MudItem xs="12">
-                            <MudText Typo="Typo.h4" Style=""><b>@drivers.price.ToString("#,##0")</b><span style="color: #767676; font-size: 20px;">/ngày</span>
+                        <MudItem xs="7" Class="pb-0 pt-0">
+                            <MudText Typo="Typo.h6" Class="fw-bold" Color="Color.Primary">
+                                @driver_price.ToString("#,##0") VNĐ/ngày
                             </MudText>
                         </MudItem>
-                        <MudItem xs="6">
-                            <MudTextField T="DateTime?" Format="s" Label="DateTimeLocal" InputType="InputType.DateTimeLocal" />
-                        </MudItem>
-                        <MudItem xs="6">
-                            <MudTextField T="DateTime?" Format="s" Label="DateTimeLocal" InputType="InputType.DateTimeLocal" />
+                        <MudItem xs="5" Class="pb-0 pt-0">
+                            <MudText Class="text-decoration-line-through fs-14 pt-2">@drivers.price.ToString("#,##0") VNĐ/ngày</MudText>
                         </MudItem>
                         <MudItem xs="12">
-                            <MudPaper Class="pt-3 pb-3 pl-4 pe-4 rounded-lg" MaxWidth="MaxWidth.Medium" Style="width: 100%; background: #fff; border: 1px solid #e0e0e0; box-shadow: none;">
-                                <MudText Typo="Typo.subtitle2">Địa điểm giao xe</MudText>
-                                <MudText Style="font-size: 16px" Typo="Typo.h6"><b>Nguyễn Văn Linh, TP.Cần Thơ</b></MudText>
-                            </MudPaper>
-                        </MudItem>
-                        <MudItem xs="12">
-                            <MudDivider Style="height: 1px; background-color: #333;" />
+                            <MudText Typo="Typo.subtitle1">
+                                Thời gian thuê
+                            </MudText>
+                            <MudDateRangePicker Variant="Variant.Outlined" @bind-DateRange="_dateRange" MinDate="DateTime.Today" />
                         </MudItem>
 
-                        <MudItem xs="6">
-                            <MudText Style="font-size: 16px" Typo="Typo.subtitle1">Đơn giá thuê</MudText>
+
+                        <MudItem xs="6" Class="pb-2 pt-2">
+                            <MudText Typo="Typo.subtitle1">Thành Tiền</MudText>
                         </MudItem>
-                        <MudItem xs="6">
-                            <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>500 500đ/ ngày</b></MudText>
+                        <MudItem xs="6" Class="pb-2 pt-2">
+
+                            @if (_dateRange.Start != null && _dateRange.End != null)    
+                            {
+                                date_number = (_dateRange.End.Value - _dateRange.Start.Value).Days;
+                                money = date_number * drivers.price;
+                                <MudText Align="Align.End" Typo="Typo.subtitle1">@money.ToString("#,##0") VNĐ</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Error">
+                                    Vui lòng chọn khoảng thời gian thuê
+                                </MudText>
+                            }
+
+
                         </MudItem>
 
-                        <MudItem xs="6">
-                            <MudText Style="font-size: 16px" Typo="Typo.subtitle1">Bảo hiểm thuê xe</MudText>
-                        </MudItem>
-                        <MudItem xs="6">
-                            <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>50 500đ/ ngày</b></MudText>
-                        </MudItem>
-
-                        <MudItem xs="12">
-                            <MudDivider Style="height: 2px; background-color: #333;" />
-                        </MudItem>
-
-                        <MudItem xs="6">
-                            <MudText Style="font-size: 16px" Typo="Typo.subtitle1">Tổng cộng</MudText>
-                        </MudItem>
-                        <MudItem xs="6">
-                            <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>551 000đ/ ngày</b></MudText>
-                        </MudItem>
-
-                        <MudItem xs="6">
-                            <MudText Style="font-size: 16px" Typo="Typo.subtitle1"><b>Thành Tiền</b></MudText>
-                        </MudItem>
-                        <MudItem xs="6">
-                            <MudText Style="font-size: 16px" Align="Align.End" Typo="Typo.h6"><b>551 000đ/ ngày</b></MudText>
-                        </MudItem>
-
-                        <MudItem xs="12">
-                            <MudDivider Style="height: 1px; background-color: #333;" />
-                        </MudItem>
-
-                        <MudItem xs="12">
-                            <MudButton Class="pt-4 pb-4 rounded-1" MaxWidth="MaxWidth.Medium" Style="width: 100%;" Variant="Variant.Filled" Color="Color.Primary">Chọn Thuê</MudButton>
-                        </MudItem>
+                        @if (cus_id != 0)
+                        {
+                            <MudItem xs="12">
+                                <MudButton OnClick="CheckDateRetailDriver" FullWidth="true" Variant="Variant.Filled" Color="Color.Primary">thuê tài xế</MudButton>
+                                @if (_showMessage)
+                                {
+                                    <MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Error">@message</MudText>
+                                }
+                            </MudItem>
+                        }
+                        else
+                        {
+                            <MudItem xs="12">
+                                <MudText Align="Align.Center" Typo="Typo.subtitle1" Color="Color.Error">Vui lòng đăng nhập để thanh toán</MudText>
+                            </MudItem>
+                        }
                     </MudGrid>
-
                 </MudPaper>
+
+                @if (cus_id != 0)
+                {
+                    <MudPaper Class="p-4 mt-4" Elevation="1">
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.h6" Color="Color.Primary">THÔNG TIN KHÁCH HÀNG</MudText>
+                            </MudItem>
+
+                            <MudItem xs="4" Class="mb-3">
+                                <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                    Khách hàng
+                                </MudText>
+                                <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                    Email
+                                </MudText>
+                                <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                    Điện thoại
+                                </MudText>
+                            </MudItem>
+
+                            <MudItem xs="8" Class="mb-3">
+                                <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                    @customer.fullname
+                                </MudText>
+                                <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                    @customer.email
+                                </MudText>
+                                <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                    @customer.phone_number
+                                </MudText>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                }
             </MudItem>
+
         </MudGrid>
     }
+
     <MudItem xs="12">
-        <MudText Typo="Typo.h5"><b>Danh Sách Tài Xế Nổi Bật Trong Tháng</b></MudText>
+        <MudText Typo="Typo.subtitle1" Class="fw-bold">Danh Sách Tài Xế Nổi Bật Trong Tháng</MudText>
     </MudItem>
     <MudGrid>
         @foreach (var item in eDriver)
@@ -217,23 +243,180 @@
 
 @code {
     [Parameter] public int id { get; set; }
+    private int cus_id;
+    private guest_driver_create bill = new guest_driver_create();
+    private List<guest_driver_create> elements = new List<guest_driver_create>();
+    private customer customer = new customer();
+
+    private List<car_img> latestImages;
+    private bool loading = false;
+    private bool? isCarRented;
+    private bool _showMessage = false;
+    private string message;
+
+    private string urlCheckDateRetail = "http://localhost:49922/api/GuestDriver/CheckDateRetailDriver";
+    private string urlBill = "http://localhost:49922/api/GuestDriver";
+    private string urlTopGuestDriver = "http://localhost:49922/api/GuestDriver/GetTop";
+    private string urlCus = "http://localhost:49922/api/Customer";
+    private string urlDriver = "http://localhost:49922/api/HomePage/DriverHome";
+    private string urlVNPayCreate = "http://localhost:49922/api/Payment/create-payment";
+    private int date_number;
+    private float money;
+
+    private DateRange? _dateRange;
+
+    private float driver_price;
+
     private DRIVERS drivers;
     private IEnumerable<driver_home> eDriver = new List<driver_home>();
-    private string urlDriver = "http://localhost:49922/api/HomePage/DriverHome";
 
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadCars();
-        await Driver();
+        await DriverHot();
+        await LoadDrivers();
 
+        var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            // Giải mã token
+            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            // Lấy giá trị của 'username' từ payload của token
+            var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "id");
+
+            if (usernameClaim != null)
+            {
+                cus_id = (int.Parse(usernameClaim.Value));
+                await LoadUser();
+            }
+        }
     }
 
-    private async Task LoadCars()
+    private async Task LoadUser()
+    {
+        customer = await httpClient.GetFromJsonAsync<customer>($"{urlCus}/{cus_id}");
+    }
+
+    private async Task CheckDateRetailDriver()
+    {
+        try
+        {
+            if (_dateRange == null || id == 0 || !_dateRange.Start.HasValue)
+            {
+                _showMessage = true;
+                message = "Quý khách vui lòng chọn ngày thuê";
+                return;
+            }
+
+            var request = new DriverRentalRequest
+                {
+                    DateStart = _dateRange.Start.Value,
+                    DriverId = id
+                };
+
+            var response = await httpClient.PostAsJsonAsync(urlCheckDateRetail, request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var isRented = await response.Content.ReadFromJsonAsync<bool>();
+
+                if (isRented)
+                {
+                    message = "Tài xế đã có khách thuê vào ngày này!";
+                    _showMessage = true;
+                }
+                else
+                {
+                    bill.date_start = _dateRange.Start.Value;
+                    bill.date_end = _dateRange.End.Value;
+
+                    date_number = (bill.date_start - bill.date_start).Days;
+
+                    bill.price = (driver_price * date_number);
+
+                    AddBill();
+                }
+            }
+            else
+            {
+                message = "Lỗi kiểm tra tình trạng xe!";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Đã có lỗi xảy ra: {ex.Message}";
+        }
+    }
+
+    private void DateRangeChanged(DateRange newRange)
+    {
+        _dateRange = newRange;
+        CheckDateRetailDriver();
+    }
+
+    private async Task AddBill()
+    {
+        try
+        {
+            bill.emp_id = 5;
+            bill.date_start = _dateRange.Start.Value;
+            bill.date_end = _dateRange.End.Value;
+            bill.driver_id = id;
+            bill.cus_id = cus_id;
+            bill.deposit = (int)Math.Ceiling(money / 3);
+            bill.price = money;
+            var response = await httpClient.PostAsJsonAsync(urlBill, bill);
+            if (response.IsSuccessStatusCode)
+            {
+                // Console.WriteLine("Thêm thành công", Severity.Success);
+
+                var responseTop = await httpClient.GetAsync(urlTopGuestDriver);
+                var jsonResponse = await responseTop.Content.ReadAsStringAsync();
+                var guestTrips = JsonSerializer.Deserialize<List<guest_driver>>(jsonResponse);
+                var guestTripId = guestTrips.First().id;
+                await js.InvokeVoidAsync("sessionStorage.setItem", "billId", guestTripId);
+                var paymentRequest = new PaymentRequestModel
+                    {
+                        OrderId = guestTripId.ToString(),
+                        Amount = (int)(bill.deposit),
+                        OrderInfo = guestTripId.ToString(),
+                        returnUrl = "http://localhost:5112/checkoutdriver"
+                    };
+
+
+                var paymentResponse = await httpClient.PostAsJsonAsync(urlVNPayCreate, paymentRequest);
+                if (paymentResponse.IsSuccessStatusCode)
+                {
+                    var paymentData = await paymentResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                    if (paymentData != null && paymentData.ContainsKey("paymentUrl"))
+                    {
+                       
+                        var paymentUrl = paymentData["paymentUrl"];
+                        Navigation.NavigateTo(paymentUrl, forceLoad: true);
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Thêm thất bại", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi: {ex.Message} + {bill}", Severity.Error);
+        }
+    }
+
+    private async Task LoadDrivers()
     {
         try
         {
             drivers = await httpClient.GetFromJsonAsync<DRIVERS>($"http://localhost:49922/api/Driver/{id}");
+            driver_price = drivers.price - drivers.voucher;
 
         }
         catch (Exception ex)
@@ -241,7 +424,7 @@
             Console.WriteLine($"Error: {ex.Message}");
         }
     }
-    async Task Driver()
+    private async Task DriverHot()
     {
         try
         {

@@ -1,4 +1,4 @@
-﻿@page "/checkoutcar/{id:int}"
+﻿@page "/checkoutdriver"
 @inject HttpClient httpClient
 @inject IJSRuntime js
 @inject NavigationManager Navigation
@@ -6,9 +6,19 @@
 
 <MudContainer Class="mt-8 mb-5" MaxWidth="MaxWidth.Medium">
     <MudPaper Class="p-4" Elevation="0">
-        <MudText Typo="Typo.h5" Align="Align.Center" Color="Color.Primary">
-            QUÍ KHÁCH VUI LÒNG THANH TOÁN KHI NHẬN XE
-        </MudText>
+        @if (responseCode == "00")
+        {
+            <MudText Typo="Typo.h5" Align="Align.Center" Color="Color.Primary">
+                CỌC THÀNH CÔNG, QUÍ KHÁCH VUI LÒNG THANH TOÁN SAU CHUYẾN ĐI
+            </MudText>
+        }
+        else
+        {
+            <MudText Typo="Typo.h5" Align="Align.Center" Color="Color.Primary">
+                QUÍ KHÁCH VUI LÒNG CỌC TRONG THỜI GIAN 15 PHÚT
+            </MudText>
+        }
+
         <MudGrid Class="mt-4">
             <MudItem xs="12">
                 <MudPaper Class="p-4" Elevation="4">
@@ -52,16 +62,17 @@
                         </MudItem>
 
                         <MudItem xs="3">
-                            <MudText Typo="Typo.subtitle1" Color="Color.Default">Mã đơn</MudText>
+                            <MudText Typo="Typo.subtitle1" Color="Color.Default">Mã hóa đơn</MudText>
                         </MudItem>
                         <MudItem xs="9">
-                            <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@bill.guest_car_code</MudText>
-                        </MudItem>  
-                        <MudItem xs="3">
-                            <MudText Typo="Typo.subtitle1" Color="Color.Default">Xe</MudText>
+                            <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@bill.guest_driver_code</MudText>
+                        </MudItem>
+
+                            <MudItem xs="3">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Default">Tài xế</MudText>
                         </MudItem>
                         <MudItem xs="9">
-                            <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@bill.car_number - @bill.car_name</MudText>
+                            <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@bill.driver_name - @bill.driver_phone</MudText>
                         </MudItem>
 
                         <MudItem xs="3">
@@ -71,6 +82,11 @@
                             <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@bill.date_start - @bill.date_end</MudText>
                         </MudItem>
                         <MudItem xs="3">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Default">Tiền cọc</MudText>
+                        </MudItem>
+                        <MudItem xs="9">
+                            <MudText Align="Align.End" Color="Color.Secondary" Class="fw-bold" Typo="Typo.subtitle1">@bill.deposit.ToString("#,##0") VNĐ</MudText>
+                        </MudItem>  <MudItem xs="3">
                             <MudText Typo="Typo.subtitle1" Color="Color.Default">Tổng Tiền</MudText>
                         </MudItem>
                         <MudItem xs="9">
@@ -85,21 +101,57 @@
 
 @code {
 
-    [Parameter] public int id { get; set; }
-    private guest_car bill = new guest_car();
-    private string url = "http://localhost:49922/api/GuestCars";
+    private guest_driver bill = new guest_driver();
+    private string url = "http://localhost:49922/api/GuestDriver";
+    private string urlUpdateStatusBill = "http://localhost:49922/api/GuestDriver/PutStatus10";
+    private string billId;
+    private string responseCode;
 
     protected override async Task OnInitializedAsync()
     {
+        billId = await js.InvokeAsync<string>("sessionStorage.getItem", "billId");
         try
         {
-            var response = await httpClient.GetFromJsonAsync<guest_car>($"{url}/{id}");
+            var response = await httpClient.GetFromJsonAsync<guest_driver>($"{url}/{billId}");
 
             bill = response;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Lỗi khi gọi API: {ex.Message}");
+        }
+        string currentUrl = Navigation.Uri;
+
+        var uri = new Uri(currentUrl);
+        var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+
+        responseCode = queryParams["vnp_ResponseCode"];
+
+        if (responseCode == "00")
+        {
+            await UpdateStatusBill10();
+        }
+        await js.InvokeVoidAsync("sessionStorage.removeItem", "billId");
+    }
+
+    private async Task UpdateStatusBill10()
+    {
+        try
+        {
+            var response = await httpClient.PutAsJsonAsync($"{urlUpdateStatusBill}/{billId}", bill);
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Cập nhật trạng thái hóa đơn {billId} thành công!");
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Cập nhật trạng thái thất bại: {errorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi: {ex.Message}", Severity.Error);
         }
     }
 }

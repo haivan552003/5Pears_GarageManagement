@@ -7,4 +7,9 @@ namespace BE_API.ModelCustom
         public DateTime DateStart { get; set; }
         public int CarId { get; set; }
     }
+    public class DriverRentalRequest
+    {
+        public DateTime DateStart { get; set; }
+        public int DriverId { get; set; }
+    }
 }
