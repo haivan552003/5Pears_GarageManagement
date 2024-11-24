@@ -7,9 +7,19 @@
 
 <MudContainer Class="mt-8 mb-5" MaxWidth="MaxWidth.Medium">
     <MudPaper Class="p-4" Elevation="0">
-        <MudText Typo="Typo.h5" Align="Align.Center" Color="Color.Primary">
-            THANH TOÁN THÀNH CÔNG
-        </MudText>
+        @if (responseCode == "00")
+        {
+            <MudText Typo="Typo.h5" Align="Align.Center" Color="Color.Primary">
+                THANH TOÁN THÀNH CÔNG
+            </MudText>
+        }
+        else
+        {
+            <MudText Typo="Typo.h5" Align="Align.Center" Color="Color.Primary">
+                QUÍ KHÁCH VUI LÒNG THANH TOÁN TRONG THỜI GIAN 15 PHÚT
+            </MudText>
+        }
+      
         <MudGrid Class="mt-4">
             <MudItem xs="12">
                 <MudPaper Class="p-4" Elevation="4">
@@ -98,6 +108,7 @@
     private string url = "http://localhost:49922/api/GuestTrip";
     private string urlUpdateStatusBill = "http://localhost:49922/api/GuestTrip/PutStatus2";
     private string billId;
+    private string responseCode;
 
     protected override async Task OnInitializedAsync()
     {
@@ -120,7 +131,7 @@
         var uri = new Uri(currentUrl);
         var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
 
-        string responseCode = queryParams["vnp_ResponseCode"];
+        responseCode = queryParams["vnp_ResponseCode"];
 
         if (responseCode == "00")
         {

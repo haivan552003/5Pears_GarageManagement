@@ -1,64 +1,63 @@
-﻿using BE_API.ModelCustom;
-using BE_API.Models;
-using Dapper;
+﻿using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
+using System;
+using BE_API.Models;
+using BE_API.ModelCustom;
 
 namespace BE_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GuestCarsController : ControllerBase
+    public class GuestDriverController : ControllerBase
     {
         private readonly string _connectionString;
-        public GuestCarsController(IConfiguration configuration)
+        public GuestDriverController(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("SqlConnection");
         }
 
-        [HttpGet("GetAll")]
-        public async Task<ActionResult<IEnumerable<guest_car>>> GetGuestCar()
-        {
-            var procedureName = "sp_get_guest_car";
+        //[HttpGet("GetAll")]
+        //public async Task<ActionResult<IEnumerable<guest_car>>> GetGuestCar()
+        //{
+        //    var procedureName = "sp_get_guest_car";
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var employeesList = await connection.QueryAsync<guest_car>(procedureName, commandType: CommandType.StoredProcedure);
-                return Ok(employeesList);
-            }
-        }
+        //    using (var connection = new SqlConnection(_connectionString))
+        //    {
+        //        var employeesList = await connection.QueryAsync<guest_car>(procedureName, commandType: CommandType.StoredProcedure);
+        //        return Ok(employeesList);
+        //    }
+        //}
 
         [HttpGet("GetTop")]
-        public async Task<ActionResult<IEnumerable<guest_car>>> GetTopGuestCar()
+        public async Task<ActionResult<IEnumerable<guest_driver>>> GetTopGuestDriver()
         {
-            var procedureName = "sp_get_top_guest_car";
+            var procedureName = "sp_get_top_guest_driver";
 
             using (var connection = new SqlConnection(_connectionString))
             {
-                var employeesList = await connection.QueryAsync<guest_car>(procedureName, commandType: CommandType.StoredProcedure);
+                var employeesList = await connection.QueryAsync<guest_driver>(procedureName, commandType: CommandType.StoredProcedure);
                 return Ok(employeesList);
             }
         }
 
         // GET: api/Products/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<guest_car>> GetGuestCarID(int id)
+        public async Task<ActionResult<guest_driver>> GetGuestDriverID(int id)
         {
-            var procedureName = "sp_getid_guest_car";
+            var procedureName = "sp_getid_guest_driver";
             var parameters = new DynamicParameters();
             parameters.Add("Id", id, DbType.Int32, ParameterDirection.Input);
 
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                var product = await connection.QueryFirstOrDefaultAsync<guest_car>(
+                var product = await connection.QueryFirstOrDefaultAsync<guest_driver>(
                     procedureName, parameters, commandType: CommandType.StoredProcedure);
 
                 if (product == null)
@@ -71,7 +70,7 @@ namespace BE_API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddGuestCar(guest_car_create request)
+        public async Task<ActionResult> AddGuestCar(guest_driver_create request)
         {
             try
             {
@@ -80,7 +79,7 @@ namespace BE_API.Controllers
                 {
                     await connection.OpenAsync();
 
-                    var result = await connection.ExecuteAsync("sp_create_guest_car", parameters, commandType: CommandType.StoredProcedure);
+                    var result = await connection.ExecuteAsync("sp_create_guest_driver", parameters, commandType: CommandType.StoredProcedure);
 
                     if (result > 0)
                     {
@@ -162,16 +161,36 @@ namespace BE_API.Controllers
             }
 
             return NoContent();
+        }//update -> status = 10(Đã cọc)
+        [HttpPut("PutStatus10/{id}")]
+        public async Task<IActionResult> PutStatus10(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var result = await connection.ExecuteAsync("sp_update_status_10_guest_driver", parameters, commandType: CommandType.StoredProcedure);
+
+                if (result == 0)
+                {
+                    return NotFound();
+                }
+            }
+
+            return NoContent();
         }
 
         // POST: api/Products/CheckDateRetailCar
-        [HttpPost("CheckDateRetailCar")]
-        public async Task<ActionResult<bool>> CheckDateRetailCar([FromBody] CarRentalRequest request)
+        [HttpPost("CheckDateRetailDriver")]
+        public async Task<ActionResult<bool>> CheckDateRetailCar([FromBody] DriverRentalRequest request)
         {
-            var procedureName = "sp_check_date_retail_car";
+            var procedureName = "sp_check_date_retail_driver";
             var parameters = new DynamicParameters();
             parameters.Add("@date_start", request.DateStart, DbType.Date, ParameterDirection.Input);
-            parameters.Add("@car_id", request.CarId, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@driver_id", request.DriverId, DbType.Int32, ParameterDirection.Input);
 
             using (var connection = new SqlConnection(_connectionString))
             {
