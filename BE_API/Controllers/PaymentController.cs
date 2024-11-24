@@ -24,12 +24,14 @@ namespace BE_API.Controllers
         public IActionResult CreatePayment([FromBody] PaymentRequestModel model)
         {
             // Kiểm tra các thuộc tính của model
-            if (model == null || string.IsNullOrEmpty(model.OrderId) || model.Amount <= 0)
+            if (model == null || string.IsNullOrEmpty(model.OrderId) || model.Amount <= 0 || string.IsNullOrEmpty(model.ReturnUrl))
             {
                 return BadRequest("Thông tin thanh toán không hợp lệ.");
             }
 
-            var paymentUrl = _vnpayService.CreatePaymentUrl(model.OrderId, model.Amount, model.OrderInfo, Request.HttpContext.Connection.RemoteIpAddress.ToString());
+            var paymentUrl = _vnpayService.CreatePaymentUrl(model.OrderId, model.Amount, model.OrderInfo,
+         Request.HttpContext.Connection.RemoteIpAddress.ToString(), model.ReturnUrl);
+
             return Ok(new { paymentUrl });
         }
 

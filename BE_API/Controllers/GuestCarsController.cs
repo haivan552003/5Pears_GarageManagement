@@ -36,7 +36,7 @@ namespace BE_API.Controllers
         }
 
         [HttpGet("GetTop")]
-        public async Task<ActionResult<IEnumerable<guest_trip>>> GetTopGuestCar()
+        public async Task<ActionResult<IEnumerable<guest_car>>> GetTopGuestCar()
         {
             var procedureName = "sp_get_top_guest_car";
 
@@ -189,5 +189,6 @@ namespace BE_API.Controllers
                 }
             }
         }
+
     }
 }

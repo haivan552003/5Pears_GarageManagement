@@ -41,7 +41,7 @@
                     <MudText Class="mb-1" Typo="Typo.subtitle1">Loại hộp số</MudText>
                     @if (@cars.isAuto == 0)
                     {
-                        <MudText Typo="Typo.subtitle1"  Class=" fw-bold">Số Tự Động</MudText>
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Số Tự Động</MudText>
                     }
                     else
                     {
@@ -205,7 +205,7 @@
                 <MudItem xs="12">
                     <MudText Typo="Typo.h5" Class="fw-bold">Giấy Tờ Thuê Xe</MudText>
                 </MudItem>
-                <MudPaper Elevation="0"Class="pa-4 border-l-4 border-solid mud-border-warning w-100" Style="@($"background:{Colors.Amber.Lighten5};")">
+                <MudPaper Elevation="0" Class="pa-4 border-l-4 border-solid mud-border-warning w-100" Style="@($"background:{Colors.Amber.Lighten5};")">
                     <MudGrid>
                         <MudItem xs="12" Class="d-flex align-center">
                             <img loading="lazy" src="https://n1-cstg.mioto.vn/v4/p/m/icons/papers/gplx_cccd.png" alt="" style="width:32px; height:32px;">
@@ -217,7 +217,7 @@
                         </MudItem>
                     </MudGrid>
                 </MudPaper>
-               
+
             </MudGrid>
 
             <MudDivider Class="mt-6 mb-6" />
@@ -232,9 +232,9 @@
                             <MudText Typo="Typo.subtitle1">Không yêu cầu khách thuê thế chấp Tiền mặt hoặc Xe máy</MudText>
                         </MudItem>
                     </MudGrid>
-                </MudPaper>          
-            </MudGrid>  
-            
+                </MudPaper>
+            </MudGrid>
+
             <MudDivider Class="mt-6 mb-6" />
 
             <MudGrid Class="mb-4">
@@ -280,7 +280,7 @@
                         <MudText Typo="Typo.subtitle1">
                             Thời gian thuê
                         </MudText>
-                        <MudDateRangePicker Variant="Variant.Outlined" @bind-DateRange="_dateRange" onchange="@CheckDateRetailCar" />
+                        <MudDateRangePicker Variant="Variant.Outlined" @bind-DateRange="_dateRange" MinDate="DateTime.Today" />
                     </MudItem>
 
                     <MudItem xs="6" Class="pb-2 pt-2">
@@ -294,7 +294,21 @@
                         <MudText Typo="Typo.subtitle1">Thành Tiền</MudText>
                     </MudItem>
                     <MudItem xs="6" Class="pb-2 pt-2">
-                        <MudText Align="Align.End" Typo="Typo.subtitle1">@money.ToString("#,##0") VNĐ</MudText>
+
+                        @if (_dateRange.Start != null && _dateRange.End != null)
+                        {
+                            date_number = (_dateRange.End.Value - _dateRange.Start.Value).Days;
+                            money = (date_number * car_price) - cars.insurance_fee;
+                            <MudText Align="Align.End" Typo="Typo.subtitle1">@money.ToString("#,##0") VNĐ</MudText>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Error">
+                                Vui lòng chọn khoảng thời gian thuê
+                            </MudText>
+                        }
+
+                      
                     </MudItem>
 
                     @if (cus_id != 0)
@@ -303,7 +317,7 @@
                             <MudButton OnClick="CheckDateRetailCar" FullWidth="true" Variant="Variant.Filled" Color="Color.Primary">thuê xe</MudButton>
                             @if (_showMessage)
                             {
-                                <MudText Typo="Typo.subtitle1" Color="Color.Error">@message</MudText>
+                                <MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Error">@message</MudText>
                             }
                         </MudItem>
                     }
@@ -463,7 +477,7 @@
 
                     bill.price = (cars.price * date_number) + cars.insurance_fee;
 
-                    // AddBill();
+                    AddBill();
                 }
             }
             else
@@ -477,6 +491,11 @@
         }
     }
 
+    private void DateRangeChanged(DateRange newRange)
+    {
+        _dateRange = newRange;
+        CheckDateRetailCar();
+    }
 
     private async Task AddBill()
     {
@@ -496,8 +515,8 @@
                 var responseTop = await httpClient.GetAsync(urlTopGuestCar);
                 var jsonResponse = await responseTop.Content.ReadAsStringAsync();
                 var guestTrips = JsonSerializer.Deserialize<List<guest_car>>(jsonResponse);
-                var guestTripId = guestTrips.First().id;
-                // Navigation.NavigateTo($"/edit_bill/{guestTripId}");
+                var guestTripId = guestTrips.First().id;               
+                Navigation.NavigateTo($"/checkoutcar/{guestTripId}");
             }
             else
             {
