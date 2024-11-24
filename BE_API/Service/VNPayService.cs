@@ -17,7 +17,7 @@ public class VNPayService
         _config = config ?? throw new ArgumentNullException(nameof(config));
     }
 
-    public string CreatePaymentUrl(string orderId, decimal amount, string orderInfo, string ipAddress)
+    public string CreatePaymentUrl(string orderId, decimal amount, string orderInfo, string ipAddress, string returnUrl)
     {
         var vnpUrl = _config["VNPay:vnp_Url"];
         var vnpTmnCode = _config["VNPay:vnp_TmnCode"];
@@ -35,7 +35,7 @@ public class VNPayService
             { "vnp_OrderInfo", orderInfo },
             { "vnp_OrderType", "billpayment" },
             { "vnp_Locale", "vn" },
-            { "vnp_ReturnUrl", vnpReturnUrl },
+            { "vnp_ReturnUrl", returnUrl },
             { "vnp_IpAddr", ipAddress },
             { "vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) }
         };

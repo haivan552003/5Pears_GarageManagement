@@ -67,7 +67,6 @@ namespace FE_User.Models
     public class guest_trip_update
     {
         public bool? payment_method { get; set; }
-        public float? pay_amount { get; set; }
         public string bank_code { get; set; }
         public string card_type { get; set; }
         public string? transaction_no { get; set; }

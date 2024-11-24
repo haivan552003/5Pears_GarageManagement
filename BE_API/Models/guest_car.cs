@@ -22,6 +22,10 @@ namespace BE_API.Models
         public string emp_name { get; set; }
         public string cus_name { get; set; }
         public bool payment_method { get; set; }
+        public string email { get; set; }
+        public string phone_number { get; set; }
+        public string car_number { get; set; }
+
     }
 
     public class guest_car_create
@@ -31,12 +35,11 @@ namespace BE_API.Models
         public int cus_id { get; set; }
         public int car_id { get; set; }
         public float price { get; set; }
-        public float? pay_amount { get; set; }
         public string? bank_code { get; set; }
         public string? card_type { get; set; }
         public DateTime? pay_date { get; set; }
         public string? transaction_no { get; set; }
-        public bool payment_method { get; set; }
+        public bool? payment_method { get; set; }
         public DateTime date_start { get; set; }
         public DateTime date_end { get; set; }
     }

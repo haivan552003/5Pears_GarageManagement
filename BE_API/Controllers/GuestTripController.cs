@@ -112,7 +112,7 @@ namespace BE_API.Controllers
         [HttpPut("PutStatus2/{id}")]
         public async Task<IActionResult> PutStatus2(int id, guest_trip_update employee)
         {
-            var parameters = new DynamicParameters();
+            var parameters = new DynamicParameters(employee);
             parameters.Add("@id", id);
 
             using (var connection = new SqlConnection(_connectionString))

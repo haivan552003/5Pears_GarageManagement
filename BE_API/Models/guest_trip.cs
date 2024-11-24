@@ -56,7 +56,6 @@ namespace BE_API.Models
         public int emp_id { get; set; }
         public int cus_id { get; set; }
         public float price { get; set; }
-        public float? pay_amount { get; set; }
         public string? bank_code { get; set; }
         public string? card_type { get; set; }
         public DateTime? pay_date { get; set; }
@@ -68,10 +67,10 @@ namespace BE_API.Models
     public class guest_trip_update
     {
         public bool? payment_method { get; set; }
-        public float? pay_amount { get; set; }
         public string bank_code { get; set; }
         public string card_type { get; set; }
         public string? transaction_no { get; set; }
         public string? transaction_status { get; set; }
+
     }
 }

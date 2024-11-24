@@ -397,7 +397,8 @@
                     {
                         OrderId = guestTripId.ToString(),
                         Amount = (int)(bill.price),
-                        OrderInfo = guestTripId.ToString()
+                        OrderInfo = guestTripId.ToString(),
+                        returnUrl = "http://localhost:5112/checkouttrip"
                     };
 
 
@@ -461,7 +462,8 @@
                     {
                         OrderId = guestTripId.ToString(),
                         Amount = (int)(bill.price),
-                        OrderInfo = guestTripId.ToString()
+                        OrderInfo = guestTripId.ToString(),
+                        returnUrl = "http://localhost:5112/checkouttrip"
                     };
 
 
