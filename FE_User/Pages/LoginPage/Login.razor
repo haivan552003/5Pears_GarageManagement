@@ -25,9 +25,10 @@
 
                                 <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mx-auto w-100 mt-7">Đăng nhập</MudButton>
                                 <MudText Class="mt-2 mb-2 text-center" Typo="Typo.subtitle2" Color="Color.Default">hoặc</MudText>
-                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Custom.Brands.Google" IconColor="Color.Secondary" Class="mx-auto w-100">
-                                    Google
+                                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Custom.Brands.Google" IconColor="Color.Secondary" Class="mx-auto w-100 mt-1" OnClick="OnGoogleSignInClick">
+                                    Đăng nhập với Google
                                 </MudButton>
+
                                 <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Material.Filled.PhoneAndroid" IconColor="Color.Secondary" Class="mx-auto w-100 mt-1" Href="/login_phone">
                                     Đăng nhập bằng SĐT
                                 </MudButton>
@@ -91,4 +92,33 @@
             LoginFailed = true;
         }
     }
+    private async Task OnGoogleSignInClick()
+    {
+        try
+        {
+            // Gọi hàm JavaScript để thực hiện đăng nhập Google
+            var result = await js.InvokeAsync<string>("signInWithGoogle");
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                // Lưu cookie chứa token Google
+                await js.InvokeVoidAsync("document.cookie", $"authToken={result}; path=/;");
+
+                // Điều hướng đến trang chủ
+                NavigationManager.NavigateTo("/", true);
+            }
+            else
+            {
+                Console.WriteLine("Đăng nhập Google thất bại.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi: {ex.Message}");
+        }
+    }
+
+
+
+
 }

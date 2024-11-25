@@ -105,7 +105,7 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@img_trip", trip.img_trip);
                 cmd.Parameters.AddWithValue("@from", trip.from);
                 cmd.Parameters.AddWithValue("@to", trip.to);
-                cmd.Parameters.AddWithValue("@trip_code", trip.trip_code);
+                //cmd.Parameters.AddWithValue("@trip_code", trip.trip_code);
                 cmd.Parameters.AddWithValue("@status", trip.status);
                 cmd.Parameters.AddWithValue("@is_return", trip.is_return);
 

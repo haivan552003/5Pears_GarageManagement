@@ -1,6 +1,5 @@
 ﻿@inject MudBlazor.ISnackbar Snackbar
-@inject HttpClient httpClient // Thêm inject HttpClient
-
+@inject HttpClient httpClient
 
 <MudDialog MaxWidth="MaxWidth.Medium">
     <DialogContent>
@@ -12,60 +11,85 @@
                         <MudTextField Label="Mã CT chuyến đi" @bind-Value="SelectedTrip.trip_detail_code"
                                       Placeholder="Nhập mã CT chuyến đi" Variant="Variant.Outlined" />
                     </MudItem>
+
                     <MudItem xs="6" Class="mb-4">
                         <MudNumericField T="float" Label="Khoảng cách" @bind-Value="SelectedTrip.distance"
                                          Placeholder="Nhập khoảng cách" Variant="Variant.Outlined" Required="true" />
                     </MudItem>
+
                     <MudItem xs="6" Class="mb-4">
                         <MudTextField T="float" Label="Giá" @bind-Value="SelectedTrip.price"
                                       Placeholder="Nhập giá" Variant="Variant.Outlined" Required="true" />
                     </MudItem>
+
                     <MudItem xs="6" Class="mb-4">
                         <MudSelect @bind-Value="SelectedTrip.driver_id" Label="Mã Tài Xế" Variant="Variant.Outlined" Required="true">
-                            @foreach (var driver in drivers)
+                            @foreach (var driver in driverss)
                             {
-                                <MudSelectItem Value="@driver.id">@driver.name</MudSelectItem>
+                                <MudSelectItem Value="@driver.id">@driver.fullname</MudSelectItem>
                             }
                         </MudSelect>
                     </MudItem>
+
                     <MudItem xs="6" Class="mb-4">
                         <MudSelect @bind-Value="SelectedTrip.location_from_id" Label="Điểm đến" Variant="Variant.Outlined" Required="true">
-                            @foreach (var location in locationsfrom)
+                            @foreach (var location in locations)
                             {
                                 <MudSelectItem Value="@location.id">@location.name</MudSelectItem>
                             }
                         </MudSelect>
                     </MudItem>
+
                     <MudItem xs="6" Class="mb-4">
                         <MudSelect @bind-Value="SelectedTrip.car_id" Label="Xe" Variant="Variant.Outlined" Required="true">
-                            @foreach (var car in cars)
+                            @foreach (var car in carss)
                             {
-                                <MudSelectItem Value="@car.id">@car.name</MudSelectItem>
+                                <MudSelectItem Value="@car.id">@car.car_name</MudSelectItem>
                             }
                         </MudSelect>
                     </MudItem>
+
                     <MudItem xs="6" Class="mb-4">
                         <MudSelect @bind-Value="SelectedTrip.location_to_id" Label="Điểm khởi hành" Variant="Variant.Outlined" Required="true">
-                            @foreach (var locations in locationsto)
+                            @foreach (var locations in locations)
                             {
                                 <MudSelectItem Value="@locations.id">@locations.name</MudSelectItem>
                             }
                         </MudSelect>
                     </MudItem>
+
                     <MudItem xs="6" Class="mb-4">
                         <MudSelect Variant="Variant.Outlined" @bind-Value="SelectedTrip.status" Label="Trạng thái" Required="true" RequiredError="Trạng thái là bắt buộc">
                             <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
                             <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
                         </MudSelect>
                     </MudItem>
+
                     <MudItem xs="6" Class="mb-4">
-                        <MudTextField Label="Thời gian bắt đầu" @bind-Value="SelectedTrip.time_start"
-                                      Placeholder="Bắt đầu" Variant="Variant.Outlined" Required="true" />
+                        <MudDatePicker @bind-Date="startDate"
+                                       Label="Thời gian bắt đầu"
+                                       DateFormat="dd/MM/yyyy"
+                                       Variant="Variant.Outlined"
+                                       Required="true"
+                                       RequiredError="Vui lòng chọn thời gian bắt đầu"
+                                       OnDateChanged="HandleStartDateChanged" />
                     </MudItem>
+
                     <MudItem xs="6" Class="mb-4">
-                        <MudTextField Label="Thời gian kết thúc" @bind-Value="SelectedTrip.time_end"
-                                      Placeholder="Kết thúc" Variant="Variant.Outlined" Required="true" />
+                        <MudDatePicker @bind-Date="endDate"
+                                       Label="Thời gian kết thúc"
+                                       DateFormat="dd/MM/yyyy"
+                                       Variant="Variant.Outlined"
+                                       Required="true"
+                                       RequiredError="Vui lòng chọn thời gian kết thúc"
+                                       OnDateChanged="HandleEndDateChanged" />
                     </MudItem>
+
+                    <MudItem xs="6" Class="mb-4">
+                        <MudTextField Label="Trip_ID" @bind-Value="SelectedTrip.trip_id"
+                                      Placeholder="Trip ID" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+
                     <MudItem xs="12" Class="mb-4">
                         <MudTextField Label="Voucher" @bind-Value="SelectedTrip.voucher"
                                       Placeholder="Mã voucher" Variant="Variant.Outlined" Required="true" />
@@ -83,37 +107,140 @@
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public string ContentText { get; set; }
-    [Parameter]
-    public trip_detail_create SelectedTrip { get; set; } = new trip_detail_create();
+    [Parameter] public trip_detail_create SelectedTrip { get; set; } = new trip_detail_create();
 
+    private DateTime? startDate;
+    private DateTime? endDate;
     private MudForm form;
 
+    private List<driver> driverss = new List<driver>();
+    private List<location> locations = new List<location>();
+    private List<car> carss = new List<car>();
 
-    private List<dropdown> drivers = new List<dropdown>();
-    private List<dropdown> locationsfrom = new List<dropdown>(); // điểm đến
-    private List<dropdown> cars = new List<dropdown>(); // Danh sách xe
-    private List<dropdown> locationsto = new List<dropdown>(); // điểm khởi hành
+    private const string driverUrl = "http://localhost:49922/api/Driver";
+    private const string locationUrl = "http://localhost:49922/api/Location";
+    private const string carUrl = "http://localhost:49922/api/Cars/getAllCars";
 
     protected override async Task OnInitializedAsync()
     {
-        drivers = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/driver");
-
-        locationsfrom = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/tripfrom");
-
-        cars = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/car");
-
-        locationsto = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/tripto");
-    }
-
-    void Submit()
-    {
-        if (form.IsValid)
+        try
         {
-            MudDialog.Close(DialogResult.Ok(SelectedTrip));
+            await Task.WhenAll(
+                LoadDriver(),
+                LoadLocation(),
+                LoadCar()
+            );
+
+            // Khởi tạo giá trị cho date pickers
+            if (SelectedTrip != null)
+            {
+                startDate = SelectedTrip.time_start != default ? SelectedTrip.time_start : null;
+                endDate = SelectedTrip.time_end != default ? SelectedTrip.time_end : null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Có lỗi xảy ra khi tải dữ liệu: {ex.Message}", Severity.Error);
         }
     }
 
-    void Cancel()
+    private async Task LoadDriver()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<driver>>(driverUrl);
+            if (response != null)
+            {
+                driverss = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi tải danh sách tài xế: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task LoadLocation()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<location>>(locationUrl);
+            if (response != null)
+            {
+                locations = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi tải danh sách địa điểm: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task LoadCar()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<List<car>>(carUrl);
+            if (response != null)
+            {
+                carss = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi tải danh sách xe: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void HandleStartDateChanged(DateTime? date)
+    {
+        if (date.HasValue)
+        {
+            startDate = date.Value;
+            SelectedTrip.time_start = date.Value;
+        }
+    }
+
+    private void HandleEndDateChanged(DateTime? date)
+    {
+        if (date.HasValue)
+        {
+            endDate = date.Value;
+            SelectedTrip.time_end = date.Value;
+        }
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            if (form.IsValid)
+            {
+                if (!startDate.HasValue || !endDate.HasValue)
+                {
+                    Snackbar.Add("Vui lòng chọn đầy đủ thời gian bắt đầu và kết thúc", Severity.Warning);
+                    return;
+                }
+
+                if (endDate < startDate)
+                {
+                    Snackbar.Add("Thời gian kết thúc không thể trước thời gian bắt đầu", Severity.Warning);
+                    return;
+                }
+
+                SelectedTrip.time_start = startDate.Value;
+                SelectedTrip.time_end = endDate.Value;
+
+                MudDialog.Close(DialogResult.Ok(SelectedTrip));
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Có lỗi xảy ra khi lưu dữ liệu: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void Cancel()
     {
         MudDialog.Close(DialogResult.Cancel());
     }
