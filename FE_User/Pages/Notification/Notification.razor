@@ -1,0 +1,74 @@
+﻿@page "/notifications"
+@using MudBlazor
+
+<MudPaper Class="mud-paper mud-elevation-4 p-4" Style="max-width: 600px; margin: auto; margin-top: 20px;">
+    <div class="header d-flex align-center justify-between mb-3">
+        <MudText Typo="Typo.h5" Class="fw-bold">Thông báo</MudText>
+        <MudIconButton Icon="notifications" Color="Color.Primary" Class="notification-icon" />
+    </div>
+    <div>
+            @foreach (var notification in NewNotifications)
+            {
+                <MudGrid Class="notification-item mb-2">
+                    <MudItem xs="2">
+                        <MudAvatar Icon="person" Color="Color.Info" />
+                    </MudItem>
+                    <MudItem xs="10">
+                        <MudText Typo="Typo.body2" Class="fw-medium">
+                         
+                        </MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">3 phút trước</MudText>
+                    </MudItem>
+                </MudGrid>
+            }
+       
+        <div class="center-button">
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Style="padding: 10px 30px; font-size: 16px; font-weight: bold; border-radius: 8px;">
+                Xem thông báo trước đó
+            </MudButton>
+        </div>
+    </div>
+</MudPaper>
+
+<style>
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .notification-item {
+        transition: background-color 0.3s ease-in-out, transform 0.2s ease;
+        padding: 12px;
+        border-radius: 12px;
+        background-color: #fafafa;
+    }
+
+    .notification-item:hover {
+        background-color: #f0f0f0;
+        transform: translateX(4px);
+    }
+
+    .center-button {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .center-button button {
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .center-button button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    
+
+</style>
+
+@code {
+    private List<string> NewNotifications = new List<string> { "Thông báo 1", "Thông báo 2", "Thông báo 3" , "Thông báo 4", "Thông báo 5", "Thông báo 6" };
+}
