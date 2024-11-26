@@ -1,13 +1,16 @@
 ﻿using BE_API.Models;
 using Dapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Tesseract;
 
 namespace BE_API.Controllers
 {
@@ -102,10 +105,13 @@ namespace BE_API.Controllers
         [HttpPost("PostCars")]
         public async Task<ActionResult<car_create>> PostCars(car_create cars)
         {
+            int carId;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 SqlCommand cmd = new SqlCommand("sp_create_cars", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
+
+                // Existing car parameters
                 cmd.Parameters.AddWithValue("@car_number", cars.car_number);
                 cmd.Parameters.AddWithValue("@color", cars.color);
                 cmd.Parameters.AddWithValue("@v_registration_start", cars.vehicle_registration_start);
@@ -114,38 +120,103 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@isAuto", cars.isAuto);
                 cmd.Parameters.AddWithValue("@is_retail", cars.isRetail);
                 cmd.Parameters.AddWithValue("@type_id", cars.type_id);
-
                 cmd.Parameters.AddWithValue("@brand_id", cars.brand_id);
                 cmd.Parameters.AddWithValue("@year_production", cars.year_production);
                 cmd.Parameters.AddWithValue("@odo", cars.odo);
                 cmd.Parameters.AddWithValue("@insurance_fee", cars.insurance_fee);
                 cmd.Parameters.AddWithValue("@fuel", cars.fuel);
-                //cmd.Parameters.AddWithValue("@location_car", cars.location_car);
                 cmd.Parameters.AddWithValue("@description", cars.description);
                 cmd.Parameters.AddWithValue("@car_name", cars.car_name);
                 cmd.Parameters.AddWithValue("@voucher", cars.voucher);
                 cmd.Parameters.AddWithValue("@number_seat", cars.number_seat);
+
+                SqlParameter carIdParam = new SqlParameter("@car_id", SqlDbType.Int);
+                carIdParam.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(carIdParam);
+
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
-            }
-            return CreatedAtAction(nameof(GetAllCars), new { id = cars.id }, cars);
-        }
-        [HttpPost("PostCarSeat")]
-        public async Task<ActionResult<car>> PostCarSeat(car_seat cs)
-        {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                SqlCommand cmd = new SqlCommand("sp_create_car_seats", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@name", cs.name);
-                cmd.Parameters.AddWithValue("@car_id", cs.car_id);
-                cmd.Parameters.AddWithValue("@row", cs.row);
-                cmd.Parameters.AddWithValue("@col", cs.col);
-                await conn.OpenAsync();
-                await cmd.ExecuteNonQueryAsync();
+
+                carId = Convert.ToInt32(carIdParam.Value);
             }
 
-            return CreatedAtAction(nameof(GetAllCars), new { id = cs.id }, cs);
+            // Only create seats for bus-type vehicles (type_id = 3)
+            if (cars.type_id == 3 && cars.number_seat > 0)
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+
+                    // Create driver's seat
+                    SqlCommand driverSeatCmd = new SqlCommand("sp_create_car_seats", conn);
+                    driverSeatCmd.CommandType = CommandType.StoredProcedure;
+                    driverSeatCmd.Parameters.AddWithValue("@name", "TÀI XẾ");
+                    driverSeatCmd.Parameters.AddWithValue("@car_id", carId);
+                    driverSeatCmd.Parameters.AddWithValue("@row", 1);
+                    driverSeatCmd.Parameters.AddWithValue("@col", 1);
+                    await driverSeatCmd.ExecuteNonQueryAsync();
+
+                    // Create additional seats
+                    for (int i = 1; i <= cars.number_seat - 1; i++)
+                    {
+                        SqlCommand seatCmd = new SqlCommand("sp_create_car_seats", conn);
+                        seatCmd.CommandType = CommandType.StoredProcedure;
+
+                        string seatName = GetSeatName(cars.number_seat, i);
+
+                        seatCmd.Parameters.AddWithValue("@name", seatName);
+                        seatCmd.Parameters.AddWithValue("@car_id", carId);
+                        seatCmd.Parameters.AddWithValue("@row", i + 1);
+                        seatCmd.Parameters.AddWithValue("@col", 1);
+                        await seatCmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+
+            return CreatedAtAction(nameof(GetAllCars), new { id = carId }, cars);
+        }
+
+        // Helper method to generate seat names
+        private string GetSeatName(int totalSeats, int seatNumber)
+        {
+            char prefix = totalSeats switch
+            {
+                16 => 'A',
+                24 => 'B',
+                36 => 'C',
+                45 => 'D',
+                _ => 'X'
+            };
+            return $"{prefix}{seatNumber}";
+        }
+
+      
+        [HttpPost("PostCarSeat")]
+        public async Task<ActionResult<IEnumerable<car_seat>>> PostCarSeat(List<car_seat> seats)
+        {
+            List<car_seat> createdSeats = new List<car_seat>();
+
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+
+                foreach (var seat in seats)
+                {
+                    SqlCommand cmd = new SqlCommand("sp_create_car_seats", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@name", seat.name);
+                    cmd.Parameters.AddWithValue("@car_id", seat.car_id);
+                    cmd.Parameters.AddWithValue("@row", seat.row);
+                    cmd.Parameters.AddWithValue("@col", seat.col);
+
+                    int seatId = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+                    seat.id = seatId;
+
+                    createdSeats.Add(seat);
+                }
+            }
+
+            return CreatedAtAction(nameof(GetAllCars), createdSeats);
         }
         [HttpPut("putCars/{id}")]
         public async Task<IActionResult> PutCars(int id, car_create cars)
@@ -395,7 +466,6 @@ namespace BE_API.Controllers
                 }
             }
         }
-
 
     }
 }
