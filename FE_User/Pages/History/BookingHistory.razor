@@ -1,0 +1,135 @@
+﻿@page "/booking_history"
+@inject HttpClient httpClient
+@inject IJSRuntime js
+<MudContainer Class="mt-14 pa-0 fs-18" MaxWidth="MaxWidth.False">
+    <MudGrid Class="pa-0">
+
+        <NavProfileUser />
+
+        <MudItem xs="9">
+            <MudGrid Class="pa-0">
+                <MudItem xs="12">
+                    <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+
+                    </MudPaper>
+                    <MudPaper Elevation="0">
+                        <MudDataGrid Class="mx-auto pa-2" T="role_task" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                                     Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+                            <ToolBarContent>
+                                <MudItem xs="4" Elevation="0" Class="pb-3">
+                                    <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
+                                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                                </MudItem>
+
+                                <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
+                                    <MudButton Href="/addroletask" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                                        Thêm mới
+                                    </MudButton>
+
+                                    <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
+                                        Nhập file
+                                    </MudButton>
+
+                                    <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
+                                        Xuất file
+                                    </MudButton>
+                                </MudItem>
+                            </ToolBarContent>
+                            <Columns>
+                                <SelectColumn T="role_task" />
+                                @* <PropertyColumn T="role_task" TProperty="int" Property="x => x.id_role_task" /> *@
+                                <PropertyColumn T="role_task" Style="width: 80%;" TProperty="string" Property="x => x.name" SortBy="@_sortBy" Class="fw-bold" Title="Tên công việc" />
+                                <TemplateColumn T="role_task" Class="fw-bold" Title="Chức năng">
+                                    <CellTemplate Context="element">
+                                        @*      <MudTooltip Text="Chỉnh sửa">
+                                        <MudIconButton Href="@($"/editroletask/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                        </MudTooltip> *@
+                                        <MudTooltip Text="Xóa">
+                                            <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
+                                        </MudTooltip>
+                                    </CellTemplate>
+                                </TemplateColumn>
+                            </Columns>
+                            <PagerContent>
+                                <MudDataGridPager T="role_task" />
+                            </PagerContent>
+                        </MudDataGrid>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+@code {
+    [Parameter] public int Id { get; set; }
+    private IEnumerable<role_task> Elements = new List<role_task>();
+    private Dictionary<int, string> CategoryDict = new Dictionary<int, string>();
+    private string _searchString;
+    private bool _sortNameByLength;
+    private List<string> _events = new();
+    private string url = "http://localhost:49922/api/RoleTask";
+
+
+    private Func<role_task, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.name.Length;
+        else
+            return x.name;
+    };
+
+    private string GenerateEditUrl(int id)
+    {
+        return $"/updateproducts/{id}";
+    }
+
+    private string GenerateDeleteUrl(int id)
+    {
+        return $"/deleteproduct/{id}";
+    }
+
+    private string GetRoleTaskName(int cateId)
+    {
+        return CategoryDict.TryGetValue(cateId, out var name) ? name : "Unknown";
+    }
+
+    private Func<role_task, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if ($"{x.name} {x.id_role_task} {GetRoleTaskName(x.id_role_task)}".Contains(_searchString))
+            return true;
+
+        return false;
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Elements = await httpClient.GetFromJsonAsync<List<role_task>>(url);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    void RowClicked(DataGridRowClickEventArgs<role_task> args)
+    {
+        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void RowRightClicked(DataGridRowClickEventArgs<role_task> args)
+    {
+        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void SelectedItemsChanged(HashSet<role_task> items)
+    {
+        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+}
+
