@@ -372,6 +372,19 @@
     {
         try
         {
+            if (registrationStartDate.HasValue && registrationEndDate.HasValue)
+            {
+                if (registrationEndDate.Value <= registrationStartDate.Value)
+                {
+                    Snackbar.Add("Ngày hết hạn đăng kiểm phải sau ngày đăng kiểm", Severity.Error);
+                    return;
+                }
+            }
+            if (productionDate.HasValue && productionDate.Value.Year > DateTime.Now.Year)
+            {
+                Snackbar.Add("Năm sản xuất không được lớn hơn năm hiện tại", Severity.Error);
+                return;
+            }
             if (registrationStartDate.HasValue)
                 Car.vehicle_registration_start = registrationStartDate.Value;
             if (registrationEndDate.HasValue)

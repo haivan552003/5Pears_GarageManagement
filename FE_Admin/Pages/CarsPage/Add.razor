@@ -2,6 +2,9 @@
 @inject HttpClient httpClient
 @inject ISnackbar Snackbar
 @inject NavigationManager nv
+@using DynamicTesseract
+@using IronOcr
+@using Tesseract
 
 <MudContainer MaxWidth="MaxWidth.False" Class="mt-14 pa-0">
     <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
@@ -11,6 +14,10 @@
         <MudText Typo="Typo.h5" Class="mb-4">Thêm xe mới</MudText>
         <MudForm @ref="form">
             <MudGrid>
+
+                <MudItem xs="12">
+
+                </MudItem>
                 <MudItem xs="4">
                     <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.car_number" Label="Biển số xe" Placeholder="Nhập biển số xe" Required="true" RequiredError="Biển số xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateCarNumber))" />
                 </MudItem>
@@ -44,7 +51,7 @@
                     <MudNumericField Variant="Variant.Outlined" @bind-Value="newCar.price" Label="Giá xe" Placeholder="Nhập giá xe" Required="true" RequiredError="Giá xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidatePrice))" />
                 </MudItem>
                 <MudItem xs="4">
-                    <MudSelect @bind-Value="newCar.type_id" Label="Loại xe"  Required="true" Variant="Variant.Outlined">
+                    <MudSelect @bind-Value="newCar.type_id" Label="Loại xe" Required="true" Variant="Variant.Outlined">
                         @if (car_types != null)
                         {
                             @foreach (var role in car_types)
@@ -109,17 +116,17 @@
                                      Min="0" />
                 </MudItem>
                 <MudItem xs="3">
-                  
-                        <MudSelect T="int" @bind-Value="newCar.number_seat"
-                                   Label="Số ghế"
-                                   Required="true"
-                                   RequiredError="Số ghế là bắt buộc"
-                                   Variant="Variant.Outlined">
-                            <MudSelectItem Value="16">16 chỗ</MudSelectItem>
-                            <MudSelectItem Value="24">24 chỗ</MudSelectItem>
-                            <MudSelectItem Value="36">36 chỗ</MudSelectItem>
-                            <MudSelectItem Value="45">45 chỗ</MudSelectItem>
-                        </MudSelect>
+
+                    <MudSelect T="int" @bind-Value="newCar.number_seat"
+                               Label="Số ghế"
+                               Required="true"
+                               RequiredError="Số ghế là bắt buộc"
+                               Variant="Variant.Outlined">
+                        <MudSelectItem Value="16">16 chỗ</MudSelectItem>
+                        <MudSelectItem Value="24">24 chỗ</MudSelectItem>
+                        <MudSelectItem Value="36">36 chỗ</MudSelectItem>
+                        <MudSelectItem Value="45">45 chỗ</MudSelectItem>
+                    </MudSelect>
                 </MudItem>
                 <MudItem xs="12">
                     <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.description" Label="Mô tả" Placeholder="Nhập mô tả" Required="true" Lines="3" RequiredError="Mô tả là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateDescription))" />
@@ -142,6 +149,9 @@
 
     private string typeUrl = "http://localhost:49922/api/Dropdown/car_type";
     private string brandUrl = "http://localhost:49922/api/Dropdown/car_brand";
+
+    private string ocrApiUrl = "https://api.ocr-service.com/v1/ocr"; // Địa chỉ API OCR của bạn
+    private string ocrApiKey = "your-api-key-here";
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -185,9 +195,24 @@
             Snackbar.Add($"Lỗi khi tải danh sách vai trò: {ex.Message}", Severity.Error);
         }
     }
+
+
     private async Task AddCar()
     {
         await form.Validate();
+        if (vehicle_registration_start.HasValue && vehicle_registration_end.HasValue)
+        {
+            if (vehicle_registration_end.Value <= vehicle_registration_start.Value)
+            {
+                Snackbar.Add("Ngày hết hạn đăng kiểm phải sau ngày đăng kiểm", Severity.Error);
+                return;
+            }
+        }
+        if (year_production.HasValue && year_production.Value.Year > DateTime.Now.Year)
+        {
+            Snackbar.Add("Năm sản xuất không được lớn hơn năm hiện tại", Severity.Error);
+            return;
+        }
         if (year_production.HasValue)
         {
             newCar.year_production = year_production.Value;
@@ -206,74 +231,208 @@
             try
             {
                 var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Cars/PostCars/", newCar);
-                var content = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var carId = JsonSerializer.Deserialize<car>(content).id;
+                    var content = await response.Content.ReadAsStringAsync();
+                    var addedCar = JsonSerializer.Deserialize<car>(content);
 
-                    // Xử lý tạo ghế dựa trên số ghế đã chọn
-                    if (newCar.type_id == 3 && newCar.number_seat > 0)
+                    if (addedCar != null && addedCar.id > 0)
                     {
-                        var seats = GenerateSeats(carId, newCar.number_seat);
-                        var seatsResponse = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Cars/PostCarSeat", seats);
-
-                        if (!seatsResponse.IsSuccessStatusCode)
+                        if (newCar.type_id == 3 && newCar.number_seat > 0)
                         {
-                            Snackbar.Add("Thêm xe thành công nhưng không thể tạo sơ đồ ghế", Severity.Warning);
-                            nv.NavigateTo("/getcars");
-                            return;
-                        }
-                    }
+                            try
+                            {
+                                var seats = GenerateSeats(addedCar.id, newCar.number_seat);
+                                if (seats.Any())
+                                {
+                                    var seatsResponse = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Cars/PostCarSeat", seats);
 
-                    Snackbar.Add("Thêm xe thành công", Severity.Success);
-                    newCar = new car_create();
-                    newCar.brand_id = 1;
-                    newCar.type_id = 1;
-                    StateHasChanged();
+                                    if (!seatsResponse.IsSuccessStatusCode)
+                                    {
+                                        var errorContent = await seatsResponse.Content.ReadAsStringAsync();
+                                        Snackbar.Add($"Thêm xe thành công nhưng không thể tạo sơ đồ ghế: {errorContent}", Severity.Warning);
+                                    }
+                                    else
+                                    {
+                                        Snackbar.Add("Thêm xe và sơ đồ ghế thành công", Severity.Success);
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Snackbar.Add($"Thêm xe thành công nhưng có lỗi khi tạo ghế: {ex.Message}", Severity.Warning);
+                            }
+                        }
+                        else
+                        {
+                            Snackbar.Add("Thêm xe thành công", Severity.Success);
+                        }
+                        newCar = new car_create();
+                        vehicle_registration_start = null;
+                        vehicle_registration_end = null;
+                        year_production = null;
+                        StateHasChanged();
+                        nv.NavigateTo("/getcars");
+                    }
                 }
                 else
                 {
-                    Snackbar.Add($"Thêm xe thất bại. Lỗi: {content}", Severity.Error);
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Thêm xe thất bại: {errorContent}", Severity.Error);
                 }
             }
             catch (Exception ex)
             {
-                Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
-                Console.WriteLine(ex);
+                Snackbar.Add($"Lỗi khi thêm xe: {ex.Message}", Severity.Error);
             }
         }
     }
 
-    // Thêm phương thức mới để tạo danh sách ghế
     private List<car_seat> GenerateSeats(int carId, int seatCount)
     {
         var seats = new List<car_seat>();
 
         // Thêm ghế tài xế
-        seats.Add(new car_seat { car_id = carId, name = "TÀI XẾ", row = 1, col = 1 });
-
-        int currentSeat = 1;
-        int currentRow = 1;
-        int maxCol = seatCount == 16 ? 3 : 4; // 16 chỗ thì 3 cột, còn lại 4 cột
-
-        while (currentSeat <= seatCount - 1) // -1 vì đã có ghế tài xế
-        {
-            for (int col = (currentRow == 1 ? 2 : 1); col <= maxCol && currentSeat <= seatCount - 1; col++)
+        seats.Add(new car_seat
             {
-                seats.Add(new car_seat
-                    {
-                        car_id = carId,
-                        name = currentSeat.ToString(),
-                        row = currentRow,
-                        col = col
-                    });
-                currentSeat++;
-            }
-            currentRow++;
+                car_id = carId,
+                name = "TÀI XẾ",
+                row = 1,
+                col = 1
+            });
+
+        // Tạo layout dựa trên số ghế
+        switch (seatCount)
+        {
+            case 16:
+                GenerateLayout16Seats(seats, carId);
+                break;
+            case 24:
+                GenerateLayout24Seats(seats, carId);
+                break;
+            case 36:
+                GenerateLayout36Seats(seats, carId);
+                break;
+            case 45:
+                GenerateLayout45Seats(seats, carId);
+                break;
         }
 
         return seats;
+    }
+
+    private void GenerateLayout16Seats(List<car_seat> seats, int carId)
+    {
+        var seatLayout = new[]
+        {
+            new { name = "A1", row = 2, col = 1 },
+            new { name = "A2", row = 2, col = 2 },
+            new { name = "A3", row = 2, col = 3 },
+            new { name = "A4", row = 3, col = 1 },
+            new { name = "A5", row = 3, col = 2 },
+            new { name = "A6", row = 3, col = 3 },
+            new { name = "A7", row = 4, col = 1 },
+            new { name = "A8", row = 4, col = 2 },
+            new { name = "A9", row = 4, col = 3 },
+            new { name = "A10", row = 5, col = 1 },
+            new { name = "A11", row = 5, col = 2 },
+            new { name = "A12", row = 5, col = 3 },
+            new { name = "A13", row = 6, col = 1 },
+            new { name = "A14", row = 6, col = 2 },
+            new { name = "A15", row = 6, col = 3 }
+        };
+
+        foreach (var seat in seatLayout)
+        {
+            seats.Add(new car_seat
+                {
+                    car_id = carId,
+                    name = seat.name,
+                    row = seat.row,
+                    col = seat.col
+                });
+        }
+    }
+
+    private void GenerateLayout24Seats(List<car_seat> seats, int carId)
+    {
+        // Layout cho xe 24 chỗ
+        for (int i = 1; i <= 23; i++) // 23 ghế + 1 ghế tài xế
+        {
+            seats.Add(new car_seat
+                {
+                    car_id = carId,
+                    name = $"B{i}",
+                    row = (i - 1) / 3 + 2, // 3 ghế mỗi hàng, bắt đầu từ hàng 2
+                    col = (i - 1) % 3 + 1
+                });
+        }
+    }
+
+    private void GenerateLayout36Seats(List<car_seat> seats, int carId)
+    {
+        // Layout cho xe 36 chỗ
+        for (int i = 1; i <= 35; i++) // 35 ghế + 1 ghế tài xế
+        {
+            seats.Add(new car_seat
+                {
+                    car_id = carId,
+                    name = $"C{i}",
+                    row = (i - 1) / 4 + 2, // 4 ghế mỗi hàng, bắt đầu từ hàng 2
+                    col = (i - 1) % 4 + 1
+                });
+        }
+    }
+
+    private void GenerateLayout45Seats(List<car_seat> seats, int carId)
+    {
+        // Layout cho xe 45 chỗ
+        for (int i = 1; i <= 44; i++) // 44 ghế + 1 ghế tài xế
+        {
+            seats.Add(new car_seat
+                {
+                    car_id = carId,
+                    name = $"D{i}",
+                    row = (i - 1) / 4 + 2, // 4 ghế mỗi hàng, bắt đầu từ hàng 2
+                    col = (i - 1) % 4 + 1
+                });
+        }
+    }
+    private async Task ProcessOCR(IBrowserFile file)
+    {
+        using var stream = file.OpenReadStream();
+        using var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+
+        // Convert MemoryStream to byte array
+        byte[] imageBytes = memoryStream.ToArray();
+
+        using (var tesseract = new TesseractEngine("./tessdata", "vie", "Default"))
+        {
+            using (var pix = Pix.LoadFromMemory(imageBytes))
+            {
+                using (var page = tesseract.Process(pix))
+                {
+                    string extractedText = page.GetText();
+                    string extractedNumber = CleanAndValidateCarNumber(extractedText);
+                    if (!string.IsNullOrEmpty(extractedNumber))
+                    {
+                        newCar.car_number = extractedNumber;
+                    }
+                }
+            }
+        }
+    }
+
+    private string CleanAndValidateCarNumber(string rawText)
+    {
+        // Loại bỏ khoảng trắng, ký tự đặc biệt
+        string cleanedText = System.Text.RegularExpressions.Regex.Replace(rawText, @"[^\w-]", "");
+
+        // Kiểm tra định dạng biển số
+        var regex = new System.Text.RegularExpressions.Regex(@"^[A-Za-z]{2}-\d{5}$");
+        return regex.IsMatch(cleanedText) ? cleanedText : null;
     }
 
     private IEnumerable<string> CarValidateCarNumber(string number)
