@@ -1,33 +1,76 @@
 ﻿@page "/notifications"
+@inject HttpClient Http
 @using MudBlazor
+@using System.Net.Http.Json
 
 <MudPaper Class="mud-paper mud-elevation-4 p-4" Style="max-width: 600px; margin: auto; margin-top: 20px;">
     <div class="header d-flex align-center justify-between mb-3">
         <MudText Typo="Typo.h5" Class="fw-bold">Thông báo</MudText>
         <MudIconButton Icon="notifications" Color="Color.Primary" Class="notification-icon" />
     </div>
-    <div>
-            @foreach (var notification in NewNotifications)
+
+    @if (isLoading)
+    {
+        <MudProgressLinear Indeterminate Color="Color.Primary" />
+    }
+    else if (hasError)
+    {
+        <MudText Typo="Typo.body1" Color="Color.Error">Đã xảy ra lỗi khi tải thông báo.</MudText>
+    }
+    else
+    {
+        @if (DriverGuestTripNotifications.Any() || DriverGuestDriverNotifications.Any() || DriverGuestCarNotifications.Any())
+        {
+            @foreach (var notification in DriverGuestTripNotifications)
             {
                 <MudGrid Class="notification-item mb-2">
                     <MudItem xs="2">
-                        <MudAvatar Icon="person" Color="Color.Info" />
+                        <MudAvatar Icon="trip_origin" Color="Color.Info" />
                     </MudItem>
                     <MudItem xs="10">
                         <MudText Typo="Typo.body2" Class="fw-medium">
-                            <strong>Thông báo:</strong> @notification
+                            <strong>Chuyến đi:</strong> Mã chuyến: @notification.trip_detail_code, Địa điểm: @notification.location_name
                         </MudText>
-                        <MudText Typo="Typo.caption" Color="Color.Secondary">3 phút trước</MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Bắt đầu: @notification.time_start.ToString("dd/MM/yyyy HH:mm")</MudText>
                     </MudItem>
                 </MudGrid>
             }
-       
-        <div class="center-button">
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Style="padding: 10px 30px; font-size: 16px; font-weight: bold; border-radius: 8px;">
-                Xem thông báo trước đó
-            </MudButton>
-        </div>
-    </div>
+
+            @foreach (var notification in DriverGuestDriverNotifications)
+            {
+                <MudGrid Class="notification-item mb-2">
+                    <MudItem xs="2">
+                        <MudAvatar Icon="person" Color="Color.Success" />
+                    </MudItem>
+                    <MudItem xs="10">
+                        <MudText Typo="Typo.body2" Class="fw-medium">
+                            <strong>Khách hàng:</strong> Mã khách: @notification.guest_driver_code
+                        </MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Ngày: @notification.date</MudText>
+                    </MudItem>
+                </MudGrid>
+            }
+
+            @foreach (var notification in DriverGuestCarNotifications)
+            {
+                <MudGrid Class="notification-item mb-2">
+                    <MudItem xs="2">
+                        <MudAvatar Icon="directions_car" Color="Color.Warning" />
+                    </MudItem>
+                    <MudItem xs="10">
+                        <MudText Typo="Typo.body2" Class="fw-medium">
+                            <strong>Xe khách:</strong> Mã xe: @notification.guest_car_code, Tên xe: @notification.car_name
+                        </MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Ngày: @notification.date</MudText>
+                    </MudItem>
+                </MudGrid>
+            }
+        }
+        else
+        {
+            <MudText Typo="Typo.body1">Không có thông báo nào.</MudText>
+        }
+    }
 </MudPaper>
 
 <style>
@@ -44,31 +87,39 @@
         background-color: #fafafa;
     }
 
-    .notification-item:hover {
-        background-color: #f0f0f0;
-        transform: translateX(4px);
-    }
-
-    .center-button {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-
-    .center-button button {
-        transition: all 0.3s ease-in-out;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .center-button button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-
-    
-
+        .notification-item:hover {
+            background-color: #f0f0f0;
+            transform: translateX(4px);
+        }
 </style>
 
 @code {
-    private List<string> NewNotifications = new List<string> { "Thông báo 1", "Thông báo 2", "Thông báo 3" , "Thông báo 4", "Thông báo 5", "Thông báo 6" };
+    private List<DriverGuestTripNotification> DriverGuestTripNotifications = new();
+    private List<DriverGuestNotification> DriverGuestDriverNotifications = new();
+    private List<DriverGuestCarNotification> DriverGuestCarNotifications = new();
+    private bool isLoading = true;
+    private bool hasError = false;
+    private int userId = 1; 
+    private int userIdcar = 2; 
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+
+            // Gọi API để lấy dữ liệu
+            DriverGuestTripNotifications = await Http.GetFromJsonAsync<List<DriverGuestTripNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetDriverGuestTrips/{userId}") ?? new();
+            DriverGuestDriverNotifications = await Http.GetFromJsonAsync<List<DriverGuestNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetDriverGuestDriverNotifications/{userId}") ?? new();
+            DriverGuestCarNotifications = await Http.GetFromJsonAsync<List<DriverGuestCarNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetGuestDriverCarNotifications/{userIdcar}") ?? new();
+        }
+        catch
+        {
+            hasError = true;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
 }
