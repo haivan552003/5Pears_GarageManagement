@@ -117,24 +117,6 @@
                                    StartIcon="@Icons.Material.Outlined.Save" Disabled="@isLoading" Color="Color.Primary">Lưu</MudButton>
                     </MudItem>              
                 </MudItem>
-
-               @*  <MudItem xs="12" md="4">
-                    <MudPaper Elevation="3" Class="pa-4">
-                        <MudText Typo="Typo.h6" Class="mb-4">Hình ảnh</MudText>
-                        <MudGrid>
-                            <MudItem xs="12">
-                                <InputFile id="driverImageInput" OnChange="@LoadDriverImage" hidden accept=".jpg,.jpeg,.png" />
-                                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary"
-                                           StartIcon="@Icons.Material.Filled.CloudUpload" for="driverImageInput"
-                                           FullWidth="true" Class="mud-button-small-text">
-                                    Ảnh tài xế
-                                </MudButton>
-                                @if (!string.IsNullOrEmpty(Driver.img_driver))
-                                {
-                                    <MudImage Src="@Driver.img_driver" Alt="Ảnh tài xế" Width="100" Height="100"
-                                              ObjectFit="ObjectFit.Cover" Class="mt-2" />
-                                }
-                            </MudItem> *@
                 <MudItem xs="12" md="4">
                     <MudPaper Elevation="3" Class="pa-4">
                         <MudText Typo="Typo.h6" Class="mb-4">Hình ảnh</MudText>
@@ -307,41 +289,77 @@
       
     }
 
-    private async Task LoadCitizenIdImage(InputFileChangeEventArgs e, int imageNumber)
+    private async Task LoadImage(InputFileChangeEventArgs e, string folder, Action<string> setUrl)
     {
-       
-        await LoadImage(e, "citizen_id_images", (url) =>
+        try
         {
+            var file = e.File;
+            if (file != null)
+            {
+                // Validate file type and size
+                if (!IsValidImageFile(file))
+                {
+                    Snackbar.Add("Invalid file type or size", Severity.Warning);
+                    return;
+                }
 
+                // Generate a unique filename
+                var fileExtension = Path.GetExtension(file.Name);
+                var fileName = $"{folder}/{Guid.NewGuid()}{fileExtension}";
 
-            if (imageNumber == 1)
-                Driver.citizen_identity_img1 = url;
-            else
-                Driver.citizen_identity_img2 = url;
+                // Convert file to base64
+                using var memoryStream = new MemoryStream();
+                await file.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024).CopyToAsync(memoryStream);
+                var base64Data = Convert.ToBase64String(memoryStream.ToArray());
+
+                // Upload to Firebase
+                var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
+
+                // Set the URL and update UI
+                setUrl(imageUrl);
+                StateHasChanged();
+            }
         }
-        );
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Upload failed: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private bool IsValidImageFile(IBrowserFile file)
+    {
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+        var maxFileSize = 5 * 1024 * 1024; // 5MB
+
+        return allowedExtensions.Contains(Path.GetExtension(file.Name).ToLower())
+               && file.Size <= maxFileSize;
     }
 
     private async Task LoadDriverImage(InputFileChangeEventArgs e)
     {
-        
         await LoadImage(e, "driver_images", (url) => Driver.img_driver = url);
+    }
 
+    private async Task LoadCitizenIdImage(InputFileChangeEventArgs e, int imageNumber)
+    {
+        await LoadImage(e, "citizen_id_images", (url) =>
+        {
+            if (imageNumber == 1)
+                Driver.citizen_identity_img1 = url;
+            else
+                Driver.citizen_identity_img2 = url;
+        });
     }
 
     private async Task LoadLicenseImage(InputFileChangeEventArgs e, int imageNumber)
     {
-      
         await LoadImage(e, "license_images", (url) =>
         {
-
             if (imageNumber == 1)
                 Driver.driver_license_img1 = url;
             else
                 Driver.driver_license_img2 = url;
-        }
-
-        );
+        });
     }
     private string ValidateVoucher(float voucher)
     {
@@ -351,30 +369,30 @@
         }
         return null;
     }
-    private async Task LoadImage(InputFileChangeEventArgs e, string folder, Action<string> setUrl)
-    {
-        var file = e.File;
-        if (file != null)
-        {
-            var fileExtension = Path.GetExtension(file.Name);
-            var fileName = $"{Guid.NewGuid()}{fileExtension}";
-            var relativePath = Path.Combine("uploads", folder, fileName);
-            var absolutePath = Path.Combine(Environment.WebRootPath, relativePath);
+    // private async Task LoadImage(InputFileChangeEventArgs e, string folder, Action<string> setUrl)
+    // {
+    //     var file = e.File;
+    //     if (file != null)
+    //     {
+    //         var fileExtension = Path.GetExtension(file.Name);
+    //         var fileName = $"{Guid.NewGuid()}{fileExtension}";
+    //         var relativePath = Path.Combine("uploads", folder, fileName);
+    //         var absolutePath = Path.Combine(Environment.WebRootPath, relativePath);
 
-            Directory.CreateDirectory(Path.GetDirectoryName(absolutePath));
+    //         Directory.CreateDirectory(Path.GetDirectoryName(absolutePath));
 
-            using (var stream = new FileStream(absolutePath, FileMode.Create))
-            {
-                await file.OpenReadStream().CopyToAsync(stream);
-            }
+    //         using (var stream = new FileStream(absolutePath, FileMode.Create))
+    //         {
+    //             await file.OpenReadStream().CopyToAsync(stream);
+    //         }
 
-            var url = $"/{relativePath.Replace("\\", "/")}";
-            setUrl(url);
-            StateHasChanged();
-        }
+    //         var url = $"/{relativePath.Replace("\\", "/")}";
+    //         setUrl(url);
+    //         StateHasChanged();
+    //     }
 
 
-    }
+    // }
 
     private async Task EditDriver()
     {
