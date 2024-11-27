@@ -144,15 +144,8 @@ namespace BE_API.Controllers
                     "sp_admin_login",
                     parameters,
                     commandType: CommandType.StoredProcedure);
-                if (user != null && BCrypt.Net.BCrypt.Verify(password, user.password))
-                {
-                    user.password = null;
 
-                    return user;
-
-                }
-
-                return null;
+                return user;
             }
         }
     }
