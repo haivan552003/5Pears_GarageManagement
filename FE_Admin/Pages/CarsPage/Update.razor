@@ -19,7 +19,7 @@
                         <MudText Typo="Typo.h5" Class="mb-4">Thông tin xe</MudText>
                         <MudGrid>
                             <MudItem xs="4">
-                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_number" Label="Biển số xe" Required="true" RequiredError="Biển số xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateCarNumber))" />
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_number" Label="Biển số xe" ReadOnly />
                             </MudItem>
                             <MudItem xs="4">
                                 <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_name" Label="Tên xe" Required="true" RequiredError="Tên xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateCarName))" />
@@ -43,7 +43,7 @@
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="4">
-                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.price" Label="Giá xe" Required="true" RequiredError="Giá xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidatePrice))" />
+                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.price" Label="Giá xe" Min="0" Step="1000" Required="true" RequiredError="Giá xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidatePrice))" />
                             </MudItem>
                             <MudItem xs="4">
                                 <MudTextField Variant="Variant.Outlined" @bind-Value="Car.color" Label="Màu xe" Required="true" RequiredError="Màu xe đi được là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateColor))" />
@@ -84,19 +84,19 @@
                                                Placeholder="Năm sản xuất" />
                             </MudItem>
                             <MudItem xs="3">
-                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.location_car" Placeholder="Vị trí xe" Label="Vị trí xe" Required="true" />
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.location_car" Placeholder="Vị trí xe" Label="Vị trí xe" ReadOnly />
                             </MudItem>
                             <MudItem xs="3">
                                 <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.odo" Label="Số km đã đi" Required="true" RequiredError="Số km đã đi là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateOdo))" />
                             </MudItem>
                             <MudItem xs="3">
-                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.voucher" Placeholder="Voucher" Label="Voucher" Required="true" />
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.voucher" Placeholder="Voucher" Label="Voucher" Required="true" Min="0" Step="1000" />
                             </MudItem>
                             <MudItem xs="3">
-                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.number_seat" Label="Số ghế" Required="true" RequiredError="Số ghế" />
+                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.number_seat" Label="Số ghế" ReadOnly />
                             </MudItem>
                             <MudItem xs="3">
-                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.insurance_fee" Label="Phí bảo hiểm" Required="true" RequiredError="Phí bảo hiểm là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateBh))" />
+                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.insurance_fee" Label="Phí bảo hiểm" Required="true" Min="0" Step="1000" RequiredError="Phí bảo hiểm là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateBh))" />
                             </MudItem>
                             <MudItem xs="3">
                                 <MudSelect @bind-Value="Car.type_id" Label="Loại Xe" Required="true" Variant="Variant.Outlined">
@@ -148,7 +148,7 @@
                                    Class="mb-3">
                             Thêm ghế
                         </MudButton>
-                        <MudGrid>
+                        <MudGrid Class="overflow-y-auto" Style="max-height: 400px;">
                             @foreach (var seat in CarSeats)
                             {
                                 <MudItem xs="12">
