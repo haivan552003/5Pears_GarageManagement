@@ -17,7 +17,7 @@
 
                 <MudGrid>
                     <MudItem xs="4" Class="pa-5">
-                        <MudImage Src="@newRoleTask.img_cus" Height="320" Alt="Swedish Farm House" Elevation="0" Class="w-100" />
+                        <MudImage Src="https://sme.hust.edu.vn/wp-content/uploads/2022/02/Avatar-Facebook-trang.jpg" Height="320" Alt="Swedish Farm House" Elevation="0" Class="w-100" />
                     </MudItem>
                     <MudItem xs="8" Class="pa-5">
                         <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Họ và tên</MudText>
@@ -82,32 +82,7 @@
     </MudGrid>
 </MudContainer>
 
-<MudContainer Class="mt-14 pa-0 fs-18" MaxWidth="MaxWidth.False">
-    <!-- Form Cập nhật công việc -->
-    
-        @*  <MudItem xs="12">
-        </MudItem>
-        <MudItem xs="6" Class="mx-auto">
-        <MudPaper Elevation="0" Class="pa-3">
-        <MudItem xs="12">
-        <MudPaper Elevation="4" Class="p-4">
-        <MudText Typo="Typo.h6" Class="mb-5">Cập nhật công việc</MudText>
-        <MudForm @ref="form" Style="height:auto">
-        <MudTextField ShrinkLabel @bind-Value="newRoleTask.email" Label="Email" Placeholder="Email" Variant="Variant.Outlined" Required="true" />
-        <MudTextField ShrinkLabel @bind-Value="newRoleTask.fullname" Label="Tên" Placeholder="Tên" Variant="Variant.Outlined" Required="true" />
-        <MudDatePicker @bind-Date="birthdayDate" Label="Ngày sinh" Required="true" Variant="Variant.Outlined" />
-        <MudSelect @bind-Value="newRoleTask.gender" Label="Giới tính" Required="true">
-        <MudSelectItem Value="(byte)1">Nam</MudSelectItem>
-        <MudSelectItem Value="(byte)0">Nữ</MudSelectItem>
-        </MudSelect>
-        <MudTextField ShrinkLabel @bind-Value="newRoleTask.phone_number" Label="SĐT" Placeholder="SĐT" Variant="Variant.Outlined" Required="true" />
-
-        </MudForm>
-        </MudPaper>
-        </MudItem>
-        </MudPaper>
-        </MudItem> *@
-
+@* <MudContainer Class="mt-14 pa-0 fs-18" MaxWidth="MaxWidth.False">
     <MudGrid Class="pa-0">
         <MudItem xs="3">
         </MudItem>
@@ -137,12 +112,6 @@
                                             <MudButton Class="me-3" Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="() => UpdateAddress(address)">Cập nhật</MudButton>
                                             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Delete" Color="Color.Error" OnClick="() => OpenDeleteDialog(address)">Xóa</MudButton>
                                         </MudItem>
-
-                                        @* <MudTextField ShrinkLabel @bind-Value="address.id_cus" Label="ID Khách Hàng" Placeholder="ID Khách Hàng" Variant="Variant.Outlined" Disabled="true" /> *@
-                                        @* <MudSelect @bind-Value="address.status" Label="Trạng thái" Required="true">
-                                    <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
-                                    <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
-                                    </MudSelect> *@
                                     </MudGrid>
                                 </MudForm>
                             }
@@ -156,8 +125,8 @@
     <MudItem xs="12" Class="mx-auto">
         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateData" Class="mt-3">Lưu</MudButton>
     </MudItem>
-</MudContainer>
-<MudDialog @bind-IsVisible="isDialogVisible" MaxWidth="MaxWidth.Medium">
+</MudContainer> *@
+@* <MudDialog @bind-IsVisible="isDialogVisible" MaxWidth="MaxWidth.Medium">
     <DialogContent>
         <MudTextField ShrinkLabel @bind-Value="newAddress.address" Label="Địa chỉ" Placeholder="Địa chỉ" Variant="Variant.Outlined" Required="true" />
         <MudTextField ShrinkLabel @bind-Value="newAddress.type" Label="Loại" Placeholder="Loại" Variant="Variant.Outlined" Required="true" />
@@ -170,7 +139,7 @@
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddNewAddress">Lưu</MudButton>
         <MudButton Variant="Variant.Text" OnClick="CloseDialog">Hủy</MudButton>
     </DialogActions>
-</MudDialog>
+</MudDialog> *@
 
 @code {
     [Parameter] public int customerId { get; set; } // Lấy ID từ URL
@@ -250,6 +219,8 @@
             var response = await httpClient.PutAsJsonAsync($"{url}/{newRoleTask.Id}", newRoleTask);
             if (response.IsSuccessStatusCode)
             {
+                Snackbar.Add($"Sửa thành công", Severity.Success);
+
                 showSuccess = true;
             }
             else
@@ -338,5 +309,6 @@
             Snackbar.Add($"Lỗi khi xóa địa chỉ: {ex.Message}", Severity.Error);
         }
     }
+    
 
 }

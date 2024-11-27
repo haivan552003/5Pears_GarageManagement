@@ -1,0 +1,32 @@
+﻿@inherits MudComponentBase
+
+<MudDialog>
+    <DialogContent>
+        <div class="d-flex flex-column align-center">
+            <MudIcon Icon="@Icons.Material.Outlined.Warning" Color="Color.Warning" Size="Size.Large" Class="mb-3" />
+            <MudText Typo="Typo.body1" Align="Align.Center" Class="mb-4">@ContentText</MudText>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="@Color" OnClick="Submit" Class="mr-3">@ButtonText</MudButton>
+        <MudButton Variant="Variant.Text" OnClick="Cancel">Hủy</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public string ContentText { get; set; }
+    [Parameter] public string ButtonText { get; set; }
+    [Parameter] public Color Color { get; set; }
+
+    private void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
