@@ -27,100 +27,90 @@ namespace BE_API.Controllers
             _context = context;
         }
 
-        //tạo token
         [HttpPost("gentoken-user")]
         public async Task<IActionResult> GenerateTokenUser(login user)
         {
-            if (user != null && !string.IsNullOrEmpty(user.email) && !string.IsNullOrEmpty(user.password))
-            {
-                //lấy dữ liệu nhập vào 
-                var userData = await GetUserInfor(user.email, user.password);
-
-                if (userData == null)
-                {
-                    return Unauthorized("Invalid username or password.");
-                }
-
-                //tạo chuỗi token
-                var jwt = Configuration.GetSection("Jwt").Get<Jwt>();
-
-                var claims = new[]
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                    new Claim("email", userData.email.ToString()),
-                    new Claim("password", userData.password.ToString()),
-                    new Claim("id", userData.id.ToString()),
-                    new Claim("fullname", userData.fullname.ToString()),
-                    new Claim(ClaimTypes.Role, userData.role_id.ToString()),
-                };
-
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));
-                var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-                var token = new JwtSecurityToken(
-                    jwt.Issuer,
-                    jwt.Audience,
-                    claims,
-                    expires: DateTime.Now.AddMinutes(30),
-                    signingCredentials: signIn
-                );
-                return Ok(new JwtSecurityTokenHandler().WriteToken(token));
-            }
-            else
+            if (user == null || string.IsNullOrEmpty(user.email) || string.IsNullOrEmpty(user.password))
             {
                 return BadRequest("Invalid request.");
             }
+
+            var userData = await GetUserInfor(user.email, user.password);
+
+            if (userData == null)
+            {
+                return Unauthorized("Invalid username or password.");
+            }
+
+            var jwt = Configuration.GetSection("Jwt").Get<Jwt>();
+
+            var claims = new[]
+            {
+        new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+        new Claim("email", userData.email),
+        new Claim("id", userData.id.ToString()),
+        new Claim("fullname", userData.fullname),
+        new Claim(ClaimTypes.Role, userData.role_id.ToString()),
+    };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));
+            var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                jwt.Issuer,
+                jwt.Audience,
+                claims,
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: signIn
+            );
+
+            return Ok(new JwtSecurityTokenHandler().WriteToken(token));
         }
-        //tạo token
+
         [HttpPost("gentoken-admin")]
         public async Task<IActionResult> GenerateTokenAdmin(login user)
         {
-            if (user != null && !string.IsNullOrEmpty(user.email) && !string.IsNullOrEmpty(user.password))
-            {
-                //lấy dữ liệu nhập vào 
-                var userData = await GetAdminInfor(user.email, user.password);
-
-                if (userData == null)
-                {
-                    return Unauthorized("Invalid username or password.");
-                }
-
-                //tạo chuỗi token
-                var jwt = Configuration.GetSection("Jwt").Get<Jwt>();
-
-                var claims = new[]
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                    new Claim("email", userData.email.ToString()),
-                    new Claim("password", userData.password.ToString()),
-                    new Claim("emp_id", userData.id.ToString()),
-                    new Claim("fullname", userData.fullname.ToString()),
-                    new Claim(ClaimTypes.Role, userData.role_id.ToString()),
-                };
-
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));
-                var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-                var token = new JwtSecurityToken(
-                    jwt.Issuer,
-                    jwt.Audience,
-                    claims,
-                    expires: DateTime.Now.AddMinutes(30),
-                    signingCredentials: signIn
-                );
-                return Ok(new JwtSecurityTokenHandler().WriteToken(token));
-            }
-            else
+            if (user == null || string.IsNullOrEmpty(user.email) || string.IsNullOrEmpty(user.password))
             {
                 return BadRequest("Invalid request.");
             }
+
+            var userData = await GetAdminInfor(user.email, user.password);
+
+            if (userData == null)
+            {
+                return Unauthorized("Invalid username or password.");
+            }
+
+            var jwt = Configuration.GetSection("Jwt").Get<Jwt>();
+
+            var claims = new[]
+            {
+        new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+        new Claim("email", userData.email),
+        new Claim("emp_id", userData.id.ToString()),
+        new Claim("fullname", userData.fullname),
+        new Claim(ClaimTypes.Role, userData.role_id.ToString()),
+    };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));
+            var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                jwt.Issuer,
+                jwt.Audience,
+                claims,
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: signIn
+            );
+
+            return Ok(new JwtSecurityTokenHandler().WriteToken(token));
         }
 
-        //kiểm tra người dùng 
         [HttpGet("user-login")]
         public async Task<login> GetUserInfor(string email, string password)
         {
@@ -131,11 +121,17 @@ namespace BE_API.Controllers
                     "sp_user_login",
                     parameters,
                     commandType: CommandType.StoredProcedure);
+                if (user != null && BCrypt.Net.BCrypt.Verify(password, user.password))
+                {
+                    user.password = null;
 
-                return user;
+                    return user;
+
+                }
+
+                return null;
             }
         }
-
 
         //kiểm tra người dùng 
         [HttpGet("admin-login")]
@@ -148,8 +144,15 @@ namespace BE_API.Controllers
                     "sp_admin_login",
                     parameters,
                     commandType: CommandType.StoredProcedure);
+                if (user != null && BCrypt.Net.BCrypt.Verify(password, user.password))
+                {
+                    user.password = null;
 
-                return user;
+                    return user;
+
+                }
+
+                return null;
             }
         }
     }
