@@ -4,47 +4,65 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime js
 
-<MudContainer>
-    <MudCard>
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText Typo="Typo.h6">Đổi Mật Khẩu</MudText>
-            </CardHeaderContent>
-        </MudCardHeader>
-        <MudCardContent>
+<MudContainer Class="mt-5 pa-0" MaxWidth="MaxWidth.False" Style="margin-top: 100px;">
+    <MudGrid Class="pa-0 justify-center">
+        <MudItem xs="6" Class="mx-auto">
             <MudForm @ref="_form" @bind-IsValid="_isValid">
-                <MudTextField @bind-Value="_model.OldPassword"
-                              Label="Mật khẩu hiện tại"
-                              InputType="InputType.Password"
-                              Required="true"
-                              RequiredError="Vui lòng nhập mật khẩu hiện tại" />
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudCard Class="mud-elevation-12 rounded pa-6" Style="border-radius: 12px;">
+                            <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center pt-5">Đổi Mật Khẩu</MudText>
+                            <MudCardContent Class="pa-4">
+                                <MudTextField @bind-Value="_model.OldPassword"
+                                              Label="Mật khẩu hiện tại"
+                                              InputType="InputType.Password"
+                                              Variant="Variant.Outlined"
+                                              Placeholder="Nhập mật khẩu hiện tại"
+                                              Required="true"
+                                              RequiredError="Vui lòng nhập mật khẩu hiện tại"
+                                              Adornment="Adornment.Start"
+                                              AdornmentIcon="@Icons.Material.Filled.Lock" />
 
-                <MudTextField @bind-Value="_model.NewPassword"
-                              Label="Mật khẩu mới"
-                              InputType="InputType.Password"
-                              Required="true"
-                              RequiredError="Vui lòng nhập mật khẩu mới"
-                              Validation="@(new Func<string, string>(ValidateNewPassword))" />
+                                <MudTextField @bind-Value="_model.NewPassword"
+                                              Label="Mật khẩu mới"
+                                              InputType="InputType.Password"
+                                              Variant="Variant.Outlined"
+                                              Placeholder="Nhập mật khẩu mới"
+                                              Required="true"
+                                              RequiredError="Vui lòng nhập mật khẩu mới"
+                                              Adornment="Adornment.Start"
+                                              AdornmentIcon="@Icons.Material.Filled.Lock"
+                                              Validation="@(new Func<string, string>(ValidateNewPassword))" />
 
-                <MudTextField @bind-Value="_model.ConfirmPassword"
-                              Label="Xác nhận mật khẩu"
-                              InputType="InputType.Password"
-                              Required="true"
-                              RequiredError="Vui lòng xác nhận mật khẩu"
-                              Validation="@(new Func<string, string>(ValidateConfirmPassword))" />
+                                <MudTextField @bind-Value="_model.ConfirmPassword"
+                                              Label="Xác nhận mật khẩu"
+                                              InputType="InputType.Password"
+                                              Variant="Variant.Outlined"
+                                              Placeholder="Xác nhận mật khẩu"
+                                              Required="true"
+                                              RequiredError="Vui lòng xác nhận mật khẩu"
+                                              Adornment="Adornment.Start"
+                                              AdornmentIcon="@Icons.Material.Filled.Lock"
+                                              Validation="@(new Func<string, string>(ValidateConfirmPassword))" />
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           FullWidth="true"
+                                           Class="mx-auto w-100 mt-5 mb-3"
+                                           Disabled="!_isValid"
+                                           OnClick="ChangePasswordAsync">
+                                    Đổi Mật Khẩu
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+                </MudGrid>
             </MudForm>
-        </MudCardContent>
-        <MudCardActions>
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       FullWidth="true"
-                       Disabled="!_isValid"
-                       OnClick="ChangePasswordAsync">
-                Đổi Mật Khẩu
-            </MudButton>
-        </MudCardActions>
-    </MudCard>
+        </MudItem>
+    </MudGrid>
 </MudContainer>
+
 <script>
     // Lấy token từ localStorage
     function getAuthToken() {
