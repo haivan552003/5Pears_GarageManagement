@@ -1,0 +1,59 @@
+﻿@using System.Net.Http.Json
+@inject HttpClient HttpClient
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudText>Bạn có chắc chắn muốn xóa hóa đơn này không?</MudText>
+        <MudText Color="Color.Error">@_errorMessage</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" OnClick="Cancel">Hủy</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="ConfirmDelete" Disabled="@_isDeleting">
+            @(_isDeleting ? "Đang xóa..." : "Xóa")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public int ItemId { get; set; }
+    [Parameter] public string DeleteUrl { get; set; }
+
+    private bool _isDeleting = false;
+    private string _errorMessage = "";
+
+    private async Task ConfirmDelete()
+    {
+        _isDeleting = true;
+        _errorMessage = "";
+
+        try
+        {
+            var response = await HttpClient.PutAsync($"{DeleteUrl}/{ItemId}", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Xóa thành công!", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                _errorMessage = "Không thể xóa. Vui lòng thử lại.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Lỗi: {ex.Message}";
+        }
+        finally
+        {
+            _isDeleting = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

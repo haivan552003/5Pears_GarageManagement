@@ -113,5 +113,91 @@ namespace BE_API.Controllers
                 return Ok(results.ToList());
             }
         }
+
+
+
+
+        [HttpPut("Status6_gt/{id}")]
+        public async Task<IActionResult> Status6_gt(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var result = await connection.ExecuteAsync("sp_update_status_6_guest_trip", parameters, commandType: CommandType.StoredProcedure);
+
+                if (result == 0)
+                {
+                    return NotFound();
+                }
+            }
+
+            return NoContent();
+        }
+
+
+        [HttpPut("Status6_gc/{id}")]
+        public async Task<IActionResult> Status6_gc(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var result = await connection.ExecuteAsync("sp_update_status_6_guest_car", parameters, commandType: CommandType.StoredProcedure);
+
+                if (result == 0)
+                {
+                    return NotFound();
+                }
+            }
+
+            return NoContent();
+        }
+        [HttpPut("Status6_gd/{id}")]
+        public async Task<IActionResult> Status6_gd(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var result = await connection.ExecuteAsync("sp_update_status_6_guest_driver", parameters, commandType: CommandType.StoredProcedure);
+
+                if (result == 0)
+                {
+                    return NotFound();
+                }
+            }
+
+            return NoContent();
+        }
+        [HttpPut("Status6_gcd/{id}")]
+        public async Task<IActionResult> Status6_gcd(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var result = await connection.ExecuteAsync("sp_update_status_6_guest_car_driver", parameters, commandType: CommandType.StoredProcedure);
+
+                if (result == 0)
+                {
+                    return NotFound();
+                }
+            }
+
+            return NoContent();
+        }
     }
 }

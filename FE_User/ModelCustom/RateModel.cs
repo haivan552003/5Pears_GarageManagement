@@ -1,7 +1,6 @@
-﻿
-namespace BE_API.ModelCustom
+﻿namespace FE_User.ModelCustom
 {
-    public class RateModel 
+    public class RateModel
     {
         public int id { get; set; }
         public int rate { get; set; }
@@ -10,7 +9,7 @@ namespace BE_API.ModelCustom
     public class GuestCarDriverHistory
     {
         public int id { get; set; }
-        public decimal Price { get; set; }
+        public float price { get; set; }
         public string Car_Name { get; set; }
         public string Car_Code { get; set; }
         public string Car_Number { get; set; }
@@ -19,12 +18,14 @@ namespace BE_API.ModelCustom
         public string Driver_Code { get; set; }
         public string EmpName { get; set; }
         public int status { get; set; }
+        public int rate { get; set; }
+        public string rate_content { get; set; }
     }
 
     public class GuestCarHistory
     {
         public int id { get; set; }
-        public decimal Price { get; set; }
+        public float Price { get; set; }
         public string guest_car_code { get; set; }
         public string car_code { get; set; }
         public string car_name { get; set; }
@@ -67,5 +68,4 @@ namespace BE_API.ModelCustom
         public int rate { get; set; }
         public string rate_content { get; set; }
     }
-
 }

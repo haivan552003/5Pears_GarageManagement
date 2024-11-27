@@ -1,135 +1,131 @@
 ﻿@page "/booking_history"
 @inject HttpClient httpClient
+@inject IDialogService DialogService
 @inject IJSRuntime js
 <MudContainer Class="mt-14 pa-0 fs-18" MaxWidth="MaxWidth.False">
     <MudGrid Class="pa-0">
-
         <NavProfileUser />
 
         <MudItem xs="9">
             <MudGrid Class="pa-0">
                 <MudItem xs="12">
                     <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-
                     </MudPaper>
                     <MudPaper Elevation="0">
-                        <MudDataGrid Class="mx-auto pa-2" T="role_task" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
-                                     Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+                        <MudDataGrid Items="@_guestCarDriverHistories"
+                                     Dense="true"
+                                     Hover="true"
+                                     Bordered="true"
+                                     Striped="true"
+                                     MultiSelection="false">
+
                             <ToolBarContent>
-                                <MudItem xs="4" Elevation="0" Class="pb-3">
-                                    <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
-                                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-                                </MudItem>
-
-                                <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
-                                    <MudButton Href="/addroletask" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
-                                        Thêm mới
-                                    </MudButton>
-
-                                    <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
-                                        Nhập file
-                                    </MudButton>
-
-                                    <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
-                                        Xuất file
-                                    </MudButton>
+                                <MudItem xs="4" Class="pb-3">
+                                    <MudTextField @bind-Value="_searchString"
+                                                  Placeholder="Tìm kiếm..."
+                                                  Adornment="Adornment.Start"
+                                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                                  Immediate="true" />
                                 </MudItem>
                             </ToolBarContent>
+
                             <Columns>
-                                <SelectColumn T="role_task" />
-                                @* <PropertyColumn T="role_task" TProperty="int" Property="x => x.id_role_task" /> *@
-                                <PropertyColumn T="role_task" Style="width: 80%;" TProperty="string" Property="x => x.name" SortBy="@_sortBy" Class="fw-bold" Title="Tên công việc" />
-                                <TemplateColumn T="role_task" Class="fw-bold" Title="Chức năng">
-                                    <CellTemplate Context="element">
-                                        @*      <MudTooltip Text="Chỉnh sửa">
-                                        <MudIconButton Href="@($"/editroletask/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
-                                        </MudTooltip> *@
-                                        <MudTooltip Text="Xóa">
-                                            <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
-                                        </MudTooltip>
+                                <PropertyColumn Property="x => x.Price" Title="Giá tiền" />
+                                <PropertyColumn Property="x => x.car_code" Title="Mã xe" />
+                                <PropertyColumn Property="x => x.guest_trip_code" Title="Mã hóa đơn" />
+                                <PropertyColumn Property="x => x.car_name" Title="Tên xe" />
+                                <PropertyColumn Property="x => x.car_number" Title="Biển số xe" />
+                                <PropertyColumn Property="x => x.fullname" Title="Tên tài xế" />    
+                                    <PropertyColumn Property="x => x.driver_code" Title="Mã tài xế" />
+                                <TemplateColumn Title="Hành động">
+                                    <CellTemplate>                                      
+                                        @if (context.Item.status == 2 || context.Item.status == 5)
+                                        {
+                                            <MudIconButton Icon="@Icons.Material.Filled.Payment" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" />
+                                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                                           Variant="Variant.Filled"
+                                                           Color="Color.Error"
+                                                           Size="Size.Small"
+                                                           OnClick="@(() => OpenDeleteDialog(context.Item))" />
+                                        }
+                                        else 
+                                        {
+                                            <MudText Typo="Typo.subtitle1">Đã thanh toán</MudText>
+                                        }
                                     </CellTemplate>
                                 </TemplateColumn>
                             </Columns>
+
                             <PagerContent>
-                                <MudDataGridPager T="role_task" />
+                                <MudDataGridPager />
                             </PagerContent>
                         </MudDataGrid>
                     </MudPaper>
                 </MudItem>
             </MudGrid>
-
         </MudItem>
     </MudGrid>
 </MudContainer>
+<script>
+    // Lấy token từ localStorage
+    function getAuthToken() {
+        return localStorage.getItem("authToken");
+    }
+
+</script>
 @code {
-    [Parameter] public int Id { get; set; }
-    private IEnumerable<role_task> Elements = new List<role_task>();
-    private Dictionary<int, string> CategoryDict = new Dictionary<int, string>();
-    private string _searchString;
-    private bool _sortNameByLength;
-    private List<string> _events = new();
-    private string url = "http://localhost:49922/api/RoleTask";
+    private List<GuestTripHistory> _guestCarDriverHistories = new();
+    private string _searchString = "";
+    private int _currentUserId = 1; // Lấy từ authentication
+    [Parameter] public int id_cus { get; set; }
 
-
-    private Func<role_task, object> _sortBy => x =>
-    {
-        if (_sortNameByLength)
-            return x.name.Length;
-        else
-            return x.name;
-    };
-
-    private string GenerateEditUrl(int id)
-    {
-        return $"/updateproducts/{id}";
-    }
-
-    private string GenerateDeleteUrl(int id)
-    {
-        return $"/deleteproduct/{id}";
-    }
-
-    private string GetRoleTaskName(int cateId)
-    {
-        return CategoryDict.TryGetValue(cateId, out var name) ? name : "Unknown";
-    }
-
-    private Func<role_task, bool> _quickFilter => x =>
-    {
-        if (string.IsNullOrWhiteSpace(_searchString))
-            return true;
-
-        if ($"{x.name} {x.id_role_task} {GetRoleTaskName(x.id_role_task)}".Contains(_searchString))
-            return true;
-
-        return false;
-    };
+    private string _historyUrl = "http://localhost:49922/api/Rate/GetCustomerGuestTripHistory";
 
     protected override async Task OnInitializedAsync()
     {
+        var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "id");
+
+            if (usernameClaim != null)
+            {
+                id_cus = Convert.ToInt16(usernameClaim.Value);
+            }
+        }
+        await LoadGuestCarDriverHistory();
+    }
+
+    private async Task LoadGuestCarDriverHistory()
+    {
         try
         {
-            Elements = await httpClient.GetFromJsonAsync<List<role_task>>(url);
+            var response = await httpClient.GetFromJsonAsync<List<GuestTripHistory>>($"{_historyUrl}/{id_cus}");
+            _guestCarDriverHistories = response ?? new List<GuestTripHistory>();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            Console.WriteLine($"Lỗi tải lịch sử: {ex.Message}");
         }
     }
-
-    void RowClicked(DataGridRowClickEventArgs<role_task> args)
+    private async Task OpenDeleteDialog(GuestTripHistory selectedItem)
     {
-        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-    }
+        var parameters = new DialogParameters
+ {
+     { "ItemId", selectedItem.id },
+     { "DeleteUrl", "http://localhost:49922/api/Rate/Status6_gt" }
+ };
 
-    void RowRightClicked(DataGridRowClickEventArgs<role_task> args)
-    {
-        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-    }
+        var dialog = await DialogService.ShowAsync<DeleteDialog>("Xác nhận xóa", parameters);
+        var result = await dialog.Result;
 
-    void SelectedItemsChanged(HashSet<role_task> items)
-    {
-        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+        if (!result.Canceled)
+        {
+            await LoadGuestCarDriverHistory();
+        }
     }
 }
-

@@ -1,0 +1,80 @@
+﻿@inherits MudComponentBase
+@inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer>
+            <MudGrid>
+                <MudItem xs="12" Class="text-center">
+                    <MudText Typo="Typo.h6">Đánh giá</MudText>
+                </MudItem>
+
+                <MudItem xs="12" Class="text-center mb-4">
+                    <MudRating SelectedValue="@_rating"
+                               SelectedValueChanged="@(value => _rating = value)"
+                               Color="Color.Warning"
+                               Size="Size.Large" />
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_comment"
+                                  Label="Nhận xét"
+                                  Variant="Variant.Outlined"
+                                  Lines="3"
+                                  Placeholder="Nhập nhận xét của bạn (không bắt buộc)"
+                                  FullWidth="true" />
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="@Cancel" Color="Color.Default">Hủy</MudButton>
+        <MudButton OnClick="@SubmitRating" Color="Color.Primary" Disabled="@(_rating == 0)">Gửi đánh giá</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public int ItemId { get; set; }
+    [Parameter] public string RateUrl { get; set; }
+
+
+    private int _rating = 0;
+    private string _comment = "";
+
+    private async Task SubmitRating()
+    {
+        try
+        {
+            var rateModel = new RateModel
+                {
+                    rate = _rating,
+                    rate_content = _comment
+                };
+
+            var response = await HttpClient.PutAsJsonAsync($"{RateUrl}/{ItemId}", rateModel);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Đánh giá thành công!", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Đánh giá thất bại!", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
