@@ -27,15 +27,39 @@
 
 <MudContainer Class="pa-0" style="margin-top:95px">
     <div class="position-relative">
-        <MudCarousel Class="mud-width-full rounded-3" style="height:550px" ShowArrows="true" TData="banner" ShowBullets="false" EnableSwipeGesture="true" AutoCycle="true" TData="object">
+        <MudCarousel Class="mud-width-full rounded-3" style="height:400px; overflow: hidden;" ShowArrows="true" TData="object" ShowBullets="false" EnableSwipeGesture="true" AutoCycle="true">
             @foreach (var item in eBanner)
             {
-                <MudCarouselItem Transition="Transition.Slide" Color="Color.Primary">
-                    <MudImage class="img-fluid w-100 rounded-3" style="height:550px" src="@item.img_banner" alt="@item.title" />
+                <MudCarouselItem Transition="Transition.Slide" Color="Color.Transparent">
+                    <div style="position: relative; height: 100%; width: 100%; overflow: hidden; border-radius: 12px;">
+                        <!-- Hình ảnh -->
+                        <MudImage class="w-100 h-100"
+                                  style="object-fit: cover; height: 100%; width: 100%; border-radius: 12px;"
+                                  src="@item.img_banner"
+                                  alt="@item.title" />
+
+                        <!-- Tiêu đề -->
+                        <div style="
+                        position: absolute;
+                        bottom: 10%;
+                        left: 5%;
+                        transform: translateY(50%);
+                        background-color: rgba(0, 0, 0, 0.7);
+                        color: white;
+                        padding: 15px 20px;
+                        border-radius: 12px;
+                        font-size: 1.4rem;
+                        font-weight: bold;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);">
+                            @item.title
+                        </div>
+                    </div>
                 </MudCarouselItem>
             }
         </MudCarousel>
-    </div> 
+    </div>
+
+
     @* chuyến xe phổ biến *@
     <MudText Class="text-center text-uppercase fw-bold pt-9 pb-3" Typo="Typo.h5" Color="Color.Primary">tuyến xe phổ biến</MudText>
     <MudGrid>
