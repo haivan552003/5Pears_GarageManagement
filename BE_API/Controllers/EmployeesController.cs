@@ -64,6 +64,7 @@ namespace BE_API.Controllers
             try
             {
                 var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newEmployee.password);
+                newEmployee.password = hashedPassword;
                 var parameters = new DynamicParameters(newEmployee);
                 using (var connection = new SqlConnection(_connectionString))
                 {
