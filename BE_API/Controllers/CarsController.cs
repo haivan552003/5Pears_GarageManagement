@@ -10,7 +10,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Tesseract;
 
 namespace BE_API.Controllers
 {
@@ -140,8 +139,7 @@ namespace BE_API.Controllers
                 carId = Convert.ToInt32(carIdParam.Value);
             }
 
-            // Only create seats for bus-type vehicles (type_id = 3)
-            if (cars.type_id == 3 && cars.number_seat > 0)
+            if (cars.number_seat > 0)
             {
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
@@ -166,7 +164,7 @@ namespace BE_API.Controllers
 
                         seatCmd.Parameters.AddWithValue("@name", seatName);
                         seatCmd.Parameters.AddWithValue("@car_id", carId);
-                        seatCmd.Parameters.AddWithValue("@row", i + 1);
+                        seatCmd.Parameters.AddWithValue("@row",  1);
                         seatCmd.Parameters.AddWithValue("@col", 1);
                         await seatCmd.ExecuteNonQueryAsync();
                     }

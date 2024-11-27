@@ -2,9 +2,7 @@
 @inject HttpClient httpClient
 @inject ISnackbar Snackbar
 @inject NavigationManager nv
-@using DynamicTesseract
-@using IronOcr
-@using Tesseract
+
 
 <MudContainer MaxWidth="MaxWidth.False" Class="mt-14 pa-0">
     <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
@@ -39,7 +37,7 @@
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="4">
-                    <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.color" Label="Màu xe" Placeholder="Nhập màu xe" Required="true" RequiredError="Màu xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateColor))" />
+                    <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.color" Label="Màu xe"  Placeholder="Nhập màu xe" Required="true" RequiredError="Màu xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateColor))" />
                 </MudItem>
                 <MudItem xs="4">
                     <MudDatePicker @bind-Date="vehicle_registration_start" Variant="Variant.Outlined" Placeholder="Ngày đăng kiểm" Label="Ngày đăng ký" Required="true" RequiredError="Ngày đăng ký là bắt buộc" />
@@ -48,7 +46,7 @@
                     <MudDatePicker @bind-Date="vehicle_registration_end" Label="Ngày hết hạn đăng ký" Placeholder="Ngày hết hạn đăng kiểm" Variant="Variant.Outlined" Required="true" RequiredError="Ngày hết hạn đăng ký là bắt buộc" />
                 </MudItem>
                 <MudItem xs="4">
-                    <MudNumericField Variant="Variant.Outlined" @bind-Value="newCar.price" Label="Giá xe" Placeholder="Nhập giá xe" Required="true" RequiredError="Giá xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidatePrice))" />
+                    <MudNumericField Variant="Variant.Outlined" @bind-Value="newCar.price" Label="Giá xe" Placeholder="Nhập giá xe" Min="0" Step="1000" Required="true" RequiredError="Giá xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidatePrice))" />
                 </MudItem>
                 <MudItem xs="4">
                     <MudSelect @bind-Value="newCar.type_id" Label="Loại xe" Required="true" Variant="Variant.Outlined">
@@ -94,23 +92,25 @@
                                      Label="Phí bảo hiểm"
                                      Placeholder="Phí bảo hiểm"
                                      Required="true"
+                                      Min="0" Step="1000"
                                      RequiredError="Phí bảo hiểm là bắt buộc"
                                      Validation="@(new Func<float, string>(ValidateInsuranceFee))"
-                                     Min="0" />
+                                     />
                 </MudItem>
                 <MudItem xs="3">
                     <MudSelect Variant="Variant.Outlined" @bind-Value="newCar.isRetail" Label="Loại xe" Required="true" Placeholder="Loại xe" RequiredError="Loại xe là bắt buộc">
                         <MudSelectItem Value="@((byte)0)">Xe dịch vụ</MudSelectItem>
-                        <MudSelectItem Value="@((byte)1)">Xe bán lẻ</MudSelectItem>
+                        <MudSelectItem Value="@((byte)1)">Xe cho thuê</MudSelectItem>
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="3">
-                    <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.location_car" Label="Vị trí xe" Placeholder="Nhập vị trí xe" Required="true" RequiredError="Vị trí xe là bắt buộc" />
+                    <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.location_car" Label="Vị trí xe" Placeholder="Nhập vị trí xe" ReadOnly />
                 </MudItem>
                 <MudItem xs="3">
                     <MudNumericField Variant="Variant.Outlined"
                                      @bind-Value="newCar.voucher"
                                      Label="Voucher"
+                                    Step="1000"
                                      Placeholder="Nhập giá trị voucher"
                                      Validation="@(new Func<float, string>(ValidateVoucher))"
                                      Min="0" />
@@ -239,7 +239,7 @@
 
                     if (addedCar != null && addedCar.id > 0)
                     {
-                        if (newCar.type_id == 3 && newCar.number_seat > 0)
+                        if ( newCar.number_seat > 0)
                         {
                             try
                             {
@@ -267,13 +267,15 @@
                         else
                         {
                             Snackbar.Add("Thêm xe thành công", Severity.Success);
+                            nv.NavigateTo("/getcars");
                         }
                         newCar = new car_create();
                         vehicle_registration_start = null;
                         vehicle_registration_end = null;
                         year_production = null;
-                        StateHasChanged();
+                        Snackbar.Add("Thêm xe thành công", Severity.Success);
                         nv.NavigateTo("/getcars");
+                        StateHasChanged();
                     }
                 }
                 else
@@ -399,31 +401,6 @@
                 });
         }
     }
-    private async Task ProcessOCR(IBrowserFile file)
-    {
-        using var stream = file.OpenReadStream();
-        using var memoryStream = new MemoryStream();
-        await stream.CopyToAsync(memoryStream);
-
-        // Convert MemoryStream to byte array
-        byte[] imageBytes = memoryStream.ToArray();
-
-        using (var tesseract = new TesseractEngine("./tessdata", "vie", "Default"))
-        {
-            using (var pix = Pix.LoadFromMemory(imageBytes))
-            {
-                using (var page = tesseract.Process(pix))
-                {
-                    string extractedText = page.GetText();
-                    string extractedNumber = CleanAndValidateCarNumber(extractedText);
-                    if (!string.IsNullOrEmpty(extractedNumber))
-                    {
-                        newCar.car_number = extractedNumber;
-                    }
-                }
-            }
-        }
-    }
 
     private string CleanAndValidateCarNumber(string rawText)
     {
@@ -443,10 +420,21 @@
         }
         else
         {
-            var regex = new System.Text.RegularExpressions.Regex(@"^[A-Za-z]{2}-\d{5}$");
-            if (!regex.IsMatch(number))
+            // Regex patterns for different Vietnamese license plate formats
+            var regexPatterns = new[]
             {
-                yield return "Biển số xe không hợp lệ. Định dạng phải là XX-12345.";
+            @"^\d{2}[A-Z]-\d{4,5}$",      // Standard format: 12A-1234 or 12A-12345
+            @"^\d{2}[A-Z]\d-\d{4,5}$",      // Alternate format: 12A1-1234
+            @"^[A-Z]\d{2}-\d{4,5}$",      // Format for some provinces: A12-1234 or A12-12345
+            @"^[A-Z]{2}\d{3}(?:\.\d{2})?$" // Format for diplomatic/special vehicles
+        };
+
+            bool isValid = regexPatterns.Any(pattern =>
+                System.Text.RegularExpressions.Regex.IsMatch(number, pattern));
+
+            if (!isValid)
+            {
+                yield return "Biển số xe không hợp lệ. Ví dụ đúng: 12A-1234, 12A1-1234, A12-1234";
             }
         }
     }
