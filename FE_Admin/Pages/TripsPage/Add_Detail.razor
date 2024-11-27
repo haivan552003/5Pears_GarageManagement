@@ -1,5 +1,6 @@
 ﻿@inject MudBlazor.ISnackbar Snackbar
-@inject HttpClient httpClient // Thêm inject HttpClient
+@inject HttpClient httpClient
+@inject NavigationManager Navigation
 
 
 <MudDialog MaxWidth="MaxWidth.Medium">
@@ -8,10 +9,15 @@
             <MudText Typo="Typo.h6" Class="mb-5">@ContentText</MudText>
             <MudForm @ref="form">
                 <MudGrid Gutter="true">
-                    <MudItem xs="6" Class="mx-auto">
-                        <MudTextField Label="Mã CT chuyến đi" @bind-Value="SelectedTrip.trip_detail_code"
-                                      Placeholder="Nhập mã CT chuyến đi" Variant="Variant.Outlined" />
+                    <MudItem xs="6" Class="mb-4">
+                        <MudDatePicker Label="Ngày bắt đầu" @bind-Date="SelectedTrip.DateStart" Variant="Variant.Outlined" MinDate="@DateTime.Today" />
+                        <MudTimePicker Label="Giờ bắt đầu" @bind-Time="SelectedTrip.TimeStart" Variant="Variant.Outlined" />
                     </MudItem>
+                    <MudItem xs="6" Class="mb-4">
+                        <MudDatePicker Label="Ngày kết thúc" @bind-Date="SelectedTrip.DateEnd"  Variant="Variant.Outlined"  MinDate="@(SelectedTrip.DateStart ?? DateTime.Today)" />
+                        <MudTimePicker Label="Giờ kết thúc" @bind-Time="SelectedTrip.TimeEnd" Variant="Variant.Outlined" />
+                    </MudItem>
+
                     <MudItem xs="6" Class="mb-4">
                         <MudNumericField T="float" Label="Khoảng cách" @bind-Value="SelectedTrip.distance"
                                          Placeholder="Nhập khoảng cách" Variant="Variant.Outlined" Required="true" />
@@ -58,15 +64,8 @@
                             <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
                         </MudSelect>
                     </MudItem>
+
                     <MudItem xs="6" Class="mb-4">
-                        <MudTextField Label="Thời gian bắt đầu" @bind-Value="SelectedTrip.time_start"
-                                      Placeholder="Bắt đầu" Variant="Variant.Outlined" Required="true" />
-                    </MudItem>
-                    <MudItem xs="6" Class="mb-4">
-                        <MudTextField Label="Thời gian kết thúc" @bind-Value="SelectedTrip.time_end"
-                                      Placeholder="Kết thúc" Variant="Variant.Outlined" Required="true" />
-                    </MudItem>
-                    <MudItem xs="12" Class="mb-4">
                         <MudTextField Label="Voucher" @bind-Value="SelectedTrip.voucher"
                                       Placeholder="Mã voucher" Variant="Variant.Outlined" Required="true" />
                     </MudItem>
@@ -94,24 +93,65 @@
     private List<dropdown> cars = new List<dropdown>(); // Danh sách xe
     private List<dropdown> locationsto = new List<dropdown>(); // điểm khởi hành
 
+    private string LastSegment;
+
     protected override async Task OnInitializedAsync()
     {
         drivers = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/driver");
 
-        locationsfrom = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/tripfrom");
+        locationsfrom = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/location");
 
         cars = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/car");
 
-        locationsto = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/tripto");
+        locationsto = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/location");
     }
 
-    void Submit()
+    private string GetLastSegment(string url)
     {
+        var segments = url.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+        return segments.Length > 0 ? segments.Last() : string.Empty;
+    }
+
+
+    private async Task Submit()
+    {
+        await form.Validate();
         if (form.IsValid)
         {
-            MudDialog.Close(DialogResult.Ok(SelectedTrip));
+            var uri = Navigation.Uri;
+            LastSegment = GetLastSegment(uri);
+            SelectedTrip.trip_id = int.Parse(LastSegment);
+
+            if (SelectedTrip.DateStart.HasValue && SelectedTrip.TimeStart.HasValue)
+            {
+                SelectedTrip.time_start = SelectedTrip.DateStart.Value.Date + SelectedTrip.TimeStart.Value;
+            }
+            if (SelectedTrip.DateEnd.HasValue && SelectedTrip.TimeEnd.HasValue)
+            {
+                SelectedTrip.time_end = SelectedTrip.DateEnd.Value.Date + SelectedTrip.TimeEnd.Value;
+            }
+
+            try
+            {
+                var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Trips/tripdetail", SelectedTrip);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Thêm chi tiết chuyến đi thành công!", Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(SelectedTrip));
+                    StateHasChanged();
+                }
+                else
+                {
+                    Snackbar.Add($"Lỗi: {response.ReasonPhrase}", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Đã xảy ra lỗi: {ex.Message}", Severity.Error);
+            }
         }
     }
+
 
     void Cancel()
     {

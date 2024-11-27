@@ -9,7 +9,15 @@
             <MudGrid Gutter="true">
                 <MudItem xs="6" Class="mx-auto">
                     <MudTextField Label="Mã CT chuyến đi" @bind-Value="SelectedTrip.trip_detail_code"
-                                  Placeholder="Nhập mã CT chuyến đi" Variant="Variant.Outlined" />
+                                  Placeholder="Nhập mã CT chuyến đi" Variant="Variant.Outlined" Disabled="true" />
+                </MudItem>
+                <MudItem xs="6" Class="mb-4">
+                    <MudTextField Label="Thời gian bắt đầu" Value="@SelectedTrip.time_start.ToString("dd/MM/yyyy HH:mm")"
+                                  Placeholder="Bắt đầu" Variant="Variant.Outlined" Required="true" Disabled="true" />
+                </MudItem>
+                <MudItem xs="6" Class="mb-4">
+                    <MudTextField Label="Thời gian kết thúc" Value="@SelectedTrip.time_end.ToString("dd/MM/yyyy HH:mm")"
+                                  Placeholder="Kết thúc" Variant="Variant.Outlined" Required="true" Disabled="true" />
                 </MudItem>
                 <MudItem xs="6" Class="mb-4">
                     <MudNumericField T="float" Label="Khoảng cách" @bind-Value="SelectedTrip.distance"
@@ -57,15 +65,7 @@
                         <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
                     </MudSelect>
                 </MudItem>
-                <MudItem xs="6" Class="mb-4">
-                    <MudTextField Label="Thời gian bắt đầu" @bind-Value="SelectedTrip.time_start"
-                                  Placeholder="Bắt đầu" Variant="Variant.Outlined" Required="true" />
-                </MudItem>
-                <MudItem xs="6" Class="mb-4">
-                    <MudTextField Label="Thời gian kết thúc" @bind-Value="SelectedTrip.time_end"
-                                  Placeholder="Kết thúc" Variant="Variant.Outlined" Required="true" />
-                </MudItem>
-                <MudItem xs="12" Class="mb-4">
+                               <MudItem xs="12" Class="mb-4">
                     <MudTextField Label="Voucher" @bind-Value="SelectedTrip.voucher"
                                   Placeholder="Mã voucher" Variant="Variant.Outlined" Required="true" />
                 </MudItem>
@@ -97,18 +97,31 @@
     {
         drivers = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/driver");
 
-        locationsfrom = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/tripfrom");
+        locationsfrom = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/location");
 
         cars = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/car");
 
-        locationsto = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/tripto");
+        locationsto = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/location");
     }
 
     void Submit()
     {
         if (form.IsValid)
         {
-            MudDialog.Close(DialogResult.Ok(SelectedTrip));
+            var updatedTripDetail = new trip_detail_update
+                {
+                    id = SelectedTrip.id,
+                    distance = SelectedTrip.distance,
+                    price = SelectedTrip.price,
+                    driver_id = SelectedTrip.driver_id,
+                    location_from_id = SelectedTrip.location_from_id,
+                    location_to_id = SelectedTrip.location_to_id,
+                    car_id = SelectedTrip.car_id,
+                    status = SelectedTrip.status,
+                    voucher = SelectedTrip.voucher
+                };
+
+            MudDialog.Close(DialogResult.Ok(updatedTripDetail));
         }
     }
 

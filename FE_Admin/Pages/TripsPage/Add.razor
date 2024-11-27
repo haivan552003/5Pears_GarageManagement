@@ -13,18 +13,13 @@
         <MudGrid xs="10" Class="mx-auto">
             <MudItem xs="12">
                 <MudPaper Elevation="6" Class="pa-8">
-                    <MudForm @ref="form" @bind-IsValid="isFormValid">
+                    <MudForm @ref="form">
                         <MudItem xs="12" md="12">
                             <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4};")">
                                 <MudText Typo="Typo.h6" Class="mb-5">Thêm Chuyến Đi</MudText>
                             </MudPaper>
                         </MudItem>
                         <MudGrid Gutter="true">
-
-                            <MudItem xs="6" Class="mb-4">
-                                <MudTextField Label="Mã chuyến" @bind-Value="newTrip.trip_code" Placeholder="Mã Chuyến"
-                                              Variant="Variant.Outlined" Required="true" />
-                            </MudItem>
                             <MudItem xs="6" Class="mb-4">
                                 <MudTextField Label="Điểm khởi hành" @bind-Value="newTrip.from" Placeholder="Từ"
                                               Variant="Variant.Outlined" Required="true" />
@@ -33,9 +28,9 @@
                                 <MudTextField Label="Điểm đến" @bind-Value="newTrip.to" Placeholder="Đến"
                                               Variant="Variant.Outlined" Required="true" />
                             </MudItem>
-                          @*   <MudItem xs="6" Class="mb-4">
-                                <MudTextField Label="Hình ảnh chuyến đi" @bind-Value="newTrip.img_trip" Placeholder="URL Hình Ảnh"
-                                              Variant="Variant.Outlined" />
+                            @*   <MudItem xs="6" Class="mb-4">
+                            <MudTextField Label="Hình ảnh chuyến đi" @bind-Value="newTrip.img_trip" Placeholder="URL Hình Ảnh"
+                            Variant="Variant.Outlined" />
                             </MudItem> *@
                             <MudItem xs="6" Class="mb-4">
                                 <MudSelect @bind-Value="newTrip.status" Label="Trạng thái " Variant="Variant.Outlined" Required="true">
@@ -44,9 +39,9 @@
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="6" Class="mb-4">
-                                <MudSelect @bind-Value="newTrip.is_return" Label="Trở về" Variant="Variant.Outlined" Required="true">
-                                    <MudSelectItem Value="true">Có</MudSelectItem>
-                                    <MudSelectItem Value="false">Không</MudSelectItem>
+                                <MudSelect @bind-Value="newTrip.is_return" Label="Trở về" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="true">Khứ hồi</MudSelectItem>
+                                    <MudSelectItem Value="false">Một chiều</MudSelectItem>
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="12" Class="d-flex justify-end">
@@ -63,7 +58,6 @@
 
 @code {
     private trip_create newTrip = new trip_create();
-    private bool isFormValid = false;
     private MudForm form;
     private string url = "http://localhost:49922/api/Trips/trip";
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
@@ -75,33 +69,24 @@
 
     private async Task Addtrip()
     {
-        if (form.IsValid)
+        newTrip.emp_create = 5;
+        try
         {
-            newTrip.emp_create = 5;
-
-            try
+            var response = await httpClient.PostAsJsonAsync(url, newTrip);
+            if (response.IsSuccessStatusCode)
             {
-                newTrip.img_trip = "1";
-                var response = await httpClient.PostAsJsonAsync(url, newTrip);
-                if (response.IsSuccessStatusCode)
-                {
-                    Snackbar.Add("Thêm thành công!", Severity.Success);
-                    Navigation.NavigateTo("/gettrip");
-                }
-                else
-                {
-                    var errorMsg = await response.Content.ReadAsStringAsync();
-                    Snackbar.Add($"Lỗi: {errorMsg}", Severity.Error);
-                }
+                Snackbar.Add("Thêm thành công!", Severity.Success);
+                Navigation.NavigateTo("/gettrip");
             }
-            catch (Exception ex)
+            else
             {
-                Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Lỗi: {errorMsg}", Severity.Error);
             }
         }
-        else
+        catch (Exception ex)
         {
-            Snackbar.Add("Vui lòng kiểm tra lại các trường.", Severity.Warning);
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
         }
     }
 }
