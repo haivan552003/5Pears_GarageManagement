@@ -25,26 +25,17 @@
                             <MudButton Href="/addtrip" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
                                 Thêm mới
                             </MudButton>
-
-                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
-                                Nhập file
-                            </MudButton>
-
-                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
-                                Xuất file
-                            </MudButton>
                         </MudItem>
                     </ToolBarContent>
 
                     <Columns>
-                        <SelectColumn T="trip" />
                         <PropertyColumn T="trip" Class="fw-bold" TProperty="string" Property="x => x.trip_code" Title="Mã chuyến đi"
                                         Style="width: 15%;" />
                         <PropertyColumn T="trip" Class="fw-bold" TProperty="string" Property="x => x.from" Title="Điểm khởi hành"
                                         Style="width: 15%;" />
                         <PropertyColumn T="trip" Class="fw-bold"  TProperty="string" Property="x => x.to" Title="Điểm đến"
                                         Style="width: 15%;" />
-                        <TemplateColumn T="trip" Class="fw-bold" Title="Trạng thái" Style="white-space: nowrap;">
+                        <TemplateColumn T="trip" Class="fw-bold" Title="Trạng thái">
                             <CellTemplate Context="element">
                                 @if (element.Item.status)
                                 {
@@ -56,7 +47,7 @@
                                 }
                             </CellTemplate>
                         </TemplateColumn>
-                        <TemplateColumn T="trip" Title="Chức năng" Style="white-space: nowrap;">
+                        <TemplateColumn T="trip" Title="Chức năng" Class="fw-bold">
                             <CellTemplate Context="element">
                                 <MudTooltip Text="Chỉnh sửa">
                                     <MudIconButton Href="@($"/edittrip/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />

@@ -3,10 +3,12 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 @inject IDialogService DialogService
+@inject IJSRuntime js
+
 
 <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
     <MudGrid>
-        <MudItem xs="12" >
+        <MudItem xs="12">
             <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
                 <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
             </MudPaper>
@@ -18,9 +20,6 @@
                         <MudText Typo="Typo.h6" Class="mb-5">Cập nhật thông tin chuyến đi</MudText>
                         <MudForm @ref="form" Style="height:auto">
                             <MudGrid>
-                                <MudItem xs="3">
-                                    <MudTextField ShrinkLabel @bind-Value="tripInfo.trip_code" Label="Mã chuyến đi" Variant="Variant.Outlined" Required="true" />
-                                </MudItem>
                                 <MudItem xs="3">
                                     <MudTextField ShrinkLabel @bind-Value="tripInfo.from" Label="Điểm khởi hành" Variant="Variant.Outlined" Required="true" />
 
@@ -34,8 +33,14 @@
                                         <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
                                     </MudSelect>
                                 </MudItem>
-                            </MudGrid>                           
-                           
+                                <MudItem xs="3" Class="mb-4">
+                                    <MudSelect @bind-Value="tripInfo.is_return" Label="Trở về" Variant="Variant.Outlined" Disabled="true">
+                                        <MudSelectItem Value="true">Khứ hồi</MudSelectItem>
+                                        <MudSelectItem Value="false">Một chiều</MudSelectItem>
+                                    </MudSelect>
+                                </MudItem>
+                            </MudGrid>
+
                             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateTrip" Class="mt-3">Cập nhật</MudButton>
                         </MudForm>
                     </MudPaper>
@@ -61,22 +66,12 @@
                             <MudButton OnClick="@(async () => await OpenDetailCreateDialog(null))" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
                                 Thêm mới
                             </MudButton>
-
-                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
-                                Nhập file
-                            </MudButton>
-
-                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
-                                Xuất file
-                            </MudButton>
                         </MudItem>
                     </ToolBarContent>
                     <Columns>
-                        <SelectColumn T="trip_detail" />
                         <PropertyColumn T="trip_detail" TProperty="string" Property="x => x.trip_detail_code" Class="fw-bold" Title="Mã CT Chuyến" Width="150px" />
                         <PropertyColumn T="trip_detail" TProperty="string" Property="x => x.location_from" Class="fw-bold" Title="Điểm Đi" Width="150px" />
                         <PropertyColumn T="trip_detail" TProperty="string" Property="x => x.location_to" Class="fw-bold" Title="Điểm Đến" Width="200px" />
-                        <PropertyColumn T="trip_detail" TProperty="string" Property="x => x.car_code" Class="fw-bold" Title="Mã Xe" Width="150px" />
                         <PropertyColumn T="trip_detail" TProperty="DateTime" Property="x => x.time_start" Class="fw-bold" Title="Bắt Đầu" Width="150px" />
                         <PropertyColumn T="trip_detail" TProperty="DateTime" Property="x => x.time_end" Class="fw-bold" Title="Kết Thúc" Width="150px" />
                         <TemplateColumn T="trip_detail" Class="fw-bold" Title="Trạng Thái" Width="150px">
@@ -113,12 +108,22 @@
     </MudGrid>
 </MudContainer>
 
+<script>
+     window.triggerSelectClick = () => {
+        const selectElements = document.querySelectorAll('.mud-select');
+
+        selectElements.forEach(select => {
+            select.click();
+        });
+    };
+</script>
 @code {
     [Parameter] public int Id { get; set; }
 
     private trip tripInfo = new trip();
     private List<trip_detail> tripDetails = new List<trip_detail>();
     private trip_detail_create newTripDetail = new trip_detail_create();
+    private trip_detail_update updateTripDetail = new trip_detail_update();
     private MudForm form;
     private string url = "http://localhost:49922/api/Trips/trip";
     private string tripdetailUrl = "http://localhost:49922/api/Trips/tripdetail";
@@ -147,7 +152,9 @@
         {
             Snackbar.Add($"Lỗi khi tải chuyến đi: {ex.Message}", Severity.Error);
         }
+
     }
+
 
     private string GetLastSegment(string url)
     {
@@ -166,7 +173,8 @@
                 var response = await httpClient.PutAsJsonAsync($"{url}/{Id}", tripInfo);
                 if (response.IsSuccessStatusCode)
                 {
-                    Snackbar.Add($"Cập nhật chuyến đi {Id} thành công", Severity.Success);
+                    Snackbar.Add($"Cập nhật chuyến đi thành công", Severity.Success);
+                    StateHasChanged();
                 }
                 else
                 {
@@ -201,7 +209,7 @@
         if (!result.Cancelled && result.Data is trip_detail_create newTripDetail)
         {
             this.newTripDetail = newTripDetail;
-            await AddTripDetail();
+            // await AddTripDetail();
         }
     }
     private async Task OpenDetailUpdateDialog(trip_detail selectedTrip = null)
@@ -214,11 +222,12 @@
         var dialog = DialogService.Show<Update_Detail>("Chi tiết chuyến xe", parameters);
         var result = await dialog.Result;
 
-        if (!result.Cancelled && result.Data is trip_detail_create newTripDetail)
+        if (result.Data is trip_detail_update newTripDetail)
         {
-            this.newTripDetail = newTripDetail;
+            this.updateTripDetail = newTripDetail;
             await UpdateTripDetail();
         }
+
     }
 
     private async Task AddTripDetail()
@@ -247,10 +256,10 @@
     {
         try
         {
-            var response = await httpClient.PutAsJsonAsync($"{tripdetailUrl}/{newTripDetail.id}", newTripDetail);
+            var response = await httpClient.PutAsJsonAsync($"{tripdetailUrl}/{updateTripDetail.id}", updateTripDetail);
             if (response.IsSuccessStatusCode)
             {
-                Snackbar.Add($"Cập nhật chi tiết chuyến đi {newTripDetail.id} thành công", Severity.Success);
+                Snackbar.Add($"Cập nhật chi tiết chuyến đi thành công", Severity.Success);
                 await OnInitializedAsync();
             }
             else

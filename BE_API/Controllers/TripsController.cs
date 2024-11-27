@@ -95,31 +95,26 @@ namespace BE_API.Controllers
 
 
         [HttpPut("trip/{id}")]
-        public async Task<IActionResult> UpdateTrip(int id, trip_create trip)
+        public async Task<IActionResult> UpdateTrip(int id, trip_update trip)
         {
+            var parameters = new DynamicParameters(trip);
+            parameters.Add("@id", id);
+
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand("sp_update_trip", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@id", id);
-                cmd.Parameters.AddWithValue("@img_trip", trip.img_trip);
-                cmd.Parameters.AddWithValue("@from", trip.from);
-                cmd.Parameters.AddWithValue("@to", trip.to);
-                cmd.Parameters.AddWithValue("@trip_code", trip.trip_code);
-                cmd.Parameters.AddWithValue("@status", trip.status);
-                cmd.Parameters.AddWithValue("@is_return", trip.is_return);
-
                 await conn.OpenAsync();
 
-                int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                var result = await conn.ExecuteAsync("sp_update_trip", parameters, commandType: CommandType.StoredProcedure);
 
-                if (rowsAffected == 0)
+                if (result > 0)
                 {
-                    return NotFound();
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
                 }
             }
-
-            return NoContent();
         }
         [HttpDelete("trip/{id}")]
         public async Task<IActionResult> DeleteTrip(int id)
@@ -222,19 +217,8 @@ namespace BE_API.Controllers
         [HttpPost("tripdetail")]
         public async Task<ActionResult> AddTripDetail(trip_detail_create newTrip)
         {
-            var parameters = new DynamicParameters();
-            parameters.Add("@time_start", newTrip.time_start);
-            parameters.Add("@time_end", newTrip.time_end);
-            parameters.Add("@price", newTrip.price);
-            parameters.Add("@voucher", newTrip.voucher);
-            parameters.Add("@trip_id", newTrip.trip_id);
-            parameters.Add("@car_id", newTrip.car_id);
-            parameters.Add("@location_from_id", newTrip.location_from_id);
-            parameters.Add("@driver_id", newTrip.driver_id);
-            parameters.Add("@location_to_id", newTrip.location_to_id);
-            parameters.Add("@distance", newTrip.distance);
-            parameters.Add("@status", newTrip.status);
-
+            var parameters = new DynamicParameters(newTrip);
+           
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
@@ -253,19 +237,8 @@ namespace BE_API.Controllers
         [HttpPut("tripdetail/{id}")]
         public async Task<IActionResult> UpdateTripDetail(int id, trip_detail_update trip)
         {
-            var parameters = new DynamicParameters();
-            parameters.Add("@id", id); 
-            parameters.Add("@time_start", trip.time_start);
-            parameters.Add("@time_end", trip.time_end);
-            parameters.Add("@price", trip.price);
-            parameters.Add("@voucher", trip.voucher);
-            parameters.Add("@trip_id", trip.trip_id);
-            parameters.Add("@car_id", trip.car_id);
-            parameters.Add("@location_from_id", trip.location_from_id);
-            parameters.Add("@driver_id", trip.driver_id);
-            parameters.Add("@location_to_id", trip.location_to_id);
-            parameters.Add("@distance", trip.distance);
-            parameters.Add("@status", trip.status);
+            var parameters = new DynamicParameters(trip);
+            parameters.Add("@id", id);
 
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
