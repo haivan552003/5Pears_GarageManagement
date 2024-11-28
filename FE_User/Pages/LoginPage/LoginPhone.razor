@@ -59,7 +59,7 @@
         try
         {
             // var response = await Http.PostAsJsonAsync("http://localhost:49922/api/PhoneNumber/send-otp", new { PhoneNumber = model.PhoneNumber }); //url real
-            var response = await Http.PostAsJsonAsync("http://localhost:49922/api/OTPFake/send-otp1", new { PhoneNumber = model.PhoneNumber }); //url fake
+            var response = await Http.PostAsJsonAsync("http://localhost:49922/api/PhoneNumber/send-otp", new { PhoneNumber = model.PhoneNumber });
 
 
             if (response.IsSuccessStatusCode)
