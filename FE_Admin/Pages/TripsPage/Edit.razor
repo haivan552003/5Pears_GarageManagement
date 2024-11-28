@@ -88,6 +88,9 @@
                         </TemplateColumn>
                         <TemplateColumn T="trip_detail" Class="fw-bold" Title="Chức năng" Width="150px">
                             <CellTemplate Context="element">
+                                <MudTooltip Text="Đặt vé">
+                                    <MudIconButton Href="@($"/rentail_guest_trip/{element.Item.id}")" Icon="@Icons.Material.Outlined.AddCircle" Color="Color.Secondary" Size="Size.Small" />
+                                </MudTooltip>
                                 <MudTooltip Text="Chỉnh sửa">
                                     <MudIconButton OnClick="@(async () => await OpenDetailUpdateDialog(element.Item))" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
                                 </MudTooltip>

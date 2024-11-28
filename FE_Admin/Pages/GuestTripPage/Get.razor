@@ -39,27 +39,11 @@
 
                         <Columns>
                             <PropertyColumn T="guest_trip" TProperty="string" Property="x => x.guest_trip_code" SortBy="@_sortBy" Class="fw-bold" Title="Mã hóa đơn" />
-                            <PropertyColumn T="guest_trip" TProperty="string" style="width:100px" Property="x => x.trip_detail_code" SortBy="@_sortBy" Class="fw-bold" Title="Mã chuyến" />
                             <PropertyColumn T="guest_trip" TProperty="string" style="width:100px" Property="x => x.cus_name" SortBy="@_sortBy" Class="fw-bold" Title="Khách hàng" />
                             <PropertyColumn T="guest_trip" TProperty="string" style="width:100px" Property="x => x.location_from" SortBy="@_sortBy" Class="fw-bold" Title="Điểm đi" />
                             <PropertyColumn T="guest_trip" TProperty="string" style="width:100px" Property="x => x.location_to" SortBy="@_sortBy" Class="fw-bold" Title="Điểm đến" />
                             <PropertyColumn T="guest_trip" TProperty="string" style="width:100px" Property="x => x.time_start.ToShortDateString()" SortBy="@_sortBy" Class="fw-bold" Title="Bắt đầu" />
-                            <PropertyColumn T="guest_trip" TProperty="string" style="width:100px" Property="x => x.time_end.ToShortDateString()" SortBy="@_sortBy" Class="fw-bold" Title="Kết thúc" />
-                            <PropertyColumn T="guest_trip" TProperty="string" style="width:100px" Property="x => x.date_create.ToShortDateString()" SortBy="@_sortBy" Class="fw-bold" Title="Ngày tạo" />
-                            <TemplateColumn T="guest_trip" Class="fw-bold" style="width:100px" Title="Thanh toán">
-                                <CellTemplate Context="element">
-                                    @if (element.Item.payment_method)
-                                    {
-                                        <MudChip Color="Color.Surface" Size="Size.Small" Variant="Variant.Text">Tiền mặt</MudChip>
-                                    }
-                                    else
-                                    {
-                                        <MudChip Color="Color.Tertiary" Size="Size.Small" Variant="Variant.Text">Ngân hàng</MudChip>
-                                    }
-                                </CellTemplate>
-                            </TemplateColumn>
-                            <PropertyColumn T="guest_trip" style="width:100px" TProperty="float" Property="x => x.price" SortBy="@_sortBy" Class="fw-bold" Title="Tổng tiền" />
-                            <PropertyColumn T="guest_trip" style="width:100px" TProperty="string" Property="x => x.emp_name" SortBy="@_sortBy" Class="fw-bold" Title="Người tạo" />
+                                                       <PropertyColumn T="guest_trip" style="width:100px" TProperty="float" Property="x => x.price" SortBy="@_sortBy" Class="fw-bold" Title="Tổng tiền" />
                             <TemplateColumn T="guest_trip" style="width:100px" Class="fw-bold" Title="Trạng Thái">
                                 <CellTemplate Context="element">
                                     @if (element.Item.status == 1)

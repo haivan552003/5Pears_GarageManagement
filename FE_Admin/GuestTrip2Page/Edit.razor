@@ -1,0 +1,491 @@
+﻿@page "/rentail_guest_trip/{id:int}"
+@using Microsoft.AspNetCore.SignalR.Client
+@using MudBlazor
+@using System.Text.Json
+@using System.Collections.Concurrent
+@inject HttpClient httpClient
+@inject IJSRuntime js
+@inject NavigationManager Navigation
+@implements IAsyncDisposable
+
+<MudContainer Class="pt-5">
+    <MudGrid>
+        <MudItem xs="7">
+            <MudPaper Class="p-4" Elevation="1">
+                <MudGrid>
+                    <MudItem xs="12" Class="mx-auto">
+                        <MudText Typo="Typo.h6" Color="Color.Primary">CHỌN GHẾ</MudText>
+                    </MudItem>
+
+                    <MudItem xs="10">
+                        <MudGrid>
+                            @foreach (var item in car_seat)
+                            {
+                                var isDisabled = item.status == "Đã đặt" || takenSeats.Contains(item.id.ToString()) || item.name.ToLower() == "tài xế"; ;
+                                var buttonColor = selectedSeats.Contains(item.id) ? Color.Success : Color.Primary;
+
+                                <MudItem xs="2">
+                                    <MudButton Variant="Variant.Outlined"
+                                               Color="@buttonColor"
+                                               Size="Size.Small"
+                                               Disabled="@isDisabled"
+                                               OnClick="() => OnSeatSelected(item.id, item.name)">
+                                        @item.name
+                                    </MudButton>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </MudItem>
+
+                </MudGrid>
+            </MudPaper>
+                   </MudItem>
+
+        <MudItem xs="5">
+            <MudPaper Class="p-4" Elevation="1">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h6" Color="Color.Primary">THÔNG TIN VÉ</MudText>
+                    </MudItem>
+
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Tuyến Xe</MudText>
+                    </MudItem>
+                    <MudItem xs="9">
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@TRIPDETAILS.from - @TRIPDETAILS.to</MudText>
+                    </MudItem>
+
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Chuyến Xe</MudText>
+                    </MudItem>
+                    <MudItem xs="9">
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@TRIPDETAILS.location_from - @TRIPDETAILS.location_to</MudText>
+                    </MudItem>
+
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Khởi hành</MudText>
+                    </MudItem>
+                    <MudItem xs="9">
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@TRIPDETAILS.time_start</MudText>
+                    </MudItem>
+
+                    <MudItem xs="4">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Số Lượng Ghế</MudText>
+                    </MudItem>
+                    <MudItem xs="8">
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@selectedSeats.Count</MudText>
+                    </MudItem>
+
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Tên ghế</MudText>
+                    </MudItem>
+                    <MudItem xs="9">
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1"> @string.Join(", ", selectedSeatNames)</MudText>
+                    </MudItem>
+
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Giá vé</MudText>
+                    </MudItem>
+                    <MudItem xs="9">
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@TRIPDETAILS.price.ToString("#,##0") VNĐ</MudText>
+                    </MudItem>
+
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Voucher</MudText>
+                    </MudItem>
+                    <MudItem xs="9">
+                        <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@TRIPDETAILS.voucher.ToString("#,##0") VNĐ/Vé</MudText>
+                    </MudItem>
+
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default">Tổng Tiền</MudText>
+                    </MudItem>
+                    <MudItem xs="9">
+                        <MudText Align="Align.End" Color="Color.Secondary" Class="fw-bold" Typo="Typo.subtitle1">@TRIPDETAILS.sale.ToString("#,##0") VNĐ</MudText>
+                    </MudItem>
+                    @if (cus_id != 0)
+                    {
+                        <MudItem xs="12">
+                            <MudButton Variant="Variant.Filled" Class="w-100" Color="Color.Primary" Size="Size.Medium" OnClick="@OnCheckout">Thanh Toán</MudButton>
+                        </MudItem>
+                    }
+                    else
+                    {
+                   @*      <MudItem xs="12">
+                            <MudText Align="Align.Center" Typo="Typo.subtitle1" Color="Color.Error">Vui lòng đăng nhập để thanh toán</MudText>
+                        </MudItem> *@
+                    }
+                </MudGrid>
+            </MudPaper>
+
+            @if (cus_id != 0)
+            {
+                <MudPaper Class="p-4 mt-4" Elevation="1">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6" Color="Color.Primary">THÔNG TIN KHÁCH HÀNG</MudText>
+                        </MudItem>
+
+                        <MudItem xs="4" Class="mb-3">
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Tên khách hàng
+                            </MudText>
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Email
+                            </MudText>
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Số điện thoại
+                            </MudText>
+                        </MudItem>
+
+                        <MudItem xs="8" Class="mb-3">
+                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                @customer.fullname
+                            </MudText>
+                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                @customer.email
+                            </MudText>
+                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                @customer.phone_number
+                            </MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            }
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+<script>
+    // Lấy token từ localStorage
+    function getAuthToken() {
+        return localStorage.getItem("authToken");
+    }
+
+</script>
+@code {
+    [Parameter] public int id { get; set; }
+    private int cus_id;
+    private HubConnection? hubConnection;
+    private List<string> takenSeats = new List<string>();
+
+    private trip trips;
+    private TRIPDETAILS TRIPDETAILS = new TRIPDETAILS();
+    private List<car_seat_rentail> car_seat = new List<car_seat_rentail>();
+    private List<car_seat_not_null> car_seat_not_null;
+    private customer customer = new customer();
+    private string urlTrip = "http://localhost:49922/api/Trips/trip";
+    private string urlCus = "http://localhost:49922/api/Customer";
+    private string urlBill = "http://localhost:49922/api/GuestTrip";
+    private string urlTopGuestTrip = "http://localhost:49922/api/GuestTrip/GetTop";
+    private string urlViewTrip = "http://localhost:49922/api/Trips/viewTrip/";
+    private string urlSeatNotNull = "http://localhost:49922/api/GuestTrip/GetSeatNotNull/";
+    private string urlVNPayCreate = "http://localhost:49922/api/Payment/create-payment";
+
+    private List<int> selectedSeats = new List<int>();
+    private List<string> selectedSeatNames = new List<string>();
+    private static ConcurrentDictionary<string, bool> userCheckoutStatus = new ConcurrentDictionary<string, bool>();
+
+    private Timer? inactivityTimer;
+
+    private guest_trip_create bill = new guest_trip_create();
+
+    private bool isHubConnected = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTripDetail();
+        var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            // Giải mã token
+            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            // Lấy giá trị của 'username' từ payload của token
+            var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "id");
+
+            if (usernameClaim != null)
+            {
+                cus_id = (int.Parse(usernameClaim.Value));
+                await LoadUser();
+            }
+        }
+        hubConnection = new HubConnectionBuilder()
+             .WithUrl(Navigation.ToAbsoluteUri("http://localhost:49922/seatHub"))
+             .Build();
+
+        // Xử lý chọn ghế từ các client khác
+        hubConnection.On<int>("ReceiveSeatSelection", (seatId) =>
+        {
+            if (!takenSeats.Contains(seatId.ToString()))
+            {
+                takenSeats.Add(seatId.ToString());
+                StateHasChanged();
+            }
+        });
+
+        // Xử lý bỏ chọn ghế từ các client khác
+        hubConnection.On<int>("ReceiveSeatDeselection", (seatId) =>
+        {
+            if (takenSeats.Contains(seatId.ToString()))
+            {
+                takenSeats.Remove(seatId.ToString());
+                StateHasChanged();
+            }
+        });
+
+        // Nhận toàn bộ danh sách ghế đã chọn khi client mới kết nối
+        hubConnection.On<List<int>>("ReceiveAllSelectedSeats", (seatIds) =>
+        {
+            takenSeats = seatIds.Select(id => id.ToString()).ToList();
+            StateHasChanged();
+        });
+
+        hubConnection.On("ReceiveCheckoutNotification", async () =>
+         {
+             await ReloadSeats();
+             await InvokeAsync(() => StateHasChanged());
+         });
+
+        await hubConnection.StartAsync();
+
+        InitializeInactivityTimer();
+    }
+
+    private void InitializeInactivityTimer()
+    {
+        inactivityTimer = new Timer(async _ =>
+        {
+            if (hubConnection != null && hubConnection.State == HubConnectionState.Connected)
+            {
+                await hubConnection.StopAsync();
+            }
+
+            await InvokeAsync(() =>
+            {
+                Navigation.NavigateTo("http://localhost:5112/getTrip");
+            });
+        }, null, TimeSpan.FromMinutes(5), Timeout.InfiniteTimeSpan);
+
+        InterceptUserActivity();
+    }
+
+    private async Task ResetInactivityTimer()
+    {
+        if (inactivityTimer != null)
+        {
+            inactivityTimer.Change(TimeSpan.FromSeconds(10), Timeout.InfiniteTimeSpan);
+        }
+    }
+
+    private void InterceptUserActivity()
+    {
+        var dotNetRef = DotNetObjectReference.Create(this);
+        js.InvokeVoidAsync("addEventListenersForActivity", dotNetRef);
+    }
+
+    [JSInvokable]
+    public async Task UserActivityDetected()
+    {
+        await ResetInactivityTimer();
+    }
+    public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+
+    private async Task ReloadSeats()
+    {
+        var currentSelectedSeats = new List<int>(selectedSeats);
+
+        var seatsResponse = await httpClient.GetFromJsonAsync<TRIPDETAILS>($"{urlViewTrip}{id}");
+        if (seatsResponse != null)
+        {
+            TRIPDETAILS = seatsResponse;
+
+            takenSeats = seatsResponse.car_seat
+                .Where(seat => seat.status == "Đã đặt")
+                .Select(seat => seat.id.ToString())
+                .ToList();
+            Console.WriteLine("Taken Seats: " + string.Join(", ", takenSeats));
+        }
+
+        selectedSeats = currentSelectedSeats;
+        Console.WriteLine("Restored Selected Seats: " + string.Join(", ", selectedSeats));
+    }
+
+
+    private async Task LoadUser()
+    {
+        customer = await httpClient.GetFromJsonAsync<customer>($"{urlCus}/{cus_id}");
+    }
+    private async Task LoadTripDetail()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<TRIPDETAILS>($"{urlViewTrip}{id}");
+            TRIPDETAILS = response;
+            car_seat = response.car_seat.ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private async Task OnSeatSelected(int seatId, string seatName)
+    {
+        if (selectedSeats.Contains(seatId))
+        {
+            selectedSeats.Remove(seatId);
+            selectedSeatNames.Remove(seatName);
+
+            if (hubConnection?.State == HubConnectionState.Connected)
+            {
+                await hubConnection.SendAsync("UnselectSeat", seatId);
+            }
+        }
+        else
+        {
+            if (selectedSeats.Count < 5)
+            {
+                selectedSeats.Add(seatId);
+                selectedSeatNames.Add(seatName);
+
+                if (hubConnection?.State == HubConnectionState.Connected)
+                {
+                    await hubConnection.SendAsync("SelectSeat", seatId);
+                }
+            }
+        }
+        TRIPDETAILS.sale = (TRIPDETAILS.price - TRIPDETAILS.voucher) * selectedSeats.Count();
+    }
+
+    private async Task OnCheckout()
+    {
+        if (selectedSeats.Count() == 1)
+        {
+            //1 ghế
+            bill.emp_id = 5;
+            bill.trip_detail_id = id;
+            bill.car_seat_id = selectedSeats.First();
+            bill.parent_id = 0;
+            bill.cus_id = cus_id;
+            bill.price = TRIPDETAILS.sale;
+
+            var response = await httpClient.PostAsJsonAsync(urlBill, bill);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseTop = await httpClient.GetAsync(urlTopGuestTrip);
+                var jsonResponse = await responseTop.Content.ReadAsStringAsync();
+                var guestTrips = JsonSerializer.Deserialize<List<guest_trip>>(jsonResponse);
+                var guestTripId = guestTrips.First().id;
+                await js.InvokeVoidAsync("sessionStorage.setItem", "billId", guestTripId);
+                var paymentRequest = new PaymentRequestModel
+                    {
+                        OrderId = guestTripId.ToString(),
+                        Amount = (int)(bill.price),
+                        OrderInfo = guestTripId.ToString(),
+                        returnUrl = "http://localhost:5112/checkouttrip"
+                    };
+
+
+                var paymentResponse = await httpClient.PostAsJsonAsync(urlVNPayCreate, paymentRequest);
+                if (paymentResponse.IsSuccessStatusCode)
+                {
+                    var paymentData = await paymentResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                    if (paymentData != null && paymentData.ContainsKey("paymentUrl"))
+                    {
+                        if (hubConnection != null)
+                        {
+                            await hubConnection.SendAsync("OnCheckout");
+                        }
+                        var paymentUrl = paymentData["paymentUrl"];
+                        Navigation.NavigateTo(paymentUrl, forceLoad: true);
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Thêm thất bại");
+            }
+        }
+        else
+        {
+            //nhiều ghế
+            bill.emp_id = 5;
+            bill.trip_detail_id = id;
+            bill.parent_id = 0;
+            bill.car_seat_id = null;
+            bill.cus_id = cus_id;
+            bill.price = TRIPDETAILS.sale;
+
+            var firstResponse = await httpClient.PostAsJsonAsync(urlBill, bill);
+            if (firstResponse.IsSuccessStatusCode)
+            {
+                var responseTop = await httpClient.GetAsync(urlTopGuestTrip);
+                var jsonResponse = await responseTop.Content.ReadAsStringAsync();
+                var guestTrips = JsonSerializer.Deserialize<List<guest_trip>>(jsonResponse);
+                var guestTripId = guestTrips.First().id;
+
+                await js.InvokeVoidAsync("sessionStorage.setItem", "billId", guestTripId.ToString());
+
+                var seatPrice = TRIPDETAILS.sale / selectedSeats.Count();
+
+                foreach (var seatId in selectedSeats)
+                {
+                    bill.car_seat_id = seatId;
+                    bill.parent_id = guestTripId;
+                    bill.price = seatPrice;
+
+                    var response = await httpClient.PostAsJsonAsync(urlBill, bill);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine("Thêm ghế thất bại");
+                    }
+                }
+
+                var paymentRequest = new PaymentRequestModel
+                    {
+                        OrderId = guestTripId.ToString(),
+                        Amount = (int)(bill.price),
+                        OrderInfo = guestTripId.ToString(),
+                        returnUrl = "http://localhost:5112/checkouttrip"
+                    };
+
+
+                var paymentResponse = await httpClient.PostAsJsonAsync(urlVNPayCreate, paymentRequest);
+                if (paymentResponse.IsSuccessStatusCode)
+                {
+                    var paymentData = await paymentResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                    if (paymentData != null && paymentData.ContainsKey("paymentUrl"))
+                    {
+                        if (hubConnection != null)
+                        {
+                            await hubConnection.SendAsync("OnCheckout");
+                        }
+                        var paymentUrl = paymentData["paymentUrl"];
+                        Navigation.NavigateTo(paymentUrl, forceLoad: true);
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Thêm thất bại");
+            }
+        }
+    }
+
+
+}
+
+
