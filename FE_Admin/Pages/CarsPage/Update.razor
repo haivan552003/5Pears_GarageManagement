@@ -19,7 +19,7 @@
                         <MudText Typo="Typo.h5" Class="mb-4">Thông tin xe</MudText>
                         <MudGrid>
                             <MudItem xs="4">
-                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_number" Label="Biển số xe" ReadOnly />
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_number" Label="Biển số xe" Disabled="true" />
                             </MudItem>
                             <MudItem xs="4">
                                 <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_name" Label="Tên xe" Required="true" RequiredError="Tên xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateCarName))" />
@@ -84,7 +84,7 @@
                                                Placeholder="Năm sản xuất" />
                             </MudItem>
                             <MudItem xs="3">
-                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.location_car" Placeholder="Vị trí xe" Label="Vị trí xe" ReadOnly />
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.location_car" Placeholder="Vị trí xe" Label="Vị trí xe" Disabled="true" />
                             </MudItem>
                             <MudItem xs="3">
                                 <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.odo" Label="Số km đã đi" Required="true" RequiredError="Số km đã đi là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateOdo))" />
@@ -93,7 +93,7 @@
                                 <MudTextField Variant="Variant.Outlined" @bind-Value="Car.voucher" Placeholder="Voucher" Label="Voucher" Required="true" Min="0" Step="1000" />
                             </MudItem>
                             <MudItem xs="3">
-                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.number_seat" Label="Số ghế" ReadOnly />
+                                <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.number_seat" Label="Số ghế" Disabled="true" />
                             </MudItem>
                             <MudItem xs="3">
                                 <MudNumericField Variant="Variant.Outlined" @bind-Value="Car.insurance_fee" Label="Phí bảo hiểm" Required="true" Min="0" Step="1000" RequiredError="Phí bảo hiểm là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateBh))" />
@@ -142,13 +142,14 @@
                     <MudPaper Elevation="3" Class="pa-4">
                         <MudText Typo="Typo.h6" Class="mb-4">Ghế</MudText>
                         <MudButton OnClick="OpenAddSeatDialog"
-                                   Variant="Variant.Filled"
+                                   Variant="Variant.Outlined"
                                    Color="Color.Primary"
+                                   Size="Size.Small"
                                    StartIcon="@Icons.Material.Filled.Add"
-                                   Class="mb-3">
+                                   Class="mb-5">
                             Thêm ghế
                         </MudButton>
-                        <MudGrid Class="overflow-y-auto" Style="max-height: 400px;">
+                        <MudGrid Class="overflow-y-auto" Style="max-height: 580px;">
                             @foreach (var seat in CarSeats)
                             {
                                 <MudItem xs="12">
@@ -156,7 +157,7 @@
                                         <MudCardContent>
                                             <MudGrid>
                                                 <MudItem xs="9">
-                                                    <MudText>@seat.name (Hàng: @seat.row, Cột: @seat.col)</MudText>
+                                                    <MudText>@seat.name (Hàng: @seat.row, Tầng: @seat.col)</MudText>
                                                 </MudItem>
                                                 <MudItem xs="3" Class="d-flex justify-end">
                                                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
@@ -198,7 +199,7 @@
                                         <MudGrid>
                                             @foreach (var image in CarImages)
                                             {
-                                                <MudItem xs="3" Class="mx-auto">
+                                                <MudItem xs="2">
                                                     <MudCheckBox T="bool"
                                                                  Checked="@(SelectedImages.Contains(image.id))"
                                                                  CheckedChanged="@( (bool value) => OnImageSelected(value, image.id))" />

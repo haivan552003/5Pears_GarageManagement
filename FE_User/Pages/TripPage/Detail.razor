@@ -17,22 +17,23 @@
                     </MudItem>
 
                     <MudItem xs="10">
-                        @foreach (var item in car_seat)
-                        {
-                            var isDisabled = item.status == "Đã đặt" || takenSeats.Contains(item.id.ToString());
-                            var buttonColor = selectedSeats.Contains(item.id) ? Color.Success : Color.Primary;
+                        <MudGrid>
+                            @foreach (var item in car_seat)
+                            {
+                                var isDisabled = item.status == "Đã đặt" || takenSeats.Contains(item.id.ToString()) || item.name.ToLower() == "tài xế"; ;
+                                var buttonColor = selectedSeats.Contains(item.id) ? Color.Success : Color.Primary;
 
-                            <MudItem xs="2">
-                                <MudButton Variant="Variant.Outlined"
-                                           Color="@buttonColor"
-                                           Size="Size.Small"
-                                           Disabled="@isDisabled"
-                                           OnClick="() => OnSeatSelected(item.id, item.name)">
-                                    @item.name
-                                </MudButton>
-                            </MudItem>
-                        }
-
+                                <MudItem xs="2">
+                                    <MudButton Variant="Variant.Outlined"
+                                               Color="@buttonColor"
+                                               Size="Size.Small"
+                                               Disabled="@isDisabled"
+                                               OnClick="() => OnSeatSelected(item.id, item.name)">
+                                        @item.name
+                                    </MudButton>
+                                </MudItem>
+                            }
+                        </MudGrid>
                     </MudItem>
 
                 </MudGrid>

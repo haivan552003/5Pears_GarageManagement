@@ -107,13 +107,11 @@
                                                    Placeholder="Trạng thái">
                                             <MudSelectItem Value="true">
                                                 <div class="d-flex align-center">
-                                                    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="mr-2" />
                                                     Đang hoạt động
                                                 </div>
                                             </MudSelectItem>
                                             <MudSelectItem Value="false">
                                                 <div class="d-flex align-center">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Cancel" Color="Color.Error" Class="mr-2" />
                                                     Ngưng hoạt động
                                                 </div>
                                             </MudSelectItem>
@@ -252,7 +250,7 @@
         private IBrowserFile selectedFile1;
         private string imagePreviewUrl;
         private string imagePreviewUrl1;
-        private string roleUrl = "http://localhost:49922/api/Roles";
+    private string roleUrl = "http://localhost:49922/api/Dropdown/role";
         private List<roles> roles = new List<roles>();
         private employees_create Employee = new employees_create();
         private bool isFormValid;

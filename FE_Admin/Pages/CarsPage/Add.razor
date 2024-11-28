@@ -40,10 +40,10 @@
                     <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.color" Label="Màu xe"  Placeholder="Nhập màu xe" Required="true" RequiredError="Màu xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateColor))" />
                 </MudItem>
                 <MudItem xs="4">
-                    <MudDatePicker @bind-Date="vehicle_registration_start" Variant="Variant.Outlined" Placeholder="Ngày đăng kiểm" Label="Ngày đăng ký" Required="true" RequiredError="Ngày đăng ký là bắt buộc" />
+                    <MudDatePicker @bind-Date="vehicle_registration_start" Variant="Variant.Outlined" Placeholder="Ngày đăng kiểm" Label="Ngày đăng kiểm" Required="true" RequiredError="Ngày đăng kiểm là bắt buộc" />
                 </MudItem>
                 <MudItem xs="4">
-                    <MudDatePicker @bind-Date="vehicle_registration_end" Label="Ngày hết hạn đăng ký" Placeholder="Ngày hết hạn đăng kiểm" Variant="Variant.Outlined" Required="true" RequiredError="Ngày hết hạn đăng ký là bắt buộc" />
+                    <MudDatePicker @bind-Date="vehicle_registration_end" Label="Ngày hết hạn đăng kiểm" Placeholder="Ngày hết hạn đăng kiểm" Variant="Variant.Outlined" Required="true" RequiredError="Ngày hết hạn đăng kiểm là bắt buộc" />
                 </MudItem>
                 <MudItem xs="4">
                     <MudNumericField Variant="Variant.Outlined" @bind-Value="newCar.price" Label="Giá xe" Placeholder="Nhập giá xe" Min="0" Step="1000" Required="true" RequiredError="Giá xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidatePrice))" />
@@ -122,6 +122,7 @@
                                Required="true"
                                RequiredError="Số ghế là bắt buộc"
                                Variant="Variant.Outlined">
+                        <MudSelectItem Value="4">4 chỗ</MudSelectItem>
                         <MudSelectItem Value="16">16 chỗ</MudSelectItem>
                         <MudSelectItem Value="24">24 chỗ</MudSelectItem>
                         <MudSelectItem Value="36">36 chỗ</MudSelectItem>
@@ -269,14 +270,15 @@
                             Snackbar.Add("Thêm xe thành công", Severity.Success);
                             nv.NavigateTo("/getcars");
                         }
-                        newCar = new car_create();
-                        vehicle_registration_start = null;
-                        vehicle_registration_end = null;
-                        year_production = null;
-                        Snackbar.Add("Thêm xe thành công", Severity.Success);
-                        nv.NavigateTo("/getcars");
-                        StateHasChanged();
+                        // newCar = new car_create();
+                        // vehicle_registration_start = null;
+                        // vehicle_registration_end = null;
+                        // year_production = null;
+                      
+                        // StateHasChanged();
                     }
+                    Snackbar.Add("Thêm xe thành công", Severity.Success);
+                    nv.NavigateTo("/getcars");
                 }
                 else
                 {

@@ -6,16 +6,19 @@
             <MudTextField @bind-Value="seat.name"
                           Label="Tên ghế"
                           Required="true"
+                          Variant="Variant.Outlined"
                           RequiredError="Vui lòng nhập tên ghế" />
             <MudNumericField @bind-Value="seat.row"
                              Label="Hàng"
                              Required="true"
                              Min="1"
+                             Variant="Variant.Outlined"
                              Class="mt-3" />
             <MudNumericField @bind-Value="seat.col"
-                             Label="Cột"
+                             Label="Tầng"
                              Required="true"
                              Min="1"
+                             Variant="Variant.Outlined"
                              Class="mt-3" />
         </MudForm>
     </DialogContent>
