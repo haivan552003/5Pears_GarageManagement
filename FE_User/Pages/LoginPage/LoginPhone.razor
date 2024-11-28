@@ -84,7 +84,7 @@
         try
         {
             // var response = await Http.PostAsJsonAsync("http://localhost:49922/api/PhoneNumber/verify-otp", new url real
-            var response = await Http.PostAsJsonAsync("http://localhost:49922/api/OTPFake/verify-otp1", new //url API Fake
+            var response = await Http.PostAsJsonAsync("http://localhost:49922/api/PhoneNumber/verify-otp", new //url API Fake
 
             {
                 PhoneNumber = model.PhoneNumber,
@@ -116,6 +116,5 @@
     {
         public string PhoneNumber { get; set; }
         public string Otp { get; set; }
-        // public string RequestId { get; set; } // This can be fetched from the OTP response if required
-    }
+    } 
 }
