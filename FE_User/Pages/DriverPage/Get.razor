@@ -34,8 +34,27 @@
                                     <MudText Typo="Typo.body2" Color="Color.Secondary" Class="ml-1">@item.phonenumber</MudText>
                                 </MudItem>
                                 <MudItem Class="d-flex align-center">
-                                    <MudIcon Icon="@Icons.Material.Filled.DateRange" Color="Color.Primary" />
-                                    <MudText Typo="Typo.body2" Color="Color.Dark" Class="ml-1">@item.age tuổi</MudText>
+                                    @if(item.class_driver_license == 1)
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Outlined.Class" Color="Color.Primary" />
+                                        <MudText Typo="Typo.body2" Color="Color.Dark" Class="ml-1">Bằng lái xe hạng B1</MudText>
+                                    }
+                                    else if (item.class_driver_license == 2)
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Outlined.Class" Color="Color.Primary" />
+                                        <MudText Typo="Typo.body2" Color="Color.Dark" Class="ml-1">Bằng lái xe hạng B2</MudText>
+                                    }
+                                    else if (item.class_driver_license == 3)
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Outlined.Class" Color="Color.Primary" />
+                                        <MudText Typo="Typo.body2" Color="Color.Dark" Class="ml-1">Bằng lái xe hạng C</MudText>
+                                    }
+                                    else if (item.class_driver_license == 4)
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Outlined.Class" Color="Color.Primary" />
+                                        <MudText Typo="Typo.body2" Color="Color.Dark" Class="ml-1">Bằng lái xe hạng D</MudText>
+                                    }
+
                                 </MudItem>
                                 <MudItem Class="d-flex align-center">
                                     <MudIcon Icon="fa-solid fa-venus-mars" Color="Color.Default" />

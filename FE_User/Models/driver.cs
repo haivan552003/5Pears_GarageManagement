@@ -19,5 +19,6 @@ namespace FE_User.Models
         public byte is_delete { get; set; }
         public int age { get; set; }
         public float price { get; set; }
+        public int class_driver_license { get; set; }
     }
 }
