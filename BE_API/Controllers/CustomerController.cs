@@ -203,5 +203,17 @@ namespace BE_API.Controllers
             return NoContent();
         }
 
+        [HttpGet("GetTop")]
+        public async Task<ActionResult<IEnumerable<customers>>> GetTop()
+        {
+            var procedureName = "sp_get_top_customer";
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var customers = await connection.QueryAsync<customers>(procedureName, commandType: CommandType.StoredProcedure);
+                return Ok(customers);
+            }
+        }
+
     }
 }

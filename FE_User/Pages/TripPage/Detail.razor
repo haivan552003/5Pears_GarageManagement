@@ -25,10 +25,10 @@
 
                                 <MudItem xs="2">
                                     <MudButton Variant="Variant.Outlined"
-                                               Color="@buttonColor"
-                                               Size="Size.Small"
-                                               Disabled="@isDisabled"
-                                               OnClick="() => OnSeatSelected(item.id, item.name)">
+                                    Color="@buttonColor"
+                                    Size="Size.Small"
+                                    Disabled="@isDisabled"
+                                    OnClick="() => OnSeatSelected(item.id, item.name)">
                                         @item.name
                                     </MudButton>
                                 </MudItem>
@@ -117,9 +117,28 @@
                     }
                     else
                     {
-                        <MudItem xs="12">
-                            <MudText Align="Align.Center" Typo="Typo.subtitle1" Color="Color.Error">Vui lòng đăng nhập để thanh toán</MudText>
-                        </MudItem>
+                        <MudPaper Class="p-4 mt-4" Elevation="1">
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudText Typo="Typo.h6" Color="Color.Primary">VUI LÒNG ĐIỀN THÔNG TIN CỦA QUÝ KHÁCH</MudText>
+                                </MudItem>
+
+                                <MudItem xs="12" Class="mb-3">
+                                    <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                        Tên khách hàng
+                                    </MudText>
+                                    <MudTextField ShrinkLabel @bind-Value="customer.cus_code" Variant="Variant.Outlined"></MudTextField>
+                                    <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                        Email
+                                    </MudText>
+                                    <MudTextField ShrinkLabel @bind-Value="customer.cus_code" Variant="Variant.Outlined"></MudTextField>
+                                    <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                        Số điện thoại
+                                    </MudText>
+                                    <MudTextField ShrinkLabel @bind-Value="customer.cus_code" Variant="Variant.Outlined"></MudTextField>
+                                </MudItem>
+                            </MudGrid>
+                        </MudPaper>
                     }
                 </MudGrid>
             </MudPaper>
@@ -164,7 +183,7 @@
 <script>
     // Lấy token từ localStorage
     function getAuthToken() {
-        return localStorage.getItem("authToken");
+    return localStorage.getItem("authToken");
     }
 
 </script>
@@ -179,6 +198,7 @@
     private List<car_seat> car_seat = new List<car_seat>();
     private List<car_seat_not_null> car_seat_not_null;
     private customer customer = new customer();
+    private customer addCus = new customer();
     private string urlTrip = "http://localhost:49922/api/Trips/trip";
     private string urlCus = "http://localhost:49922/api/Customer";
     private string urlBill = "http://localhost:49922/api/GuestTrip";
@@ -186,6 +206,8 @@
     private string urlViewTrip = "http://localhost:49922/api/Trips/viewTrip/";
     private string urlSeatNotNull = "http://localhost:49922/api/GuestTrip/GetSeatNotNull/";
     private string urlVNPayCreate = "http://localhost:49922/api/Payment/create-payment";
+    private string urlAddCus = "http://localhost:49922/api/Customer";
+    private string urlGetTopCus = "http://localhost:49922/api/Customer/GetTop";
 
     private List<int> selectedSeats = new List<int>();
     private List<string> selectedSeatNames = new List<string>();
@@ -376,6 +398,15 @@
 
     private async Task OnCheckout()
     {
+        if (cus_id == 0)
+        {
+            bill.cus_id = cus_id;
+        }
+        else
+        {
+            AddCus();
+        }
+
         if (selectedSeats.Count() == 1)
         {
             //1 ghế
@@ -383,7 +414,7 @@
             bill.trip_detail_id = id;
             bill.car_seat_id = selectedSeats.First();
             bill.parent_id = 0;
-            bill.cus_id = cus_id;
+
             bill.price = TRIPDETAILS.sale;
 
             var response = await httpClient.PostAsJsonAsync(urlBill, bill);
@@ -431,7 +462,6 @@
             bill.trip_detail_id = id;
             bill.parent_id = 0;
             bill.car_seat_id = null;
-            bill.cus_id = cus_id;
             bill.price = TRIPDETAILS.sale;
 
             var firstResponse = await httpClient.PostAsJsonAsync(urlBill, bill);
@@ -491,7 +521,25 @@
         }
     }
 
+    private async Task AddCus()
+    {
+        try
+        {
 
+            var response = await httpClient.PostAsJsonAsync(urlAddCus, addCus);
+            if(response.IsSuccessStatusCode){
+                var responseTop = await httpClient.GetAsync(urlGetTopCus);
+                var jsonResponse = await responseTop.Content.ReadAsStringAsync();
+                var customerTop = JsonSerializer.Deserialize<List<customer>>(jsonResponse);
+                var cusID = customerTop.First().Id;
+                bill.cus_id = cusID;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi khi thêm khách hàng: {ex.Message}", Severity.Error);
+        }
+    }
 }
 
 
