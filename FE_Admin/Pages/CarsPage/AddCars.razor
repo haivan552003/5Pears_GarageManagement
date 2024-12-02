@@ -1,0 +1,58 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6" Class="mb-4">Nhập số lượng xe</MudText>
+        <MudTextField @bind-Value="NumberOfCars"
+                      Variant="Variant.Outlined"
+                      Label="Số lượng xe"
+                      HelperText="Nhập số lượng xe muốn thêm"
+                      Type="number"
+                      Immediate="true"
+                      Min="1"
+                      Max="100"
+                      Required="true"
+                      RequiredError="Vui lòng nhập số lượng xe"
+                      Validation="@(new Func<int, string>(ValidateNumberOfCars))" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel"
+                   Color="Color.Secondary"
+                   StartIcon="@Icons.Material.Filled.Cancel">
+            Hủy
+        </MudButton>
+        <MudButton OnClick="Add"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.Add"
+                   Disabled="@(!IsValidNumberOfCars)">
+            Thêm
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public int CarId { get; set; }
+    private int NumberOfCars { get; set; } = 1;
+
+    private bool IsValidNumberOfCars => NumberOfCars is >= 1 and <= 100;
+
+    private string ValidateNumberOfCars(int value)
+    {
+        return value < 1 ? "Số lượng xe phải lớn hơn 0" :
+               value > 100 ? "Số lượng xe không được vượt quá 100" :
+               null;
+    }
+
+    private void Add()
+    {
+        if (IsValidNumberOfCars)
+        {
+            MudDialog.Close(DialogResult.Ok(NumberOfCars));
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

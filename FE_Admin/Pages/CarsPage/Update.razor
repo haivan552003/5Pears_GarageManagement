@@ -19,7 +19,7 @@
                         <MudText Typo="Typo.h5" Class="mb-4">Thông tin xe</MudText>
                         <MudGrid>
                             <MudItem xs="4">
-                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_number" Label="Biển số xe" Disabled="true" />
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_number" Label="Biển số xe" />
                             </MudItem>
                             <MudItem xs="4">
                                 <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_name" Label="Tên xe" Required="true" RequiredError="Tên xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateCarName))" />
@@ -80,7 +80,7 @@
                                                Required="true"
                                                RequiredError="Năm sản xuất là bắt buộc"
                                                Variant="Variant.Outlined"
-                                               DateFormat="yyyy"
+                                               OpenTo="OpenTo.Year" FixMonth="@DateTime.Today.Month" FixDay="@DateTime.Today.Day" DateFormat="yyyy"
                                                Placeholder="Năm sản xuất" />
                             </MudItem>
                             <MudItem xs="3">
@@ -128,6 +128,10 @@
                                            Color="Color.Secondary"
                                            OnClick="Cancel"
                                            Class="mx-2">Hủy</MudButton>
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Secondary"
+                                           OnClick="OpenAddMultipleCarsDialogg"
+                                           Class="mx-2">Thêm nhiều xe cùng loại</MudButton>
                                 <MudButton ButtonType="ButtonType.Submit"
                                            Variant="Variant.Filled"
                                            Color="Color.Primary"
@@ -245,6 +249,8 @@
     private string typeUrl = "http://localhost:49922/api/Dropdown/car_type";
     private string brandUrl = "http://localhost:49922/api/Dropdown/car_brand";
 
+    private int numberOfCarsToAdd = 1;  // Số lượng xe để thêm
+
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Xe", "/getcars", icon: Icons.Material.Outlined.DirectionsCar),
@@ -256,7 +262,7 @@
         try
         {
             Car = await httpClient.GetFromJsonAsync<car_create>($"{apiUrl}/Cars/{id}");
-            if(Car != null)
+            if (Car != null)
             {
                 productionDate = Car.year_production;
                 registrationStartDate = Car.vehicle_registration_start;
@@ -303,7 +309,7 @@
             Snackbar.Add($"Lỗi khi tải danh sách vai trò: {ex.Message}", Severity.Error);
         }
     }
-  
+
     private async Task OpenAddSeatDialog()
     {
         var parameters = new DialogParameters();
@@ -395,8 +401,16 @@
             var carResponse = await httpClient.PutAsJsonAsync($"{apiUrl}/Cars/putCars/{id}", Car);
             if (!carResponse.IsSuccessStatusCode)
             {
-                throw new Exception($"Lỗi cập nhật thông tin xe: {await carResponse.Content.ReadAsStringAsync()}");
+                if (carResponse.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    Snackbar.Add("Biển số xe này đã tồn tại. Vui lòng chọn biển số khác.", Severity.Error);
+                    return;
+                }
+
+                Snackbar.Add("Có lỗi xảy ra khi cập nhật thông tin xe", Severity.Error);
+                return;
             }
+
             foreach (var seat in CarSeats)
             {
                 var seatResponse = await httpClient.PutAsJsonAsync($"{apiUrl}/Cars/putCarSeat/{seat.id}", seat);
@@ -408,6 +422,67 @@
 
             Snackbar.Add("Cập nhật thành công", Severity.Success);
             navigationManager.NavigateTo("/getcars");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+
+
+    private async Task OpenAddMultipleCarsDialogg()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("CarId", id);
+
+        var dialog = DialogService.Show<AddCars>("Thêm nhiều ảnh", parameters);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            int numberOfCars = (int)result.Data;
+            await AddMultipleCars(numberOfCars);
+        }
+    }
+
+    private async Task AddMultipleCars(int numberOfCars)
+    {
+        try
+        {
+            var addCarssRequest = new Add_Carss
+                {
+                    car_id = Car.id,                          // ID của xe gốc
+                    quantity = numberOfCars,                  // Số lượng xe cần tạo
+                    number_seat = Car.number_seat,           // Số ghế của xe gốc
+                    car_number = Car.car_number,              // Biển số xe của xe gốc
+                    color = Car.color,                        // Màu sắc của xe
+                    vehicle_registration_start = Car.vehicle_registration_start, // Ngày bắt đầu đăng ký xe
+                    vehicle_registration_end = Car.vehicle_registration_end,     // Ngày kết thúc đăng ký xe
+                    price = Car.price,                        // Giá của xe
+                    isAuto = Car.isAuto,                      // Tự động (1/0)
+                    isRetail = Car.isRetail,                  // Bán lẻ (1/0)
+                    type_id = Car.type_id,                    // ID loại xe
+                    brand_id = Car.brand_id,                  // ID thương hiệu xe
+                    year_production = Car.year_production,    // Năm sản xuất
+                    odo = Car.odo,                            // Odometer (số km đã đi)
+                    insurance_fee = Car.insurance_fee,        // Phí bảo hiểm
+                    fuel = Car.fuel,                          // Loại nhiên liệu
+                    description = Car.description,            // Mô tả chi tiết
+                    car_name = Car.car_name,                  // Tên xe
+                    voucher = Car.voucher                     // Mã giảm giá (nếu có)
+                };
+
+            var response = await httpClient.PostAsJsonAsync($"{apiUrl}/Cars/PostCarsss", addCarssRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add($"Đã thêm {numberOfCars} xe thành công", Severity.Success);
+                // Optionally refresh the car list or perform other actions
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Lỗi: {errorContent}", Severity.Error);
+            }
         }
         catch (Exception ex)
         {
