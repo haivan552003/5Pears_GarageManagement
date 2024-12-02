@@ -81,7 +81,7 @@
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="3">
-                    <MudDatePicker @bind-Date="year_production" Label="Năm sản xuất" DateFormat="yyyy" Placeholder="Năm sản xuất" Variant="Variant.Outlined" Required="true" RequiredError="Năm sản xuất là bắt buộc" PickerVariant="PickerVariant.Dialog" />
+                    <MudDatePicker @bind-Date="year_production" Label="Năm sản xuất" OpenTo="OpenTo.Year" FixMonth="@DateTime.Today.Month" FixDay="@DateTime.Today.Day" DateFormat="yyyy" Placeholder="Năm sản xuất" Variant="Variant.Outlined" Required="true" RequiredError="Năm sản xuất là bắt buộc" PickerVariant="PickerVariant.Dialog" />
                 </MudItem>
                 <MudItem xs="3">
                     <MudNumericField Variant="Variant.Outlined" @bind-Value="newCar.odo" Label="Số km đã đi" Placeholder="Số KM đã đi" Required="true" RequiredError="Số km đã đi là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateOdo))" />
@@ -231,8 +231,7 @@
         {
             try
             {
-                var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Cars/PostCars/", newCar);
-
+                var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Cars/PostCars/", newCar);            
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
@@ -279,6 +278,11 @@
                     }
                     Snackbar.Add("Thêm xe thành công", Severity.Success);
                     nv.NavigateTo("/getcars");
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    Snackbar.Add("Biển số xe này đã tồn tại. Vui lòng chọn biển số khác.", Severity.Error);
+                    return;
                 }
                 else
                 {

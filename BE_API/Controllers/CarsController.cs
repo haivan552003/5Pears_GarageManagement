@@ -104,6 +104,19 @@ namespace BE_API.Controllers
         [HttpPost("PostCars")]
         public async Task<ActionResult<car_create>> PostCars(car_create cars)
         {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var existingCarCount = await connection.QueryFirstOrDefaultAsync<int>(
+                    "SELECT COUNT(*) FROM dbo.cars WHERE car_number = @CarNumber AND is_delete = 0",
+                    new { CarNumber = cars.car_number }
+                );
+
+                if (existingCarCount > 0)
+                {
+                    return BadRequest();
+                }
+            }
+
             int carId;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -174,6 +187,66 @@ namespace BE_API.Controllers
             return CreatedAtAction(nameof(GetAllCars), new { id = carId }, cars);
         }
 
+
+        [HttpPost("PostCarsss")]
+        public async Task<ActionResult<AddCarss>> PostCarsss(AddCarss cars)
+        {
+            int carId =0;
+
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                SqlCommand cmd = new SqlCommand("sp_create_multiple_cars", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@car_id", SqlDbType.Int).Value = cars.car_id;
+                cmd.Parameters.Add("@quantity", SqlDbType.Int).Value = cars.quantity;
+
+                await conn.OpenAsync();
+                var reader = await cmd.ExecuteReaderAsync();             
+                if (reader.Read())
+                {
+                    carId = Convert.ToInt32(reader["id"]);
+                }
+
+            }
+                // Tạo ghế cho từng xe đã tạo
+                if (cars.number_seat > 0)
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+
+                    // Create driver's seat
+                    SqlCommand driverSeatCmd = new SqlCommand("sp_create_car_seats", conn);
+                    driverSeatCmd.CommandType = CommandType.StoredProcedure;
+                    driverSeatCmd.Parameters.AddWithValue("@name", "TÀI XẾ");
+                    driverSeatCmd.Parameters.AddWithValue("@car_id", carId);
+                    driverSeatCmd.Parameters.AddWithValue("@row", 1);
+                    driverSeatCmd.Parameters.AddWithValue("@col", 1);
+                    await driverSeatCmd.ExecuteNonQueryAsync();
+
+                    // Create additional seats
+                    for (int i = 1; i <= cars.number_seat - 1; i++)
+                    {
+                        SqlCommand seatCmd = new SqlCommand("sp_create_car_seats", conn);
+                        seatCmd.CommandType = CommandType.StoredProcedure;
+
+                        string seatName = GetSeatName(cars.number_seat, i);
+
+                        seatCmd.Parameters.AddWithValue("@name", seatName);
+                        seatCmd.Parameters.AddWithValue("@car_id", carId);
+                        seatCmd.Parameters.AddWithValue("@row", 1);
+                        seatCmd.Parameters.AddWithValue("@col", 1);
+                        await seatCmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return CreatedAtAction(nameof(GetAllCars), new { id = carId }, cars);
+            }
+
+            // Add this else block to handle cases when no seats are created
+            return BadRequest("Number of seats must be greater than 0.");
+        }
+
         // Helper method to generate seat names
         private string GetSeatName(int totalSeats, int seatNumber)
         {
@@ -188,7 +261,8 @@ namespace BE_API.Controllers
             return $"{prefix}{seatNumber}";
         }
 
-      
+
+
         [HttpPost("PostCarSeat")]
         public async Task<ActionResult<IEnumerable<car_seat>>> PostCarSeat(List<car_seat> seats)
         {
@@ -219,6 +293,17 @@ namespace BE_API.Controllers
         [HttpPut("putCars/{id}")]
         public async Task<IActionResult> PutCars(int id, car_create cars)
         {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var existingCarCount = await connection.QueryFirstOrDefaultAsync<int>(
+                    "SELECT COUNT(*) FROM dbo.cars WHERE car_number = @CarNumber AND id != @Id AND is_delete = 0",
+                    new { CarNumber = cars.car_number, Id = id }
+                );
+                if (existingCarCount > 0)
+                {
+                    return BadRequest();
+                }
+            }
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 SqlCommand cmd = new SqlCommand("sp_update_car", conn);
@@ -246,7 +331,6 @@ namespace BE_API.Controllers
                 await conn.OpenAsync();
 
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
-
                 if (rowsAffected == 0)
                 {
                     return NotFound();

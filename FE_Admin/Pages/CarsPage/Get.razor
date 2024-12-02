@@ -1,76 +1,80 @@
 ﻿@page "/getcars"
 @inject HttpClient httpClient
+@inject NavigationManager navigationManager
 @inject IJSRuntime js
 @inject IDialogService DialogService
-@inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 
 <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    @if (isLoading)
-    {
-        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
-    }
-    else
-    {
     <MudGrid Class="pa-0">
         <MudItem xs="12">
             <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
                 <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
             </MudPaper>
             <MudPaper Elevation="0">
-                <MudDataGrid Class="mx-auto pa-2" T="car" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                <MudDataGrid Class="mx-auto pa-2" T="car" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true"
+                             Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
                              Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+
                     <ToolBarContent>
                         <MudItem xs="4" Elevation="0" Class="pb-3">
                             <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
                                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                         </MudItem>
-
                         <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
                             <MudButton Href="/addcar" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
                                 Thêm mới
                             </MudButton>
-
                             <MudButton Href="/importcars" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
                                 Nhập file
                             </MudButton>
-
                             <MudButton Href="/exportcars" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
                                 Xuất file
                             </MudButton>
                         </MudItem>
                     </ToolBarContent>
+
                     <Columns>
-                        <SelectColumn T="car" />
-                        <PropertyColumn T="car" TProperty="string" Class="fw-bold" Property="x => x.car_code" Title="Mã xe" />
-                        <PropertyColumn T="car" TProperty="string" Class="fw-bold" Property="x => x.car_name" Title="Tên xe" />
-                        <PropertyColumn T="car" TProperty="string" Class="fw-bold" Property="x => x.car_number" Title="Biển số xe" />
-                        <PropertyColumn T="car" TProperty="string" Class="fw-bold" Property="x => x.color" Title="Màu sắc" />
-                        <PropertyColumn T="car" TProperty="DateTime" Class="fw-bold" Property="x => x.year_production" Title="Năm sản xuất" Format="yyyy" />
-                        <PropertyColumn T="car" TProperty="float" Class="fw-bold" Property="x => x.price" Title="Giá" />
-                        <TemplateColumn T="car" Style="width: 80%;" Class="fw-bold" Title="Trạng Thái">
-                          @*   <CellTemplate Context="element">
-                                @if (element.Item.status == "1")
+                        <PropertyColumn T="car" Class="fw-bold" TProperty="string" Property="x => x.car_code" Title="Mã xe"
+                                        Style="width: 15%; white-space: nowrap;" />
+                        <PropertyColumn T="car" Class="fw-bold" TProperty="string" Property="x => x.car_name" Title="Tên xe"
+                                        Style="width: 20%; white-space: nowrap;" />
+
+                        <TemplateColumn T="car" Class="fw-bold" Title="Số chỗ ngồi" Style="white-space: nowrap;">
+                            <CellTemplate Context="element">
+                                @if (string.IsNullOrEmpty(element.Item.car_number))
                                 {
-                                    <MudChip Color="Color.Success" Size="Size.Small" Variant="Variant.Text">Đang hoạt động</MudChip>
+                                    <MudChip Color="Color.Warning" Size="Size.Small" Variant="Variant.Text">Chưa cập nhật</MudChip>
                                 }
                                 else
                                 {
-                                    <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Ngưng hoạt động</MudChip>
+                                    @element.Item.car_number
                                 }
-                            </CellTemplate> *@
+                            </CellTemplate>
                         </TemplateColumn>
-                        <TemplateColumn T="car" Title="Chức năng">
-                            <CellTemplate Context="car">
+
+                        <PropertyColumn T="car" Class="fw-bold" TProperty="string" Property="x => x.color" Title="Màu sắc"
+                                        Style="width: 15%; white-space: nowrap;" />
+
+                        <PropertyColumn T="car" Class="fw-bold" TProperty="DateTime" Property="x => x.year_production" Title="Năm SX"
+                                        Style="width: 10%; white-space: nowrap;" Format="yyyy" />
+
+                        <PropertyColumn T="car" Class="fw-bold" TProperty="float" Property="x => x.price" Title="Giá"
+                                        Style="width: 10%; white-space: nowrap;" />
+
+                        <TemplateColumn T="car" Class="fw-bold" Title="Chức năng" Style="white-space: nowrap;">
+                            <CellTemplate Context="element">
                                 <MudTooltip Text="Chỉnh sửa">
-                                    <MudIconButton Href="@($"/editcar/{car.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                    <MudIconButton Href="@($"/editcar/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
                                 </MudTooltip>
                                 <MudTooltip Text="Xóa">
-                                    <MudIconButton OnClick="@(async () => { await OpenDeleteDialog(car.Item); })" Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
+                                    <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small"
+                                                   OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" />
                                 </MudTooltip>
                             </CellTemplate>
                         </TemplateColumn>
                     </Columns>
+
                     <PagerContent>
                         <MudDataGridPager T="car" />
                     </PagerContent>
@@ -78,14 +82,12 @@
             </MudPaper>
         </MudItem>
     </MudGrid>
-    }
 </MudContainer>
 
 @code {
-    private bool isLoading = true;
     private IEnumerable<car> Elements = new List<car>();
     private string _searchString;
-    private List<string> _events = new();
+    private string carsUrl = "http://localhost:49922/api/Cars/getAllCars";
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -93,84 +95,75 @@
         new BreadcrumbItem("Danh sách xe", href: "/getcars", icon: @Icons.Material.Outlined.List),
     };
 
-    void RowClicked(DataGridRowClickEventArgs<car> args)
-    {
-        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-    }
-
-    void RowRightClicked(DataGridRowClickEventArgs<car> args)
-    {
-        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-    }
-
-    void SelectedItemsChanged(HashSet<car> items)
-    {
-        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
-    }
-
     private Func<car, bool> _quickFilter => x =>
     {
         if (string.IsNullOrWhiteSpace(_searchString))
             return true;
 
-        return $"{x.car_number} {x.color} {x.status}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
+        return $"{x.car_code} {x.car_name} {x.car_number} {x.color}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
     };
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadCars();
+    }
+
+    private async Task LoadCars()
+    {
         try
         {
-            Elements = await httpClient.GetFromJsonAsync<List<car>>("http://localhost:49922/api/Cars/getAllCars");
+            Elements = await httpClient.GetFromJsonAsync<List<car>>(carsUrl);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            Snackbar.Add($"Lỗi tải dữ liệu: {ex.Message}", Severity.Error);
         }
-        finally
-        {
-            isLoading = false;
-        }
+    }
+
+    void RowClicked(DataGridRowClickEventArgs<car> args)
+    {
+        // Optional row click handling
+    }
+
+    void RowRightClicked(DataGridRowClickEventArgs<car> args)
+    {
+        // Optional right-click handling
+    }
+
+    void SelectedItemsChanged(HashSet<car> items)
+    {
+        // Optional selection handling
     }
 
     private async Task OpenDeleteDialog(car car)
     {
         var parameters = new DialogParameters
         {
-            { "ContentText", $"Bạn có chắc chắn muốn xóa xe { car.car_number}?" },
+            { "ContentText", $"Bạn có chắc chắn muốn xóa xe {car.car_number}?" },
             { "ButtonText", "Xóa" },
             { "Color", Color.Error }
         };
 
-        var options = new DialogOptions() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall };
-
-        var dialog = await DialogService.ShowAsync<Delete>("Xác nhận xóa", parameters, options);
+        var dialog = DialogService.Show<Delete>("Xác nhận xóa", parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            await DeleteCar(car);
+            await DeleteCar(car.id);
         }
     }
 
-    private async Task DeleteCar(car car)
+    private async Task DeleteCar(int id)
     {
-        try
+        var response = await httpClient.DeleteAsync($"http://localhost:49922/api/Cars/DeleteCars/{id}");
+        if (response.IsSuccessStatusCode)
         {
-            var response = await httpClient.DeleteAsync($"http://localhost:49922/api/Cars/DeleteCars/{car.id}");
-            if (response.IsSuccessStatusCode)
-            {
-                Snackbar.Add($"Đã xóa xe {car.car_number} thành công", Severity.Success);
-                await OnInitializedAsync();
-            }
-            else
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Lỗi khi xóa xe: {response.ReasonPhrase}. Chi tiết: {errorContent}", Severity.Error);
-            }
+            Snackbar.Add("Xóa xe thành công!", Severity.Success);
+            await LoadCars();
         }
-        catch (Exception ex)
+        else
         {
-            Snackbar.Add($"Lỗi khi xóa xe: {ex.Message}", Severity.Error);
+            Snackbar.Add("Xóa xe thất bại!", Severity.Error);
         }
     }
 }
