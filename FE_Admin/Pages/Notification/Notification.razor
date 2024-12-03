@@ -1,5 +1,6 @@
 ﻿@page "/notifications"
 @inject HttpClient Http
+@inject IJSRuntime js
 @using MudBlazor
 @using System.Net.Http.Json
 
@@ -72,7 +73,12 @@
         }
     }
 </MudPaper>
-
+<script>
+    // Lấy token từ localStorage
+    function getAuthToken() {
+        return localStorage.getItem("authToken");
+    }
+</script>
 <style>
     .header {
         display: flex;
@@ -101,17 +107,42 @@
     private bool hasError = false;
     private int userId = 1; 
     private int userIdcar = 2; 
+    private int DriverId;
 
-    protected override async Task OnInitializedAsync()
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+
+                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "driver_id");
+
+                if (userId != null)
+                {
+                    DriverId = int.Parse(userId.Value);
+                    await LoadNotifications();
+                }
+            }
+        }
+    }
+
+    private async Task LoadNotifications()
     {
         try
         {
             isLoading = true;
 
-            // Gọi API để lấy dữ liệu
-            DriverGuestTripNotifications = await Http.GetFromJsonAsync<List<DriverGuestTripNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetDriverGuestTrips/{userId}") ?? new();
-            DriverGuestDriverNotifications = await Http.GetFromJsonAsync<List<DriverGuestNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetDriverGuestDriverNotifications/{userId}") ?? new();
-            DriverGuestCarNotifications = await Http.GetFromJsonAsync<List<DriverGuestCarNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetGuestDriverCarNotifications/{userIdcar}") ?? new();
+            DriverGuestTripNotifications = await Http.GetFromJsonAsync<List<DriverGuestTripNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetDriverGuestTrips/{DriverId}") ?? new();
+            DriverGuestDriverNotifications = await Http.GetFromJsonAsync<List<DriverGuestNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetDriverGuestDriverNotifications/{DriverId}") ?? new();
+            DriverGuestCarNotifications = await Http.GetFromJsonAsync<List<DriverGuestCarNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetGuestDriverCarNotifications/{DriverId}") ?? new();
+
+            StateHasChanged();
         }
         catch
         {
@@ -121,5 +152,10 @@
         {
             isLoading = false;
         }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Remove the token retrieval logic from here
     }
 }

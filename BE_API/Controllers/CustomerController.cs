@@ -153,11 +153,13 @@ namespace BE_API.Controllers
         public async Task<IActionResult> UpdateCustomer(int id, [FromBody] customers updatedCustomer)
         {
             var procedureName = "sp_update_customers";
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(updatedCustomer.password);
+
             var parameters = new DynamicParameters();
             parameters.Add("@cus_id", id, DbType.Int32);
             parameters.Add("@cus_code", updatedCustomer.cus_code, DbType.String);
             parameters.Add("@email", updatedCustomer.email, DbType.String);
-            parameters.Add("@password", updatedCustomer.password, DbType.String);
+            parameters.Add("@password", hashedPassword, DbType.String);
             parameters.Add("@fullname", updatedCustomer.fullname, DbType.String);
             parameters.Add("@birthday", updatedCustomer.birthday, DbType.Date);
             parameters.Add("@gender", updatedCustomer.gender, DbType.String);
