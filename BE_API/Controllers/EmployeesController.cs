@@ -95,6 +95,11 @@ namespace BE_API.Controllers
         {
             var parameters = new DynamicParameters(employee);
             parameters.Add("@id", id);
+            if (!string.IsNullOrEmpty(employee.password))
+            {
+                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(employee.password);
+                parameters.Add("@password", hashedPassword);
+            }
 
             using (var connection = new SqlConnection(_connectionString))
             {
