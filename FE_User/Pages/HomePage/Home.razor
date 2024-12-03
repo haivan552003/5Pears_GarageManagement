@@ -15,29 +15,81 @@
         border-radius: 5px
     }
 
-    .mud-card {
+    .mud-card1 {
         transition: all 0.2s ease-in-out;
     }
 
-        .mud-card:hover {
+        .mud-card1:hover {
             transform: translateY(-3px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 </style>
 
 <MudContainer Class="pa-0" style="margin-top:95px">
-    <div class="position-relative">
-        <MudCarousel Class="mud-width-full rounded-3" style="height:550px" ShowArrows="true" TData="banner" ShowBullets="false" EnableSwipeGesture="true" AutoCycle="true" TData="object">
-            @foreach (var item in eBanner)
-            {
-                <MudCarouselItem Transition="Transition.Slide" Color="Color.Primary">
-                    <MudImage class="img-fluid w-100 rounded-3" style="height:550px" src="@item.img_banner" alt="@item.title" />
-                </MudCarouselItem>
-            }
-        </MudCarousel>
-    </div>
+    <MudCarousel Class="mud-width-full rounded-3" style="height:550px" ShowArrows="true" TData="banner" ShowBullets="false" EnableSwipeGesture="true" AutoCycle="true" TData="object">
+        @foreach (var item in eBanner)
+        {
+            <MudCarouselItem Transition="Transition.Slide" Color="Color.Primary">
+                <MudImage class="img-fluid w-100 rounded-3" style="height:550px" src="@item.img_banner" alt="@item.title" />
+            </MudCarouselItem>
+        }
+    </MudCarousel>
+
+    <MudItem xs="12" Class="mx-auto mt-10">
+        <MudCard Class="w-100">
+            <MudText Class="text-center text-uppercase fw-bold pt-3" Typo="Typo.h5" Color="Color.Primary">Tra cứu chuyến xe</MudText>
+
+            <MudCardContent Class="pt-0">
+                <MudRadioGroup @bind-Value="Dense_Radio" Class="pb-5">
+                    <MudRadio Value="true" Color="Color.Primary" Size="Size.Small" Dense="false">Một Chiều</MudRadio>
+                    <MudRadio Value="false" Color="Color.Primary" Size="Size.Small" Dense="false">Khứ Hồi</MudRadio>
+                </MudRadioGroup>
+                <MudGrid>
+                    <MudItem xs="3">
+                        <MudStack>
+                            <MudSelect @bind-Value="dropDown.id" Variant="Variant.Outlined" Margin="Margin.None" Dense="false"
+                                       ReadOnly="false" Placeholder="Chọn Điểm Đi"
+                                       HelperTextOnFocus="true" Clearable="true" Label="Điểm Đi">
+                                @foreach (var item in tripFrom)
+                                {
+                                    <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudStack>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudStack>
+                            <MudSelect @bind-Value="dropDown.id" Variant="Variant.Outlined" Margin="Margin.None" Dense="false"
+                                       ReadOnly="false" Placeholder="Chọn Điểm Đi"
+                                       HelperText="@(_helperText ? "Helper Text" : null)"
+                                       HelperTextOnFocus="_helperTextOnFocus" Clearable="true" Label="Điểm Đến">
+                                @foreach (var item in tripTo)
+                                {
+                                    <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudStack>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudStack>
+                            <MudDatePicker Label="Ngày đi" Variant="Variant.Outlined" @bind-Date="_date" ShowToolbar="false" />
+                        </MudStack>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudStack>
+                            <MudDatePicker Label="Ngày về" Variant="Variant.Outlined" @bind-Date="_date" ShowToolbar="false" />
+                        </MudStack>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton OnClick="@(() => OpenDialogAsync(_maxWidth))" Class="mx-auto mb-4 mt-0" Variant="Variant.Outlined" Size="Size.Large" IconClass="@Icons.Material.Outlined.Search" Color="Color.Primary">Tìm kiếm chuyến xe</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
     @* chuyến xe phổ biến *@
-    <MudText Class="text-center text-uppercase fw-bold pt-9 pb-3" Typo="Typo.h5" Color="Color.Primary">tuyến xe phổ biến</MudText>
+   @*  <MudText Class="text-center text-uppercase fw-bold pt-9 pb-3" Typo="Typo.h5" Color="Color.Primary">tuyến xe phổ biến</MudText>
     <MudGrid>
         <MudItem xs="4">
             <MudCard style="background-color: #f2f2f2">
@@ -126,7 +178,7 @@
                 }
             </MudCard>
         </MudItem>
-    </MudGrid>
+    </MudGrid> *@
 
     @* bạn cần thuê xe *@
     <MudPaper Class="pa-5 mt-16" style="background-color:#F4F6FF">
@@ -174,7 +226,7 @@
             <div class="d-flex">
                 @foreach (var item in eNews1)
                 {
-                    <MudCard Class="text-center ma-2" Style="flex: 1;">
+                    <MudCard Class="text-center ma-2 mud-card1" Style="flex: 1;">
                         <MudCardMedia Image="@item.news_img" Height="240" />
                         <MudCardContent>
                             <MudText class="fw-bold ellipsis">@item.title</MudText>
@@ -191,7 +243,7 @@
             <div class="d-flex">
                 @foreach (var item in eNews2)
                 {
-                    <MudCard Class="text-center ma-2" Style="flex: 1">
+                    <MudCard Class="text-center ma-2 mud-card1" Style="flex: 1">
                         <MudCardMedia Image="@item.news_img" Height="240" />
                         <MudCardContent>
                             <MudText class="fw-bold ellipsis">@item.title</MudText>
@@ -208,7 +260,7 @@
             <div class="d-flex">
                 @foreach (var item in eNews3)
                 {
-                    <MudCard Class="text-center ma-2" Style="flex: 1;">
+                    <MudCard Class="text-center ma-2 mud-card1" Style="flex: 1;">
                         <MudCardMedia Image="@item.news_img" Height="240" />
                         <MudCardContent>
                             <MudText class="fw-bold ellipsis">@item.title</MudText>
@@ -275,7 +327,7 @@
         @foreach (var item in eDriver)
         {
             <MudItem xs="3">
-                <MudCard Style="background-color: #F4F6FF">
+                <MudCard Style="background-color: #F4F6FF" Class="mud-card1">
                     <MudCardContent>
                         <MudImage Height="300" Src="@item.img_driver" Fluid="true" />
                         <MudText Class="text-center mt-2" Typo="Typo.h6" Color="Color.Primary">@item.fullname</MudText>

@@ -244,5 +244,22 @@ namespace BE_API.Controllers
                 });
             }
         }
+
+        [HttpGet("CheckPhoneNumberCustomer/{phone_number}")]
+        public async Task<IActionResult> CheckPhoneNumberCustomer(string phone_number)
+        {
+            var procedureName = "sp_check_phone_customer";
+            var parameters = new { phone_number };
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var customer = await connection.QuerySingleOrDefaultAsync<customers>(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                if (customer == null)
+                {
+                    return NotFound();
+                }
+                return Ok(customer);
+            }
+        }
     }
 }
