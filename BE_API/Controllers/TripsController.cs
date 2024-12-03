@@ -346,5 +346,18 @@ namespace BE_API.Controllers
                 }
             }
         }
+
+        [HttpGet("serchtrip/{id}")]
+        public async Task<ActionResult<IEnumerable<trip_detail>>> SearchTrip(search_trip request)
+        {
+            var procedureName = "sp_search_trip";
+            var parameters = new DynamicParameters(request);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var employeesList = await connection.QueryAsync<trip_detail>(procedureName, commandType: CommandType.StoredProcedure);
+                return Ok(employeesList);
+            }
+        }
     }
 }

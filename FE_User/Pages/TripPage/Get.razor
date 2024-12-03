@@ -3,7 +3,61 @@
 @inject HttpClient httpClient
 
 <div class="container">
-    <MudTable Hover="false" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+    <MudItem xs="12" Class="mx-auto mt-10">
+        <MudCard Class="w-100">
+            <MudText Class="text-center text-uppercase fw-bold pt-3" Typo="Typo.h5" Color="Color.Primary">Tra cứu chuyến xe</MudText>
+
+            <MudCardContent Class="pt-0">
+                <MudRadioGroup @bind-Value="Dense_Radio" Class="pb-5">
+                    <MudRadio Value="true" Color="Color.Primary" Size="Size.Small" Dense="false">Một Chiều</MudRadio>
+                    <MudRadio Value="false" Color="Color.Primary" Size="Size.Small" Dense="false">Khứ Hồi</MudRadio>
+                </MudRadioGroup>
+                <MudGrid>
+                    <MudItem xs="3">
+                        <MudStack>
+                            <MudSelect @bind-Value="dropDown.id" Variant="Variant.Outlined" Margin="Margin.None" Dense="false"
+                                       ReadOnly="false" Placeholder="Chọn Điểm Đi"
+                                       HelperTextOnFocus="true" Clearable="true" Label="Điểm Đi">
+                                @foreach (var item in tripFrom)
+                                {
+                                    <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudStack>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudStack>
+                            <MudSelect @bind-Value="dropDown.id" Variant="Variant.Outlined" Margin="Margin.None" Dense="false"
+                                       ReadOnly="false" Placeholder="Chọn Điểm Đi"
+                                       HelperText="@(_helperText ? "Helper Text" : null)"
+                                       HelperTextOnFocus="_helperTextOnFocus" Clearable="true" Label="Điểm Đến">
+                                @foreach (var item in tripTo)
+                                {
+                                    <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudStack>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudStack>
+                            <MudDatePicker Label="Ngày đi" Variant="Variant.Outlined" @bind-Date="_date" ShowToolbar="false" />
+                        </MudStack>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudStack>
+                            <MudDatePicker Label="Ngày về" Variant="Variant.Outlined" @bind-Date="_date" ShowToolbar="false" />
+                        </MudStack>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Class="mx-auto mb-4 mt-0" Variant="Variant.Outlined" Size="Size.Large" IconClass="@Icons.Material.Outlined.Search" Color="Color.Primary">Tìm kiếm chuyến xe</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+
+    @*     <MudTable Hover="false" Breakpoint="Breakpoint.Sm" FixedHeader="true"
               Items="FilteredTrips"
               Virtualize="true"
               GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
@@ -72,19 +126,125 @@
             }
         </ChildRowContent>
     </MudTable>
+ *@
+    <MudGrid Class="pa-0 mt-10">
+        <MudItem xs="12">
+            <MudCard Outlined="true">
+                <MudCardContent>
+                    <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                        <MudTabPanel Text="Lịch trình">
+                            <MudPaper Elevation="1" Class="pa-10 mb-10">
+                                <MudGrid>
+                                    <MudItem xs="4">
+                                        <MudText Typo="Typo.h6" Class="me-2">
+                                            16:45
+                                            <MudIcon Icon="@Icons.Material.Filled.FiberManualRecord" Size="Size.Medium" Color="Color.Primary" Class="me-2" />
+                                        </MudText>
+                                    </MudItem>
+
+                                    <MudItem xs="2">
+                                        <MudText Typo="Typo.subtitle1" Class="me-2 text-center">--6 giờ--</MudText>
+                                    </MudItem>
+
+                                    <MudItem xs="4">
+                                        <MudText Typo="Typo.h6" Class="me-2" Align="Align.End">
+                                            <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Medium" Color="Color.Secondary" Class="me-2" />
+                                            06:45
+                                        </MudText>
+                                    </MudItem>
+
+                                    <MudItem xs="2">
+                                        <MudText Typo="Typo.h6" Color="Color.Error" Class="fw-bold" Align="Align.End">340.000đ</MudText>
+                                    </MudItem>
+                                </MudGrid>
+                                <MudGrid>
+                                    <MudItem xs="4">
+                                        <MudText Typo="Typo.h6" Class="fw-bold">Bến Xe An Nhơn, Bình Định</MudText>
+                                    </MudItem>
+
+                                    <MudItem xs="2">
+                                        <MudText Typo="Typo.body2" Class="text-muted text-center">(UTC+07:00) Hanoi</MudText>
+                                    </MudItem>
+
+                                    <MudItem xs="4">
+                                        <MudText Typo="Typo.h6" Class="fw-bold" Align="Align.End">Bến Xe Miền Tây</MudText>
+                                    </MudItem>
+                                </MudGrid>
+
+                            </MudPaper>
+
+                            <MudTimeline TimelineAlign="TimelineAlign.Start">
+                                <MudTimelineItem Color="Color.Secondary" Elevation="25">
+                                    <ItemOpposite>
+                                        <MudText Color="Color.Secondary" Typo="Typo.h6">12/02/2024 12:00</MudText>
+                                    </ItemOpposite>
+                                    <ItemContent>
+                                        <MudPaper Elevation="0" Class="mt-n1">
+                                            <MudText Color="Color.Primary" Typo="Typo.h6" GutterBottom="true">Bến Xe Khách Cà Mau</MudText>
+                                            <MudText Typo="Typo.body2">Lộ 91B (đường Nguyễn Văn Linh), phường Hưng Lợi, quận Ninh Kiều, Tp. Cần Thơ.</MudText>
+                                        </MudPaper>
+                                    </ItemContent>
+                                </MudTimelineItem>
+                                <MudTimelineItem Color="Color.Secondary" Elevation="25">
+                                    <ItemOpposite>
+                                        <MudText Color="Color.Secondary" Typo="Typo.h6">12/02/2024 18:00</MudText>
+                                    </ItemOpposite>
+                                    <ItemContent>
+                                        <MudPaper Elevation="0" Class="mt-n1">
+                                            <MudText Color="Color.Primary" Typo="Typo.h6" GutterBottom="true">Bến Xe Khách Cần Thơ</MudText>
+                                            <MudText Typo="Typo.body2"> Quốc lộ 1A, Đường Lý Thường Kiệt, Phường 6, Cà Mau.</MudText>
+                                        </MudPaper>
+                                    </ItemContent>
+                                </MudTimelineItem>
+
+
+                            </MudTimeline>
+                        </MudTabPanel>
+                        <MudTabPanel Text="Chính sách">
+                            <MudText>Chính sách</MudText>
+                        </MudTabPanel>
+                    </MudTabs>
+                </MudCardContent>
+                <MudCardActions>
+                    @*   <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Href="@($"/getTrip/{TripDetail.id}")">
+                        Đặt vé
+                    </MudButton> *@
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
 </div>
 
 @code {
+    Margin _margin;
+    bool _dense;
+    bool _readonly;
+    bool _placeholder;
+    bool _helperText;
+    bool _helperTextOnFocus;
+    bool _clearable;
+    private dropdown dropDown = new dropdown();
+    private DateTime? _date = DateTime.Today;
+    public bool Dense_Radio { get; set; } = true;
     private List<trip> Trips = new List<trip>();
     private IEnumerable<trip> FilteredTrips => Trips.Where(trip => FilterFunc(trip));
     private string searchString1 = "";
 
     public string urlTrip = "http://localhost:49922/api/Trips/trip";
     public string urlTripDetail = "http://localhost:49922/api/Trips/tripdetail_by_tripid";
+    private IEnumerable<dropdown> tripFrom = new List<dropdown>();
+    private IEnumerable<dropdown> tripTo = new List<dropdown>();
+
+    private string urlDropdownTripFrom = "http://localhost:49922/api/Dropdown/tripfrom";
+    private string urlDropdownTripTo = "http://localhost:49922/api/Dropdown/tripto";
+
+
 
     protected override async Task OnInitializedAsync()
     {
         Trips = await httpClient.GetFromJsonAsync<List<trip>>(urlTrip) ?? new List<trip>();
+        LoadTripFromTo();
     }
 
     private async Task ShowBtnPress(int tripId)
@@ -118,5 +278,18 @@
     private void ApplyFilter()
     {
         StateHasChanged();
+    }
+
+    private async Task LoadTripFromTo()
+    {
+        try
+        {
+            tripFrom = await httpClient.GetFromJsonAsync<List<dropdown>>(urlDropdownTripFrom);
+            tripTo = await httpClient.GetFromJsonAsync<List<dropdown>>(urlDropdownTripTo);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
     }
 }

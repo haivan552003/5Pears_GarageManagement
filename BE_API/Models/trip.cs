@@ -12,7 +12,7 @@ namespace BE_API.Models
         public int emp_create { get; set; }
         public bool status { get; set; }
         public bool is_return { get; set; }
-    } 
+    }
     public class trip_update
     {
         public string? img_trip { get; set; }
@@ -87,5 +87,13 @@ namespace BE_API.Models
         public int location_to_id { get; set; }
         public float distance { get; set; }
         public bool status { get; set; }
+    }
+
+    public class search_trip
+    {
+        public int location_to { get; set; }
+        public int location_from { get; set; }
+        public DateTime date_start { get; set; }
+        public DateTime date_end { get; set; }
     }
 }
