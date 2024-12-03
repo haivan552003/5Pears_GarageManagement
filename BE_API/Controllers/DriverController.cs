@@ -1,5 +1,6 @@
 ﻿using BE_API.Models;
 using Dapper;
+using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -50,8 +51,7 @@ namespace BE_API.Controllers
                     if (driver == null)
                     {
                         return NotFound();
-                    }
-
+                    }                 
                     return Ok(driver);
                 }
             }
@@ -66,6 +66,7 @@ namespace BE_API.Controllers
         [HttpPost]
         public async Task<ActionResult<driver>> AddDriver(driver driver)
         {
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(driver.password);
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 SqlCommand cmd = new SqlCommand("sp_create_drivers", conn);
@@ -87,7 +88,7 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@status", driver.status);
                 cmd.Parameters.AddWithValue("@class_driver_license", driver.class_driver_license);
                 cmd.Parameters.AddWithValue("@email", driver.email);
-                cmd.Parameters.AddWithValue("@password", driver.password);
+                cmd.Parameters.AddWithValue("@password", hashedPassword);
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
@@ -102,6 +103,8 @@ namespace BE_API.Controllers
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
+                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(driver.password);
+
                 SqlCommand cmd = new SqlCommand("sp_update_driver", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@id", id);
@@ -122,7 +125,7 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@status", driver.status);
                 cmd.Parameters.AddWithValue("@class_driver_license", driver.class_driver_license);
                 cmd.Parameters.AddWithValue("@email", driver.email);
-                cmd.Parameters.AddWithValue("@password", driver.password);
+                cmd.Parameters.AddWithValue("@password", hashedPassword);
                 await conn.OpenAsync();
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
                 if (rowsAffected == 0)
