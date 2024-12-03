@@ -14,6 +14,11 @@
                         <MudCard>
                             <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center pt-5">BOXCARS</MudText>
                             <MudCardContent>
+                                <MudRadioGroup @bind-SelectedOption="LoginRole">
+                                    <MudRadio Option="@("admin")" Color="Color.Primary">Admin</MudRadio>
+                                    <MudRadio Option="@("driver")" Color="Color.Secondary">Tài xế</MudRadio>
+                                </MudRadioGroup>
+
                                 <MudTextField Label="Email" Class="mt-3"
                                               Variant="Variant.Outlined"
                                               Placeholder="Email"
@@ -45,28 +50,29 @@
 </MudContainer>
 
 @code {
-    login model = new login();
-    bool LoginFailed;
+    private login model = new login();
+    private bool LoginFailed;
+    private string LoginRole = "admin"; 
 
     private async Task OnValidSubmit(EditContext context)
     {
         try
         {
-            var response = await Http.PostAsJsonAsync("http://localhost:49922/api/Login/gentoken-admin", model);
+            HttpResponseMessage response;
+            string apiUrl = LoginRole == "admin"
+                ? "http://localhost:49922/api/Login/gentoken-admin"
+                : "http://localhost:49922/api/Login/gentoken-driver";
+
+            response = await Http.PostAsJsonAsync(apiUrl, model);
 
             if (response.IsSuccessStatusCode)
             {
                 var token = await response.Content.ReadAsStringAsync();
-
-                // Lưu token vào localStorage
                 await js.InvokeVoidAsync("localStorage.setItem", "authToken", token);
-
-                // Điều hướng sau khi đăng nhập thành công
                 NavigationManager.NavigateTo("/index", true);
             }
             else
             {
-                // Đăng nhập thất bại
                 LoginFailed = true;
             }
         }
@@ -77,14 +83,12 @@
         }
     }
 
-    // Các biến quản lý hiển thị mật khẩu
+    // Password visibility toggle methods remain the same
     private bool isShowPassword = false;
     private InputType PasswordInput => isShowPassword ? InputType.Text : InputType.Password;
     private string PasswordInputIcon => isShowPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
-
     private void TogglePasswordVisibility()
     {
-        isShowPassword = !isShowPassword; // Đảo giá trị hiển thị mật khẩu
+        isShowPassword = !isShowPassword;
     }
 }
-
