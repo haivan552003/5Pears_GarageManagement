@@ -1,0 +1,227 @@
+﻿@page "/scan-image"
+@inject IJSRuntime JSRuntime
+@inject HttpClient httpClient
+
+
+<MudContainer Class="mt-16 pa-4" MaxWidth="MaxWidth.Large">
+    <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+        <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+    </MudPaper>
+    <MudPaper Class="pa-4">
+        <MudText Typo="Typo.h5" Class="mb-4">Quét biển số xe</MudText>
+        <MudForm @ref="form">
+            <MudGrid>
+                <MudItem xs="4">
+                    <MudText Typo="Typo.subtitle1">Tải lên hình ảnh:</MudText>
+                    <input type="file" id="imageInput" accept="image/*" />
+                    <video id="cameraVideo" width="640" height="480" autoplay></video>
+                    <canvas id="captureCanvas" style="display: none;"></canvas>
+                    <a id="downloadLink" style="display: none;">Download Image</a>
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="() => ScanImage1()">Quét ảnh</MudButton>
+                    <MudTextField id="resultInput"
+                                  Variant="Variant.Outlined"
+                                  Label="Nội dung từ hình ảnh"
+                                  @bind-Value="FoundCar.car_number"
+                                  Placeholder="Kết quả OCR sẽ hiển thị ở đây"
+                                   />
+                    <MudText id="resultInput"></MudText>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="() => StartCamera()">Mở Camera</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="() => CaptureImage()">Chụp ảnh</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="() => SwitchCamera()">Chuyển Camera</MudButton>
+                </MudItem>
+
+
+            </MudGrid>
+        </MudForm>
+    </MudPaper>
+
+    <MudGrid Class="pa-0">
+        <MudItem xs="12">
+            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+            </MudPaper>
+            <MudPaper Elevation="0">
+                <MudDataGrid Class="mx-auto pa-2" T="car" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                             Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+                    <ToolBarContent>
+                        <MudItem xs="4" Elevation="0" Class="pb-3">
+                            <MudTextField @bind-Value="_searchString" id="resultInput" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        </MudItem>
+                    </ToolBarContent>
+                    <Columns>
+                        <PropertyColumn T="car" TProperty="string" Class="fw-bold" Property="x => x.car_code" Title="Mã xe" />
+                        <PropertyColumn T="car" TProperty="string" Class="fw-bold" Property="x => x.car_name" Title="Tên xe" />
+                        <PropertyColumn T="car" TProperty="string" Class="fw-bold" Property="x => x.car_number" Title="Biển số xe" />
+                        <PropertyColumn T="car" TProperty="string" Class="fw-bold" Property="x => x.color" Title="Màu sắc" />
+                        <PropertyColumn T="car" TProperty="DateTime" Class="fw-bold" Property="x => x.vehicle_registration_start" Title="Ngày đăng kiểm" Format="dd/MM/yyyy" />
+                        <PropertyColumn T="car" TProperty="float" Class="fw-bold" Property="x => x.price" Title="Giá" />
+                        <TemplateColumn T="car" Style="width: 80%;" Class="fw-bold" Title="Trạng Thái">
+                            <CellTemplate Context="element">
+                                @if (element.Item.status == "1")
+                                {
+                                    <MudChip Color="Color.Success" Size="Size.Small" Variant="Variant.Text">Đang hoạt động</MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Ngưng hoạt động</MudChip>
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="car" />
+                    </PagerContent>
+                </MudDataGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private car newCar = new car();
+    private MudForm form;
+    private bool IsCarFound = false;
+    private car FoundCar = new car();
+    private string _searchString = string.Empty;
+    private IEnumerable<car> Elements = new List<car>();
+    private List<string> _events = new();
+    private string scannedText;
+    void RowClicked(DataGridRowClickEventArgs<car> args)
+    {
+        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void RowRightClicked(DataGridRowClickEventArgs<car> args)
+    {
+        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void SelectedItemsChanged(HashSet<car> items)
+    {
+        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Quản lý xe", href: "/getcars", icon: @Icons.Material.Outlined.DirectionsCar),
+        new BreadcrumbItem("Danh sách xe", href: "/getcars", icon: @Icons.Material.Outlined.List),
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Elements = await httpClient.GetFromJsonAsync<List<car>>("http://localhost:49922/api/Cars/getAllCars");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+    private Func<car, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        return $"{x.car_number} {x.color} {x.status}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
+    };
+
+    private async Task ScanImage1()
+    {
+        await JSRuntime.InvokeVoidAsync("readTextFromImage", "imageInput", "resultInput");
+
+        scannedText = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "scannedText");
+
+        // if (!string.IsNullOrEmpty(scannedText))
+        // {
+        //     var matchedCars = Elements.Where(car => car.car_number.Equals(scannedText, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        //     if (matchedCars.Any())
+        //     {
+        //         IsCarFound = true;
+        //         Elements = matchedCars; 
+        //     }
+        //     else
+        //     {
+        //         IsCarFound = false;
+        //         Elements = new List<car>(); 
+        //     }
+        // }
+        // else
+        // {
+        //     IsCarFound = false;
+        //     Elements = new List<car>();
+        // }
+    }
+
+
+
+    // private async Task LoadFromSession()
+    // {
+    //     scannedText = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "scannedText");
+    //     Console.WriteLine($"Scanned Text from Session: {scannedText}");
+    //     if(scannedText != null)
+    //     {
+    //         await Search(scannedText);
+    //     }
+    // }
+
+
+    // private async Task Search(string carNumber)
+    // {
+    //     try
+    //     {
+    //         using (var client = new HttpClient())
+    //         {
+    //             var response = await client.GetAsync($"http://localhost:49922/api/Cars/carNumber/{carNumber}");
+
+    //             if (response.IsSuccessStatusCode)
+    //             {
+    //                 FoundCar = await response.Content.ReadFromJsonAsync<car>();
+
+    //                 if (FoundCar != null && !string.IsNullOrEmpty(FoundCar.car_number))
+    //                 {
+    //                     IsCarFound = true;
+    //                     Elements = new List<car> { FoundCar }; 
+    //                 }
+    //                 else
+    //                 {
+    //                     IsCarFound = false;
+    //                     Elements = new List<car>(); 
+    //                 }
+    //             }
+    //             else
+    //             {
+    //                 IsCarFound = false;
+    //                 Elements = new List<car>();
+    //             }
+    //         }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Console.WriteLine($"Lỗi: {ex.Message}");
+    //         IsCarFound = false;
+    //         Elements = new List<car>();
+    //     }
+    // }
+
+
+    private async Task StartCamera()
+    {
+        await JSRuntime.InvokeVoidAsync("startCamera");
+    }
+
+    private async Task SwitchCamera()
+    {
+        await JSRuntime.InvokeVoidAsync("switchCamera");
+    }
+
+    private async Task CaptureImage()
+    {
+        var imageData = await JSRuntime.InvokeAsync<string>("captureImage");
+        Console.WriteLine("Image Data: " + imageData);
+    }
+}
