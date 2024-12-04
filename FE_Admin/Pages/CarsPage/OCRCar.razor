@@ -1,0 +1,64 @@
+﻿@page "/ocrcar"
+
+@inject HttpClient httpClient
+@inject IJSRuntime js
+
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.Medium">
+    <MudGrid Class="pa-0">
+        <MudItem xs="6">
+            <MudPaper Elevation="0">
+                <MudImage Src="https://media.thethao247.vn/upload/hiep95/2019/11/27/nhung-chiec-xe-vinfast-co-bien-so-dep-nhat-viet-nam1574846335.jpg" Elevation="25" Class="img-fluid w-100" />
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Class="ma-3">chọn file</MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Class="ma-3">mở camera</MudButton>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6">
+            <MudPaper Elevation="0">
+                <MudText Typo="Typo.h5" Class="fw-bold">THÔNG TIN XE</MudText>
+
+                <MudGrid>
+                    <MudItem xs="5" Class="pb-3">
+                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Biển số xe:</MudText>
+                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Tên xe:</MudText>
+                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Màu xe:</MudText>
+                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Loại xe:</MudText>
+                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Hãng xe:</MudText>
+                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Loại hộp số:</MudText>
+                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Ngày hết hạn đăng kiểm:</MudText>
+                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Nhiên liệu:</MudText>
+                    </MudItem>
+                    <MudItem xs="7" Class="pb-3">
+                        <MudText Typo="Typo.subtitle1" Align="Align.End">60A-69696</MudText>
+                        <MudText Typo="Typo.subtitle1" Align="Align.End">Vinfast VF5</MudText>
+                        <MudText Typo="Typo.subtitle1" Align="Align.End">Đen</MudText>
+                        <MudText Typo="Typo.subtitle1" Align="Align.End">SUV</MudText>
+                        <MudText Typo="Typo.subtitle1" Align="Align.End">Vinfast</MudText>
+                        <MudText Typo="Typo.subtitle1" Align="Align.End">Số sàn</MudText>
+                        <MudText Typo="Typo.subtitle1" Align="Align.End">30/12/2024</MudText>
+                        <MudText Typo="Typo.subtitle1" Align="Align.End">Điện</MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+        <MudText Typo="Typo.h5" Class="fw-bold">LỊCH TRÌNH XE</MudText>
+
+        <MudItem xs="12">
+
+            <MudPaper Elevation="0">
+                <MudTooltip>
+                    <ChildContent>
+                        <MudButton Variant="Variant.Outlined" Class="ma-3" Color="Color.Success">05/01/2024</MudButton>
+                    </ChildContent>
+                    <TooltipContent>
+                        <MudText Typo="Typo.subtitle1">Khách thuê xe từ ngày 06/01/2024 - 06/01/2024(1 ngày)</MudText>
+                    </TooltipContent>
+                </MudTooltip>
+                <MudButton Variant="Variant.Outlined" Class="ma-3" Color="Color.Success">06/01/2024</MudButton>
+                <MudButton Variant="Variant.Outlined" Class="ma-3" Color="Color.Default">07/01/2024</MudButton>
+                <MudButton Variant="Variant.Outlined" Class="ma-3" Color="Color.Success">08/01/2024</MudButton>
+                <MudButton Variant="Variant.Outlined" Class="ma-3" Color="Color.Success">09/01/2024</MudButton>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
