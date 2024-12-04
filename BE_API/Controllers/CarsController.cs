@@ -33,6 +33,35 @@ namespace BE_API.Controllers
             }
 
         }
+
+        [HttpGet("checkCarNumberExists/{carNumber}")]
+        public async Task<IActionResult> CheckCarNumberExists(string carNumber)
+        {
+            try
+            {
+                var procedureName = "sp_check_car_number_exists";
+                var parameters = new DynamicParameters();
+                parameters.Add("carNumber", carNumber, DbType.String, ParameterDirection.Input);
+
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+                    var carExists = await connection.QueryFirstOrDefaultAsync<bool>(
+                        procedureName,
+                        parameters,
+                        commandType: CommandType.StoredProcedure
+                    );
+
+                    return Ok(new { exists = carExists });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi kiểm tra biển số xe", error = ex.Message });
+            }
+        }
+
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<car_seat>>> Get_all_car_seats()
         {
@@ -72,6 +101,36 @@ namespace BE_API.Controllers
                 return StatusCode(500, "An error occurred while processing your request.");
             }
         }
+
+        [HttpGet("carNumber/{carNumber}")]
+        public async Task<ActionResult<car>> GetCarsByCarNumber(string carNumber)
+        {
+            try
+            {
+                var procedureName = "sp_get_by_carNumber_cars";
+                var parameters = new DynamicParameters();
+                parameters.Add("carNumber", carNumber, DbType.String, ParameterDirection.Input);
+
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+                    var car = await connection.QueryFirstOrDefaultAsync<car>(
+                        procedureName, parameters, commandType: CommandType.StoredProcedure);
+
+                    if (car == null)
+                    {
+                        return NotFound();
+                    }
+                    return Ok(car);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+
+
         [HttpGet("getCarSeats/{carId}")]
         public async Task<ActionResult<IEnumerable<car_seat>>> GetCarSeatsByCarId(int carId)
         {

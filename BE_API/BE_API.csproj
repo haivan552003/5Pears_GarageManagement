@@ -9,6 +9,7 @@
     <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="Firebase.Auth" Version="1.0.0" />
     <PackageReference Include="FirebaseAdmin" Version="3.0.1" />
+    <PackageReference Include="IronOcr" Version="2024.11.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.17" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.17" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />

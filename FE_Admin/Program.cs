@@ -1,4 +1,5 @@
 using FE_Admin.Data;
+using FE_Admin.ModelCustom;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
@@ -27,6 +28,8 @@ builder.Services.AddServerSideBlazor().AddCircuitOptions(options =>
     options.DetailedErrors = true;
 });
 builder.Services.AddHttpClient();
+builder.Services.AddSingleton<StateContainer>();
+
 
 var app = builder.Build();
 
