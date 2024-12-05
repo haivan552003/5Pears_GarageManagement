@@ -1,6 +1,8 @@
 ﻿@page "/addcar"
 @inject HttpClient httpClient
 @inject ISnackbar Snackbar
+@inject IJSRuntime JSRuntime
+
 
 <MudContainer Class="mt-16 pa-4" MaxWidth="MaxWidth.Large">
     <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
@@ -11,10 +13,22 @@
         <MudForm @ref="form">
             <MudGrid>
                 <MudItem xs="4">
+                    <MudButton>Quét</MudButton>
+                </MudItem>
+                <MudItem xs="4">
+                    <MudText Typo="Typo.subtitle1">Tải lên hình ảnh:</MudText>
+                    <input type="file" id="imageInput" accept="image/*" />
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary"
+                               OnClick="() => ScanImage()">Quét ảnh</MudButton>
+                </MudItem>
+                
+                <MudItem xs="4">
                     <MudTextField Variant="Variant.Filled" @bind-Value="newCar.car_code" Label="Mã xe" ReadOnly="true" />
                 </MudItem>
                 <MudItem xs="4">
-                    <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.car_number" Label="Biển số xe" Placeholder="Nhập biển số xe" Required="true" RequiredError="Biển số xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateCarNumber))" />
+                    <MudTextField id="resultInput" Variant="Variant.Outlined"
+                                  Label="Nội dung từ hình ảnh"
+                                  @bind-Value="newCar.car_number" Placeholder="Kết quả OCR sẽ hiển thị ở đây" />
                 </MudItem>
                 <MudItem xs="4">
                     <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.car_name" Label="Tên xe" Placeholder="Nhập tên xe" Required="true" RequiredError="Tên xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateCarName))" />
@@ -129,6 +143,11 @@
     {
         await LoadType();
         await LoadBrand();
+    }
+
+    private async Task ScanImage()
+    {
+        await JSRuntime.InvokeVoidAsync("readTextFromImage", "imageInput", "resultInput");
     }
 
     private async Task LoadType()
