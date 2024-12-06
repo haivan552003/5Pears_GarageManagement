@@ -23,7 +23,7 @@
                     <DataAnnotationsValidator />
                     <MudGrid>
                         <MudItem xs="12" md="8">
-                            <MudPaper Elevation="3" Class="pa-4">
+                            <MudPaper Elevation="3" Class="pa-4" Style="height:585px">
                                 <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-4">Chỉnh Sửa Thông Tin Nhân Viên</MudText>
                                 <MudGrid>
                                     <!-- Personal Information -->
@@ -145,25 +145,27 @@
                                                 }
                                             }
                                         </MudSelect>
-                                    </MudItem>                               
+                                    </MudItem>
+                                     <MudItem xs="4" sm="12">
+                                    <MudPaper Elevation="0" Class="d-flex justify-space-between mt-4 float-end">
+                                        <MudButton Variant="Variant.Filled"
+                                                   StartIcon="@Icons.Material.Filled.Save"
+                                                   Color="Color.Primary"
+                                                   ButtonType="ButtonType.Submit"
+                                                   Disabled="@isLoading">
+                                            @if (isLoading)
+                                            {
+                                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                                <MudText Class="ms-2">Đang xử lý...</MudText>
+                                            }
+                                            else
+                                            {
+                                                <MudText>Lưu thay đổi</MudText>
+                                            }
+                                        </MudButton>
+                                    </MudPaper>
+                                    </MudItem>
                                 </MudGrid>
-                            </MudPaper>
-                            <MudPaper Elevation="0" Class="d-flex justify-space-between mt-4 float-end">
-                                <MudButton Variant="Variant.Filled"
-                                           StartIcon="@Icons.Material.Filled.Save"
-                                           Color="Color.Primary"
-                                           ButtonType="ButtonType.Submit"
-                                           Disabled="@isLoading">
-                                    @if (isLoading)
-                                    {
-                                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                                        <MudText Class="ms-2">Đang xử lý...</MudText>
-                                    }
-                                    else
-                                    {
-                                        <MudText>Lưu thay đổi</MudText>
-                                    }
-                                </MudButton>
                             </MudPaper>
                         </MudItem>
 

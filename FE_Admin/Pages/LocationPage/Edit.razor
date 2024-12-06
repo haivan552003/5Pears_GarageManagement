@@ -15,7 +15,7 @@
         <MudItem xs="6" Class="mx-auto">
             <MudPaper Elevation="0" Class="pa-3">
                 <MudItem xs="12">
-                    <MudPaper Elevation="4" Class="p-4">
+                    <MudPaper Elevation="4" Class="p-4"  Style="height: 400px">
                         <MudText Typo="Typo.h6" Class="mb-5">Chỉnh sửa địa chỉ</MudText>
                         <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
                             <MudTextField ShrinkLabel @bind-Value="Location.name" Label="Địa Chỉ"
@@ -35,8 +35,22 @@
                                 <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
                             </MudSelect>
 
-                            <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Variant="Variant.Filled" OnClick="SubmitForm">Lưu</MudButton>
-                            <MudButton Class="mt-3 pl-3" StartIcon="@Icons.Material.Outlined.ArrowForward" Variant="Variant.Outlined" OnClick="Cancel">Trở về</MudButton>
+                            <div class="d-flex justify-content-end" style="gap: 10px;">
+                                <MudButton Class="mt-3"
+                                           StartIcon="@Icons.Material.Outlined.Save"
+                                           Color="Color.Primary"
+                                           Variant="Variant.Filled"
+                                           OnClick="SubmitForm">
+                                    Lưu
+                                </MudButton>
+                                <MudButton Class="mt-3"
+                                           StartIcon="@Icons.Material.Outlined.ArrowForward"
+                                           Variant="Variant.Outlined"
+                                           OnClick="Cancel">
+                                    Trở về
+                                </MudButton>
+                            </div>
+
                         </MudForm>
                     </MudPaper>
                 </MudItem>

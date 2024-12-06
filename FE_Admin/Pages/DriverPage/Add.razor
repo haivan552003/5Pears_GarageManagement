@@ -71,13 +71,15 @@
 
                             <MudItem xs="4">
                                 <MudTextField @bind-Value="newDriver.email" For="@(() => newDriver.email)"
-                                              Label="Email" Variant="Variant.Outlined" Placeholder="Email" RequiredError="Vui lòng nhập Email" />
+                                              Label="Email" Variant="Variant.Outlined" Placeholder="Email" RequiredError="Vui lòng nhập Email"  />
                             </MudItem>
                             <MudItem xs="4">
                                 <MudTextField ShrinkLabel @bind-Value="newDriver.password" Label="Mật khẩu" Required="true"
                                               Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End"
                                               Placeholder="Mật khẩu"
-                                              AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+                                              AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility"
+                                              Validation="@(new Func<string, IEnumerable<string>>(LocationValidateName))" />
+
                             </MudItem>
 
                             <MudItem xs="4">
@@ -107,15 +109,14 @@
                                               Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Api" OnAdornmentClick="@(() => multilineReference.SelectAsync())"
                                               Variant="Variant.Outlined" />
                             </MudItem>
+                            <MudItem xs="12" Class="d-flex justify-end mt-6">
+                                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mr-2"
+                                           OnClick="@(() => NavigationManager.NavigateTo("/getDriver"))">Hủy</MudButton>
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                                           StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary">Lưu</MudButton>
+                            </MudItem>
                         </MudGrid>
-                        
                     </MudPaper>
-                    <MudItem xs="12" Class="d-flex justify-end mt-6">
-                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mr-2"
-                                   OnClick="@(() => NavigationManager.NavigateTo("/getDriver"))">Hủy</MudButton>
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                                   StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary">Lưu</MudButton>
-                    </MudItem>
                 </MudItem>
 
                 <MudItem xs="12" md="4">
@@ -134,7 +135,7 @@
                                 {
                                     <MudGrid Justify="Justify.Center" Class="mt-2">
                                         <MudItem>
-                                            <MudImage Src="@newDriver.img_driver" Alt="Hình ảnh tài xế" Width="100"
+                                            <MudImage Src="@newDriver.img_driver" Alt="Hình ảnh tài xế" Style="height: 200px"
                                                       Height="100" ObjectFit="ObjectFit.Cover" />
                                         </MudItem>
                                     </MudGrid>
@@ -154,7 +155,7 @@
                                 {
                                     <MudGrid Justify="Justify.Center" Class="mt-2">
                                         <MudItem>
-                                            <MudImage Src="@newDriver.citizen_identity_img1" Alt="CCCD (Mặt trước)"
+                                            <MudImage Src="@newDriver.citizen_identity_img1" Alt="CCCD (Mặt trước)"  Style="height: 100px; width:auto"
                                                       Width="100" Height="100" ObjectFit="ObjectFit.Cover" />
                                         </MudItem>
                                     </MudGrid>
@@ -175,7 +176,7 @@
                                 {
                                     <MudGrid Justify="Justify.Center" Class="mt-2">
                                         <MudItem>
-                                            <MudImage Src="@newDriver.citizen_identity_img2" Alt="CCCD (Mặt sau)"
+                                            <MudImage Src="@newDriver.citizen_identity_img2" Alt="CCCD (Mặt sau)" Style="height: 100px; width:auto"
                                                       Width="100" Height="100" ObjectFit="ObjectFit.Cover" />
                                         </MudItem>
                                     </MudGrid>
@@ -195,7 +196,7 @@
                                 {
                                     <MudGrid Justify="Justify.Center" Class="mt-2">
                                         <MudItem>
-                                            <MudImage Src="@newDriver.driver_license_img1" Alt="Bằng lái (Mặt trước)"
+                                            <MudImage Src="@newDriver.driver_license_img1" Alt="Bằng lái (Mặt trước)" Style="height: 100px; width:auto"
                                                       Width="100" Height="100" ObjectFit="ObjectFit.Cover" />
                                         </MudItem>
                                     </MudGrid>
@@ -215,7 +216,7 @@
                                 {
                                     <MudGrid Justify="Justify.Center" Class="mt-2">
                                         <MudItem>
-                                            <MudImage Src="@newDriver.driver_license_img2" Alt="Bằng lái (Mặt sau)"
+                                            <MudImage Src="@newDriver.driver_license_img2" Alt="Bằng lái (Mặt sau)" Style="height: 100px; width:auto"
                                                       Width="100" Height="100" ObjectFit="ObjectFit.Cover" />
                                         </MudItem>
                                     </MudGrid>
@@ -461,7 +462,18 @@
             isLoading = false;
         }
     }
-   
+    private IEnumerable<string> LocationValidateName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            yield return "Vui lòng điền mật khẩu.";
+        }
+        else if (name.Length < 5 || name.Length > 100)
+        {
+            yield return "Mật khẩu không hợp lệ.";
+        }
+    }
+  
 }
 
 

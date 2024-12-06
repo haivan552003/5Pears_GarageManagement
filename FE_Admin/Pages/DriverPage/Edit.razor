@@ -107,15 +107,15 @@
                                               Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Api" OnAdornmentClick="@(() => multilineReference.SelectAsync())"
                                               Variant="Variant.Outlined" />
                             </MudItem>
+                            <MudItem xs="12" Class="d-flex justify-end mt-6">
+                                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mr-2"
+                                           OnClick="@Cancel">Hủy</MudButton>
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                                           StartIcon="@Icons.Material.Outlined.Save" Disabled="@isLoading" Color="Color.Primary">Lưu</MudButton>
+                            </MudItem>
                         </MudGrid>
                        
-                    </MudPaper>
-                    <MudItem xs="12" Class="d-flex justify-end mt-6">
-                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mr-2"
-                                   OnClick="@Cancel">Hủy</MudButton>
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                                   StartIcon="@Icons.Material.Outlined.Save" Disabled="@isLoading" Color="Color.Primary">Lưu</MudButton>
-                    </MudItem>              
+                    </MudPaper>            
                 </MudItem>
 
                @*  <MudItem xs="12" md="4">
@@ -150,7 +150,7 @@
                                 {
                                     <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mt-2">
                                         <MudItem>
-                                            <MudImage Src="@Driver.img_driver" Alt="Ảnh tài xế" Width="100" Height="100"
+                                            <MudImage Src="@Driver.img_driver" Alt="Ảnh tài xế" Style="height: 200px"
                                                       ObjectFit="ObjectFit.Cover" />
                                         </MudItem>
                                     </MudGrid>
@@ -169,7 +169,7 @@
                                 {
                                     <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mt-2">
                                         <MudItem>
-                                            <MudImage Src="@Driver.citizen_identity_img1" Alt="CCCD (Trước)" Width="100" Height="100"
+                                            <MudImage Src="@Driver.citizen_identity_img1" Alt="CCCD (Trước)" Style="height: 100px; width:auto"
                                                       ObjectFit="ObjectFit.Cover" />
                                         </MudItem>
                                     </MudGrid>
@@ -188,7 +188,7 @@
                                 {
                                     <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mt-2">
                                         <MudItem>
-                                            <MudImage Src="@Driver.citizen_identity_img2" Alt="CCCD (Sau)" Width="100" Height="100"
+                                            <MudImage Src="@Driver.citizen_identity_img2" Alt="CCCD (Sau)" Style="height: 100px; width:auto"
                                                       ObjectFit="ObjectFit.Cover" />
                                         </MudItem>
                                     </MudGrid>
@@ -207,7 +207,7 @@
                                 {
                                     <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mt-2">
                                         <MudItem>
-                                            <MudImage Src="@Driver.driver_license_img1" Alt="GPLX (Trước)" Width="100" Height="100"
+                                            <MudImage Src="@Driver.driver_license_img1" Alt="GPLX (Trước)" Style="height: 100px; width:auto"
                                                       ObjectFit="ObjectFit.Cover" />
                                         </MudItem>
                                     </MudGrid>
@@ -226,7 +226,7 @@
                                 {
                                     <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mt-2">
                                         <MudItem>
-                                            <MudImage Src="@Driver.driver_license_img2" Alt="GPLX (Sau)" Width="100" Height="100"
+                                            <MudImage Src="@Driver.driver_license_img2" Alt="GPLX (Sau)" Style="height: 100px; width:auto"
                                                       ObjectFit="ObjectFit.Cover" />
                                         </MudItem>
                                     </MudGrid>

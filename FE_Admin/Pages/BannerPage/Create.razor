@@ -25,15 +25,19 @@
                                 {
                                     <MudImage Fluid="false" Src="@imagePreviewUrl" Class="rounded-lg mb-2 w-100 mx-auto d-block" Height="280" />
                                 }
-                                <MudButton HtmlTag="label" For="licenseInput2" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary"
-                                           StartIcon="@Icons.Material.Outlined.CloudUpload"
+                                <MudButton HtmlTag="label" For="licenseInput2" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.CloudUpload"
                                            FullWidth="true" Class="mud-button-small-text">
                                     Hình ảnh
                                 </MudButton>
                                 <MudTextField ShrinkLabel @bind-Value="newBanner.title" Label="Tiêu đề"
                                               Class="py-3"                                           
                                               Placeholder="Tên công việc" Variant="Variant.Outlined" Required="true" />
-                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddBanner" Class="mt-3">Lưu</MudButton>
+                                <MudGrid>
+                                     <MudItem xs="12" Class="d-flex justify-end">
+                                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddBanner" Class="mt-3">Lưu</MudButton>
+                                    </MudItem>
+                                </MudGrid>
                             </MudForm>
                         </MudPaper>
                     </MudItem>

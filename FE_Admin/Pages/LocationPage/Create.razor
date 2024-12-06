@@ -26,7 +26,7 @@
         <MudItem xs="6" Class="mx-auto">
             <MudPaper Elevation="0" Class="pa-3">
                 <MudItem xs="12">
-                    <MudPaper Elevation="4" Class="p-4">
+                    <MudPaper Elevation="4" Class="p-4" Style="height: 400px">
                         <MudText Typo="Typo.h6" Class="mb-5">Thêm Địa Chỉ</MudText>
                         <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
                             <MudTextField ShrinkLabel @bind-Value="Location.name" Label="Địa Chỉ"
@@ -47,7 +47,7 @@
                             </MudSelect>
 
 
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddLocation" Class="mt-3">Lưu</MudButton>
+                            <MudButton Variant="Variant.Filled" Style="float: right;" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddLocation" Class="mt-3">Lưu</MudButton>
                         </MudForm>
                     </MudPaper>
                 </MudItem>
