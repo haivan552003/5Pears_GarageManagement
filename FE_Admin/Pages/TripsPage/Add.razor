@@ -22,11 +22,14 @@
                         <MudGrid Gutter="true">
                             <MudItem xs="6" Class="mb-4">
                                 <MudTextField Label="Điểm khởi hành" @bind-Value="newTrip.from" Placeholder="Từ"
-                                              Variant="Variant.Outlined" Required="true" />
+                                              Variant="Variant.Outlined" Required="true"
+                                              Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidateFullName))" />
+
                             </MudItem>
                             <MudItem xs="6" Class="mb-4">
                                 <MudTextField Label="Điểm đến" @bind-Value="newTrip.to" Placeholder="Đến"
-                                              Variant="Variant.Outlined" Required="true" />
+                                              Variant="Variant.Outlined" Required="true"
+                                              Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidateFullDiemden))" />
                             </MudItem>
                             @*   <MudItem xs="6" Class="mb-4">
                             <MudTextField Label="Hình ảnh chuyến đi" @bind-Value="newTrip.img_trip" Placeholder="URL Hình Ảnh"
@@ -87,6 +90,36 @@
         catch (Exception ex)
         {
             Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+    private IEnumerable<string> EmployeeValidateFullName(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            yield return "Vui lòng điền điểm khởi hành .";
+        }
+        else if (fullName.Length < 2 || fullName.Length > 150)
+        {
+            yield return "Điểm khởi hành không hợp lệ.";
+        }
+        else if (fullName.Any(ch => !char.IsLetter(ch) && !char.IsWhiteSpace(ch)))
+        {
+            yield return "Điểm khởi hành không được chứa ký tự đặc biệt.";
+        }
+    }
+    private IEnumerable<string> EmployeeValidateFullDiemden(string DiemDen)
+    {
+        if (string.IsNullOrWhiteSpace(DiemDen))
+        {
+            yield return "Vui lòng điền điểm đến.";
+        }
+        else if (DiemDen.Length < 2 || DiemDen.Length > 150)
+        {
+            yield return "Điểm đến không hợp lệ.";
+        }
+        else if (DiemDen.Any(ch => !char.IsLetter(ch) && !char.IsWhiteSpace(ch)))
+        {
+            yield return "Điểm đến không được chứa ký tự đặc biệt.";
         }
     }
 }
