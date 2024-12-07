@@ -1,0 +1,217 @@
+﻿@page "/driver-calendar"
+@inject HttpClient HttpClient
+@inject ISnackbar Snackbar
+@inject IJSRuntime js
+
+
+<MudContainer>
+    <MudCard Elevation="4">
+        <MudCardHeader Class="mud-background-gray pa-4">
+            <CardHeaderContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3">
+                    <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Color="Color.Primary" Size="Size.Large" />
+                    <MudText Typo="Typo.h5" Color="Color.Primary">Lịch Làm Việc Của Tài Xế</MudText>
+                </MudStack>
+            </CardHeaderContent>
+        </MudCardHeader>
+
+        <MudCardContent>
+            <MudStack Row="true" Spacing="3" AlignItems="AlignItems.Center" Class="mb-4">
+                <MudText>Chọn Tài Xế:</MudText>
+                <MudAutocomplete T="DriverDropdown"
+                                 Value="@SelectedDriver"
+                                 SearchFunc="@SearchDrivers"
+                                 ValueChanged="@OnDriverSelected"
+                                 Clearable="true"
+                                 Label="Danh Sách Tài Xế"
+                                 ToStringFunc="@(x => x?.name)"
+                                 AnchorOrigin="Origin.BottomCenter">
+                    <ItemTemplate Context="driver">
+                        <MudStack Row="true" AlignItems="AlignItems.Center">                          
+                            <MudText>@driver.name</MudText>
+                        </MudStack>
+                    </ItemTemplate>
+                </MudAutocomplete>
+            </MudStack>
+
+            <MudTabs Rounded="true" Centered="true" Color="Color.Primary">
+                <MudTabPanel Text="Lịch Chính">
+                    @if (MainCalendarEvents.Any())
+                    {
+                        <MudTable Items="@MainCalendarEvents"
+                                  Hover="true"
+                                  Dense="true"
+                                  Striped="true"
+                                  FixedHeader="true"
+                                  Height="450px">
+                            <HeaderContent>
+                                <MudTh>Ngày</MudTh>
+                                <MudTh>Giờ Bắt Đầu</MudTh>
+                                <MudTh>Giờ Kết Thúc</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>@context.date.ToString("dd/MM/yyyy")</MudTd>
+                                <MudTd>@context.date_start?.ToString(@"hh\:mm")</MudTd>
+                                <MudTd>@context.date_end?.ToString(@"hh\:mm")</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    }
+                    else
+                    {
+                        <MudAlert Severity="Severity.Info" Class="mt-4">Không có lịch làm việc cho tài xế này.</MudAlert>
+                    }
+                </MudTabPanel>
+                <MudTabPanel Text="Lịch Khách">
+                    @if (GuestDriverCalendar.Any())
+                    {
+                        <MudTable Items="@GuestDriverCalendar"
+                                  Hover="true"
+                                  Dense="true"
+                                  Striped="true"
+                                  FixedHeader="true"
+                                  Height="450px">
+                            <HeaderContent>
+                                <MudTh>Ngày</MudTh>
+                                <MudTh>Giờ Bắt Đầu</MudTh>
+                                <MudTh>Giờ Kết Thúc</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>@context.date.ToString("dd/MM/yyyy")</MudTd>
+                                <MudTd>@context.date_start?.ToString(@"hh\:mm")</MudTd>
+                                <MudTd>@context.date_end?.ToString(@"hh\:mm")</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    }
+                    else
+                    {
+                        <MudAlert Severity="Severity.Info" Class="mt-4">Không có lịch khách cho tài xế này.</MudAlert>
+                    }
+                </MudTabPanel>
+
+                <MudTabPanel Text="Lịch Xe Khách">
+                    @if (GuestCarDriverCalendar.Any())
+                    {
+                        <MudTable Items="@GuestCarDriverCalendar"
+                                  Hover="true"
+                                  Dense="true"
+                                  Striped="true"
+                                  FixedHeader="true"
+                                  Height="450px">
+                            <HeaderContent>
+                                <MudTh>Ngày Bắt Đầu</MudTh>
+                                <MudTh>Ngày Kết Thúc</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>@context.date_start?.ToString("dd/MM/yyyy")</MudTd>
+                                <MudTd>@context.date_end?.ToString("dd/MM/yyyy")</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    }
+                    else
+                    {
+                        <MudAlert Severity="Severity.Info" Class="mt-4">Không có lịch xe khách cho tài xế này.</MudAlert>
+                    }
+                </MudTabPanel>
+            </MudTabs>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private List<DriverDropdown> Drivers = new();
+    private DriverDropdown SelectedDriver;
+    private List<DriverCalendar> MainCalendarEvents = new();
+    private List<DriverCalendar> GuestDriverCalendar = new();
+    private List<DriverCalendar> GuestCarDriverCalendar = new();
+    private bool IsLoading = false;
+    private string baseUrl = "http://localhost:49922/api/CalendarDriver/";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDrivers();
+    }
+
+    private async Task LoadDrivers()
+    {
+        try
+        {
+            var drivers = await HttpClient.GetFromJsonAsync<List<DriverDropdown>>($"{baseUrl}dropdown-drivers");
+            if (drivers != null && drivers.Any())
+            {
+                // Ensure the first driver is selected by default
+                Drivers = drivers.OrderBy(d => d.id).ToList();
+                SelectedDriver = Drivers.First();
+                await LoadDriverCalendars(SelectedDriver.id);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task OnDriverSelected(DriverDropdown driver)
+    {
+        SelectedDriver = driver;
+        await LoadDriverCalendars(driver.id);
+    }
+
+    private async Task LoadDriverCalendars(int driverId)
+    {
+        IsLoading = true;
+        try
+        {
+            var tasks = new[]
+            {
+            HttpClient.GetFromJsonAsync<List<DriverCalendar>>($"{baseUrl}?id_driver={driverId}"),
+            HttpClient.GetFromJsonAsync<List<DriverCalendar>>($"{baseUrl}guest-driver-calendar?id_driver={driverId}"),
+            HttpClient.GetFromJsonAsync<List<DriverCalendar>>($"{baseUrl}guest-car-driver-calendar?id_driver={driverId}")
+        };
+
+            var results = await Task.WhenAll(tasks);
+
+            // Handle potential 404 responses
+            MainCalendarEvents = results[0] ?? new List<DriverCalendar>();
+            GuestDriverCalendar = results[1] ?? new List<DriverCalendar>();
+            GuestCarDriverCalendar = results[2] ?? new List<DriverCalendar>();
+
+            StateHasChanged();
+        }
+        catch (HttpRequestException ex)
+        {
+            // More specific error handling
+            if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                // Reset all calendar lists to empty lists
+                MainCalendarEvents = new List<DriverCalendar>();
+                GuestDriverCalendar = new List<DriverCalendar>();
+                GuestCarDriverCalendar = new List<DriverCalendar>();
+
+                Snackbar.Add("Không tìm thấy lịch làm việc cho tài xế này.", Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+    private async Task<IEnumerable<DriverDropdown>> SearchDrivers(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return Drivers;
+
+        return Drivers.Where(d =>
+            d.name.Contains(value, StringComparison.OrdinalIgnoreCase)
+        );
+    }
+   
+}
