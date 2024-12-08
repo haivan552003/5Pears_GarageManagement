@@ -142,21 +142,33 @@
     {
         try
         {
-            var response = await httpClient.DeleteAsync($"{url}/{driver.id}");
-            if (response.IsSuccessStatusCode)
+            // Gửi yêu cầu kiểm tra khách hàng có hóa đơn hay không
+            var response = await httpClient.GetFromJsonAsync<ApiResponse>($"http://localhost:49922/api/Validate/ValidateDriver/{driver.id}");
+
+            if (response.Success)
             {
-                Snackbar.Add($"Đã xóa tài xế {driver.fullname} thành công", Severity.Success);
-                await LoadDrivers(); 
+                // Nếu khách hàng có thể xóa được, tiếp tục xóa khách hàng
+                var deleteResponse = await httpClient.DeleteAsync($"{url}/{driver.id}");
+                if (deleteResponse.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Xóa khách hàng thành công!", Severity.Success);
+                    await LoadDrivers();
+                }
+                else
+                {
+                    Snackbar.Add("Xóa khách hàng thất bại!", Severity.Warning);
+                }
             }
             else
             {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Lỗi khi xóa tài xế: {response.ReasonPhrase}. Chi tiết: {errorContent}", Severity.Error);
+                // Nếu không thể xóa (do khách hàng có hóa đơn), lấy thông báo từ API
+                string errorMessage = response.Message ?? "Không thể xóa khách hàng này.";
+                Snackbar.Add(errorMessage, Severity.Warning);
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Lỗi khi xóa tài xế: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Lỗi xảy ra: {ex.Message}", Severity.Error);
         }
     }
     private string GenerateEditUrl(int id)
@@ -177,5 +189,10 @@
     private void SelectedItemsChanged(HashSet<driver> items)
     {
         // Handle selected items changed event if needed
+    }
+    public class ApiResponse
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
     }
 }

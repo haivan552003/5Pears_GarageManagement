@@ -155,15 +155,41 @@
 
     private async Task DeleteCar(int id)
     {
-        var response = await httpClient.DeleteAsync($"http://localhost:49922/api/Cars/DeleteCars/{id}");
-        if (response.IsSuccessStatusCode)
+        try
         {
-            Snackbar.Add("Xóa xe thành công!", Severity.Success);
-            await LoadCars();
+            // Gửi yêu cầu kiểm tra khách hàng có hóa đơn hay không
+            var response = await httpClient.GetFromJsonAsync<ApiResponse>($"http://localhost:49922/api/Validate/ValidateCars/{id}");
+
+            if (response.Success)
+            {
+                // Nếu khách hàng có thể xóa được, tiếp tục xóa khách hàng
+                var deleteResponse = await httpClient.DeleteAsync($"{carsUrl}/{id}");
+                if (deleteResponse.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Xóa xe thành công!", Severity.Success);
+                    await LoadCars();
+                }
+                else
+                {
+                    Snackbar.Add("Xóa xe thành công!", Severity.Success);
+                    await LoadCars();
+                }
+            }
+            else
+            {
+                // Nếu không thể xóa (do khách hàng có hóa đơn), lấy thông báo từ API
+                string errorMessage = response.Message ?? "Không thể xóa xe này.";
+                Snackbar.Add(errorMessage, Severity.Warning);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            Snackbar.Add("Xóa xe thất bại!", Severity.Error);
+            Snackbar.Add($"Lỗi xảy ra: {ex.Message}", Severity.Error);
         }
+    }
+    public class ApiResponse
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
     }
 }
