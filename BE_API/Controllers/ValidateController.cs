@@ -243,6 +243,94 @@ namespace BE_API.Controllers
             }
         }
 
+        [HttpGet("ValidateEmployees/{id}")]
+        public async Task<IActionResult> ValidateEmployees(int id)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@id", id, DbType.Int32);
+
+                    var result = await connection.QueryFirstOrDefaultAsync<string>(
+                        "[sp_validate_employees]",
+                        parameters,
+                        commandType: CommandType.StoredProcedure
+                    );
+
+                    if (result == null)
+                    {
+                        return Ok(new
+                        {
+                            Success = true,
+                            Message = "Nhân viên có thể được xóa."
+                        });
+                    }
+
+                    return Ok(new
+                    {
+                        Success = false,
+                        Message = result
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Success = false,
+                    Message = "Có lỗi xảy ra.",
+                    Details = ex.Message
+                });
+            }
+        }
+        [HttpGet("ValidateCars/{id}")]
+        public async Task<IActionResult> ValidateCars(int id)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@id", id, DbType.Int32);
+
+                    var result = await connection.QueryFirstOrDefaultAsync<string>(
+                        "sp_validate_car",
+                        parameters,
+                        commandType: CommandType.StoredProcedure
+                    );
+
+                    if (result == null)
+                    {
+                        return Ok(new
+                        {
+                            Success = true,
+                            Message = "Xe có thể được xóa."
+                        });
+                    }
+
+                    return Ok(new
+                    {
+                        Success = false,
+                        Message = result
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Success = false,
+                    Message = "Có lỗi xảy ra.",
+                    Details = ex.Message
+                });
+            }
+        }
+
+
         [HttpGet("ValidateCarTypes/{id}")]
         public async Task<IActionResult> ValidateCarTypes(int id)
         {
