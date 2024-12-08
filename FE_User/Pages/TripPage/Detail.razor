@@ -25,10 +25,10 @@
 
                                 <MudItem xs="2">
                                     <MudButton Variant="Variant.Outlined"
-                                    Color="@buttonColor"
-                                    Size="Size.Small"
-                                    Disabled="@isDisabled"
-                                    OnClick="() => OnSeatSelected(item.id, item.name)">
+                                               Color="@buttonColor"
+                                               Size="Size.Small"
+                                               Disabled="@isDisabled"
+                                               OnClick="() => OnSeatSelected(item.id, item.name)">
                                         @item.name
                                     </MudButton>
                                 </MudItem>
@@ -115,41 +115,48 @@
                             <MudButton Variant="Variant.Filled" Class="w-100" Color="Color.Primary" Size="Size.Medium" OnClick="@OnCheckout">Thanh Toán</MudButton>
                         </MudItem>
                     }
-                    else
-                    {
-                        <MudPaper Class="p-4 mt-4" Elevation="1">
-                            <MudGrid>
-                                <MudItem xs="12">
-                                    <MudText Typo="Typo.h6" Color="Color.Primary">VUI LÒNG ĐIỀN THÔNG TIN CỦA QUÝ KHÁCH</MudText>
-                                </MudItem>
-
-                                <MudItem xs="12" Class="mb-3">
-                                    <MudText Align="Align.Left" Typo="Typo.subtitle1">
-                                        Tên khách hàng
-                                    </MudText>
-                                    <MudTextField ShrinkLabel @bind-Value="customer.cus_code" Variant="Variant.Outlined"></MudTextField>
-                                    <MudText Align="Align.Left" Typo="Typo.subtitle1">
-                                        Email
-                                    </MudText>
-                                    <MudTextField ShrinkLabel @bind-Value="customer.cus_code" Variant="Variant.Outlined"></MudTextField>
-                                    <MudText Align="Align.Left" Typo="Typo.subtitle1">
-                                        Số điện thoại
-                                    </MudText>
-                                    <MudTextField ShrinkLabel @bind-Value="customer.cus_code" Variant="Variant.Outlined"></MudTextField>
-                                </MudItem>
-                            </MudGrid>
-                        </MudPaper>
-                        @if (errorMessageCheckCus != null){
-                            <MudItem xs="12">
-                                <MudText Color="Color.Error" Class="mt-2">
-                                    @errorMessageCheckCus
-                                </MudText>
-                            </MudItem>
-                        }
-                    }
                 </MudGrid>
             </MudPaper>
 
+
+            @if (cus_id == 0)
+            {
+
+                <MudPaper Class="p-4 mt-4" Elevation="1">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6" Color="Color.Primary">VUI LÒNG ĐIỀN THÔNG TIN CỦA QUÝ KHÁCH</MudText>
+                        </MudItem>
+
+                        <MudItem xs="12" Class="mb-3">
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Họ tên
+                            </MudText>
+                            <MudTextField ShrinkLabel @bind-Value="addCus.fullname" Variant="Variant.Outlined" Placeholder="Vui lòng nhập học tên" RequiredError="Vui lòng nhập họ tên"></MudTextField>
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Email
+                            </MudText>
+                            <MudTextField ShrinkLabel @bind-Value="addCus.email" Placeholder="Vui lòng nhập email" Variant="Variant.Outlined" RequiredError="Vui lòng nhập email"></MudTextField>
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Số điện thoại
+                            </MudText>
+                            <MudTextField ShrinkLabel @bind-Value="addCus.phone_number" Variant="Variant.Outlined" Placeholder="Vui lòng nhập số điện thoại" RequiredError="Vui lòng nhập số điện thoại"></MudTextField>
+                            <MudItem xs="12" Class="mt-3">
+                                <MudButton Variant="Variant.Filled" Class="w-100" Color="Color.Primary" Size="Size.Medium" OnClick="@OnCheckout">Thanh Toán</MudButton>
+                            </MudItem>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+
+                @if (errorMessageCheckCus != null)
+                {
+                    <MudItem xs="12">
+                        <MudText Color="Color.Error" Class="mt-2 text-center">
+                            @errorMessageCheckCus
+                        </MudText>
+                    </MudItem>
+                }
+            }
             @if (cus_id != 0)
             {
                 <MudPaper Class="p-4 mt-4" Elevation="1">
@@ -226,7 +233,6 @@
     private guest_trip_create bill = new guest_trip_create();
 
     private bool isHubConnected = false;
-
     protected override async Task OnInitializedAsync()
     {
         await LoadTripDetail();
@@ -300,7 +306,7 @@
 
             await InvokeAsync(() =>
             {
-                Navigation.NavigateTo("http://localhost:5112/getTrip");
+                Navigation.NavigateTo("http://localhost:5112/");
             });
         }, null, TimeSpan.FromMinutes(5), Timeout.InfiniteTimeSpan);
 
@@ -406,13 +412,45 @@
 
     private async Task OnCheckout()
     {
-        if (cus_id == 0)
+        if (selectedSeats.Count() == 0)
+        {
+            errorMessageCheckCus = "Quý khách vui lòng chọn ghế.";
+            return;
+        }
+
+        if (cus_id != 0)
         {
             bill.cus_id = cus_id;
         }
         else
         {
-            await CheckCustomer();
+            if (string.IsNullOrWhiteSpace(addCus.fullname) ||
+            string.IsNullOrWhiteSpace(addCus.email) ||
+            string.IsNullOrWhiteSpace(addCus.phone_number))
+            {
+                errorMessageCheckCus = "Quý khách vui lòng điền đầy đủ thông tin hoặc đăng nhập.";
+                return;
+            }
+            var response = await httpClient.GetAsync($"http://localhost:49922/api/Validate/CheckPhoneNumberCustomer/{addCus.phone_number}");
+            if (response.IsSuccessStatusCode)
+            {
+                var customer = await response.Content.ReadFromJsonAsync<customer>();
+                if (customer != null)
+                {
+                    errorMessageCheckCus = "Số điện thoại này đã được đăng ký. Vui lòng đăng nhập để tiếp tục.";
+                    Console.WriteLine(errorMessageCheckCus);
+                }
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                Console.WriteLine("Số điện thoại chưa được đăng ký, tiếp tục thêm khách hàng.");
+                await AddCus();
+            }
+            else
+            {
+                errorMessageCheckCus = "Đã xảy ra lỗi khi kiểm tra số điện thoại.";
+                Console.WriteLine(errorMessageCheckCus);
+            }
         }
 
         if (selectedSeats.Count() == 1)
@@ -529,34 +567,43 @@
         }
     }
 
-    private async Task CheckCustomer()
-    {
-        customer = await httpClient.GetFromJsonAsync<customer>($"http://localhost:49922/api/Validate/CheckPhoneNumberCustomer/{addCus.phone_number}");
-        if (customer != null && customer.phone_number == addCus.phone_number)
-        {
-            errorMessageCheckCus = "Số điện thoại này đã được đăng ký. Vui lòng đăng nhập để tiếp tục.";
-            // return false;
-        }
-        else
-        {
-            await AddCus();
-        }
-    }
-
     private async Task AddCus()
     {
         try
         {
+            addCus.password = "123456";
+            addCus.birthday = DateTime.Now.AddYears(-18);
+            addCus.gender = 0;
+            addCus.citizen_identity_img1 = null;
+            addCus.citizen_identity_number = null;
+            addCus.driver_license_img1 = null;
+            addCus.driver_license_number = null;
+            addCus.status = true;
 
             var response = await httpClient.PostAsJsonAsync(urlAddCus, addCus);
             if (response.IsSuccessStatusCode)
             {
                 var responseTop = await httpClient.GetAsync(urlGetTopCus);
                 var jsonResponse = await responseTop.Content.ReadAsStringAsync();
-                var customerTop = JsonSerializer.Deserialize<List<customer>>(jsonResponse);
-                var cusID = customerTop.First().Id;
-                bill.cus_id = cusID;
+                Console.WriteLine($"JSON Response: {jsonResponse}");
+
+                var customerTop = JsonSerializer.Deserialize<List<customers>>(jsonResponse);
+                if (customerTop != null && customerTop.Any())
+                {
+                    foreach (var customer in customerTop)
+                    {
+                        Console.WriteLine($"Customer ID: {customer.id}");
+                    }
+                    var cusID = customerTop.First().id;
+                    Console.WriteLine(customerTop.FirstOrDefault().id);
+                    bill.cus_id = cusID;
+                }
+                else
+                {
+                    Console.WriteLine("Danh sách khách hàng trả về rỗng hoặc null.");
+                }
             }
+
         }
         catch (Exception ex)
         {

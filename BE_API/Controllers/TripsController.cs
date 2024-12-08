@@ -218,7 +218,7 @@ namespace BE_API.Controllers
         public async Task<ActionResult> AddTripDetail(trip_detail_create newTrip)
         {
             var parameters = new DynamicParameters(newTrip);
-           
+
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
@@ -347,17 +347,27 @@ namespace BE_API.Controllers
             }
         }
 
-        [HttpGet("serchtrip/{id}")]
-        public async Task<ActionResult<IEnumerable<trip_detail>>> SearchTrip(search_trip request)
+        [HttpPost("serchtrip")]
+        public async Task<ActionResult<IEnumerable<search_tripdetail>>> SearchTrips(search_trip request)
         {
-            var procedureName = "sp_search_trip";
-            var parameters = new DynamicParameters(request);
+            var procedureName = "[dbo].[sp_search_trip]";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@location_from", request.location_from);
+            parameters.Add("@location_to", request.location_to);
+            parameters.Add("@date_start", request.date_start?.Date);
 
             using (var connection = new SqlConnection(_connectionString))
             {
-                var employeesList = await connection.QueryAsync<trip_detail>(procedureName, commandType: CommandType.StoredProcedure);
-                return Ok(employeesList);
+                var tripDetails = await connection.QueryAsync<search_tripdetail>(
+                    procedureName,
+                    parameters,  
+                    commandType: CommandType.StoredProcedure
+                );
+
+                return Ok(tripDetails);
             }
         }
+
     }
 }
