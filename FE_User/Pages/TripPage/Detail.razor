@@ -115,6 +115,14 @@
                             <MudButton Variant="Variant.Filled" Class="w-100" Color="Color.Primary" Size="Size.Medium" OnClick="@OnCheckout">Thanh Toán</MudButton>
                         </MudItem>
                     }
+                    @if (errorMessageCheckCus != null)
+                    {
+                        <MudItem xs="12">
+                            <MudText Color="Color.Error" Class="mt-2 text-center">
+                                @errorMessageCheckCus
+                            </MudText>
+                        </MudItem>
+                    }
                 </MudGrid>
             </MudPaper>
 
