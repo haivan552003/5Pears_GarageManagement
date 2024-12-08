@@ -4,7 +4,6 @@
 @inject NavigationManager navigationManager
 @inject IDialogService Dialog
 
-
 <style>
     .position-relative::before {
         content: '';
@@ -47,49 +46,44 @@
                 <MudGrid>
                     <MudItem xs="3">
                         <MudStack>
-                            <MudSelect @bind-Value="dropDown.id" Variant="Variant.Outlined" Margin="Margin.None" Dense="false"
-                                       ReadOnly="false" Placeholder="Chọn Điểm Đi"
-                                       HelperTextOnFocus="true" Clearable="true" Label="Điểm Đi">
-                                @foreach (var item in tripFrom)
+                            <MudSelect @bind-Value="searchRequest.location_from" Variant="Variant.Outlined" Label="Chọn điểm đi">
+                                @foreach (var location in LocationFroms)
                                 {
-                                    <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
+                                    <MudSelectItem Value="@location">@location</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudStack>
                     </MudItem>
                     <MudItem xs="3">
                         <MudStack>
-                            <MudSelect @bind-Value="dropDown.id" Variant="Variant.Outlined" Margin="Margin.None" Dense="false"
-                                       ReadOnly="false" Placeholder="Chọn Điểm Đi"
-                                       HelperText="@(_helperText ? "Helper Text" : null)"
-                                       HelperTextOnFocus="_helperTextOnFocus" Clearable="true" Label="Điểm Đến">
-                                @foreach (var item in tripTo)
+                            <MudSelect @bind-Value="searchRequest.location_to" Variant="Variant.Outlined" Label="Chọn điểm đến">
+                                @foreach (var location in LocationTos)
                                 {
-                                    <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
+                                    <MudSelectItem Value="@location">@location</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudStack>
                     </MudItem>
                     <MudItem xs="3">
                         <MudStack>
-                            <MudDatePicker Label="Ngày đi" Variant="Variant.Outlined" @bind-Date="_date" ShowToolbar="false" />
+                            <MudDatePicker Label="Ngày đi" Variant="Variant.Outlined" @bind-Date="searchRequest.date_start" />
                         </MudStack>
                     </MudItem>
-                    <MudItem xs="3">
+                    @*    <MudItem xs="3">
                         <MudStack>
-                            <MudDatePicker Label="Ngày về" Variant="Variant.Outlined" @bind-Date="_date" ShowToolbar="false" />
+                            <MudDatePicker Label="Ngày về" Variant="Variant.Outlined" @bind-Date="SearchRequest.date_end" />
                         </MudStack>
-                    </MudItem>
+                    </MudItem> *@
                 </MudGrid>
             </MudCardContent>
             <MudCardActions>
-                <MudButton OnClick="@(() => OpenDialogAsync(_maxWidth))" Class="mx-auto mb-4 mt-0" Variant="Variant.Outlined" Size="Size.Large" IconClass="@Icons.Material.Outlined.Search" Color="Color.Primary">Tìm kiếm chuyến xe</MudButton>
+                <MudButton Class="mx-auto mb-4 mt-0" OnClick="SearchTrip" Variant="Variant.Outlined" Size="Size.Large" IconClass="@Icons.Material.Outlined.Search" Color="Color.Primary">Tìm kiếm chuyến xe</MudButton>
             </MudCardActions>
         </MudCard>
     </MudItem>
 
     @* chuyến xe phổ biến *@
-   @*  <MudText Class="text-center text-uppercase fw-bold pt-9 pb-3" Typo="Typo.h5" Color="Color.Primary">tuyến xe phổ biến</MudText>
+    @*  <MudText Class="text-center text-uppercase fw-bold pt-9 pb-3" Typo="Typo.h5" Color="Color.Primary">tuyến xe phổ biến</MudText>
     <MudGrid>
         <MudItem xs="4">
             <MudCard style="background-color: #f2f2f2">
@@ -414,8 +408,8 @@
 
 <script>
     setTimeout(function () {
-        document.getElementById("app").style.display = "block";
-        document.getElementById("app").style.display = "block";
+    document.getElementById("app").style.display = "block";
+    document.getElementById("app").style.display = "block";
     }, 2000);
 </script>
 @code {
@@ -424,14 +418,13 @@
     private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = true };
     public string TextValue { get; set; }
     private dropdown dropDown = new dropdown();
-    Margin _margin;
     bool _dense;
     bool _readonly;
     bool _placeholder;
     bool _helperText;
     bool _helperTextOnFocus;
     bool _clearable;
-    private DateTime? _date = DateTime.Today;
+    private DateTime? _date;
     public bool Dense_Radio { get; set; } = true;
 
     private IEnumerable<dropdown> tripFrom = new List<dropdown>();
@@ -446,11 +439,11 @@
     private IEnumerable<trip_hot_home> eTrip1 = new List<trip_hot_home>();
     private IEnumerable<trip_hot_home> eTrip2 = new List<trip_hot_home>();
     private IEnumerable<trip_hot_home> eTrip3 = new List<trip_hot_home>();
+    private IEnumerable<string> options { get; set; } = new HashSet<string>() { "Alaska" };
 
     private IEnumerable<banner> eVoucher = new List<banner>();
 
     private IEnumerable<driver_home> eDriver = new List<driver_home>();
-
 
     private string urlDropdownTripFrom = "http://localhost:49922/api/Dropdown/tripfrom";
     private string urlDropdownTripTo = "http://localhost:49922/api/Dropdown/tripto";
@@ -467,6 +460,51 @@
     private string urlDriver = "http://localhost:49922/api/HomePage/DriverHome";
 
     private string urlVoucher = "http://localhost:49922/api/HomePage/VoucherHome";
+    private string urlSearchTrip = "http://localhost:49922/api/Trips/serchtrip";
+
+    private string value { get; set; } = "Vui lòng chọn địa điểm";
+
+    private List<string> LocationFroms = new()
+    {
+    "An Giang", "Bà Rịa - Vũng Tàu", "Bắc Giang", "Bắc Kạn",
+    "Bạc Liêu", "Bắc Ninh", "Bến Tre", "Bình Dương",
+    "Bình Định", "Bình Phước", "Bình Thuận", "Cà Mau",
+    "Cần Thơ", "Cao Bằng", "Đà Nẵng", "Đắk Lắk",
+    "Đắk Nông", "Điện Biên", "Đồng Nai", "Đồng Tháp",
+    "Gia Lai", "Hà Giang", "Hà Nam", "Hà Nội",
+    "Hà Tĩnh", "Hải Dương", "Hải Phòng", "Hậu Giang",
+    "Hòa Bình", "Hưng Yên", "Khánh Hòa", "Kiên Giang",
+    "Kon Tum", "Lai Châu", "Lâm Đồng", "Lạng Sơn",
+    "Lào Cai", "Long An", "Nam Định", "Nghệ An",
+    "Ninh Bình", "Ninh Thuận", "Phú Thọ", "Phú Yên",
+    "Quảng Bình", "Quảng Nam", "Quảng Ngãi", "Quảng Ninh",
+    "Quảng Trị", "Sóc Trăng", "Sơn La", "Tây Ninh",
+    "Thái Bình", "Thái Nguyên", "Thanh Hóa", "Thừa Thiên Huế",
+    "Tiền Giang", "TP. Hồ Chí Minh", "Trà Vinh", "Tuyên Quang",
+    "Vĩnh Long", "Vĩnh Phúc", "Yên Bái"
+};
+
+
+    private List<string> LocationTos = new()
+    {
+    "An Giang", "Bà Rịa - Vũng Tàu", "Bắc Giang", "Bắc Kạn",
+    "Bạc Liêu", "Bắc Ninh", "Bến Tre", "Bình Dương",
+    "Bình Định", "Bình Phước", "Bình Thuận", "Cà Mau",
+    "Cần Thơ", "Cao Bằng", "Đà Nẵng", "Đắk Lắk",
+    "Đắk Nông", "Điện Biên", "Đồng Nai", "Đồng Tháp",
+    "Gia Lai", "Hà Giang", "Hà Nam", "Hà Nội",
+    "Hà Tĩnh", "Hải Dương", "Hải Phòng", "Hậu Giang",
+    "Hòa Bình", "Hưng Yên", "Khánh Hòa", "Kiên Giang",
+    "Kon Tum", "Lai Châu", "Lâm Đồng", "Lạng Sơn",
+    "Lào Cai", "Long An", "Nam Định", "Nghệ An",
+    "Ninh Bình", "Ninh Thuận", "Phú Thọ", "Phú Yên",
+    "Quảng Bình", "Quảng Nam", "Quảng Ngãi", "Quảng Ninh",
+    "Quảng Trị", "Sóc Trăng", "Sơn La", "Tây Ninh",
+    "Thái Bình", "Thái Nguyên", "Thanh Hóa", "Thừa Thiên Huế",
+    "Tiền Giang", "TP. Hồ Chí Minh", "Trà Vinh", "Tuyên Quang",
+    "Vĩnh Long", "Vĩnh Phúc", "Yên Bái"
+};
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -562,8 +600,25 @@
             // navigationManager.NavigateTo($"/news/{news.id}");
         }
     }
-    private Task OpenDialogAsync(DialogOptions options)
+    private List<search_trip_data> tripResults = new List<search_trip_data>();
+    private search_trip searchRequest = new search_trip();
+
+    private async Task SearchTrip()
     {
-        return Dialog.ShowAsync<Dialog>("Danh Sách Các Chuyến Đi", options);
+        try
+        {
+            var locationFrom = searchRequest.location_from;
+            var locationTo = searchRequest.location_to;
+            var dateStart = searchRequest.date_start;
+
+            var url = $"/getTrip?locationFrom={locationFrom}&locationTo={locationTo}&dateStart={dateStart}";
+            navigationManager.NavigateTo(url);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            tripResults = null;
+        }
     }
+
 }

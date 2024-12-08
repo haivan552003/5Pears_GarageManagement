@@ -194,23 +194,23 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadTripDetail();
-        var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+        // var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
 
-        if (!string.IsNullOrEmpty(token))
-        {
-            // Giải mã token
-            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
+        // if (!string.IsNullOrEmpty(token))
+        // {
+        //     // Giải mã token
+        //     var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+        //     var jwtToken = handler.ReadJwtToken(token);
 
-            // Lấy giá trị của 'username' từ payload của token
-            var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "id");
+        //     // Lấy giá trị của 'username' từ payload của token
+        //     var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "id");
 
-            if (usernameClaim != null)
-            {
-                cus_id = (int.Parse(usernameClaim.Value));
-                await LoadUser();
-            }
-        }
+        //     if (usernameClaim != null)
+        //     {
+        //         cus_id = (int.Parse(usernameClaim.Value));
+        //         await LoadUser();
+        //     }
+        // }
         hubConnection = new HubConnectionBuilder()
              .WithUrl(Navigation.ToAbsoluteUri("http://localhost:49922/seatHub"))
              .Build();
