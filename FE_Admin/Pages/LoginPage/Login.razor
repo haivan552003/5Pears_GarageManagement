@@ -11,11 +11,14 @@
                 <DataAnnotationsValidator />
                 <MudGrid>
                     <MudItem xs="12">
-                        <MudCard>
-                            <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center pt-5">BOXCARS</MudText>
+                        <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center">BOXCARS</MudText>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudCard Class="pl-1 pe-1" Style="border-radius: 8px;">
+                            <MudText Typo="Typo.h5" Class="fw-bold text-center pt-5">Đăng nhập</MudText>
                             <MudCardContent>
-                                <MudRadioGroup @bind-SelectedOption="LoginRole">
-                                    <MudRadio Option="@("admin")" Color="Color.Primary">Admin</MudRadio>
+                                <MudRadioGroup Class="d-flex flex-column align-items-center" @bind-SelectedOption="LoginRole">
+                                    <MudRadio Option="@("admin")" Color="Color.Primary">Quản trị</MudRadio>
                                     <MudRadio Option="@("driver")" Color="Color.Secondary">Tài xế</MudRadio>
                                 </MudRadioGroup>
 
@@ -23,9 +26,9 @@
                                               Variant="Variant.Outlined"
                                               Placeholder="Email"
                                               @bind-Value="model.email" For="@(() => model.email)" />
-                                <MudTextField Label="Password" Class="mt-3"
+                                <MudTextField Label="Mật khẩu" Class="mt-3"
                                               Variant="Variant.Outlined"
-                                              Placeholder="Password"
+                                              Placeholder="Mật khẩu"
                                               @bind-Value="model.password"
                                               For="@(() => model.password)"
                                               InputType="@PasswordInput"
@@ -34,8 +37,15 @@
                                               OnAdornmentClick="TogglePasswordVisibility"
                                               AdornmentAriaLabel="Show Password" />
                             </MudCardContent>
-                            <MudCardActions>
-                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Đăng nhập</MudButton>
+                            <MudCardActions Class="d-flex justify-content-center me-2 ml-2">
+                                <MudButton
+                                    ButtonType="ButtonType.Submit"
+                                    Variant="Variant.Filled"
+                                    Color="Color.Primary"
+                                    Style="width: 100%; height: 48px; max-width: 400px;"
+                                    Class="mb-5">
+                                    Đăng nhập
+                                </MudButton>
                             </MudCardActions>
                             @if (LoginFailed)
                             {
