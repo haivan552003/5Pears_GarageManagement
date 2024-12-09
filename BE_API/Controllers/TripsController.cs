@@ -356,6 +356,8 @@ namespace BE_API.Controllers
             parameters.Add("@location_from", request.location_from);
             parameters.Add("@location_to", request.location_to);
             parameters.Add("@date_start", request.date_start?.Date);
+            parameters.Add("@date_return", request.date_return?.Date);
+            parameters.Add("@is_return", request.is_return);
 
             using (var connection = new SqlConnection(_connectionString))
             {
