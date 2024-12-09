@@ -4,6 +4,7 @@
 @inject ISnackbar Snackbar
 @inject IWebHostEnvironment Environment
 @inject IJSRuntime js
+@using System.Text.RegularExpressions
 
 <MudContainer MaxWidth="MaxWidth.False" Class="mt-14 pa-0">
     <MudGrid>
@@ -16,27 +17,28 @@
             <MudGrid>
                 <MudItem xs="12" md="8">
                     <DataAnnotationsValidator />
-                    <MudPaper Elevation="3" Class="pa-4">
+                    <MudPaper Elevation="3" Class="pa-4" Style="height:584.94px;">
                         <MudText Typo="Typo.h6" Class="mb-5">Thêm khách hàng</MudText>
                         <MudGrid>
 @*                             <MudItem xs="12" sm="6">
                                 <MudTextField ShrinkLabel @bind-Value="newDriver.cus_code" For="@(() => newDriver.cus_code)" Label="Mã khách hàng" Variant="Variant.Filled" ReadOnly="true" />
                             </MudItem> *@
                             <MudItem xs="12" sm="6">
-                                <MudTextField ShrinkLabel @bind-Value="newDriver.email" Label="Email" Variant="Variant.Outlined" Required="true" Validation="@(new Func<string, Task<IEnumerable<string>>>(CustomerValidateEmail))" />
-                            </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudTextField ShrinkLabel @bind-Value="newDriver.password" Label="Mật khẩu" Variant="Variant.Outlined" Required="true" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePassword))" />
-                            </MudItem>
-                            <MudItem xs="12" sm="6">
                                 <MudTextField ShrinkLabel @bind-Value="newDriver.fullname" Label="Họ và tên" Variant="Variant.Outlined" Required="true" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateFullName))" />
-                            </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudTextField ShrinkLabel @bind-Value="newDriver.phone_number" Label="Số điện thoại" Variant="Variant.Outlined" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePhone))" />
                             </MudItem>
                             <MudItem xs="12" sm="6">
                                 <MudDatePicker @bind-Date="birthdayDate" Label="Ngày sinh" Required="true" Variant="Variant.Outlined" DateFormat="dd/MM/yyyy" MaxDate="@DateTime.Now.AddYears(-18)" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateBirthday))" />
                             </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.email" Label="Email" Variant="Variant.Outlined" Required="true" Validation="@(new Func<string, Task<IEnumerable<string>>>(CustomerValidateEmail))" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.password" Label="Mật khẩu" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Required="true" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePassword))" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField ShrinkLabel @bind-Value="newDriver.phone_number" Label="Số điện thoại" Variant="Variant.Outlined" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePhone))" />
+                            </MudItem>
+                            
                             <MudItem xs="12" sm="6">
                                 <MudSelect @bind-Value="newDriver.gender" Label="Giới tính" Required="true" Variant="Variant.Outlined" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateGender))">
                                     <MudSelectItem Value="@((byte)0)">Nam</MudSelectItem>
@@ -71,69 +73,68 @@
                             <MudItem xs="12">
                                 <!-- CCCD Image -->
                                 <InputFile id="citizenIdInput1" OnChange="@((e) => LoadCitizenIdImage(e, 1))" hidden accept=".jpg,.jpeg,.png" />
-                                <MudButton HtmlTag="label"
-                                           Variant="Variant.Filled"
-                                           Color="Color.Secondary"
-                                           StartIcon="@Icons.Material.Filled.CloudUpload"
-                                           for="citizenIdInput1"
-                                           FullWidth="true"
-                                           Class="mud-button-small-text">
-                                    CCCD (Trước)
-                                </MudButton>
-                                <ValidationMessage For="@(() => newDriver.citizen_identity_img1)" />
-                                @if (isUploadingCitizenImage)
-                                {
-                                    <MudProgressLinear Style="display: flex; justify-content: center; margin-top: 8px;"
-                                                       Color="Color.Primary"
-                                                       Size="Size.Small"
-                                                       Indeterminate="true" />
-                                }
-                                else if (!string.IsNullOrEmpty(newDriver.citizen_identity_img1))
-                                {
-                                    <MudImage Src="@newDriver.citizen_identity_img1"
-                                              Alt="CCCD (Mặt trước)"
-                                              Width="100"
-                                              Height="100"
-                                              ObjectFit="ObjectFit.Cover"
-                                              Class="mt-2" />
-                                }
+                                <MudCard Elevation="0" Class="mb-4">
+                                    @if (!string.IsNullOrEmpty(newDriver.citizen_identity_img1))
+                                    {
+                                        <MudCardMedia Image="@newDriver.citizen_identity_img1"
+                                                      Height="200"
+                                                      Class="rounded-lg" />
+                                    }
+                                    else
+                                    {
+                                        <MudCardMedia Class="d-flex justify-center align-center rounded-lg"
+                                                      Style="height: 200px; background-color: #f5f5f5;">
+                                            <MudIcon Icon="@Icons.Material.Filled.Badge"
+                                                     Size="Size.Large"
+                                                     Color="Color.Default" />
+                                        </MudCardMedia>
+                                    }
+                                    <MudCardActions Class="pa-0 mt-2">
+                                        <MudButton HtmlTag="label"
+                                                   For="citizenIdInput1"
+                                                   Variant="Variant.Filled"
+                                                   Color="Color.Secondary"
+                                                   StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                   FullWidth="true">
+                                            CCCD (Trước)
+                                        </MudButton>
+                                    </MudCardActions>
+                                </MudCard>
 
                                 <!-- License Image -->
-                                <InputFile id="licenseInput1"
-                                           OnChange="@((e) => LoadLicenseImage(e, 1))"
-                                           hidden
-                                           accept=".jpg,.jpeg,.png"
-                                           Class="mt-4" />
-                                <MudButton HtmlTag="label"
-                                           Variant="Variant.Filled"
-                                           Color="Color.Secondary"
-                                           StartIcon="@Icons.Material.Filled.CloudUpload"
-                                           for="licenseInput1"
-                                           FullWidth="true"
-                                           Class="mud-button-small-text mt-4">
-                                    GPLX (Trước)
-                                </MudButton>
-                                <ValidationMessage For="@(() => newDriver.driver_license_img1)" />
-                                @if (isUploadingLicenseImage)
-                                {
-                                    <MudProgressLinear Style="display: flex; justify-content: center; margin-top: 8px;"
-                                                       Color="Color.Primary"
-                                                       Size="Size.Small"
-                                                       Indeterminate="true" />
-                                }
-                                else if (!string.IsNullOrEmpty(newDriver.driver_license_img1))
-                                {
-                                    <MudImage Src="@newDriver.driver_license_img1"
-                                              Alt="Bằng lái (Mặt trước)"
-                                              Width="100"
-                                              Height="100"
-                                              ObjectFit="ObjectFit.Cover"
-                                              Class="mt-2" />
-                                }
+                                <InputFile id="licenseInput1" OnChange="@((e) => LoadLicenseImage(e, 1))" hidden accept=".jpg,.jpeg,.png" />
+                                <MudCard Elevation="0">
+                                    @if (!string.IsNullOrEmpty(newDriver.driver_license_img1))
+                                    {
+                                        <MudCardMedia Image="@newDriver.driver_license_img1"
+                                                      Height="200"
+                                                      Class="rounded-lg" />
+                                    }
+                                    else
+                                    {
+                                        <MudCardMedia Class="d-flex justify-center align-center rounded-lg"
+                                                      Style="height: 200px; background-color: #f5f5f5;">
+                                            <MudIcon Icon="@Icons.Material.Filled.DriveEta"
+                                                     Size="Size.Large"
+                                                     Color="Color.Default" />
+                                        </MudCardMedia>
+                                    }
+                                    <MudCardActions Class="pa-0 mt-2">
+                                        <MudButton HtmlTag="label"
+                                                   For="licenseInput1"
+                                                   Variant="Variant.Filled"
+                                                   Color="Color.Secondary"
+                                                   StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                   FullWidth="true">
+                                            GPLX (Trước)
+                                        </MudButton>
+                                    </MudCardActions>
+                                </MudCard>
                             </MudItem>
                         </MudGrid>
                     </MudPaper>
                 </MudItem>
+
             </MudGrid>
         </EditForm>
     </MudGrid>
@@ -148,6 +149,14 @@
     private List<roles> roles = new List<roles>();
     private string roleUrl = "http://localhost:49922/api/Roles";
     private string url = "http://localhost:49922/api/Customer";
+    private bool isShowPassword = false;
+    private InputType PasswordInput => isShowPassword ? InputType.Text : InputType.Password;
+    private string PasswordInputIcon => isShowPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
+
+    private void TogglePasswordVisibility()
+    {
+        isShowPassword = !isShowPassword;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -289,6 +298,10 @@
         {
             errors.Add("Email không hợp lệ.");
         }
+        else if (!Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase))
+        {
+            errors.Add("Email không đúng định dạng.");
+        }
         else
         {
             if (await IsEmailExists(email))
@@ -341,7 +354,7 @@
         }
         else if (phone.Length != 10 || !phone.All(char.IsDigit))
         {
-            yield return "Số điện thoại không hợp lệ. Vui lòng nhập đủ 10 số.";
+            yield return "Số điện thoại không hợp lệ";
         }
     }
 

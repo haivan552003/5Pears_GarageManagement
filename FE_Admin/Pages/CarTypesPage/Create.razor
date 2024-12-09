@@ -60,7 +60,7 @@
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Loại Xe", href: "/getcartypes", icon: @Icons.Material.Outlined.WorkOutline),
+        new BreadcrumbItem("Loại Xe", href: "/getcartypes", icon: @Icons.Material.Outlined.DirectionsCar),
         new BreadcrumbItem("Danh Sách Loại Xe", href: "/getcartypes", icon: @Icons.Material.Outlined.List),
         new BreadcrumbItem("Thêm Mới Loại Xe", href: "/addcartypes", icon: @Icons.Material.Filled.AddCircleOutline),
     };
@@ -69,9 +69,17 @@
     {
 
         if (string.IsNullOrWhiteSpace(name))
-            yield return " Tên loại không được để trống";
+        {
+            yield return " Tên loại xe không được để trống";
+        }
         else if (name.Length < 2)
-            yield return "Tên loại phải có ít nhất 2 ký tự";
+        {
+            yield return "Tên loại xe không hợp lệ";
+        }
+        else if (name.Any(ch => !char.IsLetter(ch) && !char.IsWhiteSpace(ch)))
+        {
+            yield return "Tên loại xe không được chứa ký tự đặc biệt.";
+        }
     }
 
     private async Task AddCarTypes()

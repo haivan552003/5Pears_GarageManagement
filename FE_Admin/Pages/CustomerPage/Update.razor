@@ -157,34 +157,6 @@
 
             </MudPaper>
         </MudItem>
-
-        <!-- Form Cập nhật địa chỉ khách hàng -->
-        <MudItem xs="12" md="12">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudItem xs="12">
-                    <MudPaper Elevation="4" Class="p-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Cập nhật địa chỉ khách hàng</MudText>
-
-                        @foreach (var address in customerAddresses)
-                        {
-                            <MudForm @ref="formAddress" @bind-IsValid="isFormValid" Style="height:auto">
-                                <MudTextField ShrinkLabel @bind-Value="address.address" Label="Địa chỉ" Placeholder="Địa chỉ" Variant="Variant.Outlined" Required="true" />
-                                <MudTextField ShrinkLabel @bind-Value="address.id_cus" Label="ID Khách Hàng" Placeholder="ID Khách Hàng" Variant="Variant.Outlined" Disabled="true" />
-                                <MudTextField ShrinkLabel @bind-Value="address.type" Label="Loại" Placeholder="Loại" Variant="Variant.Outlined" Required="true" />
-                                <MudSelect @bind-Value="address.status" Label="Trạng thái" Required="true">
-                                    <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
-                                    <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
-                                </MudSelect>
-                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="() => UpdateAddress(address)" Class="mt-3">Cập nhật</MudButton>
-                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Delete" Color="Color.Error" OnClick="() => OpenDeleteDialog(address)" Class="mt-3">Xóa</MudButton>
-                            </MudForm>
-                        }
-                    </MudPaper>
-                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Add" Color="Color.Secondary" OnClick="OpenAddAddressDialog" Class="mt-3">Thêm</MudButton>
-
-                </MudItem>
-            </MudPaper>
-        </MudItem>
     </MudGrid>
 
     <!-- Nút Cập nhật cho cả hai form -->

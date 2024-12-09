@@ -14,15 +14,53 @@
 
 <MudLayout>
     <NavMenu />
-    <MudMainContent Class="pa-3">
+    <MudMainContent Class="pa-3 content-container">
         @Body
     </MudMainContent>
+    <MudContainer style="margin-top:20px; padding: 0px;" MaxWidth="MaxWidth.ExtraExtraLarge">
+        <MudPaper Class="pa-1 fixed_position" Style="@($"color:{Colors.Shades.White}; background:{Colors.DeepPurple.Accent4};")">
+            <MudGrid>
+                <MudItem xs="5">
+                    <MudText Style="font-size: 12px;" Typo="Typo.body2">© Bản quyền thuộc về Boxcars</MudText>
+                </MudItem>
+                <MudItem xs="7">
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    </MudContainer>
 </MudLayout>
 
 
 <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden; /* Ẩn cuộn toàn bộ trang */
+    }
 
+    .mud-layout {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    .mud-main-content {
+        flex: 1;
+        overflow-y: auto; /* Cho phép cuộn nội dung */
+        padding: 16px;
+    }
+
+    .fixed_position {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 0;
+    }
+</style>
 <MudThemeProvider />
 
 
