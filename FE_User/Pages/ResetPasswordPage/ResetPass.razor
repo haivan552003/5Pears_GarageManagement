@@ -6,7 +6,7 @@
 
 <MudContainer MaxWidth="MaxWidth.Small">
     <MudCard Elevation="3" Class="mt-6">
-        <MudCardContent>
+        <MudCardContent Style="margin-top: 120px; margin-bottom: 50px;">
             <MudText Typo="Typo.h4" Class="mb-4">Đặt lại mật khẩu</MudText>
             <EditForm Model="@model" OnValidSubmit="HandleValidSubmit">              
                 <MudTextField T="string" Label="Email" @bind-Value="model.Email" For="@(() => model.Email)" />

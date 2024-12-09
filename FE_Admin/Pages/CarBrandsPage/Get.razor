@@ -23,14 +23,6 @@
                             <MudButton Href="/addcarbrands" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
                                 Thêm mới
                             </MudButton>
-
-                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
-                                Nhập file
-                            </MudButton>
-
-                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
-                                Xuất file
-                            </MudButton>
                         </MudItem>
                     </ToolBarContent>
                     <Columns>
@@ -70,8 +62,8 @@
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
             {
-            new BreadcrumbItem("Bài Viết", href: "/getcarbrands", icon: @Icons.Material.Outlined.WorkOutline),
-            new BreadcrumbItem("Danh sách bài viết", href: "/getcarbrands", icon: @Icons.Material.Outlined.List),
+            new BreadcrumbItem("Hãng xe", href: "/getcarbrands", icon: @Icons.Material.Outlined.DirectionsCar),
+            new BreadcrumbItem("Danh sách hãng xe", href: "/getcarbrands", icon: @Icons.Material.Outlined.List),
             };
 
     private Func<car_brands, object> _sortBy => x =>
@@ -123,11 +115,11 @@
     {
 
         var parameters = new DialogParameters
-    {
-        { "ContentText", $"Bạn có chắc chắn muốn xóa tên hãng xe { car_brands.name}?" },
-        { "ButtonText", "Xóa" },
-        { "Color", Color.Error }
-    };
+        {
+            { "ContentText", $"Bạn có chắc chắn muốn xóa tên hãng xe { car_brands.name}?" },
+            { "ButtonText", "Xóa" },
+            { "Color", Color.Error }
+        };
 
         var options = new DialogOptions() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall };
 
@@ -136,35 +128,48 @@
 
         if (!result.Cancelled)
         {
-            await DeleteCarBrands(car_brands);
+            await DeleteCarBrands(car_brands.id);
         }
     }
-    private async Task DeleteCarBrands(car_brands car_brands)
+    private async Task DeleteCarBrands(int id)
     {
         isLoading = true;
         try
         {
-            var response = await httpClient.DeleteAsync($"{url}/{car_brands.id}");
-            await Task.Delay(2000);
-            if (response.IsSuccessStatusCode)
+            var response = await httpClient.GetFromJsonAsync<ApiResponse>($"http://localhost:49922/api/Validate/ValidateCarBrands/{id}");
+
+            if (response.Success)
             {
-                Snackbar.Add($"Đã xóa tên hãng xe {car_brands.name} thành công", Severity.Success);
-                await OnInitializedAsync();  // Tải lại danh sách sau khi xóa
+                var deleteResponse = await httpClient.DeleteAsync($"{url}/{id}");
+                if (deleteResponse.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Xóa hãng xe thành công!", Severity.Success);
+                    await OnInitializedAsync();
+                }
+                else
+                {
+                    Snackbar.Add("Xóa hãng xe thất bại!", Severity.Warning);
+                }
             }
             else
             {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Lỗi khi xóa vị trí: {response.ReasonPhrase}. Chi tiết: {errorContent}", Severity.Error);
+                string errorMessage = response.Message ?? "Không thể xóa hãng xe này.";
+                Snackbar.Add(errorMessage, Severity.Warning);
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Lỗi khi xóa vị trí: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Lỗi khi xóa hãng xe: {ex.Message}", Severity.Error);
         }
         finally
         {
             isLoading = false;
         }
+    }
+    public class ApiResponse
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
     }
 
 

@@ -29,7 +29,6 @@ namespace BE_API.Controllers
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    connection.Open();
                     var parameters = new DynamicParameters();
                     parameters.Add("@id", id, DbType.Int32);
 
@@ -44,7 +43,6 @@ namespace BE_API.Controllers
                         return Ok(new
                         {
                             Success = true,
-                            Message = "Khách hàng có thể được xóa."
                         });
                     }
 
@@ -60,8 +58,8 @@ namespace BE_API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new
                 {
                     Success = false,
-                    Message = "Có lỗi xảy ra.",
-                    Details = ex.Message
+                    Message = "Đã xãy ra lỗi khi xác thực khách hàng",
+                    Error = ex.Message
                 });
             }
         }
@@ -241,6 +239,90 @@ namespace BE_API.Controllers
                     Success = false,
                     Message = "Có lỗi xảy ra.",
                     Details = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("ValidateCarTypes/{id}")]
+        public async Task<IActionResult> ValidateCarTypes(int id)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@id", id, DbType.Int32);
+
+                    var result = await connection.QueryFirstOrDefaultAsync<string>(
+                        "sp_validate_cartypes",
+                        parameters,
+                        commandType: CommandType.StoredProcedure
+                    );
+
+                    if (result == null)
+                    {
+                        return Ok(new
+                        {
+                            Success = true,
+                        });
+                    }
+
+                    return Ok(new
+                    {
+                        Success = false,
+                        Message = result
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Success = false,
+                    Message = "Đã xãy ra lỗi khi xác thực loại xe",
+                    Error = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("ValidateCarBrands/{id}")]
+        public async Task<IActionResult> ValidateCarBrands(int id)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@id", id, DbType.Int32);
+
+                    var result = await connection.QueryFirstOrDefaultAsync<string>(
+                        "sp_validate_carbrands",
+                        parameters,
+                        commandType: CommandType.StoredProcedure
+                    );
+
+                    if (result == null)
+                    {
+                        return Ok(new
+                        {
+                            Success = true,
+                        });
+                    }
+
+                    return Ok(new
+                    {
+                        Success = false,
+                        Message = result
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Success = false,
+                    Message = "Đã xãy ra lỗi khi xác thực hãng xe",
+                    Error = ex.Message
                 });
             }
         }

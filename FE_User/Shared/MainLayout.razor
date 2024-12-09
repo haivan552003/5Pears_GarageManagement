@@ -16,24 +16,19 @@
         referrerpolicy="no-referrer"></script>
 <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
 <link href="style.css" rel="stylesheet" />
-
 <body>
     <NavMain />
 
-    <MudContainer style="margin-top:80px" MaxWidth="MaxWidth.Large">
+    <MudContainer style="margin-top:80px;" MaxWidth="MaxWidth.Large">
         @Body
     </MudContainer>
-    <MudContainer style="margin-top:20px; padding: 0px;" MaxWidth="MaxWidth.ExtraExtraLarge">
-        <MudPaper Class="pa-7" Style="@($"color:{Colors.Shades.White}; background:{Colors.DeepPurple.Accent4};")">
+    <MudContainer Style="margin-top:20px; padding: 0px;" MaxWidth="MaxWidth.ExtraExtraLarge">
+        <MudPaper Class="pa-7 fixed_positon" Style="@($"color:{Colors.Shades.White}; background:{Colors.DeepPurple.Accent4};")">
             <MudGrid>
                 <MudItem xs="5">
                     <MudText Class="fw-bold" Typo="Typo.h4">BOXCARS</MudText>
                     <MudText Class="mt-2 fw-bold" Typo="Typo.subtitle1">TỔNG ĐÀI CHĂM SÓC KHÁCH HÀNG</MudText>
                     <MudText Class="mt-2 fw-bold" Typo="Typo.subtitle1">1900 1061</MudText>
-                    <MudText Class="mt-10 fw-bold" Typo="Typo.subtitle1">CÔNG TY TNHH VÀ DỊCH VỤ 5PEARS - 5PEARS BOXCARS</MudText>
-                    <MudText Class="mt-1" Typo="Typo.subtitle2">Địa chỉ: Khu dân cư Hoàng Quân, Phường Thường Thạnh, Quận Cái Răng</MudText>
-                    <MudText Class="mt-1" Typo="Typo.subtitle2">Email: fivepearscontact@gmail.com</MudText>
-                    <MudText Class="mt-1" Typo="Typo.subtitle2">Điện thoại: 02838386852</MudText>
                 </MudItem>
                 <MudItem xs="7">
                      <MudGrid>
@@ -46,14 +41,6 @@
                             <MudText Class="mt-1" Typo="Typo.subtitle2">
                                 <MudIcon Icon="@Icons.Material.Outlined.ArrowRight" Color="Color.Default"></MudIcon>
                                 Điều khoản sử dụng
-                            </MudText>
-                            <MudText Class="mt-1" Typo="Typo.subtitle2">
-                                <MudIcon Icon="@Icons.Material.Outlined.ArrowRight" Color="Color.Default"></MudIcon>
-                                Câu hỏi thường gặp
-                            </MudText>
-                            <MudText Class="mt-1" Typo="Typo.subtitle2">
-                                <MudIcon Icon="@Icons.Material.Outlined.ArrowRight" Color="Color.Default"></MudIcon>
-                                Hướng dẫn đặt vé
                             </MudText>
                         </MudItem>
                         <MudItem xs="4">
@@ -77,20 +64,6 @@
                                 <MudIcon Icon="@Icons.Material.Outlined.ArrowRight" Color="Color.Default"></MudIcon>
                                 Chăm sóc khách hàng
                             </MudText>
-                            <MudText Class="mt-1" Typo="Typo.subtitle2">
-                                <MudIcon Icon="@Icons.Material.Outlined.ArrowRight" Color="Color.Default"></MudIcon>
-                                Tin tức, sự kiện
-                            </MudText>
-                        </MudItem>
-                     </MudGrid>
-
-                    <MudText Class="fw-bold mt-5" Typo="Typo.subtitle2">Phương thức thanh toán</MudText>
-                     <MudGrid>
-                        <MudItem Class="xs=1">
-                            <MudImage Src="https://th.bing.com/th/id/OIP.pn3RUm1xk1HiAxWIgC6CIwAAAA?rs=1&pid=ImgDetMain" Width="45" Height="45" Elevation="25" Class="rounded-lg" />
-                        </MudItem>
-                        <MudItem Class="xs=1">
-                            <MudImage Src="https://th.bing.com/th/id/OIP.wBKSzdf1HTUgx1Ax_EecKwHaHa?rs=1&pid=ImgDetMain" Width="45" Height="45" Elevation="25" Class="rounded-lg" />
                         </MudItem>
                      </MudGrid>
                 </MudItem>
@@ -98,6 +71,7 @@
         </MudPaper>
     </MudContainer>
 </body>
+
 
 <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 <MudThemeProvider />
