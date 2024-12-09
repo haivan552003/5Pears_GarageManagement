@@ -32,12 +32,6 @@
                                 <MudButton Href="/addcustomer" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
                                     Thêm mới
                                 </MudButton>
-                                <MudButton Href="/importcustomers" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
-                                    Nhập file
-                                </MudButton>
-                                <MudButton Href="/exportcustomers" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
-                                    Xuất file
-                                </MudButton>
                             </MudItem>
                         </ToolBarContent>
 
@@ -159,15 +153,38 @@
 
     private async Task DeleteCustomer(int id)
     {
-        var response = await httpClient.DeleteAsync($"{customersUrl}/{id}");
-        if (response.IsSuccessStatusCode)
+        try
         {
-            Snackbar.Add("Xóa khách hàng thành công!", Severity.Success);
-            await LoadCustomers();
+            var response = await httpClient.GetFromJsonAsync<ApiResponse>($"http://localhost:49922/api/Validate/ValidateCustomer/{id}");
+
+            if (response.Success)
+            {
+                var deleteResponse = await httpClient.DeleteAsync($"{customersUrl}/{id}");
+                if (deleteResponse.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Xóa khách hàng thành công!", Severity.Success);
+                    await LoadCustomers();
+                }
+                else
+                {
+                    Snackbar.Add("Xóa khách hàng thất bại!", Severity.Warning);
+                }
+            }
+            else
+            {
+                string errorMessage = response.Message ?? "Không thể xóa khách hàng này.";
+                Snackbar.Add(errorMessage, Severity.Warning);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            Snackbar.Add("Xóa khách hàng thất bại!", Severity.Error);
+            Snackbar.Add($"Lỗi xảy ra: {ex.Message}", Severity.Error);
         }
+    }
+
+    public class ApiResponse
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
     }
 }

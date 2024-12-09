@@ -63,7 +63,7 @@
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Địa Chỉ", href: "/getcarbrand", icon: @Icons.Material.Outlined.WorkOutline),
+        new BreadcrumbItem("Hãng xe", href: "/getcarbrand", icon: @Icons.Material.Outlined.DirectionsCar),
         new BreadcrumbItem("Danh sách hãng xe", href: "/getcarbrand", icon: @Icons.Material.Outlined.List),
         new BreadcrumbItem("Thêm mới", href: "/addcarbrands", icon: @Icons.Material.Filled.AddCircleOutline),
     };
@@ -71,9 +71,17 @@
     private IEnumerable<string> CarBrandsValidate(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            yield return " Tên loại không được để trống";
+        {
+            yield return " Tên hãng xe không được để trống";
+        }
         else if (name.Length < 2)
-            yield return "Tên loại phải có ít nhất 2 ký tự";
+        {
+            yield return "Tên hãng xe không hợp lệ";
+        }
+        else if (name.Any(ch => !char.IsLetter(ch) && !char.IsWhiteSpace(ch)))
+        {
+            yield return "Tên hãng xe không được chứa ký tự đặc biệt và số.";
+        }
     }
 
     private async Task AddCarBrands()
