@@ -34,7 +34,11 @@ namespace BE_API.Models
         //public float voucher { get; set; }
         //public int number_seat { get; set; }
         public List<car_img> car_img { get; set; }
+        public List<trip_detail> trip_Details { get; set; }
+        public List<trip> trips { get; set; }
     }
+
+
     public class car_create
     {
         public int id { get; set; }

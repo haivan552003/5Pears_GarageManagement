@@ -25,6 +25,7 @@
         public float voucher { get; set; }
         public int number_seat { get; set; }
         public List<car_img> car_img { get; set; }
+        public List<trip_detail> trip_Details { get; set; }
     }
     public class car_create
     {
