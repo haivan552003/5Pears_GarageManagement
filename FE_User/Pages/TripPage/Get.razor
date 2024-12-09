@@ -9,50 +9,76 @@
             <MudText Class="text-center text-uppercase fw-bold pt-3" Typo="Typo.h5" Color="Color.Primary">Tra cứu chuyến xe</MudText>
 
             <MudCardContent Class="pt-0">
-                <MudRadioGroup @bind-Value="Dense_Radio" Class="pb-5">
-                    <MudRadio Value="true" Color="Color.Primary" Size="Size.Small" Dense="false">Một Chiều</MudRadio>
-                    <MudRadio Value="false" Color="Color.Primary" Size="Size.Small" Dense="false">Khứ Hồi</MudRadio>
+                <MudRadioGroup @bind-Value="searchRequest.is_return" Class="pb-5">
+                    <MudRadio Value="false" Color="Color.Primary" Size="Size.Small" Dense="false">Một Chiều</MudRadio>
+                    <MudRadio Value="true" Color="Color.Primary" Size="Size.Small" Dense="false">Khứ Hồi</MudRadio>
                 </MudRadioGroup>
                 <MudGrid>
-                    <MudItem xs="3">
-                        <MudStack>
-                            @*    <MudSelect @bind-Value="dropDown.id" Variant="Variant.Outlined" Margin="Margin.None" Dense="false"
-                                       ReadOnly="false" Placeholder="Chọn Điểm Đi"
-                                       HelperTextOnFocus="true" Clearable="true" Label="Điểm Đi">
-                                @foreach (var item in tripFrom)
-                                {
-                                    <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
-                                }
-                            </MudSelect> *@
-                        </MudStack>
-                    </MudItem>
-                    <MudItem xs="3">
-                        <MudStack>
-                            @*   <MudSelect @bind-Value="dropDown.id" Variant="Variant.Outlined" Margin="Margin.None" Dense="false"
-                                       ReadOnly="false" Placeholder="Chọn Điểm Đi"
-                                       HelperText="@(_helperText ? "Helper Text" : null)"
-                                       HelperTextOnFocus="_helperTextOnFocus" Clearable="true" Label="Điểm Đến">
-                                @foreach (var item in tripTo)
-                                {
-                                    <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
-                                }
-                            </MudSelect> *@
-                        </MudStack>
-                    </MudItem>
-                    <MudItem xs="3">
-                        <MudStack>
-                            <MudDatePicker Label="Ngày đi" Variant="Variant.Outlined" @bind-Date="_date" ShowToolbar="false" />
-                        </MudStack>
-                    </MudItem>
-                    <MudItem xs="3">
-                        <MudStack>
-                            <MudDatePicker Label="Ngày về" Variant="Variant.Outlined" @bind-Date="_date" ShowToolbar="false" />
-                        </MudStack>
-                    </MudItem>
+                    @if (searchRequest.is_return)
+                    {
+                        <MudItem xs="3">
+                            <MudStack>
+                                <MudSelect @bind-Value="searchRequest.location_from" Variant="Variant.Outlined" Label="Chọn điểm đi" RequiredError="Vui lòng chọn thông tin">
+                                    @foreach (var location in LocationFroms)
+                                    {
+                                        <MudSelectItem Value="@location">@location</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudStack>
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudStack>
+                                <MudSelect @bind-Value="searchRequest.location_to" Variant="Variant.Outlined" Label="Chọn điểm đến" RequiredError="Vui lòng chọn thông tin">
+                                    @foreach (var location in LocationTos)
+                                    {
+                                        <MudSelectItem Value="@location">@location</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudStack>
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudStack>
+                                <MudDatePicker Label="Ngày đi" Variant="Variant.Outlined" @bind-Date="searchRequest.date_start" RequiredError="Vui lòng chọn thông tin" />
+                            </MudStack>
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudStack>
+                                <MudDatePicker Label="Ngày về" Variant="Variant.Outlined" @bind-Date="searchRequest.date_return" RequiredError="Vui lòng chọn thông tin" />
+                            </MudStack>
+                        </MudItem>
+                    }
+                    else
+                    {
+                        <MudItem xs="4">
+                            <MudStack>
+                                <MudSelect @bind-Value="searchRequest.location_from" Variant="Variant.Outlined" Label="Chọn điểm đi" RequiredError="Vui lòng chọn thông tin">
+                                    @foreach (var location in LocationFroms)
+                                    {
+                                        <MudSelectItem Value="@location">@location</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudStack>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudStack>
+                                <MudSelect @bind-Value="searchRequest.location_to" Variant="Variant.Outlined" Label="Chọn điểm đến" RequiredError="Vui lòng chọn thông tin">
+                                    @foreach (var location in LocationTos)
+                                    {
+                                        <MudSelectItem Value="@location">@location</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudStack>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudStack>
+                                <MudDatePicker Label="Ngày đi" Variant="Variant.Outlined" @bind-Date="searchRequest.date_start" RequiredError="Vui lòng chọn thông tin" />
+                            </MudStack>
+                        </MudItem>
+                    }
                 </MudGrid>
             </MudCardContent>
             <MudCardActions>
-                <MudButton Class="mx-auto mb-4 mt-0" Variant="Variant.Outlined" Size="Size.Large" IconClass="@Icons.Material.Outlined.Search" Color="Color.Primary">Tìm kiếm chuyến xe</MudButton>
+                <MudButton Class="mx-auto mb-4 mt-0" OnClick="SearchTrip" Variant="Variant.Outlined" Size="Size.Large" IconClass="@Icons.Material.Outlined.Search" Color="Color.Primary">Tìm kiếm chuyến xe</MudButton>
             </MudCardActions>
         </MudCard>
     </MudItem>
@@ -60,101 +86,278 @@
     <MudGrid Class="pa-0 mt-10">
         @if (search_tripdetail != null && search_tripdetail.Any())
         {
-            @foreach (var trip in search_tripdetail)
+            @if (dateReturnRaw == null)
             {
-                <MudItem xs="10">
-                    <MudCard Outlined="true">
-                        <MudCardContent>
-                            <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-                                <MudTabPanel Text="Lịch trình">
-                                    <MudPaper Elevation="1" Class="pa-10 mb-10">
-                                        <MudGrid>
-                                            <MudItem xs="4">
-                                                <MudText Typo="Typo.h6" Class="me-2">
-                                                    @trip.time_start.ToString("HH:mm")
-                                                    <MudIcon Icon="@Icons.Material.Filled.FiberManualRecord" Size="Size.Medium" Color="Color.Primary" Class="me-2" />
-                                                </MudText>
-                                            </MudItem>
+                @foreach (var trip in tripForm1)
+                {
+                    <MudItem xs="10" Class="mx-auto">
+                        <MudCard Outlined="true">
+                            <MudCardContent>
+                                <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-0">
+                                    <MudTabPanel Text="Lịch trình">
+                                        <MudPaper Elevation="0" Class="pa-5 mb-5">
+                                            <MudGrid>
+                                                <MudItem xs="4">
+                                                    <MudText Typo="Typo.h6" Class="me-2">
+                                                        @trip.time_start.ToString("HH:mm")
+                                                        <MudIcon Icon="@Icons.Material.Filled.FiberManualRecord" Size="Size.Medium" Color="Color.Primary" Class="me-2" />
+                                                    </MudText>
+                                                </MudItem>
 
-                                            <MudItem xs="2">
-                                                <MudText Typo="Typo.subtitle1" Class="me-2 text-center">
-                                                    @GetTimeDifference(@trip.time_start, @trip.time_end)
-                                                </MudText>
-                                            </MudItem>
-
-
-                                            <MudItem xs="4">
-                                                <MudText Typo="Typo.h6" Class="me-2" Align="Align.End">
-                                                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Medium" Color="Color.Secondary" Class="me-2" />
-                                                    @trip.time_end.ToString("HH:mm")
-                                                </MudText>
-                                            </MudItem>
-
-                                            <MudItem xs="2">
-                                                <MudText Typo="Typo.h6" Color="Color.Error" Class="fw-bold" Align="Align.End">@trip.price</MudText>
-                                            </MudItem>
-                                        </MudGrid>
-                                        <MudGrid>
-                                            <MudItem xs="4">
-                                                <MudText Typo="Typo.h6" Class="fw-bold">@trip.from</MudText>
-                                            </MudItem>
-
-                                            <MudItem xs="2">
-                                                <MudText Typo="Typo.body2" Class="text-muted text-center">(UTC+07:00) Hanoi</MudText>
-                                            </MudItem>
-
-                                            <MudItem xs="4">
-                                                <MudText Typo="Typo.h6" Class="fw-bold" Align="Align.End">@trip.to</MudText>
-                                            </MudItem> 
-                                            <MudItem xs="2">
-                                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Href="@($"/getTrip/{trip.trip_id}")">
-                                                    Đặt vé
-                                                </MudButton>
-                                            </MudItem>
-                                        </MudGrid>
-
-                                    </MudPaper>
-
-                                    <MudTimeline TimelineAlign="TimelineAlign.Start">
-                                        <MudTimelineItem Color="Color.Secondary" Elevation="25">
-                                            <ItemOpposite>
-                                                <MudText Color="Color.Secondary" Typo="Typo.h6"> @trip.time_start.ToString("dd/MM/yyyy HH:mm")</MudText>
-                                            </ItemOpposite>
-                                            <ItemContent>
-                                                <MudPaper Elevation="0" Class="mt-n1">
-                                                    <MudText Color="Color.Primary" Typo="Typo.h6" GutterBottom="true">@trip.location_from</MudText>
-                                                    <MudText Typo="Typo.body2">@trip.from</MudText>
-                                                </MudPaper>
-                                            </ItemContent>
-                                        </MudTimelineItem>
-                                        <MudTimelineItem Color="Color.Secondary" Elevation="25">
-                                            <ItemOpposite>
-                                                <MudText Color="Color.Secondary" Typo="Typo.h6"> @trip.time_end.ToString("dd/MM/yyyy HH:mm")</MudText>
-                                            </ItemOpposite>
-                                            <ItemContent>
-                                                <MudPaper Elevation="0" Class="mt-n1">
-                                                    <MudText Color="Color.Primary" Typo="Typo.h6" GutterBottom="true">@trip.location_to</MudText>
-                                                    <MudText Typo="Typo.body2">@trip.to</MudText>
-                                                </MudPaper>
-                                            </ItemContent>
-                                        </MudTimelineItem>
+                                                <MudItem xs="2">
+                                                    <MudText Typo="Typo.subtitle1" Class="me-2 text-center">
+                                                        @GetTimeDifference(@trip.time_start, @trip.time_end)
+                                                    </MudText>
+                                                </MudItem>
 
 
-                                    </MudTimeline>
-                                </MudTabPanel>
-                                <MudTabPanel Text="Chính sách">
-                                    <MudText>Chính sách</MudText>
-                                </MudTabPanel>
-                            </MudTabs>
-                        </MudCardContent>
-                    </MudCard>
+                                                <MudItem xs="4">
+                                                    <MudText Typo="Typo.h6" Class="me-2" Align="Align.End">
+                                                        <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Medium" Color="Color.Secondary" Class="me-2" />
+                                                        @trip.time_end.ToString("HH:mm")
+                                                    </MudText>
+                                                </MudItem>
+
+                                                <MudItem xs="2">
+                                                    <MudText Typo="Typo.h6" Color="Color.Error" Class="fw-bold" Align="Align.End">@trip.price.ToString("#,##0")</MudText>
+                                                </MudItem>
+                                            </MudGrid>
+                                            <MudGrid>
+                                                <MudItem xs="4">
+                                                    <MudText Typo="Typo.h6" Class="fw-bold">@trip.from</MudText>
+                                                </MudItem>
+
+                                                <MudItem xs="2">
+                                                    <MudText Typo="Typo.body2" Class="text-muted text-center">(UTC+07:00) Hanoi</MudText>
+                                                </MudItem>
+
+                                                <MudItem xs="4">
+                                                    <MudText Typo="Typo.h6" Class="fw-bold" Align="Align.End">@trip.to</MudText>
+                                                </MudItem>
+                                                <MudItem xs="2">
+                                                    <MudButton Variant="Variant.Outlined" Class="float-end" Color="Color.Primary" Size="Size.Small" Href="@($"/getTrip/{trip.trip_id}")">
+                                                        Đặt vé
+                                                    </MudButton>
+                                                </MudItem>
+                                            </MudGrid>
+
+                                        </MudPaper>
+
+                                        <MudTimeline TimelineAlign="TimelineAlign.Start">
+                                            <MudTimelineItem Color="Color.Secondary" Elevation="25">
+                                                <ItemContent>
+                                                    <MudPaper Elevation="0" Class="mt-n1">
+                                                        <MudText Color="Color.Primary" Typo="Typo.h6" GutterBottom="true">@trip.location_from (@trip.from)</MudText>
+                                                        <MudText Typo="Typo.body2">@trip.time_start.ToString("dd/MM/yyyy HH:mm")</MudText>
+                                                        <MudText Typo="Typo.body2">@trip.location_from_address</MudText>
+                                                    </MudPaper>
+                                                </ItemContent>
+                                            </MudTimelineItem>
+                                            <MudTimelineItem Color="Color.Secondary" Elevation="25">
+                                                <ItemContent>
+                                                    <MudPaper Elevation="0" Class="mt-n1">
+                                                        <MudText Color="Color.Primary" Typo="Typo.h6" GutterBottom="true">@trip.location_to (@trip.to)</MudText>
+                                                        <MudText Typo="Typo.body2">@trip.time_end.ToString("dd/MM/yyyy HH:mm")</MudText>
+                                                        <MudText Typo="Typo.body2">@trip.location_to_address</MudText>
+                                                    </MudPaper>
+                                                </ItemContent>
+                                            </MudTimelineItem>
+                                        </MudTimeline>
+                                    </MudTabPanel>
+                                    <MudTabPanel Text="Chính sách">
+                                        <MudText>Chính sách</MudText>
+                                    </MudTabPanel>
+                                </MudTabs>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                }
+            }
+            else
+            {
+                <MudItem xs="12">
+                    <MudTabs Elevation="0" Rounded="true" Centered="true" Color="@Color.Primary">
+                        <MudTabPanel Text="CHUYẾN ĐI">
+                            @foreach (var trip in tripForm1)
+                            {
+                                <MudItem xs="10" Class="mx-auto mt-5">
+                                    <MudCard Outlined="true">
+                                        <MudCardContent>
+                                            <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-0">
+                                                <MudTabPanel Text="Lịch trình">
+                                                    <MudPaper Elevation="0" Class="pa-5 mb-5">
+                                                        <MudGrid>
+                                                            <MudItem xs="4">
+                                                                <MudText Typo="Typo.h6" Class="me-2">
+                                                                    @trip.time_start.ToString("HH:mm")
+                                                                    <MudIcon Icon="@Icons.Material.Filled.FiberManualRecord" Size="Size.Medium" Color="Color.Primary" Class="me-2" />
+                                                                </MudText>
+                                                            </MudItem>
+
+                                                            <MudItem xs="2">
+                                                                <MudText Typo="Typo.subtitle1" Class="me-2 text-center">
+                                                                    @GetTimeDifference(@trip.time_start, @trip.time_end)
+                                                                </MudText>
+                                                            </MudItem>
+
+
+                                                            <MudItem xs="4">
+                                                                <MudText Typo="Typo.h6" Class="me-2" Align="Align.End">
+                                                                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Medium" Color="Color.Secondary" Class="me-2" />
+                                                                    @trip.time_end.ToString("HH:mm")
+                                                                </MudText>
+                                                            </MudItem>
+
+                                                            <MudItem xs="2">
+                                                                <MudText Typo="Typo.h6" Color="Color.Error" Class="fw-bold" Align="Align.End">@trip.price.ToString("#,##0")</MudText>
+                                                            </MudItem>
+                                                        </MudGrid>
+                                                        <MudGrid>
+                                                            <MudItem xs="4">
+                                                                <MudText Typo="Typo.h6" Class="fw-bold">@trip.from</MudText>
+                                                            </MudItem>
+
+                                                            <MudItem xs="2">
+                                                                <MudText Typo="Typo.body2" Class="text-muted text-center">(UTC+07:00) Hanoi</MudText>
+                                                            </MudItem>
+
+                                                            <MudItem xs="4">
+                                                                <MudText Typo="Typo.h6" Class="fw-bold" Align="Align.End">@trip.to</MudText>
+                                                            </MudItem>
+                                                            <MudItem xs="2">
+                                                                <MudButton Variant="Variant.Outlined" Class="float-end" Color="Color.Primary" Size="Size.Small" Href="@($"/getTrip/{trip.trip_id}")">
+                                                                    Đặt vé
+                                                                </MudButton>
+                                                            </MudItem>
+                                                        </MudGrid>
+
+                                                    </MudPaper>
+
+                                                    <MudTimeline TimelineAlign="TimelineAlign.Start">
+                                                        <MudTimelineItem Color="Color.Secondary" Elevation="25">
+                                                            <ItemContent>
+                                                                <MudPaper Elevation="0" Class="mt-n1">
+                                                                    <MudText Color="Color.Primary" Typo="Typo.h6" GutterBottom="true">@trip.location_from (@trip.from)</MudText>
+                                                                    <MudText Typo="Typo.body2">@trip.time_start.ToString("dd/MM/yyyy HH:mm")</MudText>
+                                                                    <MudText Typo="Typo.body2">@trip.location_from_address</MudText>
+                                                                </MudPaper>
+                                                            </ItemContent>
+                                                        </MudTimelineItem>
+                                                        <MudTimelineItem Color="Color.Secondary" Elevation="25">
+                                                            <ItemContent>
+                                                                <MudPaper Elevation="0" Class="mt-n1">
+                                                                    <MudText Color="Color.Primary" Typo="Typo.h6" GutterBottom="true">@trip.location_to (@trip.to)</MudText>
+                                                                    <MudText Typo="Typo.body2">@trip.time_end.ToString("dd/MM/yyyy HH:mm")</MudText>
+                                                                    <MudText Typo="Typo.body2">@trip.location_to_address</MudText>
+                                                                </MudPaper>
+                                                            </ItemContent>
+                                                        </MudTimelineItem>
+                                                    </MudTimeline>
+                                                </MudTabPanel>
+                                                <MudTabPanel Text="Chính sách">
+                                                    <MudText>Chính sách</MudText>
+                                                </MudTabPanel>
+                                            </MudTabs>
+                                        </MudCardContent>
+                                    </MudCard>
+                                </MudItem>
+                            }
+                        </MudTabPanel>
+                        <MudTabPanel Text="CHUYẾN VỀ">
+                            @foreach (var trip in tripForm2)
+                            {
+                                <MudItem xs="10" Class="mx-auto mt-5">
+                                    <MudCard Outlined="true">
+                                        <MudCardContent>
+                                            <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-0">
+                                                <MudTabPanel Text="Lịch trình">
+                                                    <MudPaper Elevation="0" Class="pa-5 mb-5">
+                                                        <MudGrid>
+                                                            <MudItem xs="4">
+                                                                <MudText Typo="Typo.h6" Class="me-2">
+                                                                    @trip.time_start.ToString("HH:mm")
+                                                                    <MudIcon Icon="@Icons.Material.Filled.FiberManualRecord" Size="Size.Medium" Color="Color.Primary" Class="me-2" />
+                                                                </MudText>
+                                                            </MudItem>
+
+                                                            <MudItem xs="2">
+                                                                <MudText Typo="Typo.subtitle1" Class="me-2 text-center">
+                                                                    @GetTimeDifference(@trip.time_start, @trip.time_end)
+                                                                </MudText>
+                                                            </MudItem>
+
+
+                                                            <MudItem xs="4">
+                                                                <MudText Typo="Typo.h6" Class="me-2" Align="Align.End">
+                                                                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Medium" Color="Color.Secondary" Class="me-2" />
+                                                                    @trip.time_end.ToString("HH:mm")
+                                                                </MudText>
+                                                            </MudItem>
+
+                                                            <MudItem xs="2">
+                                                                <MudText Typo="Typo.h6" Color="Color.Error" Class="fw-bold" Align="Align.End">@trip.price.ToString("#,##0")</MudText>
+                                                            </MudItem>
+                                                        </MudGrid>
+                                                        <MudGrid>
+                                                            <MudItem xs="4">
+                                                                <MudText Typo="Typo.h6" Class="fw-bold">@trip.from</MudText>
+                                                            </MudItem>
+
+                                                            <MudItem xs="2">
+                                                                <MudText Typo="Typo.body2" Class="text-muted text-center">(UTC+07:00) Hanoi</MudText>
+                                                            </MudItem>
+
+                                                            <MudItem xs="4">
+                                                                <MudText Typo="Typo.h6" Class="fw-bold" Align="Align.End">@trip.to</MudText>
+                                                            </MudItem>
+                                                            <MudItem xs="2">
+                                                                <MudButton Variant="Variant.Outlined" Class="float-end" Color="Color.Primary" Size="Size.Small" Href="@($"/getTrip/{trip.trip_id}")">
+                                                                    Đặt vé
+                                                                </MudButton>
+                                                            </MudItem>
+                                                        </MudGrid>
+
+                                                    </MudPaper>
+
+                                                    <MudTimeline TimelineAlign="TimelineAlign.Start">
+                                                        <MudTimelineItem Color="Color.Secondary" Elevation="25">
+                                                            <ItemContent>
+                                                                <MudPaper Elevation="0" Class="mt-n1">
+                                                                    <MudText Color="Color.Primary" Typo="Typo.h6" GutterBottom="true">@trip.location_from (@trip.from)</MudText>
+                                                                    <MudText Typo="Typo.body2">@trip.time_start.ToString("dd/MM/yyyy HH:mm")</MudText>
+                                                                    <MudText Typo="Typo.body2">@trip.location_from_address</MudText>
+                                                                </MudPaper>
+                                                            </ItemContent>
+                                                        </MudTimelineItem>
+                                                        <MudTimelineItem Color="Color.Secondary" Elevation="25">
+                                                            <ItemContent>
+                                                                <MudPaper Elevation="0" Class="mt-n1">
+                                                                    <MudText Color="Color.Primary" Typo="Typo.h6" GutterBottom="true">@trip.location_to (@trip.to)</MudText>
+                                                                    <MudText Typo="Typo.body2">@trip.time_end.ToString("dd/MM/yyyy HH:mm")</MudText>
+                                                                    <MudText Typo="Typo.body2">@trip.location_to_address</MudText>
+                                                                </MudPaper>
+                                                            </ItemContent>
+                                                        </MudTimelineItem>
+                                                    </MudTimeline>
+                                                </MudTabPanel>
+                                                <MudTabPanel Text="Chính sách">
+                                                    <MudText>Chính sách</MudText>
+                                                </MudTabPanel>
+                                            </MudTabs>
+                                        </MudCardContent>
+                                    </MudCard>
+                                </MudItem>
+                            }
+                        </MudTabPanel>
+                    </MudTabs>
+
                 </MudItem>
             }
         }
         else
         {
-            <MudText Typo="Typo.h6" Class="me-2">
-                Không có tuyến xe
+            <MudText Typo="Typo.h6" Color="Color.Secondary" Class="mx-auto">
+                Không có tuyến xe theo tuyến đường này
             </MudText>
         }
     </MudGrid>
@@ -179,37 +382,55 @@
 
 
     private List<search_tripdetail> search_tripdetail = new List<search_tripdetail>();
+    private List<search_tripdetail> tripForm1 = new List<search_tripdetail>();
+    private List<search_tripdetail> tripForm2 = new List<search_tripdetail>();
     private string locationFrom;
     private string locationTo;
-    private string dateStart;
+    private string dateStartRaw;
+    private string dateReturnRaw;
+    private string isReturnRaw;
+    private string Mess;
+
+    private search_trip searchRequest = new search_trip();
+
 
     protected override async Task OnInitializedAsync()
     {
-        // Parse URL query parameters
-        var uri = navigationManager.Uri;
-        var uriQuery = new Uri(uri).Query;
-
-        var queryParams = System.Web.HttpUtility.ParseQueryString(uriQuery);
-
-        locationFrom = queryParams["locationFrom"];
-        locationTo = queryParams["locationTo"];
-        dateStart = queryParams["dateStart"];
-
-        if (string.IsNullOrWhiteSpace(locationFrom) || string.IsNullOrWhiteSpace(locationTo) || string.IsNullOrWhiteSpace(dateStart))
+        try
         {
-            Console.WriteLine("Thiếu thông tin cần thiết trong URL.");
+            var uri = navigationManager.Uri;
+            var uriQuery = new Uri(uri).Query;
+
+            var queryParams = System.Web.HttpUtility.ParseQueryString(uriQuery);
+
+            locationFrom = queryParams["locationFrom"];
+            locationTo = queryParams["locationTo"];
+            dateStartRaw = queryParams["dateStart"];
+            dateReturnRaw = queryParams["dateReturn"];
+            isReturnRaw = queryParams["isReturn"];
+
+            DateTime? parsedDateStart = DateTime.TryParse(dateStartRaw, out var parsedStart) ? parsedStart : null;
+            DateTime? parsedDateReturn = DateTime.TryParse(dateReturnRaw, out var parsedReturn) ? parsedReturn : null;
+
+            bool? parsedIsReturn = bool.TryParse(isReturnRaw, out var parsedBool) ? parsedBool : null;
+
+            var searchRequest = new search_trip
+                {
+                    location_from = locationFrom,
+                    location_to = locationTo,
+                    date_start = parsedDateStart ?? DateTime.Now,
+                    date_return = parsedDateReturn,
+                    is_return = parsedIsReturn ?? false
+                };
+
             search_tripdetail = new List<search_tripdetail>();
-            return;
+
+            await LoadTripData(searchRequest);
         }
-
-        var searchRequest = new search_trip
-            {
-                location_from = locationFrom,
-                location_to = locationTo,
-                date_start = DateTime.TryParse(dateStart, out var parsedDate) ? parsedDate : DateTime.Now
-            };
-
-        await LoadTripData(searchRequest);
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error initializing component: {ex.Message}");
+        }
     }
 
     private async Task LoadTripData(search_trip searchRequest)
@@ -229,6 +450,49 @@
                 if (tripDetails != null && tripDetails.Any())
                 {
                     search_tripdetail = tripDetails;
+
+                    DateTime? parsedDateStart = searchRequest.date_start;
+                    DateTime? parsedDateReturn = searchRequest.date_return;
+
+                    if (parsedDateReturn.HasValue && isReturnRaw == "True")
+                    {
+                        tripForm1 = tripDetails
+                            .Where(t => t.time_start >= parsedDateStart && t.time_start < parsedDateReturn)
+                            .ToList();
+                        tripForm2 = tripDetails
+                            .Where(t => t.time_start >= parsedDateReturn)
+                            .ToList();
+
+                        if (!tripForm1.Any())
+                        {
+                            Console.WriteLine("Không tìm thấy chuyến đi nào phù hợp với yêu cầu.");
+                            Mess = "Không có chuyến đi phù hợp với yêu cầu. Vui lòng chọn lại!";
+                        }
+
+                        if (!tripForm2.Any())
+                        {
+                            Console.WriteLine("Không tìm thấy chuyến về nào phù hợp với yêu cầu.");
+                            Mess = "Không có chuyến đi phù hợp với yêu cầu. Vui lòng chọn lại!";
+                        }
+                    }
+                    else
+                    {
+                        tripForm1 = tripDetails
+                            .Where(t => t.time_start >= parsedDateStart)
+                            .ToList();
+                        tripForm2 = new List<search_tripdetail>();
+
+                        if (!tripForm1.Any())
+                        {
+                            Console.WriteLine("Không tìm thấy chuyến đi nào phù hợp với yêu cầu.");
+                            Mess = "Không có chuyến đi phù hợp với yêu cầu. Vui lòng chọn lại!";
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Không tìm thấy dữ liệu chuyến đi.");
+                    Mess = "Không có chuyến đi phù hợp với yêu cầu. Vui lòng chọn lại!";
                 }
             }
             else
@@ -245,9 +509,80 @@
             isLoading = false;
         }
     }
-    private string GetTimeDifference(DateTime timeStart, DateTime timeEnd)
+
+    private string GetTimeDifference(DateTime startTime, DateTime endTime)
     {
-        var timeDifference = timeEnd - timeStart;  
-        return timeDifference.ToString(@"hh\:mm");
+        var diff = endTime - startTime;
+        return $"{diff.Hours} giờ {diff.Minutes} phút";
+    }
+
+    private List<string> LocationFroms = new()
+    {
+    "An Giang", "Bà Rịa - Vũng Tàu", "Bắc Giang", "Bắc Kạn",
+    "Bạc Liêu", "Bắc Ninh", "Bến Tre", "Bình Dương",
+    "Bình Định", "Bình Phước", "Bình Thuận", "Cà Mau",
+    "Cần Thơ", "Cao Bằng", "Đà Nẵng", "Đắk Lắk",
+    "Đắk Nông", "Điện Biên", "Đồng Nai", "Đồng Tháp",
+    "Gia Lai", "Hà Giang", "Hà Nam", "Hà Nội",
+    "Hà Tĩnh", "Hải Dương", "Hải Phòng", "Hậu Giang",
+    "Hòa Bình", "Hưng Yên", "Khánh Hòa", "Kiên Giang",
+    "Kon Tum", "Lai Châu", "Lâm Đồng", "Lạng Sơn",
+    "Lào Cai", "Long An", "Nam Định", "Nghệ An",
+    "Ninh Bình", "Ninh Thuận", "Phú Thọ", "Phú Yên",
+    "Quảng Bình", "Quảng Nam", "Quảng Ngãi", "Quảng Ninh",
+    "Quảng Trị", "Sóc Trăng", "Sơn La", "Tây Ninh",
+    "Thái Bình", "Thái Nguyên", "Thanh Hóa", "Thừa Thiên Huế",
+    "Tiền Giang", "TP. Hồ Chí Minh", "Trà Vinh", "Tuyên Quang",
+    "Vĩnh Long", "Vĩnh Phúc", "Yên Bái"
+};
+
+
+    private List<string> LocationTos = new()
+    {
+    "An Giang", "Bà Rịa - Vũng Tàu", "Bắc Giang", "Bắc Kạn",
+    "Bạc Liêu", "Bắc Ninh", "Bến Tre", "Bình Dương",
+    "Bình Định", "Bình Phước", "Bình Thuận", "Cà Mau",
+    "Cần Thơ", "Cao Bằng", "Đà Nẵng", "Đắk Lắk",
+    "Đắk Nông", "Điện Biên", "Đồng Nai", "Đồng Tháp",
+    "Gia Lai", "Hà Giang", "Hà Nam", "Hà Nội",
+    "Hà Tĩnh", "Hải Dương", "Hải Phòng", "Hậu Giang",
+    "Hòa Bình", "Hưng Yên", "Khánh Hòa", "Kiên Giang",
+    "Kon Tum", "Lai Châu", "Lâm Đồng", "Lạng Sơn",
+    "Lào Cai", "Long An", "Nam Định", "Nghệ An",
+    "Ninh Bình", "Ninh Thuận", "Phú Thọ", "Phú Yên",
+    "Quảng Bình", "Quảng Nam", "Quảng Ngãi", "Quảng Ninh",
+    "Quảng Trị", "Sóc Trăng", "Sơn La", "Tây Ninh",
+    "Thái Bình", "Thái Nguyên", "Thanh Hóa", "Thừa Thiên Huế",
+    "Tiền Giang", "TP. Hồ Chí Minh", "Trà Vinh", "Tuyên Quang",
+    "Vĩnh Long", "Vĩnh Phúc", "Yên Bái"
+};
+
+    private async Task SearchTrip()
+    {
+        var locationFrom = searchRequest.location_from;
+        var locationTo = searchRequest.location_to;
+        var dateStart = searchRequest.date_start;
+        var dateReturn = searchRequest.date_return;
+        var isReturn = searchRequest.is_return;
+
+        var formattedDateStart = dateStart?.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+        var formattedDateReturn = dateReturn?.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+
+        Console.WriteLine(locationFrom + locationTo + formattedDateStart + formattedDateReturn + isReturn);
+
+
+        if (formattedDateReturn == null && !isReturn)
+        {
+            var url = $"/getTrip?locationFrom={Uri.EscapeDataString(locationFrom)}&locationTo={Uri.EscapeDataString(locationTo)}&dateStart={Uri.EscapeDataString(formattedDateStart)}&isReturn={Uri.EscapeDataString(isReturn.ToString())}";
+            Console.WriteLine($"Navigating to: {url}");
+            navigationManager.NavigateTo(url, forceLoad: true);
+        }
+        else
+        {
+            var url = $"/getTrip?locationFrom={Uri.EscapeDataString(locationFrom)}&locationTo={Uri.EscapeDataString(locationTo)}&dateStart={Uri.EscapeDataString(formattedDateStart)}&dateReturn={Uri.EscapeDataString(formattedDateReturn)}&isReturn={Uri.EscapeDataString(isReturn.ToString())}";
+            Console.WriteLine($"Navigating to: {url}");
+            navigationManager.NavigateTo(url, forceLoad: true);
+        }
+        StateHasChanged();
     }
 }

@@ -39,41 +39,74 @@
             <MudText Class="text-center text-uppercase fw-bold pt-3" Typo="Typo.h5" Color="Color.Primary">Tra cứu chuyến xe</MudText>
 
             <MudCardContent Class="pt-0">
-                <MudRadioGroup @bind-Value="Dense_Radio" Class="pb-5">
-                    <MudRadio Value="true" Color="Color.Primary" Size="Size.Small" Dense="false">Một Chiều</MudRadio>
-                    <MudRadio Value="false" Color="Color.Primary" Size="Size.Small" Dense="false">Khứ Hồi</MudRadio>
+                <MudRadioGroup @bind-Value="searchRequest.is_return" Class="pb-5">
+                    <MudRadio Value="false" Color="Color.Primary" Size="Size.Small" Dense="false">Một Chiều</MudRadio>
+                    <MudRadio Value="true" Color="Color.Primary" Size="Size.Small" Dense="false">Khứ Hồi</MudRadio>
                 </MudRadioGroup>
                 <MudGrid>
-                    <MudItem xs="3">
-                        <MudStack>
-                            <MudSelect @bind-Value="searchRequest.location_from" Variant="Variant.Outlined" Label="Chọn điểm đi">
-                                @foreach (var location in LocationFroms)
-                                {
-                                    <MudSelectItem Value="@location">@location</MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudStack>
-                    </MudItem>
-                    <MudItem xs="3">
-                        <MudStack>
-                            <MudSelect @bind-Value="searchRequest.location_to" Variant="Variant.Outlined" Label="Chọn điểm đến">
-                                @foreach (var location in LocationTos)
-                                {
-                                    <MudSelectItem Value="@location">@location</MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudStack>
-                    </MudItem>
-                    <MudItem xs="3">
-                        <MudStack>
-                            <MudDatePicker Label="Ngày đi" Variant="Variant.Outlined" @bind-Date="searchRequest.date_start" />
-                        </MudStack>
-                    </MudItem>
-                    @*    <MudItem xs="3">
-                        <MudStack>
-                            <MudDatePicker Label="Ngày về" Variant="Variant.Outlined" @bind-Date="SearchRequest.date_end" />
-                        </MudStack>
-                    </MudItem> *@
+
+                    @if (searchRequest.is_return)
+                    {
+                        <MudItem xs="3">
+                            <MudStack>
+                                <MudSelect @bind-Value="searchRequest.location_from" Variant="Variant.Outlined" Label="Chọn điểm đi" RequiredError="Vui lòng chọn thông tin">
+                                    @foreach (var location in LocationFroms)
+                                    {
+                                        <MudSelectItem Value="@location">@location</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudStack>
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudStack>
+                                <MudSelect @bind-Value="searchRequest.location_to" Variant="Variant.Outlined" Label="Chọn điểm đến" RequiredError="Vui lòng chọn thông tin">
+                                    @foreach (var location in LocationTos)
+                                    {
+                                        <MudSelectItem Value="@location">@location</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudStack>
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudStack>
+                                <MudDatePicker Label="Ngày đi" Variant="Variant.Outlined" @bind-Date="searchRequest.date_start" RequiredError="Vui lòng chọn thông tin" />
+                            </MudStack>
+                        </MudItem>
+                                              <MudItem xs="3">
+                            <MudStack>
+                                <MudDatePicker Label="Ngày về" Variant="Variant.Outlined" @bind-Date="searchRequest.date_return" RequiredError="Vui lòng chọn thông tin" />
+                            </MudStack>
+                        </MudItem>
+                    }
+                    else
+                    {
+                        <MudItem xs="4">
+                            <MudStack>
+                                <MudSelect @bind-Value="searchRequest.location_from" Variant="Variant.Outlined" Label="Chọn điểm đi" RequiredError="Vui lòng chọn thông tin">
+                                    @foreach (var location in LocationFroms)
+                                    {
+                                        <MudSelectItem Value="@location">@location</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudStack>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudStack>
+                                <MudSelect @bind-Value="searchRequest.location_to" Variant="Variant.Outlined" Label="Chọn điểm đến" RequiredError="Vui lòng chọn thông tin">
+                                    @foreach (var location in LocationTos)
+                                    {
+                                        <MudSelectItem Value="@location">@location</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudStack>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudStack>
+                                <MudDatePicker Label="Ngày đi" Variant="Variant.Outlined" @bind-Date="searchRequest.date_start" RequiredError="Vui lòng chọn thông tin" />
+                            </MudStack>
+                        </MudItem>
+                    }
+
                 </MudGrid>
             </MudCardContent>
             <MudCardActions>
@@ -610,9 +643,24 @@
             var locationFrom = searchRequest.location_from;
             var locationTo = searchRequest.location_to;
             var dateStart = searchRequest.date_start;
+            var dateReturn = searchRequest.date_return;
+            var isReturn = searchRequest.is_return;
 
-            var url = $"/getTrip?locationFrom={locationFrom}&locationTo={locationTo}&dateStart={dateStart}";
-            navigationManager.NavigateTo(url);
+            var formattedDateStart = dateStart?.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+            var formattedDateReturn = dateReturn?.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+
+            if (formattedDateReturn == null && !isReturn)
+            {
+                var url = $"/getTrip?locationFrom={Uri.EscapeDataString(locationFrom)}&locationTo={Uri.EscapeDataString(locationTo)}&dateStart={Uri.EscapeDataString(formattedDateStart)}&isReturn={Uri.EscapeDataString(isReturn.ToString())}";
+                Console.WriteLine($"Navigating to: {url}");
+                navigationManager.NavigateTo(url);
+            }
+            else
+            {
+                var url = $"/getTrip?locationFrom={Uri.EscapeDataString(locationFrom)}&locationTo={Uri.EscapeDataString(locationTo)}&dateStart={Uri.EscapeDataString(formattedDateStart)}&dateReturn={Uri.EscapeDataString(formattedDateReturn)}&isReturn={Uri.EscapeDataString(isReturn.ToString())}";
+                Console.WriteLine($"Navigating to: {url}");
+                navigationManager.NavigateTo(url);
+            }
         }
         catch (Exception ex)
         {

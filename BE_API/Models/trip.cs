@@ -94,6 +94,8 @@ namespace BE_API.Models
         public string location_from { get; set; }
         public string location_to { get; set; }
         public DateTime? date_start { get; set; }
+        public DateTime? date_return { get; set; }
+        public bool is_return { get; set; }
     }
     public class search_trip_data
     {
