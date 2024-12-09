@@ -101,6 +101,36 @@ namespace BE_API.Controllers
                 return StatusCode(500, "An error occurred while processing your request.");
             }
         }
+
+        [HttpGet("CarNumber/{carNumber}")]
+        public async Task<ActionResult<ModelCustom.TripCarLocation>> ViewTripDetailByCarNumber(string carNumber)
+        {
+            var procedureName = "[dbo].[sp_get_by_carNumber_cars]";
+            var parameters = new DynamicParameters();
+            parameters.Add("@carNumber", carNumber, DbType.String, ParameterDirection.Input);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var multi = await connection.QueryMultipleAsync(procedureName, parameters, commandType: CommandType.StoredProcedure))
+                {
+                    var car = multi.ReadFirstOrDefault<ModelCustom.TripCarLocation>();
+                    if (car == null)
+                    {
+                        return NotFound();
+                    }
+
+                    car.Trip_Detail_Customs = multi.Read<ModelCustom.trip_detail_custom>().ToList();
+                    car.guest_Car_Driver_Customs = multi.Read<ModelCustom.guest_car_driver_custom>().ToList();
+                    car.guest_Cars_Customs = multi.Read<ModelCustom.guest_cars_custom>().ToList();
+
+                    return Ok(car);
+                }
+            }
+        }
+
+
         [HttpPost("PostCars")]
         public async Task<ActionResult<car_create>> PostCars(car_create cars)
         {

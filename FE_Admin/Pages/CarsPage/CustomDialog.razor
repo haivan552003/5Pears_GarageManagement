@@ -1,0 +1,52 @@
+﻿@using MudBlazor
+@inject IJSRuntime js
+
+<MudDialog>
+    <DialogContent>
+        <video id="cameraVideo" class="img-fluid" autoplay></video>
+        <canvas id="captureCanvas" style="display: none;"></canvas>
+        <div class="d-flex justify-center mt-4">
+            <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined">
+                <MudIconButton Icon="@Icons.Material.Filled.Cameraswitch" OnClick="() => SwitchCamera()">Chuyển Camera</MudIconButton>
+                @* <MudIconButton Icon="@Icons.Material.Filled.Camera" OnClick="() => CaptureImage()">Chụp ảnh</MudIconButton> *@
+                <MudButton OnClick="CaptureImage" Color="Color.Success">Chụp Hình</MudButton>
+                <MudIconButton Icon="@Icons.Material.Filled.Download" id="downloadButton" style="display: none;" OnClick="DownloadImage"></MudIconButton>
+
+                <MudIconButton Icon="@Icons.Material.Filled.MotionPhotosOff" OnClick="() => TurnOff()">Tắt Camera</MudIconButton>
+                @* <MudButton id="downloadLink" style="display: none;">Download Image</MudButton>*@
+            </MudButtonGroup>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Đóng</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+
+    private async Task SwitchCamera()
+    {
+        await js.InvokeVoidAsync("switchCamera");
+    }
+    private async Task TurnOff()
+    {
+        await js.InvokeVoidAsync("stopCameraAndHide");
+    }
+
+    private async Task CaptureImage()
+    {
+        var imageData = await js.InvokeAsync<string>("captureImage");
+        Console.WriteLine("Image Data: " + imageData);
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+    private async Task DownloadImage()
+    {
+        await js.InvokeVoidAsync("downloadImage");
+    }
+}
