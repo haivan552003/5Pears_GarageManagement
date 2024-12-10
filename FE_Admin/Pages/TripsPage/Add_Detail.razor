@@ -131,24 +131,28 @@
                 SelectedTrip.time_end = SelectedTrip.DateEnd.Value.Date + SelectedTrip.TimeEnd.Value;
             }
 
-            try
+            if (await ValidateSchedule())
             {
-                var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Trips/tripdetail", SelectedTrip);
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    Snackbar.Add("Thêm chi tiết chuyến đi thành công!", Severity.Success);
-                    MudDialog.Close(DialogResult.Ok(SelectedTrip));
-                    StateHasChanged();
+                    var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Trips/tripdetail", SelectedTrip);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Snackbar.Add("Thêm chi tiết chuyến đi thành công!", Severity.Success);
+                        MudDialog.Close(DialogResult.Ok(SelectedTrip));
+                        StateHasChanged();
+                    }
+                    else
+                    {
+                        Snackbar.Add($"Lỗi: {response.ReasonPhrase}", Severity.Error);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Snackbar.Add($"Lỗi: {response.ReasonPhrase}", Severity.Error);
+                    Snackbar.Add($"Đã xảy ra lỗi: {ex.Message}", Severity.Error);
                 }
             }
-            catch (Exception ex)
-            {
-                Snackbar.Add($"Đã xảy ra lỗi: {ex.Message}", Severity.Error);
-            }
+
         }
     }
 
@@ -156,5 +160,45 @@
     void Cancel()
     {
         MudDialog.Close(DialogResult.Cancel());
+    }
+
+    private async Task<bool> ValidateSchedule()
+    {
+        // Kiểm tra lịch tài
+        var driverResponse = await httpClient.GetFromJsonAsync<ApiResponse>($"http://localhost:49922/api/Validate/ValidateCheckScheduleDriver?id={SelectedTrip.driver_id}&date_start={SelectedTrip.time_start}");
+
+        if (driverResponse.Success)
+        {
+            // Snackbar.Add("Lịch xe hợp lệ!", Severity.Success);
+            return true; 
+        }
+        else
+        {
+            string errorMessage = driverResponse.Message ?? "Không thể kiểm tra lịch xe này.";
+            Snackbar.Add(errorMessage, Severity.Warning);
+            return false; 
+        }
+
+        // Kiểm tra lịch xe
+        var carResponse = await httpClient.GetFromJsonAsync<ApiResponse>($"http://localhost:49922/api/Validate/ValidateCheckScheduleCar?id={SelectedTrip.car_id}&date_start={SelectedTrip.time_start}");
+
+        if (carResponse.Success)
+        {
+            // Snackbar.Add("Lịch xe hợp lệ!", Severity.Success);
+            return true;
+        }
+        else
+        {
+            string errorMessage = carResponse.Message ?? "Không thể kiểm tra lịch xe này.";
+            Snackbar.Add(errorMessage, Severity.Warning);
+            return false;
+        }
+    }
+
+
+    public class ApiResponse
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
     }
 }
