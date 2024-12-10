@@ -102,10 +102,7 @@
         {
             yield return "Điểm khởi hành không hợp lệ.";
         }
-        else if (fullName.Any(ch => !char.IsLetter(ch) && !char.IsWhiteSpace(ch)))
-        {
-            yield return "Điểm khởi hành không được chứa ký tự đặc biệt.";
-        }
+       
     }
     private IEnumerable<string> EmployeeValidateFullDiemden(string DiemDen)
     {
@@ -117,9 +114,6 @@
         {
             yield return "Điểm đến không hợp lệ.";
         }
-        else if (DiemDen.Any(ch => !char.IsLetter(ch) && !char.IsWhiteSpace(ch)))
-        {
-            yield return "Điểm đến không được chứa ký tự đặc biệt.";
-        }
+       
     }
 }
