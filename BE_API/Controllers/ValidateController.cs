@@ -343,5 +343,95 @@ namespace BE_API.Controllers
                 return Ok(customer);
             }
         }
+
+        [HttpGet("ValidateCheckScheduleCar")]
+        public async Task<IActionResult> ValidateCheckScheduleCar(int id, DateTime date_start )
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@id", id, DbType.Int32);
+                    parameters.Add("@date_start", date_start, DbType.DateTime);
+
+                    var result = await connection.QueryFirstOrDefaultAsync<string>(
+                        "sp_validate_check_schedule_car",
+                        parameters,
+                        commandType: CommandType.StoredProcedure
+                    );
+
+                    if (result == null)
+                    {
+                        return Ok(new
+                        {
+                            Success = true,
+                            Message = "Chuyến xe có thể được xóa."
+                        });
+                    }
+
+                    return Ok(new
+                    {
+                        Success = false,
+                        Message = result
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Success = false,
+                    Message = "Có lỗi xảy ra.",
+                    Details = ex.Message
+                });
+            }
+        }  
+        
+        [HttpGet("ValidateCheckScheduleDriver")]
+        public async Task<IActionResult> ValidateCheckScheduleDriver(int id, DateTime date_start )
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@id", id, DbType.Int32);
+                    parameters.Add("@date_start", date_start, DbType.DateTime);
+
+                    var result = await connection.QueryFirstOrDefaultAsync<string>(
+                        "sp_validate_check_schedule_driver",
+                        parameters,
+                        commandType: CommandType.StoredProcedure
+                    );
+
+                    if (result == null)
+                    {
+                        return Ok(new
+                        {
+                            Success = true,
+                            Message = "Chuyến xe có thể được xóa."
+                        });
+                    }
+
+                    return Ok(new
+                    {
+                        Success = false,
+                        Message = result
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Success = false,
+                    Message = "Có lỗi xảy ra.",
+                    Details = ex.Message
+                });
+            }
+        }
     }
 }
