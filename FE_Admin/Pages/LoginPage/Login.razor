@@ -4,60 +4,56 @@
 @inject NavigationManager NavigationManager
 @layout EmptyLayout
 
-<MudContainer Class="mt-16 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid Class="pa-0">
-        <MudItem xs="3" Class="mx-auto">
+<MudContainer Class="d-flex justify-content-center mt-10" Style="min-height: 100vh; padding: 0;">
+    <MudGrid Class="pa-0" Style="width: 100%; max-width: 100%;">
+        <MudItem xs="12" sm="8" md="6" lg="4" Class="mx-auto d-flex justify-content-center">
             <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
                 <DataAnnotationsValidator />
-                <MudGrid>
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center">BOXCARS</MudText>
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudCard Class="pl-1 pe-1" Style="border-radius: 8px;">
-                            <MudText Typo="Typo.h5" Class="fw-bold text-center pt-5">Đăng nhập</MudText>
-                            <MudCardContent>
-                                <MudRadioGroup Class="d-flex flex-column align-items-center" @bind-SelectedOption="LoginRole">
-                                    <MudRadio Option="@("admin")" Color="Color.Primary">Quản trị</MudRadio>
-                                    <MudRadio Option="@("driver")" Color="Color.Secondary">Tài xế</MudRadio>
-                                </MudRadioGroup>
+                <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center mb-5">BOXCARS</MudText>
+                <MudCard Class="pl-1 pr-1" Style="border-radius: 8px; width: 100%; width: 400px;">
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5" Class="fw-bold text-center pt-2">Đăng nhập</MudText>
+                        <MudRadioGroup Class="d-flex flex-column align-items-center mt-3" @bind-SelectedOption="LoginRole">
+                            <MudRadio Option="@("admin")" Color="Color.Primary">Quản trị</MudRadio>
+                            <MudRadio Option="@("driver")" Color="Color.Secondary">Tài xế</MudRadio>
+                        </MudRadioGroup>
 
-                                <MudTextField Label="Email" Class="mt-3"
-                                              Variant="Variant.Outlined"
-                                              Placeholder="Email"
-                                              @bind-Value="model.email" For="@(() => model.email)" />
-                                <MudTextField Label="Mật khẩu" Class="mt-3"
-                                              Variant="Variant.Outlined"
-                                              Placeholder="Mật khẩu"
-                                              @bind-Value="model.password"
-                                              For="@(() => model.password)"
-                                              InputType="@PasswordInput"
-                                              Adornment="Adornment.End"
-                                              AdornmentIcon="@PasswordInputIcon"
-                                              OnAdornmentClick="TogglePasswordVisibility"
-                                              AdornmentAriaLabel="Show Password" />
-                            </MudCardContent>
-                            <MudCardActions Class="d-flex justify-content-center me-2 ml-2">
-                                <MudButton
-                                    ButtonType="ButtonType.Submit"
-                                    Variant="Variant.Filled"
-                                    Color="Color.Primary"
-                                    Style="width: 100%; height: 48px; max-width: 400px;"
-                                    Class="mb-5">
-                                    Đăng nhập
-                                </MudButton>
-                            </MudCardActions>
-                            @if (LoginFailed)
-                            {
-                                <MudAlert Severity="Severity.Error" Class="mt-2">Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.</MudAlert>
-                            }
-                        </MudCard>
-                    </MudItem>
-                </MudGrid>
+                        <MudTextField Label="Email" Class="mt-3"
+                                      Variant="Variant.Outlined"
+                                      Placeholder="Email"
+                                      @bind-Value="model.email" For="@(() => model.email)" />
+                        <MudTextField Label="Mật khẩu" Class="mt-3"
+                                      Variant="Variant.Outlined"
+                                      Placeholder="Mật khẩu"
+                                      @bind-Value="model.password"
+                                      For="@(() => model.password)"
+                                      InputType="@PasswordInput"
+                                      Adornment="Adornment.End"
+                                      AdornmentIcon="@PasswordInputIcon"
+                                      OnAdornmentClick="TogglePasswordVisibility"
+                                      AdornmentAriaLabel="Show Password" />
+                    </MudCardContent>
+                    <MudCardActions Class="d-flex justify-content-center mx-3 mt-3">
+                        <MudButton ButtonType="ButtonType.Submit"
+                                   Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Style="width: 100%; height: 48px;"
+                                   Class="mb-3">
+                            Đăng nhập
+                        </MudButton>
+                    </MudCardActions>
+                    @if (LoginFailed)
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mt-2">Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.</MudAlert>
+                    }
+                </MudCard>
             </EditForm>
         </MudItem>
     </MudGrid>
 </MudContainer>
+
+
+
 
 @code {
     private login model = new login();
