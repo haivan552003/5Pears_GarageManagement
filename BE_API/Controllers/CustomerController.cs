@@ -169,6 +169,8 @@ namespace BE_API.Controllers
             parameters.Add("@driver_license_img1", updatedCustomer.driver_license_img1, DbType.String);
             parameters.Add("@driver_license_number", updatedCustomer.driver_license_number, DbType.String);
             parameters.Add("@status", updatedCustomer.status, DbType.String);
+            parameters.Add("@img_cus", updatedCustomer.img_cus, DbType.String);
+
 
             using (var connection = new SqlConnection(_connectionString))
             {

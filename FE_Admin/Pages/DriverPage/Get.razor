@@ -12,7 +12,7 @@
                 <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
             </MudPaper>
             <MudPaper Elevation="0">
-                <MudDataGrid Class="mx-auto pa-2" T="driver" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true"
+                <MudDataGrid @ref="_dataGrid" Class="mx-auto pa-2" T="driver" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true"
                              Items="Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
                              Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
                     <ToolBarContent>
@@ -25,7 +25,9 @@
                             <MudButton Href="/addDriver" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
                                 Thêm mới
                             </MudButton>
-
+                            <MudButton OnClick="@PrintTable" Variant="Variant.Outlined" StartIcon="fas fa-print" Color="Color.Secondary" Size="Size.Small">
+                                In bảng
+                            </MudButton>
                             <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
                                 Nhập file
                             </MudButton>
@@ -85,6 +87,15 @@
 @code {
     private IEnumerable<driver> Elements = new List<driver>();
     private string _searchString;
+    private
+
+    MudDataGrid
+    <
+    driver
+    >
+     _dataGrid
+    ;
+
     private List<string> _events = new();
     private string url = "http://localhost:49922/api/Driver";
 
@@ -105,6 +116,33 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadDrivers();
+    }
+
+    private async Task PrintTable()
+    {
+        var parameters = new DialogParameters
+            {
+                ["Entries"] = Elements.Cast<object>().ToList(),
+                ["DocumentTitle"] = "DANH SÁCH TÀI XẾ",
+                ["EntryFields"] = new Dictionary<string, Func<object, string>>
+                {
+                    ["Mã tài xế"] = d => ((driver)d).driver_code,
+                    ["Tên tài xế"] = d => ((driver)d).fullname,
+                    ["Số điện thoại"] = d => ((driver)d).phonenumber,
+                    ["Ngày sinh"] = d => ((driver)d).birthday.ToString("dd/MM/yyyy"),
+                    ["Giới tính"] = d => ((driver)d).gender == 0 ? "Nam" : "Nữ",
+                    ["Trạng thái"] = d => ((driver)d).status == 0 ? "Đang hoạt động" : "Ngưng hoạt động"
+                }
+            };
+
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.Large,
+                FullWidth = true
+            };
+
+        var dialog = await DialogService.ShowAsync<Print>("In danh sách tài xế", parameters, options);
     }
 
     private async Task LoadDrivers()
@@ -178,4 +216,8 @@
     {
         // Handle selected items changed event if needed
     }
+
+
+
+
 }

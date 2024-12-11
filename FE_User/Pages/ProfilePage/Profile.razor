@@ -17,8 +17,65 @@
 
                 <MudGrid>
                     <MudItem xs="4" Class="pa-5">
-                        <MudImage Src="https://sme.hust.edu.vn/wp-content/uploads/2022/02/Avatar-Facebook-trang.jpg" Height="320" Alt="Swedish Farm House" Elevation="0" Class="w-100" />
+                        <InputFile id="profileImageInput" OnChange="@LoadEmpImage" hidden accept=".jpg,.jpeg,.png" />
+                        <MudCard Elevation="0" Class="mb-4">
+                            @if (!string.IsNullOrEmpty(newRoleTask.img_cus))
+                            {
+                                <MudCardMedia Image="@newRoleTask.img_cus"
+                                              Height="200"
+                                              Class="rounded-lg" />
+                            }
+                            else
+                            {
+                                <MudCardMedia Class="d-flex justify-center align-center rounded-lg"
+                                              Style="height: 200px; background-color: #f5f5f5;">
+                                    <MudIcon Icon="@Icons.Material.Filled.PersonOutline"
+                                             Size="Size.Large"
+                                             Color="Color.Default" />
+                                </MudCardMedia>
+                            }
+                            <MudCardActions Class="pa-0 mt-2">
+                                <MudButton HtmlTag="label"
+                                           For="profileImageInput"
+                                           Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.CloudUpload"
+                                           FullWidth="true">
+                                    Tải lên ảnh đại diện
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>
+
+                        <InputFile id="idCardImageInput" OnChange="@LoadEmpImage1" hidden accept=".jpg,.jpeg,.png" />
+                        <MudCard Elevation="0">
+                            @if (!string.IsNullOrEmpty(newRoleTask.citizen_identity_img1))
+                            {
+                                <MudCardMedia Image="@newRoleTask.citizen_identity_img1"
+                                              Height="200"
+                                              Class="rounded-lg" />
+                            }
+                            else
+                            {
+                                <MudCardMedia Class="d-flex justify-center align-center rounded-lg"
+                                              Style="height: 200px; background-color: #f5f5f5;">
+                                    <MudIcon Icon="@Icons.Material.Filled.Badge"
+                                             Size="Size.Large"
+                                             Color="Color.Default" />
+                                </MudCardMedia>
+                            }
+                            <MudCardActions Class="pa-0 mt-2">
+                                <MudButton HtmlTag="label"
+                                           For="idCardImageInput"
+                                           Variant="Variant.Filled"
+                                           Color="Color.Secondary"
+                                           StartIcon="@Icons.Material.Filled.CloudUpload"
+                                           FullWidth="true">
+                                    Tải lên ảnh CCCD
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>                   
                     </MudItem>
+
                     <MudItem xs="8" Class="pa-5">
                         <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Họ và tên</MudText>
                         <MudTextField Class="mb-3" ShrinkLabel @bind-Value="newRoleTask.fullname" Variant="Variant.Outlined" Required="true" />
@@ -31,119 +88,97 @@
                             <MudSelectItem Value="(byte)0">Nam</MudSelectItem>
                             <MudSelectItem Value="(byte)1">Nữ</MudSelectItem>
                         </MudSelect>
-                        <MudButton Variant="Variant.Outlined" Size="Size.Small" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateData" Class="mt-3 float-end">Lưu</MudButton>
+                        @if (newRoleTask.email == null)
+                        {
+                            <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Email</MudText>
+                            <MudTextField Class="mb-3" ShrinkLabel @bind-Value="newRoleTask.email" Variant="Variant.Outlined" Required="true" />
+                        }
+                        else
+                        {
+                            <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Email</MudText>
+                            <MudTextField Class="mb-3" ShrinkLabel @bind-Value="newRoleTask.email" Variant="Variant.Outlined" ReadOnly Required="true" />
+                        }
+                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Số điện thoại</MudText>
+                        <MudTextField Class="mb-3" ShrinkLabel @bind-Value="newRoleTask.phone_number" Variant="Variant.Outlined" ReadOnly Required="true" />
+
                     </MudItem>
-                  
-                    <MudItem xs="12" Class="ma-5">
-                        <MudGrid>
-                            <MudPaper Elevation="0" Style="background-color:#ECECF8" Class="rounded-2 w-100">
-                                <MudGrid>
-                                    <MudItem xs="4" Class="pa-10">
-                                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Class="pb-3" Typo="Typo.subtitle1">Số điện thoại</MudText>
-                                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Class="pb-3" Typo="Typo.subtitle1">Email</MudText>
-                                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Class="pb-3" Typo="Typo.subtitle1">Số hóa đơn</MudText>
-                                    </MudItem>
-                                    <MudItem xs="8" Class="text-end pa-10">
-                                        <MudText Class="pb-3 fw-bold" Typo="Typo.subtitle1">@newRoleTask.phone_number</MudText>
-                                        <MudText Class="pb-3 fw-bold" Typo="Typo.subtitle1">@newRoleTask.email</MudText>
-                                        <MudText  Class="fw-bold" Typo="Typo.subtitle1" Style="@($"color:{Colors.Grey.Darken3};")">Số hóa đơn: 8 hóa đơn</MudText>
-                                    </MudItem>
-                                </MudGrid>
-                            </MudPaper>
-                        </MudGrid>
-                    </MudItem>
+
                 </MudGrid>
             </MudPaper>
+            <div class="flex justify-end float-end items-center space-x-4 mt-4">
+                <MudButton Size="Size.Small"
+                           Variant="Variant.Filled"
+                           StartIcon="@Icons.Material.Outlined.Save"
+                           Color="Color.Primary"
+                           OnClick="UpdateData">
+                    Lưu
+                </MudButton>
 
-            <MudPaper Elevation="2" Class="mt-10">
-                <MudText Class="pa-3 fw-bold text-uppercase" Typo="Typo.subtitle1">Bằng lái xe</MudText>
-
-                <MudGrid>
-                    <MudItem xs="6" Class="pl-5">
-                        <MudText Class="pb-8 fw-bold" Typo="Typo.subtitle1">Hình ảnh mặt trước</MudText>
-                        <MudImage Fluid="true" Src="@newRoleTask.driver_license_img1" Alt="@newRoleTask.driver_license_img1" Elevation="0" Class="mb-5" />
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudText Class="pb-5 fw-bold" Typo="Typo.subtitle1">Thông tin chung</MudText>
-
-                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Số bằng lái</MudText>
-                        <MudTextField @bind-Value="@newRoleTask.driver_license_number" Class="mb-3 me-3" Variant="Variant.Outlined" ReadOnly="true" />
-
-                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Họ và tên</MudText>
-                        <MudTextField @bind-Value="@newRoleTask.fullname" Class="mb-3 me-3" Variant="Variant.Outlined" ReadOnly="true" />
-
-                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Ngày sinh</MudText>
-                        <MudTextField @bind-Value="@newRoleTask.birthday" Class="mb-3 me-3" Variant="Variant.Outlined" ReadOnly="true" />
-                    </MudItem>
-                </MudGrid>
-            </MudPaper>
+                <MudButton Size="Size.Small"
+                           OnClick="OpenDeleteAccountDialog"
+                           Variant="Variant.Filled"
+                           Color="Color.Error"
+                           StartIcon="@Icons.Material.Outlined.DeleteForever">
+                    Xóa tài khoản
+                </MudButton>
+            </div>
 
         </MudItem>
     </MudGrid>
 </MudContainer>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-analytics.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-storage.js";
 
-@* <MudContainer Class="mt-14 pa-0 fs-18" MaxWidth="MaxWidth.False">
-    <MudGrid Class="pa-0">
-        <MudItem xs="3">
-        </MudItem>
-        <MudItem xs="9">
-            <MudPaper Elevation="0">
-                <MudGrid>
-                    <MudItem xs="12">
-                        <MudPaper Elevation="4" Class="p-4">
-                            <MudText Typo="Typo.h6" Class="mb-5">Cập nhật địa chỉ khách hàng</MudText>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDHguIZkgDiKR6_EtOeQOQij79t8tXZS0w",
+        authDomain: "pear-b8fc3.firebaseapp.com",
+        projectId: "pear-b8fc3",
+        storageBucket: "pear-b8fc3.appspot.com",
+        messagingSenderId: "663990872588",
+        appId: "1:663990872588:web:e4b3b81a82e0bfb4c31c29",
+        measurementId: "G-XFDQG449JZ"
+    };
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const storage = getStorage(app);
 
-                            @foreach (var address in customerAddresses)
-                            {
-                                <MudForm @ref="formAddress" @bind-IsValid="isFormValid" Style="height:auto">
-                                    <MudGrid Class="mb-3">
-                                        <MudItem xs="4">
-                                            <MudTextField ShrinkLabel @bind-Value="address.address" Label="Địa chỉ" Placeholder="Địa chỉ" Variant="Variant.Outlined" Required="true" />
-                                        </MudItem>
-
-                                        <MudItem xs="4">
-                                            <MudSelect ShrinkLabel @bind-Value="address.type" Label="Loại địa chỉ" Required="true">
-                                                <MudSelectItem Value="@((byte)0)">Nhà Riêng</MudSelectItem>
-                                                <MudSelectItem Value="@((byte)1)">Công Ty</MudSelectItem>
-                                            </MudSelect>
-                                        </MudItem>
-
-                                        <MudItem xs="4" Class="mt-3">
-                                            <MudButton Class="me-3" Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="() => UpdateAddress(address)">Cập nhật</MudButton>
-                                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Delete" Color="Color.Error" OnClick="() => OpenDeleteDialog(address)">Xóa</MudButton>
-                                        </MudItem>
-                                    </MudGrid>
-                                </MudForm>
-                            }
-                        </MudPaper>
-                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Add" Color="Color.Secondary" OnClick="OpenAddAddressDialog" Class="mt-3">Thêm</MudButton>
-                    </MudItem>
-                </MudGrid>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-    <MudItem xs="12" Class="mx-auto">
-        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateData" Class="mt-3">Lưu</MudButton>
-    </MudItem>
-</MudContainer> *@
-@* <MudDialog @bind-IsVisible="isDialogVisible" MaxWidth="MaxWidth.Medium">
-    <DialogContent>
-        <MudTextField ShrinkLabel @bind-Value="newAddress.address" Label="Địa chỉ" Placeholder="Địa chỉ" Variant="Variant.Outlined" Required="true" />
-        <MudTextField ShrinkLabel @bind-Value="newAddress.type" Label="Loại" Placeholder="Loại" Variant="Variant.Outlined" Required="true" />
-        <MudSelect @bind-Value="newAddress.status" Label="Trạng thái" Required="true">
-            <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
-            <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
-        </MudSelect>
-    </DialogContent>
-    <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddNewAddress">Lưu</MudButton>
-        <MudButton Variant="Variant.Text" OnClick="CloseDialog">Hủy</MudButton>
-    </DialogActions>
-</MudDialog> *@
-
+    // Upload file
+    async function uploadImage(fileName, base64String) {
+        const fileRef = ref(storage, fileName);
+        try {
+            const response = await fetch(`data:image/jpeg;base64,${base64String}`);
+            const blob = await response.blob();
+            await uploadBytes(fileRef, blob);
+            const downloadURL = await getDownloadURL(fileRef);
+            return downloadURL;
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            throw error;
+        }
+    }// Expose function to global window object
+    window.uploadImage = uploadImage;
+    uploadImage
+    async function getImageUrl(fileName) {
+        const fileRef = ref(storage, fileName);
+        try {
+            const downloadURL = await getDownloadURL(fileRef);
+            return downloadURL;
+        } catch (error) {
+            console.error("Error getting download URL:", error);
+            throw error;
+        }
+    }
+    function getAuthToken() {
+        return localStorage.getItem("authToken");
+    }
+</script>
 @code {
     [Parameter] public int customerId { get; set; } // Lấy ID từ URL
-    private bool isDialogVisible = false; // Hiển thị dialog
+    private bool isDialogVisible = false; 
     private customer_address newAddress = new customer_address();
     private customer newRoleTask = new customer();
     private List<customer_address> customerAddresses = new List<customer_address>();
@@ -155,7 +190,7 @@
     private MudForm formAddress;
     private string url = "http://localhost:49922/api/Customer";
     private string addressUrl = "http://localhost:49922/api/Cus_Address";
-
+    private bool isLoading = false;
     private void OpenAddAddressDialog()
     {
         isDialogVisible = true;
@@ -186,28 +221,82 @@
                 customerId = int.Parse(userId.Value);
             }
         }
-        // Load customer info
         var response = await httpClient.GetFromJsonAsync<customer>($"{url}/{customerId}");
         if (response != null)
         {
             newRoleTask = response;
             birthdayDate = newRoleTask.birthday;
         }
-        await LoadCustomerAddress(); // Load customer addresses
     }
 
-    private async Task LoadCustomerAddress()
+    private async Task LoadEmpImage(InputFileChangeEventArgs e)
     {
         try
         {
-            var response = await httpClient.GetFromJsonAsync<List<customer_address>>($"{addressUrl}/{customerId}");
-            if (response != null)
+            isLoading = true;
+            var file = e.File;
+            if (file != null)
             {
-                customerAddresses = response; // Store multiple addresses
+                var base64Data = await GetBase64Image(file);
+                if (base64Data != null)
+                {
+                    var fileName = $"emp_images_avt/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                    var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
+                    newRoleTask.img_cus = imageUrl;
+                    StateHasChanged();
+                }
             }
         }
         catch (Exception ex)
         {
+            Snackbar.Add($"Lỗi tải lên hình ảnh: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadEmpImage1(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            isLoading = true;
+            var file = e.File;
+            if (file != null)
+            {
+                var base64Data = await GetBase64Image(file);
+                if (base64Data != null)
+                {
+                    var fileName = $"emp_images_cccd/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                    var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
+                    newRoleTask.citizen_identity_img1 = imageUrl;
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi tải lên hình ảnh: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task<string> GetBase64Image(IBrowserFile file)
+    {
+        try
+        {
+            using var memoryStream = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(memoryStream);
+            return Convert.ToBase64String(memoryStream.ToArray());
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi xử lý hình ảnh: {ex.Message}", Severity.Error);
+            return null;
         }
     }
 
@@ -215,7 +304,7 @@
     {
         try
         {
-            newRoleTask.birthday = birthdayDate.Value; // Set birthday before sending data
+            newRoleTask.birthday = birthdayDate.Value;
             var response = await httpClient.PutAsJsonAsync($"{url}/{newRoleTask.Id}", newRoleTask);
             if (response.IsSuccessStatusCode)
             {
@@ -233,82 +322,59 @@
             Snackbar.Add($"Lỗi khi cập nhật thông tin: {ex.Message}", Severity.Error);
         }
     }
-
-    private async Task UpdateAddress(customer_address address)
-    {
-        address.id_cus = customerId; // Ensure the id_cus is correctly assigned
-
-        var response = await httpClient.PutAsJsonAsync($"{addressUrl}/{address.id}", address);
-        if (response.IsSuccessStatusCode)
-        {
-            showSuccess = true;
-        }
-        else
-        {
-            showError = true;
-        }
-    }
-    private async Task AddNewAddress()
-    {
-        newAddress.id_cus = customerId; // Gán ID khách hàng
-        var response = await httpClient.PostAsJsonAsync($"{addressUrl}", newAddress);
-        if (response.IsSuccessStatusCode)
-        {
-            Snackbar.Add("Địa chỉ mới đã được thêm.", Severity.Success);
-            // Điều hướng đến trang getcus_addresstask với tham số thông báo
-            NavigationManager.NavigateTo("/getcus_addresstask");
-        }
-        else
-        {
-            Snackbar.Add("Lỗi khi thêm địa chỉ mới.", Severity.Error);
-        }
-
-        newAddress = new customer_address(); // Reset form
-        CloseDialog(); // Đóng modal
-    }
-
-    private async Task OpenDeleteDialog(customer_address address)
+    private async Task OpenDeleteAccountDialog()
     {
         var parameters = new DialogParameters
         {
-            { "ContentText", $"Bạn có chắc chắn muốn xóa địa chỉ { address.address}?" },
-            { "ButtonText", "Xóa" },
+            { "ContentText", "Bạn có chắc chắn muốn xóa tài khoản? Hành động này không thể hoàn tác." },
+            { "ButtonText", "Xóa Tài Khoản" },
             { "Color", Color.Error }
         };
 
         var options = new DialogOptions() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall };
 
-        var dialog = await DialogService.ShowAsync<DeleteAddress>("Xác nhận xóa", parameters, options);
+        var dialog = await DialogService.ShowAsync<DeleteDialog>("Xác nhận xóa tài khoản", parameters, options);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            await DeleteAddress(address);
+            await DeleteAccount();
         }
     }
 
-    // Hàm thực hiện việc xóa địa chỉ
-    private async Task DeleteAddress(customer_address address)
+    private async Task DeleteAccount()
     {
         try
         {
-            var response = await httpClient.DeleteAsync($"{addressUrl}/{address.id}");
-            if (response.IsSuccessStatusCode)
+            // Get the customer ID from the JWT token
+            var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "id");
+
+            if (userId != null)
             {
-                Snackbar.Add($"Đã xóa địa chỉ {address.address} thành công", Severity.Success);
-                await LoadCustomerAddress();  // Tải lại danh sách địa chỉ sau khi xóa
-            }
-            else
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Lỗi khi xóa địa chỉ: {response.ReasonPhrase}. Chi tiết: {errorContent}", Severity.Error);
+                var httpClient = new HttpClient();
+                var response = await httpClient.DeleteAsync($"http://localhost:49922/api/Customer/{customerId}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Remove token and navigate to login page
+                    await js.InvokeVoidAsync("localStorage.removeItem", "authToken");
+                    NavigationManager.NavigateTo("/", true);
+                }
+                else
+                {
+                    // Handle error scenario
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Error deleting account: {errorContent}");
+                }
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Lỗi khi xóa địa chỉ: {ex.Message}", Severity.Error);
+            Console.WriteLine($"Exception when deleting account: {ex.Message}");
         }
     }
-    
 
 }
