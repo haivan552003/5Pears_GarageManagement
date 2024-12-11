@@ -160,7 +160,7 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@v_registration_end", cars.vehicle_registration_end);
                 cmd.Parameters.AddWithValue("@price", cars.price);
                 cmd.Parameters.AddWithValue("@isAuto", cars.isAuto);
-                cmd.Parameters.AddWithValue("@is_retail", cars.isRetail);
+                cmd.Parameters.AddWithValue("@is_retail", cars.is_retail);
                 cmd.Parameters.AddWithValue("@type_id", cars.type_id);
                 cmd.Parameters.AddWithValue("@brand_id", cars.brand_id);
                 cmd.Parameters.AddWithValue("@year_production", cars.year_production);
@@ -345,7 +345,7 @@ namespace BE_API.Controllers
                 cmd.Parameters.AddWithValue("@v_registration_end", cars.vehicle_registration_end);
                 cmd.Parameters.AddWithValue("@price", cars.price);
                 cmd.Parameters.AddWithValue("@isAuto", cars.isAuto);
-                cmd.Parameters.AddWithValue("@isRetail", cars.isRetail);
+                cmd.Parameters.AddWithValue("@isRetail", cars.is_retail);
                 cmd.Parameters.AddWithValue("@type_id", cars.type_id);
                 cmd.Parameters.AddWithValue("@brand_id", cars.brand_id);
                 cmd.Parameters.AddWithValue("@year_production", cars.year_production);

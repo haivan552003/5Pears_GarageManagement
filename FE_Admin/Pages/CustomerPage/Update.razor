@@ -117,16 +117,16 @@
                                     <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary"
                                                StartIcon="@Icons.Material.Filled.CloudUpload" for="citizenIdInput1"
                                                FullWidth="true" Class="mud-button-small-text">
-                                        CCCD (Trước)
+                                        Ảnh đại diện
                                     </MudButton>
 
                                     @if (isCitizenImageLoading)
                                     {
                                         <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mt-2" />
                                     }
-                                    else if (!string.IsNullOrEmpty(newRoleTask.citizen_identity_img1))
+                                    else if (!string.IsNullOrEmpty(newRoleTask.img_cus))
                                     {
-                                        <MudImage Src="@newRoleTask.citizen_identity_img1" Alt="CCCD (Trước)" Width="100" Height="100"
+                                        <MudImage Src="@newRoleTask.img_cus" Alt="CCCD (Trước)" Width="100" Height="100"
                                                   ObjectFit="ObjectFit.Cover" Class="mt-2" />
                                     }
                                 </MudItem>
@@ -137,16 +137,16 @@
                                     <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary"
                                                StartIcon="@Icons.Material.Filled.CloudUpload" for="licenseInput1"
                                                FullWidth="true" Class="mud-button-small-text">
-                                        GPLX (Trước)
+                                        CCCD (Trước)
                                     </MudButton>
 
                                     @if (isLicenseImageLoading)
                                     {
                                         <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mt-2" />
                                     }
-                                    else if (!string.IsNullOrEmpty(newRoleTask.driver_license_img1))
+                                    else if (!string.IsNullOrEmpty(newRoleTask.citizen_identity_img1))
                                     {
-                                        <MudImage Src="@newRoleTask.driver_license_img1" Alt="GPLX (Trước)" Width="100" Height="100"
+                                        <MudImage Src="@newRoleTask.citizen_identity_img1" Alt="CCCD (Trước)" Width="100" Height="100"
                                                   ObjectFit="ObjectFit.Cover" Class="mt-2" />
                                     }
                                 </MudItem>
@@ -252,16 +252,16 @@
     {
         try
         {
-            if (!string.IsNullOrEmpty(newRoleTask.citizen_identity_img1))
+            if (!string.IsNullOrEmpty(newRoleTask.img_cus))
             {
-                var citizenUrl = await js.InvokeAsync<string>("getImageUrl", newRoleTask.citizen_identity_img1);
-                newRoleTask.citizen_identity_img1 = citizenUrl;
+                var citizenUrl = await js.InvokeAsync<string>("getImageUrl", newRoleTask.img_cus);
+                newRoleTask.img_cus = citizenUrl;
             }
 
-            if (!string.IsNullOrEmpty(newRoleTask.driver_license_img1))
+            if (!string.IsNullOrEmpty(newRoleTask.citizen_identity_img1))
             {
-                var licenseUrl = await js.InvokeAsync<string>("getImageUrl", newRoleTask.driver_license_img1);
-                newRoleTask.driver_license_img1 = licenseUrl;
+                var licenseUrl = await js.InvokeAsync<string>("getImageUrl", newRoleTask.citizen_identity_img1);
+                newRoleTask.citizen_identity_img1 = licenseUrl;
             }
         }
         catch (Exception ex)
@@ -279,7 +279,7 @@
         {
             if (imageNumber == 1)
             {
-                newRoleTask.citizen_identity_img1 = url;
+                newRoleTask.img_cus = url;
             }
         });
 
@@ -296,7 +296,7 @@
         {
             if (imageNumber == 1)
             {
-                newRoleTask.driver_license_img1 = url;
+                newRoleTask.citizen_identity_img1 = url;
             }
         });
 

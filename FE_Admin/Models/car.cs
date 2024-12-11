@@ -11,7 +11,7 @@
         public DateTime vehicle_registration_end { get; set; }
         public string status { get; set; }
         public byte isAuto { get; set; }
-        public byte isRetail { get; set; }
+        public byte is_retail { get; set; }
         public float price { get; set; }
         public int type_id { get; set; }
         public int brand_id { get; set; }
@@ -36,7 +36,7 @@
         public DateTime vehicle_registration_end { get; set; }
         public float price { get; set; }
         public byte isAuto { get; set; }
-        public byte isRetail { get; set; }
+        public byte is_retail { get; set; }
         public int type_id { get; set; }
         public int brand_id { get; set; }
         public DateTime year_production { get; set; }
@@ -60,7 +60,7 @@
         public DateTime vehicle_registration_end { get; set; }
         public float price { get; set; }
         public byte isAuto { get; set; }
-        public byte isRetail { get; set; }
+        public byte is_retail { get; set; }
         public int type_id { get; set; }
         public int brand_id { get; set; }
         public DateTime year_production { get; set; }

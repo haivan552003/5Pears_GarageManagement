@@ -12,7 +12,7 @@
                 <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
             </MudPaper>
             <MudPaper Elevation="0">
-                <MudDataGrid Class="mx-auto pa-2" T="driver" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true"
+                <MudDataGrid @ref="_dataGrid" Class="mx-auto pa-2" T="driver" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true"
                              Items="Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
                              Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
                     <ToolBarContent>
@@ -25,10 +25,9 @@
                             <MudButton Href="/addDriver" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
                                 Thêm mới
                             </MudButton>
-                            <MudButton Href="/driver-calendar" Variant="Variant.Outlined" StartIcon="fas fa-calendar" Color="Color.Secondary" Size="Size.Small">
-                                Lịch tài xế
+                            <MudButton OnClick="@PrintTable" Variant="Variant.Outlined" StartIcon="fas fa-print" Color="Color.Secondary" Size="Size.Small">
+                                In bảng
                             </MudButton>
-
                             <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
                                 Nhập file
                             </MudButton>
@@ -88,6 +87,15 @@
 @code {
     private IEnumerable<driver> Elements = new List<driver>();
     private string _searchString;
+    private
+
+    MudDataGrid
+    <
+    driver
+    >
+     _dataGrid
+    ;
+
     private List<string> _events = new();
     private string url = "http://localhost:49922/api/Driver";
 
@@ -108,6 +116,33 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadDrivers();
+    }
+
+    private async Task PrintTable()
+    {
+        var parameters = new DialogParameters
+            {
+                ["Entries"] = Elements.Cast<object>().ToList(),
+                ["DocumentTitle"] = "DANH SÁCH TÀI XẾ",
+                ["EntryFields"] = new Dictionary<string, Func<object, string>>
+                {
+                    ["Mã tài xế"] = d => ((driver)d).driver_code,
+                    ["Tên tài xế"] = d => ((driver)d).fullname,
+                    ["Số điện thoại"] = d => ((driver)d).phonenumber,
+                    ["Ngày sinh"] = d => ((driver)d).birthday.ToString("dd/MM/yyyy"),
+                    ["Giới tính"] = d => ((driver)d).gender == 0 ? "Nam" : "Nữ",
+                    ["Trạng thái"] = d => ((driver)d).status == 0 ? "Đang hoạt động" : "Ngưng hoạt động"
+                }
+            };
+
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.Large,
+                FullWidth = true
+            };
+
+        var dialog = await DialogService.ShowAsync<Print>("In danh sách tài xế", parameters, options);
     }
 
     private async Task LoadDrivers()
@@ -145,33 +180,21 @@
     {
         try
         {
-            // Gửi yêu cầu kiểm tra khách hàng có hóa đơn hay không
-            var response = await httpClient.GetFromJsonAsync<ApiResponse>($"http://localhost:49922/api/Validate/ValidateDriver/{driver.id}");
-
-            if (response.Success)
+            var response = await httpClient.DeleteAsync($"{url}/{driver.id}");
+            if (response.IsSuccessStatusCode)
             {
-                // Nếu khách hàng có thể xóa được, tiếp tục xóa khách hàng
-                var deleteResponse = await httpClient.DeleteAsync($"{url}/{driver.id}");
-                if (deleteResponse.IsSuccessStatusCode)
-                {
-                    Snackbar.Add("Xóa khách hàng thành công!", Severity.Success);
-                    await LoadDrivers();
-                }
-                else
-                {
-                    Snackbar.Add("Xóa khách hàng thất bại!", Severity.Warning);
-                }
+                Snackbar.Add($"Đã xóa tài xế {driver.fullname} thành công", Severity.Success);
+                await LoadDrivers(); 
             }
             else
             {
-                // Nếu không thể xóa (do khách hàng có hóa đơn), lấy thông báo từ API
-                string errorMessage = response.Message ?? "Không thể xóa khách hàng này.";
-                Snackbar.Add(errorMessage, Severity.Warning);
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Lỗi khi xóa tài xế: {response.ReasonPhrase}. Chi tiết: {errorContent}", Severity.Error);
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Lỗi xảy ra: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Lỗi khi xóa tài xế: {ex.Message}", Severity.Error);
         }
     }
     private string GenerateEditUrl(int id)
@@ -193,9 +216,8 @@
     {
         // Handle selected items changed event if needed
     }
-    public class ApiResponse
-    {
-        public bool Success { get; set; }
-        public string Message { get; set; }
-    }
+
+
+
+
 }

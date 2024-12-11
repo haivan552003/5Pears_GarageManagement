@@ -14,7 +14,6 @@
         </MudNavGroup>
         <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Password">Đặt lại mật khẩu</MudNavLink>
         <MudNavLink Class="mb-5" OnClick="Logout" Icon="@Icons.Material.Filled.Logout">Đăng xuất</MudNavLink>
-        <MudNavLink Class="rounded-3" OnClick="OpenDeleteAccountDialog" Icon="@Icons.Material.Filled.DeleteForever" IconColor="Color.Surface" Style="background: #EF5350; color: #ffff;">Xóa tài khoản</MudNavLink>
     </MudNavMenu>
 </MudItem>
 <script>
@@ -52,58 +51,5 @@
         NavigationManager.NavigateTo("/", true);
     }
 
-    private async Task OpenDeleteAccountDialog()
-    {
-        var parameters = new DialogParameters
-        {
-            { "ContentText", "Bạn có chắc chắn muốn xóa tài khoản? Hành động này không thể hoàn tác." },
-            { "ButtonText", "Xóa Tài Khoản" },
-            { "Color", Color.Error }
-        };
-
-        var options = new DialogOptions() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall };
-
-        var dialog = await DialogService.ShowAsync<DeleteDialog>("Xác nhận xóa tài khoản", parameters, options);
-        var result = await dialog.Result;
-
-        if (!result.Cancelled)
-        {
-            await DeleteAccount();
-        }
-    }
-
-    private async Task DeleteAccount()
-    {
-        try
-        {
-            // Get the customer ID from the JWT token
-            var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
-            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
-            var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "id");
-
-            if (userId != null)
-            {
-                var httpClient = new HttpClient();
-                var response = await httpClient.DeleteAsync($"http://localhost:49922/api/Customer/{id_cus}");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    // Remove token and navigate to login page
-                    await js.InvokeVoidAsync("localStorage.removeItem", "authToken");
-                    NavigationManager.NavigateTo("/", true);
-                }
-                else
-                {
-                    // Handle error scenario
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Error deleting account: {errorContent}");
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Exception when deleting account: {ex.Message}");
-        }
-    }
+   
 }

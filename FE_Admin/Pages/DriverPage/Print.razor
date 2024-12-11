@@ -1,0 +1,125 @@
+﻿@inherits MudComponentBase
+@inject IJSRuntime js
+@using System.Linq.Expressions;
+
+<MudDialog MaxWidth="MaxWidth.Large" FullWidth="true">
+    <DialogContent>
+        <div class="print-actions mb-4">
+            <MudButton Color="Color.Primary" Variant="Variant.Outlined" OnClick="PrintSelected">In các mục đã chọn</MudButton>
+            <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="PrintAll">In tất cả</MudButton>
+            <MudButton Color="Color.Default" Variant="Variant.Text" OnClick="CloseDialog" Class="ml-2">Đóng</MudButton>
+        </div>
+        <MudDataGrid T="EntryType" Items="@Entries" 
+                     SelectMode="SelectMode.Multiple" 
+                     @bind-SelectedItems="@SelectedEntries">
+            <Columns>
+                @foreach (var column in Columns)
+                {
+                    <PropertyColumn TProperty="object" T="EntryType" Property="@column.PropertyExpression">
+                        <HeaderTemplate>
+                            @column.DisplayName
+                        </HeaderTemplate>
+                    </PropertyColumn>
+                }
+            </Columns>
+        </MudDataGrid>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public List<EntryType> Entries { get; set; } = new List<EntryType>();
+
+    [Parameter]
+    public string DocumentTitle { get; set; } = "CHI TIẾT";
+
+    [Parameter]
+    public List<ColumnDefinition<EntryType>> Columns { get; set; } = new List<ColumnDefinition<EntryType>>();
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    private HashSet<EntryType> SelectedEntries = new HashSet<EntryType>();
+
+    private void PrintSelected()
+    {
+        PrintEntries(SelectedEntries.ToList());
+    }
+
+    private void PrintAll()
+    {
+        PrintEntries(Entries);
+    }
+
+    private void PrintEntries(List<EntryType> entriesToPrint)
+    {
+        var printData = entriesToPrint.Select(entry =>
+            Columns.ToDictionary(
+                column => column.DisplayName,
+                column => column.PropertyExpression.Compile().Invoke(entry)?.ToString()
+            )
+        ).ToList();
+
+        js.InvokeVoidAsync("window.print", new
+        {
+            entries = printData,
+            title = DocumentTitle
+        });
+    }
+
+    private void CloseDialog()
+    {
+        MudDialog.Close();
+    }
+
+    // Định nghĩa kiểu dữ liệu cho cột
+    public class ColumnDefinition<T>
+    {
+        public Expression<Func<T, object>> PropertyExpression { get; set; }
+        public string DisplayName { get; set; }
+    }
+
+    // Định nghĩa mẫu cho dữ liệu
+    public class EntryType
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public string Address { get; set; }
+    }
+}
+<style>
+    @@media print {
+        .print-actions {
+            display: none;
+        }
+        .print-page {
+            page-break-after: always;
+            margin: 0;
+            padding: 0;
+            size: A5;
+        }
+        .print-page:last-child {
+            page-break-after: avoid;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        @@page {
+            size: A5 portrait;
+            margin: 0.5cm;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10pt;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 3px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    }
+</style>
