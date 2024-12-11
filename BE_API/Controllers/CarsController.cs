@@ -122,8 +122,8 @@ namespace BE_API.Controllers
                     }
 
                     car.Trip_Detail_Customs = multi.Read<ModelCustom.trip_detail_custom>().ToList();
-                    car.guest_Car_Driver_Customs = multi.Read<ModelCustom.guest_car_driver_custom>().ToList();
                     car.guest_Cars_Customs = multi.Read<ModelCustom.guest_cars_custom>().ToList();
+                    car.guest_Car_Driver_Customs = multi.Read<ModelCustom.guest_car_driver_custom>().ToList();
 
                     return Ok(car);
                 }

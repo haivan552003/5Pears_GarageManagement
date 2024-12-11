@@ -12,11 +12,12 @@ namespace BE_API.ModelCustom
         public string color { get; set; }
         public DateTime vehicle_registration_start { get; set; }
         public DateTime vehicle_registration_end { get; set; }
+        public bool isAuto { get; set; }
         public float price { get; set; }
         public int type_id { get; set; }
         public string type_name { get; set; }
         public int brand_id { get; set; }
-        public string brand_name {  get; set; }
+        public string brand_name { get; set; }
         public DateTime year_production { get; set; }
         public float odo { get; set; }
         public float insurance_fee { get; set; }
@@ -29,24 +30,17 @@ namespace BE_API.ModelCustom
     }
     public class trip_detail_custom
     {
-        public string from { get; set; }
-        public string to{ get; set; }
-        public string location_from { get; set; }
-        public string location_to { get; set; }
+        public string location { get; set; }
         public string driver_name { get; set; }
-        public DateTime time_start { get; set; }
-        public DateTime time_end { get; set; }
+        public string date { get; set; }
     }
     public class guest_cars_custom
     {
-        public DateTime date_start { get; set; }
-        public DateTime date_end { get; set; }
+        public string date { get; set; }
     }
     public class guest_car_driver_custom
     {
-        public DateTime date_start { get; set; }
-        public DateTime date_end { get; set; }
+        public string date { get; set; }
         public string driver_name { get; set; }
     }
-
 }

@@ -73,7 +73,7 @@
                                 <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.color</MudText>
                                 <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.type_name</MudText>
                                 <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.brand_name</MudText>
-                                <MudText Typo="Typo.subtitle1" Align="Align.End">@(SelectedCar.isAuto == 0 ? "Số tự động" : "Số sàn")</MudText>
+                                <MudText Typo="Typo.subtitle1" Align="Align.End">@(SelectedCar.isAuto == false ? "Số tự động" : "Số sàn")</MudText>
                                 <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.vehicle_registration_end.ToString("dd/MM/yyyy")</MudText>
                                 <MudText Typo="Typo.subtitle1" Align="Align.End">
                                     @(SelectedCar.fuel == 1 ? "Xăng RON 92 (E5)" :
@@ -97,32 +97,19 @@
                 <MudPaper Elevation="0">
                     <MudText Typo="Typo.h5" Class="fw-bold mt-2" Color="Color.Primary">LỊCH TRÌNH XE</MudText>
 
-                    @if (SelectedTripDetails != null && SelectedTripDetails.Any())
-                    {
-                        <MudTable Items="@SelectedTripDetails">
-                            <HeaderContent>
-                                <MudTh Class="fw-bold">Địa điểm</MudTh>
-                                <MudTh>Bắt Đầu</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="Địa điểm">
-                                    <MudText Typo="Typo.subtitle2"> @context.from (@context.location_from)</MudText>
-                                    <MudIcon Icon="@Icons.Material.Filled.ArrowForwardIos" Size="Size.Small" />
-                                    <MudText Typo="Typo.subtitle2"> @context.to (@context.location_to)</MudText>
+                    <MudDataGrid Class="mx-auto pa-2" T="trip_detail_custom" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true"
+                                 SortMode="SortMode.Multiple" Filterable="false" Hideable="true">
+                        <Columns>
+                            <PropertyColumn T="trip_detail_custom" Class="fw-bold" TProperty="string" Property="x => x.date" Title="Thời gian" />
+                            <PropertyColumn T="trip_detail_custom" Class="fw-bold" TProperty="string" Property="x => x.location" Title="Địa điểm" />
+                        </Columns>
+                        <PagerContent>
+                            <MudDataGridPager T="trip_detail_custom" />
+                        </PagerContent>
+                    </MudDataGrid>
 
-                                </MudTd>
-                                <MudTd DataLabel="Bắt Đầu">@context.time_start.ToString("dd/MM/yyyy HH:mm")</MudTd>
-                                @*                             <MudTd DataLabel="Kết Thúc">@context.time_end.ToString("dd/MM/yyyy HH:mm")</MudTd> *@
-                            </RowTemplate>
-                        </MudTable>
-                    }
-                    else
-                    {
-                        <MudText Typo="Typo.body2" Class="text-center my-4">Không có chi tiết chuyến đi</MudText>
-                    }
                 </MudPaper>
             </MudItem>
-
         </MudGrid>
 
     </MudPaper>
@@ -133,7 +120,9 @@
     private car newCar = new car();
     private car FoundCar = new car();
     private TripCarLocation SelectedCar;
-    private List<TripDetailViewModel> SelectedTripDetails = new List<TripDetailViewModel>();
+    private List<trip_detail_custom> trip_detail_custom = new List<trip_detail_custom>();
+    private List<guest_cars_custom> guest_cars_custom = new List<guest_cars_custom>();
+    private List<guest_car_driver_custom> guest_car_driver_custom = new List<guest_car_driver_custom>();
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -156,51 +145,52 @@
         {
             try
             {
-                var response = await httpClient.GetAsync($"http://localhost:49922/api/Cars/CarNumber/{FoundCar.car_number}");
-                if (response.IsSuccessStatusCode)
+                Console.WriteLine($"Bắt đầu gọi API với car_number: {FoundCar.car_number}");
+
+                Console.WriteLine("Bắt đầu gọi API...");
+                var url = $"http://localhost:49922/api/Cars/CarNumber/{FoundCar.car_number}";
+                Console.WriteLine("URL: " + url);
+
+                var json = await httpClient.GetStringAsync(url);
+                Console.WriteLine("JSON trả về từ API:");
+                Console.WriteLine(json);
+
+                var response = JsonConvert.DeserializeObject<TripCarLocation>(json);
+                Console.WriteLine("Deserialization thành công.");
+
+                if (response != null)
                 {
-                    var responseData = await response.Content.ReadAsStringAsync();
-                    SelectedCar = JsonConvert.DeserializeObject<TripCarLocation>(responseData);
+                    SelectedCar = response;
 
-                    if (SelectedCar != null &&
-                        SelectedCar.Trip_Detail_Customs != null &&
-                        SelectedCar.guest_Cars_Customs != null &&
-                        SelectedCar.guest_Cars_Customs != null)
-                    {
-                        SelectedTripDetails = SelectedCar.Trip_Detail_Customs
-                            .Zip(SelectedCar.Trip_Detail_Customs, (detail, custom) => new TripDetailViewModel
-                                {
-                                    from = custom.from,
-                                    to = custom.to,
-                                    time_start = detail.time_start,
-                                    time_end = detail.time_end,
-                                    location_from = detail.location_from,
-                                    location_to = detail.location_to
-                                })
-                            .ToList();
+                    // Log chi tiết từng danh sách
+                    Console.WriteLine("Trip_Detail_Customs:");
+                    response.Trip_Detail_Customs.ForEach(item => Console.WriteLine(item));
 
-                        StateHasChanged();
-                    }
-                    else
-                    {
-                        Snackbar.Add("Xe chưa có lịch trình", Severity.Warning);
 
-                        SelectedTripDetails.Clear();
-                    }
+                    Console.WriteLine("guest_Cars_Customs:");
+                    response.guest_Cars_Customs.ForEach(item => Console.WriteLine(item));
+
+                    Console.WriteLine("guest_Car_Driver_Customs:");
+                    response.guest_Car_Driver_Customs.ForEach(item => Console.WriteLine(item));
+
+                    trip_detail_custom = response.Trip_Detail_Customs.ToList();
+                    guest_cars_custom = response.guest_Cars_Customs.ToList();
+                    guest_car_driver_custom = response.guest_Car_Driver_Customs.ToList();
                 }
                 else
                 {
-                    Snackbar.Add("Không tìm thấy thông tin xe", Severity.Warning);
-                    SelectedTripDetails.Clear();
-                    SelectedCar = null;
+                    Console.WriteLine("Response từ API là null.");
                 }
+            }
+            catch (HttpRequestException httpEx)
+            {
+                Console.WriteLine($"Lỗi HTTP: {httpEx.Message}");
             }
             catch (Exception ex)
             {
-                await js.InvokeVoidAsync($"Lỗi: {ex.Message}");
-                SelectedTripDetails.Clear();
-                SelectedCar = null;
+                Console.WriteLine($"Lỗi khi gọi API: {ex.Message}");
             }
+
         }
         else
         {
