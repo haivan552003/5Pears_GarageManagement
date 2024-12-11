@@ -3,23 +3,26 @@
 
 <MudDialog>
     <DialogContent>
-        <video id="cameraVideo" class="img-fluid" autoplay></video>
-        <canvas id="captureCanvas" style="display: none;"></canvas>
+        <MudPaper Elevation="0" Class="mx-auto h-75">
+            <video id="cameraVideo" class="w-100" autoplay></video>
+            <canvas id="captureCanvas" style="display: none;"></canvas>
+        </MudPaper>
         <div class="d-flex justify-center mt-4">
-            <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined">
-                <MudIconButton Icon="@Icons.Material.Filled.Cameraswitch" OnClick="() => SwitchCamera()">Chuyển Camera</MudIconButton>
-                @* <MudIconButton Icon="@Icons.Material.Filled.Camera" OnClick="() => CaptureImage()">Chụp ảnh</MudIconButton> *@
+            <MudIconButton Icon="@Icons.Material.Filled.Camera" Size="Size.Large" Color="Color.Primary" OnClick="CaptureImage"></MudIconButton>
+
+            @*  <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined">
+                <MudIconButton Icon="@Icons.Material.Filled.Cameraswitch" OnClick="() => SwitchCamera()">Chuyển Camera</MudIconButton> 
+                <MudIconButton Icon="@Icons.Material.Filled.Camera" OnClick="() => CaptureImage()">Chụp ảnh</MudIconButton>
                 <MudButton OnClick="CaptureImage" Color="Color.Success">Chụp Hình</MudButton>
                 <MudIconButton Icon="@Icons.Material.Filled.Download" id="downloadButton" style="display: none;" OnClick="DownloadImage"></MudIconButton>
-
                 <MudIconButton Icon="@Icons.Material.Filled.MotionPhotosOff" OnClick="() => TurnOff()">Tắt Camera</MudIconButton>
-                @* <MudButton id="downloadLink" style="display: none;">Download Image</MudButton>*@
-            </MudButtonGroup>
+                <MudButton id="downloadLink" style="display: none;">Download Image</MudButton>
+            </MudButtonGroup> *@
         </div>
     </DialogContent>
-    <DialogActions>
+    @*  <DialogActions>
         <MudButton OnClick="Cancel">Đóng</MudButton>
-    </DialogActions>
+    </DialogActions> *@
 </MudDialog>
 
 @code {
@@ -39,6 +42,7 @@
     {
         var imageData = await js.InvokeAsync<string>("captureImage");
         Console.WriteLine("Image Data: " + imageData);
+        Cancel();
     }
 
     private void Cancel()
