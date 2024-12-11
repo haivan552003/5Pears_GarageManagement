@@ -155,7 +155,7 @@
             var response = await httpClient.DeleteAsync($"{url}/{banner.id}");
             if (response.IsSuccessStatusCode)
             {
-                Snackbar.Add($"Đã xóa banner {banner.title} thành công", Severity.Success);
+                Snackbar.Add($"Đã xóa banner thành công", Severity.Success);
                 await LoadBanners();
             }
             else

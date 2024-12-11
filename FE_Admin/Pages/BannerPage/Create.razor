@@ -3,7 +3,7 @@
 @inject HttpClient httpClient
 @inject IJSRuntime js
 @inject ISnackbar Snackbar
-
+@inject NavigationManager nv
 <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
 
     <MudGrid>
@@ -33,7 +33,10 @@
                                 <MudTextField ShrinkLabel @bind-Value="newBanner.title" Label="Tiêu đề"
                                               Class="py-3"                                           
                                               Placeholder="Tên công việc" Variant="Variant.Outlined" Required="true" />
-                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddBanner" Class="mt-3">Lưu</MudButton>
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddBanner" Class="mt-3 float-end">Lưu</MudButton>
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Cancel" Color="Color.Error" Class="mr-2 mt-3 float-end"
+                                           OnClick="@Cancel">Hủy</MudButton>
+
                             </MudForm>
                         </MudPaper>
                     </MudItem>
@@ -172,6 +175,8 @@
                     newBanner = new banner();
                     imagePreviewUrl = null;   
                     Snackbar.Add("Thêm thành công!", Severity.Success);
+                    nv.NavigateTo("/getbanner");
+
                 }
                 else
                 {
@@ -189,8 +194,14 @@
 
     private async Task<string> GetBase64Image(IBrowserFile file)
     {
-        var buffer = new byte[file.Size];
-        await file.OpenReadStream().ReadAsync(buffer);
-        return Convert.ToBase64String(buffer);
+        using var memoryStream = new MemoryStream();
+        await file.OpenReadStream().CopyToAsync(memoryStream);
+        var bytes = memoryStream.ToArray();
+        return Convert.ToBase64String(bytes);
     }
+    private async Task Cancel()
+    {
+        nv.NavigateTo("/getbanner");
+    }
+
 }
