@@ -6,102 +6,130 @@
 @inject IJSRuntime js
 @inject NavigationManager NavigationManager
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.Medium">
-    <MudGrid Class="pa-0">
-        <MudItem xs="6">
-            <MudPaper Elevation="0">
-                <MudImage Src="@newCar.car_number" Elevation="25" Class="img-fluid w-100" id="capturedImage" />
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.85); /* Màu trắng với độ mờ 50% */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999; /* Đảm bảo overlay hiển thị trên các thành phần khác */
+    }
 
+</style>
 
-                <InputFile id="imageInput" OnChange="@LoadDriverImage" hidden accept=".jpg,.jpeg,.png" />
-                <MudButton HtmlTag="label" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Class="ma-3" for="imageInput">Chọn File</MudButton>
-
-@*                 <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Class="ma-3" OnClick="() => StartCamera()">Mở camera</MudButton>
- *@             <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Class="ma-3" OnClick="() => ScanImage1()">Quét ảnh</MudButton>
-                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Class="ma-3" OnClick="() => OpenFullScreenDialog()">Camera</MudButton>
-
-            </MudPaper>
+@if (isLoading)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
+    </div>
+}
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.Small">
+    <MudPaper Elevation="1">
+        <MudGrid Class="pa-3">
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="text-center">
+                    <MudImage Src="@newCar.car_number" Elevation="0" Style="max-width:350px; height: 150px" Class="mb-3 mx-auto" id="capturedImage" />
 
-        <MudItem xs="6">
-            <MudPaper Elevation="0">
-                <MudText Typo="Typo.h5" Class="fw-bold">THÔNG TIN XE</MudText>
 
-                <MudGrid>
-                    <MudItem xs="6" Class="pb-3">
-                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Biển số xe:</MudText>
-                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Tên xe:</MudText>
-                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Màu xe:</MudText>
-                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Loại xe:</MudText>
-                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Hãng xe:</MudText>
-                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Loại hộp số:</MudText>
-                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Ngày hết hạn đăng kiểm:</MudText>
-                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Nhiên liệu:</MudText>
-                    </MudItem>
-                    <MudItem xs="6" Class="pb-3">
-                        <MudTextField Style="margin-top:-10px" id="resultInput" @bind-Value="FoundCar.car_number" />
+                    <InputFile id="imageInput" OnChange="@LoadDriverImage" hidden accept=".jpg,.jpeg,.png" />
+                    <MudButton HtmlTag="label" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Class="m-0 d-none d-md-flex mx-auto" Style="max-width:350px" for="imageInput">Chọn ảnh từ thư viện</MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Class="ma-2 d-sm-none" OnClick="() => OpenFullScreenDialog()">Máy ảnh</MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small" Class="ma-2 d-sm-none" OnClick="() => ScanImage1()">Kiểm tra ảnh</MudButton>
 
-                        @if (SelectedCar != null)
-                        {
-                            <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.car_name</MudText>
-                            <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.color</MudText>
-                            <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.type_name</MudText>
-                            <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.brand_name</MudText>
-                            <MudText Typo="Typo.subtitle1" Align="Align.End">@(SelectedCar.isAuto == 0 ? "Số tự động" : "Số sàn")</MudText>
-                            <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.vehicle_registration_end.ToString("dd/MM/yyyy")</MudText>
-                            <MudText Typo="Typo.subtitle1" Align="Align.End">
-                                   @(SelectedCar.fuel == 1 ? "Xăng RON 92 (E5)" :
-                                    (SelectedCar.fuel == 2 ? "RON 92-III" :
-                                    (SelectedCar.fuel == 3 ? "RON 95-IV" :
-                                    (SelectedCar.fuel == 4 ? "Diesel 0,05%S" :
-                                    (SelectedCar.fuel == 5 ? "Diesel 0,001%S (Diesel Euro 5)" :
-                                    (SelectedCar.fuel == 6 ? "Pin Lithium-ion(Li-ion)" :
-                                    (SelectedCar.fuel == 7 ? "Pin Lithium Iron Phosphate" :
-                                    (SelectedCar.fuel == 8 ? "Pin thể rắn(Solid-State Battery)" :
-                                    (SelectedCar.fuel == 9 ? "Hybrid truyền thống(HEV)" : "Không xác định")))))))))
-                            </MudText>
+                    @*             <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Class="ma-3" OnClick="() => StartCamera()">Mở camera</MudButton> *@
 
-                        }
-                    </MudItem>
-                </MudGrid>
-            </MudPaper>
-        </MudItem>
+                </MudPaper>
+            </MudItem>
 
-        <MudItem xs="12">
-            <MudPaper Elevation="0">
-                <MudText Typo="Typo.h5" Class="fw-bold">LỊCH TRÌNH XE</MudText>
+            <MudItem xs="12">
+                <MudPaper Elevation="0">
+                    <MudText Typo="Typo.h5" Class="fw-bold" Color="Color.Primary">THÔNG TIN XE</MudText>
+                    <MudText Typo="Typo.subtitle1" Class="fw-bold">Biển số xe</MudText>
+                    <MudTextField id="resultInput" Variant="Variant.Outlined" Disabled="true" Margin="Margin.Dense" @bind-Value="FoundCar.car_number" />
+                    <MudGrid>
+                        <MudItem xs="6" Class="pb-3">
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Tên xe:</MudText>
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Màu xe:</MudText>
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Loại xe:</MudText>
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Hãng xe:</MudText>
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Loại hộp số:</MudText>
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Hạn đăng kiểm:</MudText>
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Nhiên liệu:</MudText>
+                        </MudItem>
+                        <MudItem xs="6" Class="pb-2">
 
-                @if (SelectedTripDetails != null && SelectedTripDetails.Any())
-                {
-                    <MudTable Items="@SelectedTripDetails">
-                        <HeaderContent>
-                            <MudTh Class="fw-bold">Địa điểm</MudTh>
-                            <MudTh>Bắt Đầu</MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd DataLabel="Địa điểm">
-                                  <MudText Typo="Typo.subtitle2"> @context.from (@context.location_from)</MudText>
-                                  <MudIcon Icon="@Icons.Material.Filled.ArrowForwardIos" Size="Size.Small"/>
-                                  <MudText Typo="Typo.subtitle2"> @context.to (@context.location_to)</MudText>
-                                
-                            </MudTd>
-                            <MudTd DataLabel="Bắt Đầu">@context.time_start.ToString("dd/MM/yyyy HH:mm")</MudTd>
-@*                             <MudTd DataLabel="Kết Thúc">@context.time_end.ToString("dd/MM/yyyy HH:mm")</MudTd> *@
-                        </RowTemplate>
-                    </MudTable>
-                }
-                else
-                {
-                    <MudText Typo="Typo.body2" Class="text-center my-4">Không có chi tiết chuyến đi</MudText>
-                }
-            </MudPaper>
-        </MudItem>
+                            @if (SelectedCar != null)
+                            {
+                                <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.car_name</MudText>
+                                <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.color</MudText>
+                                <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.type_name</MudText>
+                                <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.brand_name</MudText>
+                                <MudText Typo="Typo.subtitle1" Align="Align.End">@(SelectedCar.isAuto == 0 ? "Số tự động" : "Số sàn")</MudText>
+                                <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.vehicle_registration_end.ToString("dd/MM/yyyy")</MudText>
+                                <MudText Typo="Typo.subtitle1" Align="Align.End">
+                                    @(SelectedCar.fuel == 1 ? "Xăng RON 92 (E5)" :
+                                        (SelectedCar.fuel == 2 ? "RON 92-III" :
+                                        (SelectedCar.fuel == 3 ? "RON 95-IV" :
+                                        (SelectedCar.fuel == 4 ? "Diesel 0,05%S" :
+                                        (SelectedCar.fuel == 5 ? "Diesel 0,001%S (Diesel Euro 5)" :
+                                        (SelectedCar.fuel == 6 ? "Pin Lithium-ion(Li-ion)" :
+                                        (SelectedCar.fuel == 7 ? "Pin Lithium Iron Phosphate" :
+                                        (SelectedCar.fuel == 8 ? "Pin thể rắn(Solid-State Battery)" :
+                                        (SelectedCar.fuel == 9 ? "Hybrid truyền thống(HEV)" : "Không xác định")))))))))
+                                </MudText>
 
-    </MudGrid>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudPaper Elevation="0">
+                    <MudText Typo="Typo.h5" Class="fw-bold mt-2" Color="Color.Primary">LỊCH TRÌNH XE</MudText>
+
+                    @if (SelectedTripDetails != null && SelectedTripDetails.Any())
+                    {
+                        <MudTable Items="@SelectedTripDetails">
+                            <HeaderContent>
+                                <MudTh Class="fw-bold">Địa điểm</MudTh>
+                                <MudTh>Bắt Đầu</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Địa điểm">
+                                    <MudText Typo="Typo.subtitle2"> @context.from (@context.location_from)</MudText>
+                                    <MudIcon Icon="@Icons.Material.Filled.ArrowForwardIos" Size="Size.Small" />
+                                    <MudText Typo="Typo.subtitle2"> @context.to (@context.location_to)</MudText>
+
+                                </MudTd>
+                                <MudTd DataLabel="Bắt Đầu">@context.time_start.ToString("dd/MM/yyyy HH:mm")</MudTd>
+                                @*                             <MudTd DataLabel="Kết Thúc">@context.time_end.ToString("dd/MM/yyyy HH:mm")</MudTd> *@
+                            </RowTemplate>
+                        </MudTable>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body2" Class="text-center my-4">Không có chi tiết chuyến đi</MudText>
+                    }
+                </MudPaper>
+            </MudItem>
+
+        </MudGrid>
+
+    </MudPaper>
 </MudContainer>
 
 @code {
+    private bool isLoading = false;
     private car newCar = new car();
     private car FoundCar = new car();
     private TripCarLocation SelectedCar;
@@ -110,13 +138,20 @@
     {
         if (firstRender)
         {
-            // Hiển thị ảnh đã chụp nếu có trong localStorage
-            await js.InvokeVoidAsync("displayCapturedImage");
+            // Kiểm tra nếu ảnh tồn tại trong localStorage
+            var imageData = await js.InvokeAsync<string>("localStorage.getItem", "imageInput");
+            if (!string.IsNullOrEmpty(imageData))
+            {
+                await js.InvokeVoidAsync("displayCapturedImage");
+                await ScanImage1();
+            }
         }
     }
 
+
     private async Task SearchCar()
     {
+        isLoading = true;
         if (!string.IsNullOrEmpty(FoundCar.car_number) && FoundCar.car_number.Length >= 5)
         {
             try
@@ -148,13 +183,14 @@
                     }
                     else
                     {
-                        await js.InvokeVoidAsync( "Không tìm thấy chi tiết chuyến đi cho xe này.");
+                        Snackbar.Add("Xe chưa có lịch trình", Severity.Warning);
+
                         SelectedTripDetails.Clear();
                     }
                 }
                 else
                 {
-                    await js.InvokeVoidAsync("Không tìm thấy thông tin xe.");
+                    Snackbar.Add("Không tìm thấy thông tin xe", Severity.Warning);
                     SelectedTripDetails.Clear();
                     SelectedCar = null;
                 }
@@ -170,9 +206,11 @@
         {
             await js.InvokeVoidAsync("Biển số xe không hợp lệ. Vui lòng kiểm tra lại.");
         }
+        isLoading = false;
     }
     private async Task LoadDriverImage(InputFileChangeEventArgs e)
     {
+        isLoading = true;
         try
         {
             var file = e.File;
@@ -184,6 +222,7 @@
                     var fileName = $"driver_images/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
                     var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
                     newCar.car_number = imageUrl;
+                    ScanImage1();
                     StateHasChanged();
                 }
             }
@@ -214,27 +253,27 @@
     {
         try
         {
-            var ocrResult = await js.InvokeAsync<string>("readTextFromImage", "imageInput", "resultInput");
+            var ocrResult = await js.InvokeAsync<string>("readTextFromImage", "imageInput");
 
             if (!string.IsNullOrEmpty(ocrResult) && ocrResult != "Không nhận diện được")
             {
                 FoundCar.car_number = ocrResult.Trim();
-                // await SearchCar();
+                await SearchCar();
             }
             else
             {
                 FoundCar.car_number = string.Empty;
-                await js.InvokeVoidAsync("alert", "Không thể nhận diện biển số xe. Vui lòng thử lại.");
+                Snackbar.Add("Không thể nhận diện biển số xe", Severity.Warning);
             }
+
+            await js.InvokeVoidAsync("localStorage.removeItem", "imageInput");
 
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            FoundCar.car_number = string.Empty;
-            await js.InvokeVoidAsync("alert", $"Lỗi: {ex.Message}");
+            Console.WriteLine($"Lỗi: {ex.Message}");
         }
-        // await js.InvokeVoidAsync("scanCapturedImage", "resultInput");
     }
 
     private async Task OpenCameraDialog()
@@ -264,11 +303,11 @@
         var options = new DialogOptions
             {
                 FullScreen = true,
-                CloseButton = true, 
-                MaxWidth = MaxWidth.Large, 
+                CloseButton = true,
+                MaxWidth = MaxWidth.Medium,
             };
 
-        await DialogService.ShowAsync<CustomDialog>("Full Screen Dialog", parameters, options);
+        await DialogService.ShowAsync<CustomDialog>("Máy ảnh", parameters, options);
         await StartCamera();
     }
     private async Task DownloadImage()
@@ -276,75 +315,9 @@
         await js.InvokeVoidAsync("downloadImage");
     }
 
-    public class TripCarLocation
-    {
-        public int id { get; set; }
-        public string car_name { get; set; }
-        public string car_code { get; set; }
-        public string car_number { get; set; }
-        public string color { get; set; }
-        public DateTime vehicle_registration_start { get; set; }
-        public DateTime vehicle_registration_end { get; set; }
-        public float price { get; set; }
-        public int type_id { get; set; }
-        public string type_name { get; set; }
-        public int brand_id { get; set; }
-        public string brand_name { get; set; }
-        public byte isAuto { get; set; }
-        public DateTime year_production { get; set; }
-        public float odo { get; set; }
-        public float insurance_fee { get; set; }
-        public int fuel { get; set; }
-        public string description { get; set; }
-        public int number_seat { get; set; }
-        public List<trip_detail_custom> Trip_Detail_Customs { get; set; }
-        public List<guest_cars_custom> guest_Cars_Customs { get; set; }
-        public List<guest_car_driver_custom> guest_Car_Driver_Customs { get; set; }
-    }
-
-    public class trip_detail_custom
-    {
-        public string from { get; set; }
-        public string to { get; set; }
-        public string location_from { get; set; }
-        public string location_to { get; set; }
-        public string driver_name { get; set; }
-        public DateTime time_start { get; set; }
-        public DateTime time_end { get; set; }
-    }
-
-    public class trip_custom
-    {
-        public string from { get; set; }
-        public string to { get; set; }
-        public string location_from { get; set; }
-        public string location_to { get; set; }
-    }
-
-    public class guest_cars_custom
-    {
-        public DateTime date_start { get; set; }
-        public DateTime date_end { get; set; }
-    }
-    public class guest_car_driver_custom
-    {
-        public DateTime date_start { get; set; }
-        public DateTime date_end { get; set; }
-        public string driver_name { get; set; }
-    }
-
-    public class TripDetailViewModel
-    {
-        public string from { get; set; }
-        public string to { get; set; }
-        public string location_from { get; set; }
-        public string location_to { get; set; }
-        public DateTime time_start { get; set; }
-        public DateTime time_end { get; set; }
-    }
-
-    public class car
+    public class car_number_check
     {
         public string car_number { get; set; }
     }
+
 }

@@ -47,48 +47,6 @@ async function getImageUrl(fileName) {
     }
 }
 
-window.readTextFromImage = async function (fileInputId, resultInputId) {
-    const inputElement = document.getElementById(fileInputId);
-    const resultElement = document.getElementById(resultInputId);
-
-    if (inputElement.files && inputElement.files[0]) {
-        const file = inputElement.files[0];
-        const reader = new FileReader();
-
-        reader.onload = async function () {
-            const image = new Image();
-            image.src = reader.result;
-
-            image.onload = async function () {
-                const canvas = document.createElement('canvas');
-                canvas.width = image.width;
-                canvas.height = image.height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(image, 0, 0);
-
-                // Sử dụng thư viện OCR như Tesseract.js để nhận diện văn bản
-                const result = await Tesseract.recognize(
-                    canvas.toDataURL(),
-                    'eng',
-                    { logger: m => console.log(m) }
-                );
-
-                const text = result.text.trim();
-                resultElement.value = text;
-
-                // Lưu dữ liệu vào localStorage
-                try {
-                    localStorage.setItem("scannedText", text);
-                    console.log("Dữ liệu được lưu vào localStorage:", text);
-                } catch (error) {
-                    console.error("Không thể lưu dữ liệu vào localStorage:", error);
-                }
-            };
-        };
-
-        reader.readAsDataURL(file);
-    }
-};
 
 
 
@@ -123,7 +81,7 @@ window.startCamera = function () {
 // Switch camera function
 window.switchCamera = function () {
     currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
-    window.startCamera(); 
+    window.startCamera();
 };
 
 // Capture image function
@@ -148,15 +106,10 @@ window.captureImage = async function () {
     imgElement.style.display = "block";
 
     try {
-        const fileName = `images/${new Date().toISOString()}.png`;
-        const base64Data = imageData.split(',')[1];
-        const imageUrl = await uploadImage(fileName, base64Data);
-
-        console.log("Image uploaded successfully: ", imageUrl);
-
-        localStorage.setItem('capturedImageUrl', imageUrl);
+        // Lưu ảnh vào localStorage
+        localStorage.setItem('imageInput', imageData); // Lưu ảnh dưới dạng base64
     } catch (err) {
-        console.error("Lỗi tải ảnh lên: ", err);
+        console.error("Lỗi lưu ảnh vào localStorage: ", err);
     }
 };
 
@@ -178,12 +131,12 @@ window.stopCameraAndHide = function () {
 
     if (window.currentStream) {
         const tracks = window.currentStream.getTracks();
-        tracks.forEach(track => track.stop()); 
-        window.currentStream = null; 
+        tracks.forEach(track => track.stop());
+        window.currentStream = null;
     }
 
     if (videoElement) {
-        videoElement.srcObject = null; 
+        videoElement.srcObject = null;
         videoElement.style.display = "none";
     }
 
@@ -200,38 +153,78 @@ window.downloadImage = function () {
 };
 
 
-window.readTextFromImage = async function (fileInputId, resultInputId) {
+window.readTextFromImage = async function (fileInputId) {
     const inputElement = document.getElementById(fileInputId);
 
+    // Kiểm tra nếu có file được chọn từ input
     if (inputElement.files && inputElement.files[0]) {
         try {
+            // Nhận diện văn bản từ file đã chọn
             const result = await Tesseract.recognize(
-                inputElement.files[0],
+                inputElement.files[0], // Sử dụng file đã chọn
                 'eng',
                 { logger: m => console.log(m) }
             );
 
             const text = result.data.text.trim();
-
             return text.length >= 5 ? text : "Không nhận diện được";
         } catch (error) {
             console.error("OCR Error:", error);
             return "Không nhận diện được";
         }
     }
-    return "Không có file";
+
+    // Kiểm tra nếu có ảnh trong localStorage, nếu có thì sử dụng
+    const imageData = localStorage.getItem('imageInput');
+    if (imageData) {
+        try {
+            // Chuyển base64 thành ảnh
+            const img = new Image();
+            img.src = imageData;
+
+            // Đợi ảnh tải xong trước khi xử lý OCR
+            return new Promise((resolve, reject) => {
+                img.onload = async function () {
+                    try {
+                        const result = await Tesseract.recognize(
+                            img,
+                            'eng',
+                            { logger: m => console.log(m) }
+                        );
+
+                        const text = result.data.text.trim();
+                        console.log("Nhận diện văn bản từ localStorage: ", text);
+
+                        resolve(text.length >= 5 ? text : "Không nhận diện được");
+                    } catch (error) {
+                        console.error("OCR Error:", error);
+                        reject("Không nhận diện được");
+                    }
+                };
+
+                img.onerror = function () {
+                    reject("Lỗi khi tải ảnh từ localStorage");
+                };
+            });
+        } catch (error) {
+            console.error("Lỗi xử lý ảnh từ localStorage:", error);
+            return "Không nhận diện được";
+        }
+    } else {
+        return "Không có ảnh hoặc file để nhận diện";
+    }
 };
 
 
 window.triggerClick = function (elementId) {
     const element = document.getElementById(elementId);
     if (element) {
-        element.click();  
+        element.click();
     }
 };
 
 window.scanCapturedImage = async function (resultInputId) {
-    const imageBase64 = localStorage.getItem('capturedImage'); 
+    const imageBase64 = localStorage.getItem('capturedImage');
     if (!imageBase64) {
         alert("Không tìm thấy ảnh để quét OCR.");
         return;
@@ -241,10 +234,10 @@ window.scanCapturedImage = async function (resultInputId) {
         const result = await Tesseract.recognize(
             imageBase64,
             'eng',
-            { logger: m => console.log(m) } 
+            { logger: m => console.log(m) }
         );
 
-        const text = result.data.text.trim(); 
+        const text = result.data.text.trim();
         const resultInput = document.getElementById(resultInputId);
 
         if (resultInput) {
