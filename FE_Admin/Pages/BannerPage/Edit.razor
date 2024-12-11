@@ -2,7 +2,7 @@
 @inject HttpClient httpClient
 @inject IJSRuntime js
 @inject ISnackbar Snackbar
-
+@inject NavigationManager navigationManager
 <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
     <MudGrid>
         <MudItem xs="12">
@@ -44,8 +44,10 @@
                                           Class="py-3"
                                           Disabled="true"
                                           Placeholder="Người tạo" Variant="Variant.Outlined" Required="true" />
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="SubmitForm" Class="mt-3 float-end">Lưu</MudButton>
 
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="SubmitForm" Class="mt-3">Lưu</MudButton>
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Cancel" Color="Color.Error" Class="mr-2 mt-3 float-end"
+                                       OnClick="@Cancel">Hủy</MudButton>
                         </MudForm>
                     </MudItem>
                 </MudGrid>
@@ -172,16 +174,17 @@
                 var response = await httpClient.PutAsJsonAsync(url + "/" + Id, Banner);
                 if (response.IsSuccessStatusCode)
                 {
-                    Snackbar.Add($"Chỉnh sửa {Id} thành công", Severity.Success);
+                    Snackbar.Add($"Chỉnh sửa thành công", Severity.Success);
+                    navigationManager.NavigateTo("/getbanner");
                 }
                 else
                 {
-                    Snackbar.Add($"Chỉnh sửa {Id} thất bại", Severity.Warning);
+                    Snackbar.Add($"Chỉnh sửa thất bại", Severity.Warning);
                 }
             }
             else
             {
-                Snackbar.Add($"Chỉnh sửa {Id} thất bại", Severity.Warning);
+                Snackbar.Add($"Chỉnh sửa thất bại", Severity.Warning);
             }
         }
         catch (Exception ex)
@@ -201,4 +204,9 @@
             await EditBanner();
         }
     }
+    private async Task Cancel()
+    {
+        navigationManager.NavigateTo("/getbanner");
+    }
+
 }
