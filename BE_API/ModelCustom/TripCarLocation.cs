@@ -25,8 +25,9 @@ namespace BE_API.ModelCustom
         public string description { get; set; }
         public int number_seat { get; set; }
         public List<trip_detail_custom> Trip_Detail_Customs { get; set; }
-        public List<guest_cars_custom> guest_Cars_Customs { get; set; }
         public List<guest_car_driver_custom> guest_Car_Driver_Customs { get; set; }
+        public List<guest_cars_custom> guest_Cars_Customs { get; set; }
+
     }
     public class trip_detail_custom
     {
@@ -34,12 +35,15 @@ namespace BE_API.ModelCustom
         public string driver_name { get; set; }
         public string date { get; set; }
     }
-    public class guest_cars_custom
-    {
-        public string date { get; set; }
-    }
     public class guest_car_driver_custom
     {
+        public string cus_name { get; set; }
+        public string date { get; set; }
+        public string driver_name { get; set; }
+    }
+    public class  guest_cars_custom
+    {
+        public string cus_name { get; set; }
         public string date { get; set; }
         public string driver_name { get; set; }
     }

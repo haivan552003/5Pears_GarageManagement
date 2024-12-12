@@ -10,16 +10,16 @@
 
 <style>
     .loading-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(255, 255, 255, 0.85); /* Màu trắng với độ mờ 50% */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999; /* Đảm bảo overlay hiển thị trên các thành phần khác */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85); /* Màu trắng với độ mờ 50% */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Đảm bảo overlay hiển thị trên các thành phần khác */
     }
 
 </style>
@@ -32,9 +32,9 @@
         </MudItem>
     </div>
 }
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.Small">
+<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.Medium">
     <MudPaper Elevation="1">
-        <MudGrid Class="pa-3">
+        <MudGrid Class="pa-2">
             <MudItem xs="12">
                 <MudPaper Elevation="0" Class="text-center">
                     <MudImage Src="@newCar.car_number" Elevation="0" Style="max-width:350px; height: 150px" Class="mb-3 mx-auto" id="capturedImage" />
@@ -55,20 +55,21 @@
                     <MudText Typo="Typo.h5" Class="fw-bold" Color="Color.Primary">THÔNG TIN XE</MudText>
                     <MudText Typo="Typo.subtitle1" Class="fw-bold">Biển số xe</MudText>
                     <MudTextField id="resultInput" Variant="Variant.Outlined" Disabled="true" Margin="Margin.Dense" @bind-Value="FoundCar.car_number" />
-                    <MudGrid>
-                        <MudItem xs="6" Class="pb-3">
-                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Tên xe:</MudText>
-                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Màu xe:</MudText>
-                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Loại xe:</MudText>
-                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Hãng xe:</MudText>
-                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Loại hộp số:</MudText>
-                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Hạn đăng kiểm:</MudText>
-                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Nhiên liệu:</MudText>
-                        </MudItem>
-                        <MudItem xs="6" Class="pb-2">
+                    @if (SelectedCar != null)
+                    {
+                        <MudGrid>
+                            <MudItem xs="6" Class="pb-3">
+                                <MudText Typo="Typo.subtitle1" Class="fw-bold">Tên xe:</MudText>
+                                <MudText Typo="Typo.subtitle1" Class="fw-bold">Màu xe:</MudText>
+                                <MudText Typo="Typo.subtitle1" Class="fw-bold">Loại xe:</MudText>
+                                <MudText Typo="Typo.subtitle1" Class="fw-bold">Hãng xe:</MudText>
+                                <MudText Typo="Typo.subtitle1" Class="fw-bold">Loại hộp số:</MudText>
+                                <MudText Typo="Typo.subtitle1" Class="fw-bold">Hạn đăng kiểm:</MudText>
+                                <MudText Typo="Typo.subtitle1" Class="fw-bold">Nhiên liệu:</MudText>
+                            </MudItem>
+                            <MudItem xs="6" Class="pb-2">
 
-                            @if (SelectedCar != null)
-                            {
+
                                 <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.car_name</MudText>
                                 <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.color</MudText>
                                 <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.type_name</MudText>
@@ -77,42 +78,157 @@
                                 <MudText Typo="Typo.subtitle1" Align="Align.End">@SelectedCar.vehicle_registration_end.ToString("dd/MM/yyyy")</MudText>
                                 <MudText Typo="Typo.subtitle1" Align="Align.End">
                                     @(SelectedCar.fuel == 1 ? "Xăng RON 92 (E5)" :
-                                        (SelectedCar.fuel == 2 ? "RON 92-III" :
-                                        (SelectedCar.fuel == 3 ? "RON 95-IV" :
-                                        (SelectedCar.fuel == 4 ? "Diesel 0,05%S" :
-                                        (SelectedCar.fuel == 5 ? "Diesel 0,001%S (Diesel Euro 5)" :
-                                        (SelectedCar.fuel == 6 ? "Pin Lithium-ion(Li-ion)" :
-                                        (SelectedCar.fuel == 7 ? "Pin Lithium Iron Phosphate" :
-                                        (SelectedCar.fuel == 8 ? "Pin thể rắn(Solid-State Battery)" :
-                                        (SelectedCar.fuel == 9 ? "Hybrid truyền thống(HEV)" : "Không xác định")))))))))
+                                            (SelectedCar.fuel == 2 ? "RON 92-III" :
+                                            (SelectedCar.fuel == 3 ? "RON 95-IV" :
+                                            (SelectedCar.fuel == 4 ? "Diesel 0,05%S" :
+                                            (SelectedCar.fuel == 5 ? "Diesel 0,001%S (Diesel Euro 5)" :
+                                            (SelectedCar.fuel == 6 ? "Pin Lithium-ion(Li-ion)" :
+                                            (SelectedCar.fuel == 7 ? "Pin Lithium Iron Phosphate" :
+                                            (SelectedCar.fuel == 8 ? "Pin thể rắn(Solid-State Battery)" :
+                                            (SelectedCar.fuel == 9 ? "Hybrid truyền thống(HEV)" : "Không xác định")))))))))
                                 </MudText>
 
-                            }
-                        </MudItem>
-                    </MudGrid>
-                </MudPaper>
-            </MudItem>
 
-            <MudItem xs="12">
-                <MudPaper Elevation="0">
-                    <MudText Typo="Typo.h5" Class="fw-bold mt-2" Color="Color.Primary">LỊCH TRÌNH XE</MudText>
-
-                    <MudDataGrid Class="mx-auto pa-2" T="trip_detail_custom" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true"
-                                 SortMode="SortMode.Multiple" Filterable="false" Hideable="true">
-                        <Columns>
-                            <PropertyColumn T="trip_detail_custom" Class="fw-bold" TProperty="string" Property="x => x.date" Title="Thời gian" />
-                            <PropertyColumn T="trip_detail_custom" Class="fw-bold" TProperty="string" Property="x => x.location" Title="Địa điểm" />
-                        </Columns>
-                        <PagerContent>
-                            <MudDataGridPager T="trip_detail_custom" />
-                        </PagerContent>
-                    </MudDataGrid>
-
+                            </MudItem>
+                        </MudGrid>
+                    }
                 </MudPaper>
             </MudItem>
         </MudGrid>
-
     </MudPaper>
+
+    <MudGrid Class="d-none d-md-flex">
+        @if (trip_detail_custom != null && trip_detail_custom.Any())
+        {
+            <MudItem xs="12">
+                <MudPaper Elevation="0">
+                    <MudText Typo="Typo.h5" Class="fw-bold mt-2 mb-2" Color="Color.Primary">LỊCH TRÌNH THUÊ XE</MudText>
+
+                    <MudTable Items="@trip_detail_custom" Hover="true" Bordered="true" HorizontalScrollbar="true" Striped="true">
+                        <HeaderContent>
+                            <MudTh Class="fw-bold">Thời gian</MudTh>
+                            <MudTh Class="fw-bold">Địa điểm</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@context.date</MudTd>
+                            <MudTd>@context.location</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
+        }
+
+        @if (guest_car_driver_custom != null && guest_car_driver_custom.Any())
+        {
+            <MudItem xs="12">
+                <MudPaper Elevation="0">
+                    <MudText Typo="Typo.h5" Class="fw-bold mt-2 mb-2" Color="Color.Primary">KHÁCH THUÊ XE VÀ TÀI XẾ</MudText>
+
+                    <MudTable Items="@guest_car_driver_custom" Hover="true" Bordered="true" HorizontalScrollbar="true" Striped="true">
+                        <HeaderContent>
+                            <MudTh Class="fw-bold">Thời gian</MudTh>
+                            <MudTh Class="fw-bold">Tài xế</MudTh>
+                            <MudTh Class="fw-bold">Khách hàng</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@context.date</MudTd>
+                            <MudTd>@context.driver_name</MudTd>
+                            <MudTd>@context.cus_name</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
+        }
+
+
+        @if (guest_cars_custom != null && guest_cars_custom.Any())
+        {
+            <MudItem xs="12">
+                <MudPaper Elevation="0">
+                    <MudText Typo="Typo.h5" Class="fw-bold mt-2 mb-2" Color="Color.Primary">KHÁCH THUÊ XE</MudText>
+
+                    <MudTable Items="@guest_cars_custom" Hover="true" Bordered="true" HorizontalScrollbar="true" Striped="true">
+                        <HeaderContent>
+                            <MudTh Class="fw-bold">Thời gian</MudTh>
+                            <MudTh Class="fw-bold">Khách hàng</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@context.date</MudTd>
+                            <MudTd>@context.cus_name</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
+        }
+    </MudGrid>
+
+    <MudGrid Class="d-sm-none">
+        @if (trip_detail_custom != null && trip_detail_custom.Any())
+        {
+            <MudItem xs="12">
+                <MudText Typo="Typo.h6" Class="fw-bold mt-2 mb-2" Color="Color.Primary">LỊCH TRÌNH THUÊ XE</MudText>
+                @foreach (var trip in trip_detail_custom)
+                {
+                    <MudCard Class="mb-2">
+                        <MudCardContent>
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Thời gian:</MudText>
+                            <MudText>@trip.date</MudText>
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold mt-1">Địa điểm:</MudText>
+                            <MudText>@trip.location</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                }
+            </MudItem>
+        }
+
+        @if (guest_car_driver_custom != null && guest_car_driver_custom.Any())
+        {
+            <MudItem xs="12">
+                <MudText Typo="Typo.h6" Class="fw-bold mt-2 mb-2" Color="Color.Primary">KHÁCH THUÊ XE VÀ TÀI XẾ</MudText>
+                @foreach (var guest in guest_car_driver_custom)
+                {
+                    <MudCard Class="mb-2">
+                        <MudCardContent>
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Thời gian:</MudText>
+                            <MudText>@guest.date</MudText>
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold mt-1">Tài xế:</MudText>
+                            <MudText>@guest.driver_name</MudText>
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold mt-1">Khách hàng:</MudText>
+                            <MudText>@guest.cus_name</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                }
+            </MudItem>
+        }
+
+        @if (guest_cars_custom != null && guest_cars_custom.Any())
+        {
+            <MudItem xs="12" Class="d-sm-none">
+                <MudText Typo="Typo.h6" Class="fw-bold mt-2 mb-2" Color="Color.Primary">KHÁCH THUÊ XE</MudText>
+                @foreach (var guest in guest_cars_custom)
+                {
+                    <MudCard Class="mb-2">
+                        <MudCardContent>
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Thời gian:</MudText>
+                            <MudText>@guest.date</MudText>
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold mt-1">Khách hàng:</MudText>
+                            <MudText>@guest.cus_name</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                }
+            </MudItem>
+        }
+    </MudGrid>
+
 </MudContainer>
 
 @code {
@@ -145,34 +261,14 @@
         {
             try
             {
-                Console.WriteLine($"Bắt đầu gọi API với car_number: {FoundCar.car_number}");
-
-                Console.WriteLine("Bắt đầu gọi API...");
                 var url = $"http://localhost:49922/api/Cars/CarNumber/{FoundCar.car_number}";
-                Console.WriteLine("URL: " + url);
 
                 var json = await httpClient.GetStringAsync(url);
-                Console.WriteLine("JSON trả về từ API:");
-                Console.WriteLine(json);
-
                 var response = JsonConvert.DeserializeObject<TripCarLocation>(json);
-                Console.WriteLine("Deserialization thành công.");
 
                 if (response != null)
                 {
                     SelectedCar = response;
-
-                    // Log chi tiết từng danh sách
-                    Console.WriteLine("Trip_Detail_Customs:");
-                    response.Trip_Detail_Customs.ForEach(item => Console.WriteLine(item));
-
-
-                    Console.WriteLine("guest_Cars_Customs:");
-                    response.guest_Cars_Customs.ForEach(item => Console.WriteLine(item));
-
-                    Console.WriteLine("guest_Car_Driver_Customs:");
-                    response.guest_Car_Driver_Customs.ForEach(item => Console.WriteLine(item));
-
                     trip_detail_custom = response.Trip_Detail_Customs.ToList();
                     guest_cars_custom = response.guest_Cars_Customs.ToList();
                     guest_car_driver_custom = response.guest_Car_Driver_Customs.ToList();
@@ -243,6 +339,7 @@
     {
         try
         {
+            isLoading = true;
             var ocrResult = await js.InvokeAsync<string>("readTextFromImage", "imageInput");
 
             if (!string.IsNullOrEmpty(ocrResult) && ocrResult != "Không nhận diện được")
@@ -253,6 +350,7 @@
             else
             {
                 FoundCar.car_number = string.Empty;
+                isLoading = false;
                 Snackbar.Add("Không thể nhận diện biển số xe", Severity.Warning);
             }
 
@@ -262,6 +360,7 @@
         }
         catch (Exception ex)
         {
+            isLoading = false;
             Console.WriteLine($"Lỗi: {ex.Message}");
         }
     }

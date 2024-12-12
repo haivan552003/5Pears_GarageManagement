@@ -231,18 +231,41 @@ window.scanCapturedImage = async function (resultInputId) {
     }
 
     try {
+        // Gọi OCR với Tesseract.js
         const result = await Tesseract.recognize(
             imageBase64,
             'eng',
             { logger: m => console.log(m) }
         );
 
-        const text = result.data.text.trim();
-        const resultInput = document.getElementById(resultInputId);
+        // Lấy văn bản từ OCR và loại bỏ tất cả các ký tự không hợp lệ
+        let text = result.data.text.trim();
 
+        // Loại bỏ tất cả các ký tự không hợp lệ, chỉ giữ lại ký tự hợp lệ
+        text = text.replace(/[^A-Z0-9-\n]/g, ''); // Chỉ giữ lại chữ cái, số, và dấu '-'
+
+        // Tách từng dòng (trong trường hợp kết quả nhiều dòng)
+        const lines = text.split("\n").map(line => line.trim());
+
+        // Regex kiểm tra biển số Việt Nam hợp lệ
+        const plateRegex = /^[0-9]{2}[A-Z]{1}-[0-9]{3}\.?[0-9]{2}$/; // Ví dụ: 99A-123.45
+
+        // Tìm dòng khớp với regex
+        let plateNumber = lines.find(line => plateRegex.test(line));
+
+        // Kiểm tra lại kết quả để đảm bảo nó là biển số hợp lệ
+        if (plateNumber) {
+            // Kiểm tra lần nữa nếu có ký tự lạ hoặc định dạng không phù hợp
+            plateNumber = convertToValidLicensePlate(plateNumber); // Sử dụng hàm convert để chuẩn hóa biển số
+        } else {
+            plateNumber = "Không nhận diện được biển số hợp lệ"; // Nếu không tìm thấy biển số hợp lệ
+        }
+
+        // Hiển thị kết quả vào input
+        const resultInput = document.getElementById(resultInputId);
         if (resultInput) {
-            resultInput.value = text;
-            console.log("Kết quả OCR: ", text);
+            resultInput.value = plateNumber;
+            console.log("Kết quả OCR: ", plateNumber);
         } else {
             console.error("Không tìm thấy phần tử đầu vào để hiển thị kết quả OCR.");
         }
@@ -251,3 +274,54 @@ window.scanCapturedImage = async function (resultInputId) {
         alert("Không thể nhận diện văn bản từ ảnh. Vui lòng thử lại.");
     }
 };
+
+// Hàm convert biển số hợp lệ
+function convertToValidLicensePlate(input) {
+    // Định nghĩa các ký tự hợp lệ cho biển số xe Việt Nam
+    const validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    // Chuyển các ký tự đặc biệt trong tiếng Việt thành các ký tự tương ứng
+    const vietnameseToLatinMap = {
+        'à': 'a', 'á': 'a', 'ả': 'a', 'ã': 'a', 'ạ': 'a',
+        'ă': 'a', 'ắ': 'a', 'ằ': 'a', 'ẳ': 'a', 'ẵ': 'a', 'ặ': 'a',
+        'â': 'a', 'ấ': 'a', 'ầ': 'a', 'ẩ': 'a', 'ẫ': 'a', 'ậ': 'a',
+        'è': 'e', 'é': 'e', 'ẻ': 'e', 'ẽ': 'e', 'ẹ': 'e',
+        'ê': 'e', 'ế': 'e', 'ề': 'e', 'ể': 'e', 'ễ': 'e', 'ệ': 'e',
+        'ì': 'i', 'í': 'i', 'ỉ': 'i', 'ĩ': 'i', 'ị': 'i',
+        'ò': 'o', 'ó': 'o', 'ỏ': 'o', 'õ': 'o', 'ọ': 'o',
+        'ô': 'o', 'ố': 'o', 'ồ': 'o', 'ổ': 'o', 'ỗ': 'o', 'ộ': 'o',
+        'ơ': 'o', 'ớ': 'o', 'ờ': 'o', 'ở': 'o', 'ỡ': 'o', 'ợ': 'o',
+        'ù': 'u', 'ú': 'u', 'ủ': 'u', 'ũ': 'u', 'ụ': 'u',
+        'ư': 'u', 'ứ': 'u', 'ừ': 'u', 'ử': 'u', 'ữ': 'u', 'ự': 'u',
+        'ỳ': 'y', 'ý': 'y', 'ỷ': 'y', 'ỹ': 'y', 'ỵ': 'y',
+        'đ': 'd'
+    };
+
+    // Chuyển đổi ký tự tiếng Việt thành ký tự tương ứng
+    input = input.split('').map(char => vietnameseToLatinMap[char] || char).join('');
+
+    // Lọc ra chỉ những ký tự hợp lệ
+    let filteredInput = '';
+    for (let i = 0; i < input.length; i++) {
+        if (validChars.includes(input[i].toUpperCase())) {
+            filteredInput += input[i].toUpperCase();
+        }
+    }
+
+    // Đảm bảo đầu ra theo định dạng biển số xe Việt Nam: "XX-123.41"
+    let formatted = '';
+
+    // Phần mã tỉnh và chữ cái đầu tiên
+    formatted += filteredInput.substring(0, 2) + '-';
+
+    // Phần số
+    formatted += filteredInput.substring(2, 5);
+
+    // Nếu có phần số thập phân, thêm phần này vào
+    if (filteredInput.length > 5) {
+        formatted += '.' + filteredInput.substring(5, 7);
+    }
+
+    return formatted;
+}
+
