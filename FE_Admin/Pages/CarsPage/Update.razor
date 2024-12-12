@@ -19,7 +19,7 @@
                         <MudText Typo="Typo.h5" Class="mb-4">Thông tin xe</MudText>
                         <MudGrid>
                             <MudItem xs="4">
-                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_number" Label="Biển số xe" />
+                                <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_number" Label="Biển số xe" Disabled="true" />
                             </MudItem>
                             <MudItem xs="4">
                                 <MudTextField Variant="Variant.Outlined" @bind-Value="Car.car_name" Label="Tên xe" Required="true" RequiredError="Tên xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateCarName))" />
@@ -40,6 +40,7 @@
                                     <MudSelectItem Value="8">Pin thể rắn (Solid-State Battery)</MudSelectItem>
                                     <MudSelectItem Value="9">Hybrid truyền thống (HEV)</MudSelectItem>
                                     <MudSelectItem Value="10">Plug-in Hybrid (PHEV)</MudSelectItem>
+                                    <MudSelectItem Value="11">Pin CATL</MudSelectItem>
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="4">
@@ -66,9 +67,9 @@
                             </MudItem>
                             <MudItem xs="4">
                                 <MudSelect @bind-Value="Car.isRetail"
-                                           Label="Loại hộp số"
+                                           Label="Loại dịch vụ"
                                            Required="true"
-                                           RequiredError="Vui lòng chọn loại hộp số"
+                                           RequiredError="Vui lòng chọn loại dịch vụ"
                                            Variant="Variant.Outlined">
                                     <MudSelectItem Value="@((byte)0)">Xe dịch vụ</MudSelectItem>
                                     <MudSelectItem Value="@((byte)1)">Xe cho thuê</MudSelectItem>

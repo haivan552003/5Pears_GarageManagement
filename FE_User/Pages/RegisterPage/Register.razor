@@ -6,14 +6,12 @@
 @inject NavigationManager NavigationManager
 @layout EmptyLayout
 
-<MudContainer Class="mt-5 pa-0" MaxWidth="MaxWidth.False" Style="margin-top: 100px;">
-    <MudGrid Class="pa-0 justify-center">
-        <MudItem xs="6" Class="mx-auto">
+<MudContainer Class="d-flex justify-content-center mt-10" Style="min-height: 100vh; padding: 0;">
+    <MudGrid Class="pa-0" Style="width: 100%; max-width: 100%;">
+        <MudItem xs="12" sm="8" md="6" lg="4" Class="mx-auto d-flex justify-content-center">
             <MudForm @ref="form" Model="@model">
                 <DataAnnotationsValidator />
-                <MudGrid>
-                    <MudItem xs="12">
-                        <MudCard Class="mud-elevation-12 rounded pa-6" Style="border-radius: 12px;">
+                <MudCard Class="pl-1 pr-1" Style="border-radius: 8px; width: 100%; width: 400px;">
                             @if (!isOtpSent)
                             {
                                 <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center pt-5">Đăng ký tài khoản</MudText>
@@ -98,15 +96,14 @@
                                             <MudText>Tiếp tục</MudText>
                                         }
                                     </MudButton>
-
-                                    <MudGrid Class="mt-3 mb-5">
-                                        <MudItem xs="6" Class="text-center pa-0">
-                                            <MudLink Href="/" Underline="Underline.Hover">Trang chủ</MudLink>
-                                        </MudItem>
-                                        <MudItem xs="6" Class="text-center pa-0">
-                                            <MudLink Href="/login" Underline="Underline.Hover">Đã có tài khoản? Đăng nhập</MudLink>
-                                        </MudItem>
-                                    </MudGrid>
+                            <MudGrid Class="pt-2 mb-3">
+                                <MudItem xs="4" Class="text-start">
+                                    <MudLink Href="/" Underline="Underline.Hover">Trang chủ</MudLink>
+                                </MudItem>
+                                <MudItem xs="8" Class="text-end">
+                                    <MudLink Href="/login" Underline="Underline.Hover">Đã có tài khoản? Đăng nhập</MudLink>
+                                </MudItem>
+                            </MudGrid>
                                 </MudCardContent>
                             }
                             else
@@ -170,8 +167,6 @@
                                 </MudCardContent>
                             }
                         </MudCard>
-                    </MudItem>
-                </MudGrid>
             </MudForm>
         </MudItem>
     </MudGrid>
