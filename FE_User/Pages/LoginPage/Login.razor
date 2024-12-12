@@ -4,14 +4,14 @@
 @inject NavigationManager NavigationManager
 @layout EmptyLayout
 
-<MudContainer Class="mt-16 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid Class="pa-0">
-        <MudItem xs="3" Class="mx-auto">
+<MudContainer Class="d-flex justify-content-center mt-16" Style="min-height: 100vh; padding: 0;">
+    <MudGrid Class="pa-0" Style="width: 100%; max-width: 100%;">
+        <MudItem xs="12" sm="8" md="6" lg="4" Class="mx-auto d-flex justify-content-center">
             <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
                 <DataAnnotationsValidator />
                 <MudGrid>
                     <MudItem xs="12">
-                        <MudCard>
+                        <MudCard Class="pl-1 pr-1" Style="border-radius: 8px; width: 100%; width: 400px;">
                             <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center pt-5">BOXCARS</MudText>
                             <MudCardContent>
                                 <MudTextField Label="Email" Class="mt-3"
@@ -24,7 +24,7 @@
                                               @bind-Value="model.password" For="@(() => model.password)" InputType="InputType.Password" />
 
                                 <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mx-auto w-100 mt-7">Đăng nhập</MudButton>
-                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Material.Filled.PhoneAndroid" IconColor="Color.Secondary" Class="mx-auto w-100 mt-1" Href="/login_phone">
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Material.Filled.PhoneAndroid" IconColor="Color.Secondary" Class="mx-auto w-100 mt-3" Href="/login_phone">
                                     Đăng nhập bằng SĐT
                                 </MudButton>
                                 <MudGrid Class="mt-3 mb-5">
