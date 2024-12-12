@@ -34,13 +34,11 @@
                         </MudItem>
                     </ToolBarContent>
 
-                    <Columns>
-                        <PropertyColumn T="car" Class="fw-bold" TProperty="string" Property="x => x.car_code" Title="Mã xe"
-                                        Style="width: 15%; white-space: nowrap;" />
+                    <Columns>                   
                         <PropertyColumn T="car" Class="fw-bold" TProperty="string" Property="x => x.car_name" Title="Tên xe"
                                         Style="width: 20%; white-space: nowrap;" />
 
-                        <TemplateColumn T="car" Class="fw-bold" Title="Số chỗ ngồi" Style="white-space: nowrap;">
+                        <TemplateColumn T="car" Class="fw-bold" Title="Biển số xe" Style="white-space: nowrap;">
                             <CellTemplate Context="element">
                                 @if (string.IsNullOrEmpty(element.Item.car_number))
                                 {
@@ -52,6 +50,12 @@
                                 }
                             </CellTemplate>
                         </TemplateColumn>
+                           <PropertyColumn T="car" Style="width: 80%;" TProperty="string" Title="Loại dịch vụ xe" Class="fw-bold">
+                            <CellTemplate>
+                                @(context.Item.is_retail == 0 ? "Xe dịch vụ" : "Xe cho thuê")
+                            </CellTemplate>
+                        </PropertyColumn>
+                      
 
                         <PropertyColumn T="car" Class="fw-bold" TProperty="string" Property="x => x.color" Title="Màu sắc"
                                         Style="width: 15%; white-space: nowrap;" />
@@ -64,6 +68,9 @@
 
                         <TemplateColumn T="car" Class="fw-bold" Title="Chức năng" Style="white-space: nowrap;">
                             <CellTemplate Context="element">
+                                <MudTooltip Text="Đặt vé">
+                                    <MudIconButton Href="@($"/calendarCar/{element.Item.id}")" Icon="@Icons.Material.Outlined.AddCircle" Color="Color.Secondary" Size="Size.Small" />
+                                </MudTooltip>
                                 <MudTooltip Text="Chỉnh sửa">
                                     <MudIconButton Href="@($"/editcar/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
                                 </MudTooltip>
