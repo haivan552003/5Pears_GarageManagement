@@ -89,4 +89,21 @@ namespace BE_API.Models
 
     }
 
+
+     public class carlendarCar
+    {
+        public DateTime? date { get; set; }
+        public DateTime? date_start { get; set; }
+        public DateTime? date_end { get; set; }
+        public string name_cus { get; set; }
+        public string phone { get; set; }
+        public string email { get; set; }
+        public string name_drivers { get; set; }
+        public string sdt_driver { get; set; }
+        public string email_driver { get; set; }
+        public string code_driver { get; set; }
+    }
+
+
+
 }
