@@ -2,8 +2,19 @@
 @using MudBlazor
 @inject HttpClient httpClient
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-5 mb-5">
-    <MudGrid>
+<style>
+       .mud-card1 {
+        transition: all 0.2s ease-in-out;
+    }
+
+        .mud-card1:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+</style>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-6 mb-5">
+    <MudGrid Class="mt-5">
         <MudItem xs="3">
             <MudPaper Width="300px" Class="d-inline-flex p-3" Elevation="0">
                 <MudNavMenu Dense="true" Rounded="true" Class="mud-width-full">
@@ -46,34 +57,82 @@
                 @foreach (var item in PaginatedElements)
                 {
                     <MudItem xs="12" sm="6" md="4" Class="mb-4">
-                        <a Href="@($"/getidcar/{item.id}")" Class="mud-width-full" Style="text-decoration: none;">
-                            <MudPaper Class="p-4" Style="padding: 1.5rem;">
+                        <a Href="@($"/getidcar/{item.id}")" Style="text-decoration: none;">
+                            <MudPaper Class="p-3 mud-card1">
                                 <img src="@item.img_name" alt="Hình xe"
-                                     style="width: 100%; height: 200px; border-radius: 15%; object-fit: cover;"
+                                     style="width: 100%; height: 220px; border-radius: 5px; object-fit: cover;"
                                      class="mb-3" />
-                                <MudText Typo="Typo.h6" Class="mb-1">@item.car_name</MudText>
-                                <MudButton Variant="Variant.Outlined" Size="Size.Small" Color="Color.Primary" Class="mb-1">
-                                    @(item.isAuto == 0 ? "Tự động" : "Số Sàn")
-                                </MudButton>
-                                <MudItem Class="d-flex align-center">
-                                    <MudIcon Icon="@Icons.Material.Filled.Category" />
-                                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="ml-1">@item.type_name</MudText>
+                                <MudText Typo="Typo.h6" Class="mb-1 text-center fw-bold ">@item.car_name</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-center"> (@(item.isAuto == 0 ? "Xe số tự động" : "Xe số sàn"))</MudText>
+                                <MudItem Class="d-flex align-center pt-2 pb-2">
+                                    <MudIcon Icon="fas fa-car" Size="Size.Small" Color="Color.Primary" />
+                                    <MudText Typo="Typo.body2" Class="ml-2">@item.type_name</MudText>
                                 </MudItem>
-                                <MudGrid Class="mt-3">
-                                    <MudItem xs="3" Class="d-flex align-center">
+                                <MudItem Class="d-flex align-center pt-2 pb-2">
+                                    <MudIcon Icon="fas fa-copyright" Size="Size.Small" Color="Color.Primary" />
+                                    <MudText Typo="Typo.body2" Class="ml-2">@item.brand_name</MudText>
+                                </MudItem>
+                                <MudItem Class="d-flex align-center pt-2 pb-2">
+                                    <MudIcon Icon="fas fa-gas-pump" Size="Size.Small" Color="Color.Primary" />
+                                    @if (item.fuel == 1)
+                                    {
+                                        <MudText Typo="Typo.body2" Class="ml-2">Xăng RON 92 (E5)</MudText>
+                                    }
+                                    else if (item.fuel == 2)
+                                    {
+                                        <MudText Typo="Typo.body2" Class="ml-2">RON 95-III</MudText>
+                                    }
+                                    else if (item.fuel == 3)
+                                    {
+                                        <MudText Typo="Typo.body2" Class="ml-2">RON 95-IV</MudText>
+                                    }
+                                    else if (item.fuel == 4)
+                                    {
+                                        <MudText Typo="Typo.body2" Class="ml-2">Diesel 0,05%5</MudText>
+                                    }
+                                    else if (item.fuel == 5)
+                                    {
+                                        <MudText Typo="Typo.body2" Class="ml-2">Diesel 0,001%S (Diesel Euro 5)</MudText>
+                                    }
+                                    else if (item.fuel == 6)
+                                    {
+                                        <MudText Typo="Typo.body2" Class="ml-2">Pin Lithium-ion (Li-ion)</MudText>
+                                    }
+                                    else if (item.fuel == 7)
+                                    {
+                                        <MudText Typo="Typo.body2" Class="ml-2">Pin Lithium Iron Phosphate (LFP)</MudText>
+                                    }
+                                    else if (item.fuel == 8)
+                                    {
+                                        <MudText Typo="Typo.body2" Class="ml-2">Pin thể rắn (Solid-State Battery)</MudText>
+                                    }
+                                    else if (item.fuel == 9)
+                                    {
+                                        <MudText Typo="Typo.body2" Class="ml-2">Hybrid truyền thống (HEV)</MudText>
+                                    }
+                                    else if (item.fuel == 10)
+                                    {
+                                        <MudText Typo="Typo.body2" Class="ml-2">Plug-in Hybrid (PHEV)</MudText>
+                                    }
+                                    else if (item.fuel == 11)
+                                    {
+                                        <MudText Typo="Typo.body2" Class="ml-2">Pin CATL</MudText>
+                                    }
+                                </MudItem>
+                                <MudGrid Class="mt-2">
+                                    <MudItem xs="4" Class="d-flex align-center">
                                         <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Success" />
-                                        <MudText Typo="Typo.subtitle1" Class="ml-1">20</MudText>
+                                        <MudText Typo="Typo.body2" Class="ml-1">@item.rate</MudText>
                                     </MudItem>
 
                                     <MudItem xs="8">
-                                        <MudText Typo="Typo.subtitle1" Color="Color.Error">
-                                            @item.price.ToString("#,##0") /Ngày
+                                        <MudText Typo="Typo.h6" Class="fw-bold" Align="Align.End">
+                                            @item.price_user.ToString("#,##0")
                                         </MudText>
-
                                     </MudItem>
                                 </MudGrid>
                             </MudPaper>
-                         </a>
+                        </a>
                     </MudItem>
                 }
             </MudGrid>

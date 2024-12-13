@@ -30,6 +30,8 @@ namespace FE_User.Models
         public string description {  get; set; }
         public float voucher {  get; set; }
         public int number_seat {  get; set; }
+        public float price_user {  get; set; }
+        public decimal rate {  get; set; }
         public List<car_img> car_img { get; set; }
 
 
