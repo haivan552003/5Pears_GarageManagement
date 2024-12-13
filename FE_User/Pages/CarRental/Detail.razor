@@ -9,25 +9,25 @@
 <MudContainer Class="pt-5">
     <MudGrid>
         <MudItem xs="8">
-            <div class="pb-5">
+            <div class="mb-3">
                 @if (cars.car_img != null && cars.car_img.Any())
                 {
-                    <img src="@cars.car_img.First().name" Alt="Hình chiếc xe" class="img-fluid w-100 mx-auto rounded-3" Style="width:810px; height:600px;" />
+                    <img src="@cars.car_img.First().name" Alt="Hình chiếc xe" class="img-fluid w-100 mx-auto rounded-1" Style="height:572px;" />
                 }
             </div>
             <MudGrid Class="mb-4">
                 <MudItem xs="12">
-                    <MudText Typo="Typo.h4"><b>@cars.car_name</b></MudText>
+                    <MudText Typo="Typo.h4" Class="pb-0"><b>@cars.car_name</b></MudText>
                 </MudItem>
 
-                <MudItem xs="1" Class="d-flex align-center">
+                <MudItem xs="2" Class="d-flex align-center">
                     <MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Warning" />
                     <MudText Typo="Typo.body1" Class="ml-1">4.5</MudText>
                 </MudItem>
 
-                <MudItem xs="1" Class="d-flex align-center">
+                <MudItem xs="10" Class="d-flex align-center">
                     <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Success" />
-                    <MudText Typo="Typo.body1" Class="ml-1">20</MudText>
+                    <MudText Typo="Typo.body1" Class="ml-1">20 lượt đánh giá</MudText>
                 </MudItem>
             </MudGrid>
 
@@ -96,6 +96,10 @@
                     {
                         <MudText Typo="Typo.subtitle1" Class=" fw-bold">Plug-in Hybrid (PHEV)</MudText>
                     }
+                    else if (cars.fuel == 11)
+                    {
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Pin CATL</MudText>
+                    }
                 </MudItem>
             </MudGrid>
 
@@ -107,12 +111,24 @@
                 </MudItem>
 
                 <MudItem xs="12">
-                    <MudText Typo="Typo.subtitle1">
+                    <MudText Typo="Typo.subtitle1" Color="Color.Primary">
                         @cars.car_name
                     </MudText>
-                    <MudText Typo="Typo.subtitle1">
+                    <MudText Typo="Typo.subtitle1" Align="Align.Justify">
                         @cars.description
                     </MudText>
+                    @if (latestImages != null && latestImages.Any())
+                    {
+                        <MudText Typo="Typo.body2" Class="fst-italic" Align="Align.Justify">
+                            (*) Một số hình ảnh của xe
+                        </MudText>
+                        @foreach (var image in latestImages)
+                        {
+                            <MudItem xs="6" Class="mx-auto pa-2 text-center">
+                                <img src="@image.name" class="rounded-1 w-100" />
+                            </MudItem>
+                        }
+                    }
                 </MudItem>
             </MudGrid>
 
@@ -253,29 +269,25 @@
         </MudItem>
 
         <MudItem xs="4">
-            <div class="pb-5">
+            <div class="mb-3">
                 @if (latestImages != null && latestImages.Any())
                 {
-                    @foreach (var image in latestImages)
+                    @foreach (var image in latestImages.Take(2))
                     {
-                        <img src="@image.name" class="rounded-3 pb-3 w-100" Alt="Hình chiếc xe 2" />
+                        <img src="@image.name" class="rounded-1 mb-1 w-100" Alt="Hình chiếc xe 2" />
                     }
-                }
-                else
-                {
-                    <p>No images available.</p>
                 }
             </div>
             <MudPaper Class="p-4" MaxWidth="MaxWidth.Medium" Elevation="1">
                 <MudGrid>
-                    <MudItem xs="7" Class="pb-0 pt-0">
+                    <MudItem xs="12" Class="pb-0 pt-0">
                         <MudText Typo="Typo.h6" Class="fw-bold" Color="Color.Primary">
                             @car_price.ToString("#,##0") VNĐ/ngày
                         </MudText>
                     </MudItem>
-                    <MudItem xs="5" Class="pb-0 pt-0">
+                    @*  <MudItem xs="5" Class="pb-0 pt-0">
                         <MudText Class="text-decoration-line-through fs-14 pt-2">@cars.price.ToString("#,##0") VNĐ/ngày</MudText>
-                    </MudItem>
+                    </MudItem> *@
                     <MudItem xs="12">
                         <MudText Typo="Typo.subtitle1">
                             Thời gian thuê
@@ -308,7 +320,7 @@
                             </MudText>
                         }
 
-                      
+
                     </MudItem>
 
                     @if (cus_id != 0)
@@ -515,7 +527,7 @@
                 var responseTop = await httpClient.GetAsync(urlTopGuestCar);
                 var jsonResponse = await responseTop.Content.ReadAsStringAsync();
                 var guestTrips = JsonSerializer.Deserialize<List<guest_car>>(jsonResponse);
-                var guestTripId = guestTrips.First().id;               
+                var guestTripId = guestTrips.First().id;
                 Navigation.NavigateTo($"/checkoutcar/{guestTripId}");
             }
             else
