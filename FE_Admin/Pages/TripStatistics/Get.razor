@@ -3,6 +3,30 @@
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255); /* Màu trắng với độ mờ 50% */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999; /* Đảm bảo overlay hiển thị trên các thành phần khác */
+    }
+
+</style>
+
+@if (isLoading)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudImage Src="/Image/404.jpg" Alt="NOT FOUND" Elevation="0" Fluid="true" />
+        </MudItem>
+    </div>
+}
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
     <!-- GCD Statistics Card -->
@@ -53,6 +77,9 @@
     private bool isLoadingGCD = true;
     private List<DetailedTripStatistics> gcdStatistics = new();
     private MudTable<DetailedTripStatistics> gcdTable;
+    private string userRole;
+    private bool isInitialized = false;
+    private bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
