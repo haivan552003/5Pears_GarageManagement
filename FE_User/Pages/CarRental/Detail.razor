@@ -3,6 +3,7 @@
 @using System.Text.Json
 @inject HttpClient httpClient
 @inject IJSRuntime js
+@inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 
 
@@ -308,7 +309,7 @@
                             </MudText>
                         }
 
-                      
+
                     </MudItem>
 
                     @if (cus_id != 0)
@@ -442,52 +443,60 @@
 
     private async Task CheckDateRetailCar()
     {
-        try
+        if (customer.driver_license_img1 == null)
         {
-            if (_dateRange == null || id == 0 || !_dateRange.Start.HasValue)
+            Snackbar.Add("Cần phải có ảnh giấy phép lái xe", Severity.Error);
+            Navigation.NavigateTo("/profile");
+        }
+        else
+        {
+            try
             {
-                _showMessage = true;
-                message = "Quý khách vui lòng chọn ngày thuê";
-                return;
-            }
-
-            var request = new CarRentalRequest
+                if (_dateRange == null || id == 0 || !_dateRange.Start.HasValue)
                 {
-                    DateStart = _dateRange.Start.Value,
-                    CarId = id
-                };
-
-            var response = await httpClient.PostAsJsonAsync(urlCheckDateRetailCar, request);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var isRented = await response.Content.ReadFromJsonAsync<bool>();
-
-                if (isRented)
-                {
-                    message = "Xe đã có khách thuê vào ngày này!";
                     _showMessage = true;
+                    message = "Quý khách vui lòng chọn ngày thuê";
+                    return;
+                }
+
+                var request = new CarRentalRequest
+                    {
+                        DateStart = _dateRange.Start.Value,
+                        CarId = id
+                    };
+
+                var response = await httpClient.PostAsJsonAsync(urlCheckDateRetailCar, request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var isRented = await response.Content.ReadFromJsonAsync<bool>();
+
+                    if (isRented)
+                    {
+                        message = "Xe đã có khách thuê vào ngày này!";
+                        _showMessage = true;
+                    }
+                    else
+                    {
+                        bill.date_start = _dateRange.Start.Value;
+                        bill.date_end = _dateRange.End.Value;
+
+                        date_number = (bill.date_end.Value - bill.date_start.Value).Days;
+
+                        bill.price = (cars.price * date_number) + cars.insurance_fee;
+
+                        AddBill();
+                    }
                 }
                 else
                 {
-                    bill.date_start = _dateRange.Start.Value;
-                    bill.date_end = _dateRange.End.Value;
-
-                    date_number = (bill.date_end.Value - bill.date_start.Value).Days;
-
-                    bill.price = (cars.price * date_number) + cars.insurance_fee;
-
-                    AddBill();
+                    message = "Lỗi kiểm tra tình trạng xe!";
                 }
             }
-            else
+            catch (Exception ex)
             {
-                message = "Lỗi kiểm tra tình trạng xe!";
+                message = $"Đã có lỗi xảy ra: {ex.Message}";
             }
-        }
-        catch (Exception ex)
-        {
-            message = $"Đã có lỗi xảy ra: {ex.Message}";
         }
     }
 
@@ -515,7 +524,7 @@
                 var responseTop = await httpClient.GetAsync(urlTopGuestCar);
                 var jsonResponse = await responseTop.Content.ReadAsStringAsync();
                 var guestTrips = JsonSerializer.Deserialize<List<guest_car>>(jsonResponse);
-                var guestTripId = guestTrips.First().id;               
+                var guestTripId = guestTrips.First().id;
                 Navigation.NavigateTo($"/checkoutcar/{guestTripId}");
             }
             else
