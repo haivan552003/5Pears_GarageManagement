@@ -1,0 +1,97 @@
+﻿@page "/nav_phone"
+@inject HttpClient Http
+@inject IJSRuntime js
+@inject NavigationManager NavigationManager
+@layout EmptyLayout
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen"
+               Elevation="2"
+               Anchor="Anchor.Start"
+               Variant="@DrawerVariant.Persistent"
+               ClipMode="DrawerClipMode.Docked"
+               DisableOverlay="false">
+        <MudDrawerHeader Class="d-flex justify-content-center">
+            <MudText Typo="Typo.h5" Class="mt-1">Menu</MudText>
+        </MudDrawerHeader>
+
+        <MudDivider Class="my-2" Style="flex-grow: 0; border-width: 1px; border-color: gray;" />
+
+        <MudNavMenu>
+            <MudNavLink Href="/">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Outlined.Dashboard" Size="Size.Small" />
+                    <MudText Class="text-uppercase">Trang chủ</MudText>
+                </MudStack>
+            </MudNavLink>
+
+            <MudDivider Class="my-2" Style="flex-grow: 0; border-width: 1px; border-color: gray;" />
+
+            <MudNavLink Href="/getTrip">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Outlined.DirectionsBus" Size="Size.Small" />
+                    <MudText Class="text-uppercase">Chuyến xe</MudText>
+                </MudStack>
+            </MudNavLink>
+
+            <MudDivider Class="my-2" Style="flex-grow: 0; border-width: 1px; border-color: gray;" />
+
+            <MudNavLink Href="/getCar">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Outlined.DirectionsCar" Size="Size.Small" />
+                    <MudText Class="text-uppercase">Thuê xe</MudText>
+                </MudStack>
+            </MudNavLink>
+
+            <MudDivider Class="my-2" Style="flex-grow: 0; border-width: 1px; border-color: gray;" />
+
+            <MudNavLink Href="/getdriver">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Outlined.People" Size="Size.Small" />
+                    <MudText Class="text-uppercase">Thuê tài xế</MudText>
+                </MudStack>
+            </MudNavLink>
+
+            <MudDivider Class="my-2" Style="flex-grow: 0; border-width: 1px; border-color: gray;" />
+
+            <MudNavLink Href="/news">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Outlined.Newspaper" Size="Size.Small" />
+                    <MudText Class="text-uppercase">Tin tức</MudText>
+                </MudStack>
+            </MudNavLink>
+
+            <MudDivider Class="my-2" Style="flex-grow: 0; border-width: 1px; border-color: gray;" />
+
+            <MudNavLink Href="/GetIntroduce">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Outlined.Contactless" Size="Size.Small" />
+                    <MudText Class="text-uppercase">Giới thiệu</MudText>
+                </MudStack>
+            </MudNavLink>
+
+            <MudDivider Class="my-2" Style="flex-grow: 0; border-width: 1px; border-color: gray;" />
+        </MudNavMenu>
+    </MudDrawer>
+
+    <MudMainContent>
+        <MudText Class="text-uppercase">Giới thiệu</MudText>
+        <MudText Class="text-uppercase">Giới thiệu</MudText>
+        <MudText Class="text-uppercase">Giới thiệu</MudText>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = false;
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}
