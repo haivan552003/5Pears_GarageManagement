@@ -1,0 +1,23 @@
+﻿<MudDialog Style="border: 1px solid #DDE2E8; border-radius: 1.5rem !important;">
+    <DialogContent>
+        <MudText Typo="Typo.subtitle1" Align="Align.Justify">- <b>Ngày thường:</b> Vui lòng có mặt trước giờ khởi hành 1 tiếng.</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Justify">- <b>Ngày lễ:</b> Vui lòng có mặt trước giờ khởi hành 1 tiếng 30 phút.</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Justify">- <b>Hành lý:</b></MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Justify" Class="ml-5">* Chỉ chấp nhận hành lý nhỏ gọn dưới 20kg.</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Justify" Class="ml-5">* Không vận chuyển động vật, thú cưng.</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Justify" Class="ml-5 mb-5">* Không mang theo đồ có mùi, đồ chảy nước hoặc các vật dụng gây ảnh hưởng đến hành khách khác.</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Justify"><b style="color: #F44336;">(*)</b> Chúng tôi mong quý khách tuân thủ các quy định để đảm bảo chuyến đi an toàn và thoải mái cho tất cả mọi người. Cảm ơn sự hợp tác của bạn!</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Hủy</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}

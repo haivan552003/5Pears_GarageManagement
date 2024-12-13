@@ -3,6 +3,7 @@
 @inject HttpClient httpClient
 @inject IJSRuntime js
 @inject NavigationManager Navigation
+@inject IDialogService Dialog
 
 
 <MudContainer Class="mt-8 mb-5" MaxWidth="MaxWidth.Medium">
@@ -137,7 +138,7 @@
                         <MudItem xs="8">
                             <MudText Class="mb-2" Typo="Typo.subtitle1" Style="">165.000đ</MudText>
                             <MudText Class="mb-2" Typo="Typo.subtitle1" Style="">VNPay</MudText>
-                            <MudText Class="mb-2" Typo="Typo.subtitle1" Color="Color.Success" Style="">Thành công</MudText>
+                            <MudText Class="mb-2 fw-bold" Typo="Typo.subtitle1" Color="Color.Success" Style="">Thành công</MudText>
                         </MudItem>
                     </MudGrid>
                 </MudItem>
@@ -154,51 +155,61 @@
                                 <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Số ghế</MudText>
                             </MudItem>
                             <MudItem xs="6" Class="pb-0">
-                                <MudText Class="mb-2 text-end" Typo="Typo.subtitle1" Color="Color.Primary">TX241212</MudText>
-                                <MudText Class="mb-2 text-end" Typo="Typo.subtitle1" Color="Color.Primary" >Can Tho - Ho Chi Minh</MudText>
-                                <MudText Class="mb-2 text-end" Typo="Typo.subtitle1" Color="Color.Primary">15:59 - 12/12/2024</MudText>
-                                <MudText Class="mb-2 text-end" Typo="Typo.subtitle1" Color="Color.Primary">B01</MudText>
+                                <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">TX241212</MudText>
+                                <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary" >Can Tho - Ho Chi Minh</MudText>
+                                <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">15:59 - 12/12/2024</MudText>
+                                <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">B01</MudText>
                             </MudItem>
 
                             <MudItem xs="8" Class="pt-0 pb-0">
                                 <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Thời gian tới điểm lên xe</MudText>
                             </MudItem>
                             <MudItem xs="4" Class="pt-0 pb-0">
-                                <MudText Class="mb-2 text-end" Typo="Typo.subtitle1" Color="Color.Error">Trước 15:44 <br /> 12/12/2024</MudText>
+                                <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Error">Trước 15:44 <br /> 12/12/2024</MudText>
                             </MudItem>
 
                             <MudItem xs="12" Class="pt-0 pb-0">
                                 <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">
                                     Quý khách vui lòng có mặt tại bến xe
-                                    <b style="color: #00613D; font-weight: none;">BX Cần Thơ</b>
+                                    <b style="color: #594AE2; font-weight: none;">BX Cần Thơ</b>
                                     <b style="color: #F44336; font-weight: none;">trước 15:44 12/12/2024</b>
                                     để kiểm tra thông tin trước khi lên xe.
                                     </MudText>
                             </MudItem>
 
-                            <MudItem xs="4" Class="pt-0 pb-0">
+                            <MudItem xs="12" Class="pt-0 pb-0">
                                 <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Điểm lên xe</MudText>
                             </MudItem>
-                            <MudItem xs="8" Class="pt-0 pb-0 pl-0">
-                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style=""><br /> <b style="color: #00613D; font-weight: none;">BX Cần Thơ</b> <br />VP BX Cần Thơ: Quốc lộ 1, Hưng Thạnh, Cái Răng, TP. Cần Thơ</MudText>
+                            <MudItem xs="12" Class="pt-0 pb-0 pl-0 ml-6">
+                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style=""><b style="color: #594AE2; font-weight: none;">BX Cần Thơ</b> <br />VP BX Cần Thơ: Quốc lộ 1, Hưng Thạnh, Cái Răng, TP. Cần Thơ</MudText>
                             </MudItem>
 
-                            <MudItem xs="4" Class="pt-0 pb-0 pe-1">
-                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Điểm trả khách</MudText>
+                            <MudItem xs="12" Class="pt-0 pb-0 ">
+                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">
+                                    Điểm trả khách
+                                    <MudButton OnClick="@(() => OpenDialogDown(_policyDown))" Color="Color.Transparent" Style="min-width: 0; padding: 0;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Info" Color="Color.Warning" Title="Info" />
+                                    </MudButton>
+                                </MudText>
                             </MudItem>
-                            <MudItem xs="8" Class="pt-0 pb-0 pl-0">
-                                <MudText Class="mb-2" Typo="Typo.subtitle1" ><br /> 395 Kinh Dương Vương, P.An Lạc, Q.Bình Tân, TP.HCM</MudText>
+                            <MudItem xs="12" Class="pt-0 pb-0 pl-0 ml-6">
+                                <MudText Class="mb-2" Typo="Typo.subtitle1" >395 Kinh Dương Vương, P.An Lạc, Q.Bình Tân, TP.HCM</MudText>
                             </MudItem>
 
                             <MudItem xs="6" Class="pb-0">
-                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Giá vé</MudText>
+                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">
+                                    Giá vé
+                                    <MudButton OnClick="@(() => OpenDialogPrice(_policyPrice))" Color="Color.Transparent" Style="min-width: 0; padding: 0;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Info" Color="Color.Warning" Title="Info" />
+                                    </MudButton>
+                                </MudText>
                                 <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Biển số xe</MudText>
                                 <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Mã tra cứu hóa đơn</MudText>
                             </MudItem>
                             <MudItem xs="6" Class="pb-0">
-                                <MudText Class="mb-2 text-end" Typo="Typo.subtitle1" Color="Color.Primary">165.000đ</MudText>
-                                <MudText Class="mb-2 text-end" Typo="Typo.subtitle1" Color="Color.Primary">59F-040.87</MudText>
-                                <MudText Class="mb-2 text-end" Typo="Typo.subtitle1" Color="Color.Primary">GT241212</MudText>
+                                <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">165.000đ</MudText>
+                                <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">59F-040.87</MudText>
+                                <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">GT241212</MudText>
                             </MudItem>
 
                         </MudGrid>
@@ -214,6 +225,8 @@
     private guest_trip bill = new guest_trip();
     private guest_trip_update bill_update = new guest_trip_update();
     private List<guest_trip_child> guest_trip_child = new List<guest_trip_child>();
+    private readonly DialogOptions _policyDown = new() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
+    private readonly DialogOptions _policyPrice = new() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
     private string url = "http://localhost:49922/api/GuestTrip";
     private string urlUpdateStatusBill = "http://localhost:49922/api/GuestTrip/PutStatus2";
     private string billId;
@@ -285,5 +298,13 @@
         {
             Console.WriteLine($"Lỗi: {ex.Message}", Severity.Error);
         }
+    }
+    private Task OpenDialogDown(DialogOptions options)
+    {
+        return Dialog.ShowAsync<DialogPolicyDown>("Đón trả khách", options);
+    }
+    private Task OpenDialogPrice(DialogOptions options)
+    {
+        return Dialog.ShowAsync<DialogPolicyPrice>("Chính sách hủy vé", options);
     }
 }
