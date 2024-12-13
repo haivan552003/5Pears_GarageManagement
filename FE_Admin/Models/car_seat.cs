@@ -7,6 +7,8 @@
         public int car_id { get; set; }
         public int row { get; set; }
         public int col { get; set; }
+        public string status { get; set; }
+
 
     }
 }

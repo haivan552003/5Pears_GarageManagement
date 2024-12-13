@@ -3,10 +3,13 @@
 @using MudBlazor
 @using System.Text.Json
 @using System.Collections.Concurrent
+@using System.Net
 @inject HttpClient httpClient
 @inject IJSRuntime js
 @inject NavigationManager Navigation
 @implements IAsyncDisposable
+@inject ISnackbar Snackbar
+
 <style>
     .fs-14{
         font-size: 14px;
@@ -26,13 +29,16 @@
                         <MudText Typo="Typo.h6" Color="Color.Primary">Thông tin khách hàng</MudText>
                     </MudItem>
                     <MudItem xs="12" sm="6">
-                        <MudTextField ShrinkLabel @bind-Value="TextValue" Label="Số điện thoại" Margin="Margin.Dense" Variant="Variant.Outlined" />
+                        <MudTextField ShrinkLabel @bind-Value="addCus.phone_number" Label="Số điện thoại" Margin="Margin.Dense" Variant="Variant.Outlined" OnBlur="@SearchPhoneNumber" />
                     </MudItem>
                     <MudItem xs="12" sm="6">
-                        <MudTextField ShrinkLabel @bind-Value="TextValue" Label="Họ và tên" Margin="Margin.Dense" Variant="Variant.Outlined" />
+                        <MudTextField ShrinkLabel @bind-Value="addCus.fullname" Label="Họ và tên" Margin="Margin.Dense" Variant="Variant.Outlined"/>
                     </MudItem>
                     <MudItem xs="12" Class="d-flex justify-end">
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary">Lưu</MudButton>
+                        @if (!SaveButton)
+                        {
+                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddCus">Lưu</MudButton>
+                        }
                     </MudItem>
                 </MudGrid>
             </MudPaper>
@@ -117,82 +123,109 @@
                     <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
                         <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1"> @string.Join(", ", selectedSeatNames)</MudText>
                     </MudItem>
-
-                    
-
                 </MudGrid>
             </MudPaper>
 
-            <MudPaper Class="p-4" Elevation="1">
-                <MudGrid>
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.h6" Color="Color.Primary">Chi tiết giá</MudText>
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudTextField ShrinkLabel @bind-Value="TextValue" Label="Tiền khách đưa" Margin="Margin.Dense" Variant="Variant.Outlined" />
-                    </MudItem>
+            <MudItem xs="12" Style="margin-top:-5px;margin-bottom:10px;text-align:center">
+                <MudRadioGroup @bind-Value="Dense_Radio">
+                    <MudRadio Value="true" Color="Color.Primary" Dense="true" Size="Size.Medium">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-16">Tiền Mặt</MudText>
+                    </MudRadio>
+                    <MudRadio Value="false" Color="Color.Secondary" Dense="false" Size="Size.Medium">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-16">Chuyển Khoản</MudText>
+                    </MudRadio>
+                </MudRadioGroup>
+            </MudItem>
 
-                    <MudItem xs="12">
-                        <MudTextField ShrinkLabel @bind-Value="TextValue" Label="Tiền thừa" Margin="Margin.Dense" Variant="Variant.Outlined" Disabled="true" />
-                    </MudItem>
-
-                    <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
-                        <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Giá vé</MudText>
-                    </MudItem>
-                    <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
-                        <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.price.ToString("#,##0") VNĐ</MudText>
-                    </MudItem>
-                    <MudItem xs="12" Class="pb-4">
-                    <MudDivider Style="border: 1px;" />
-                    </MudItem>
-                    <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
-                        <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Tổng Tiền</MudText>
-                    </MudItem>
-                    <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
-                        <MudText Align="Align.End" Color="Color.Secondary" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.sale.ToString("#,##0") VNĐ</MudText>
-                    </MudItem>
-
-                    <MudItem xs="12">
-                        <MudButton Variant="Variant.Filled" Class="w-100" Color="Color.Primary" Size="Size.Medium" OnClick="@OnCheckout">Thanh Toán</MudButton>
-                    </MudItem>
-
-                </MudGrid>
-            </MudPaper>
-
-            @if (cus_id != 0)
+            
+            @if(Dense_Radio == true)
             {
-                <MudPaper Class="p-4 mt-4" Elevation="1">
+                <MudPaper Class="p-4" Elevation="1">
                     <MudGrid>
                         <MudItem xs="12">
-                            <MudText Typo="Typo.h6" Color="Color.Primary">THÔNG TIN KHÁCH HÀNG</MudText>
+                            <MudText Typo="Typo.h6" Color="Color.Primary">Chi tiết giá</MudText>
                         </MudItem>
 
-                        <MudItem xs="4" Class="mb-3">
-                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
-                                Tên khách hàng
-                            </MudText>
-                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
-                                Email
-                            </MudText>
-                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
-                                Số điện thoại
-                            </MudText>
+                        <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Giá vé</MudText>
+                        </MudItem>
+                        <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
+                            <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.price.ToString("#,##0") VNĐ</MudText>
                         </MudItem>
 
-                        <MudItem xs="8" Class="mb-3">
-                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
-                                @customer.fullname
-                            </MudText>
-                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
-                                @customer.email
-                            </MudText>
-                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
-                                @customer.phone_number
-                            </MudText>
+                        <MudItem xs="12">
+                            <MudTextField ShrinkLabel @bind-Value="_tienKhachDua" Label="Tiền khách đưa" Margin="Margin.Dense" Variant="Variant.Outlined" OnBlur="@CalculateChange" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField ShrinkLabel @bind-Value="_tienThua" Label="Tiền thừa" Margin="Margin.Dense" Variant="Variant.Outlined" Disabled="true" />
+                        </MudItem>
+
+                        <MudItem xs="12" Class="pb-4">
+                            <MudDivider Style="border: 1px;" />
+                        </MudItem>
+                        <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Tổng Tiền</MudText>
+                        </MudItem>
+                        <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
+                            <MudText Align="Align.End" Color="Color.Secondary" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.sale.ToString("#,##0") VNĐ</MudText>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudButton Variant="Variant.Filled" Class="w-100" Color="Color.Primary" Size="Size.Medium" OnClick="@OnCheckout">Thanh Toán</MudButton>
+                        </MudItem>
+
+                    </MudGrid>
+                </MudPaper>
+                @if (errorMessageCheckCus != null)
+                {
+                    <MudItem xs="12">
+                        <MudText Color="Color.Error" Class="mt-2 text-center">
+                            @errorMessageCheckCus
+                        </MudText>
+                    </MudItem>
+                }
+
+            }
+            else
+            {
+                <MudPaper Class="p-4" Elevation="1">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6" Color="Color.Primary">Chi tiết giá</MudText>
+                        </MudItem>
+
+                        <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Giá vé</MudText>
+                        </MudItem>
+                        <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
+                            <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.price.ToString("#,##0") VNĐ</MudText>
+                        </MudItem>
+                        <MudItem xs="12" Class="pb-4">
+                            <MudDivider Style="border: 1px;" />
+                        </MudItem>
+                        <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Tổng Tiền</MudText>
+                        </MudItem>
+                        <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
+                            <MudText Align="Align.End" Color="Color.Secondary" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.sale.ToString("#,##0") VNĐ</MudText>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudButton Variant="Variant.Filled" Class="w-100" Color="Color.Primary" Size="Size.Medium" OnClick="@OnCheckout">Thanh Toán</MudButton>
                         </MudItem>
                     </MudGrid>
                 </MudPaper>
+                @if (errorMessageCheckCus != null)
+                {
+                    <MudItem xs="12">
+                        <MudText Color="Color.Error" Class="mt-2 text-center">
+                            @errorMessageCheckCus
+                        </MudText>
+                    </MudItem>
+                }
             }
+
         </MudItem>
     </MudGrid>
 </MudContainer>
@@ -201,15 +234,23 @@
     function getAuthToken() {
         return localStorage.getItem("authToken");
     }
-
 </script>
 @code {
+    private customer addCus = new customer();
+    private string errorMessageCheckCus;
+    private bool SaveButton = false;
+    public bool Dense_Radio { get; set; } = true;
+    private decimal _tienKhachDua = 0;
+    private decimal _tienThua = 0;
+
+
+
+
     public string TextValue { get; set; }
     [Parameter] public int id { get; set; }
     private int cus_id;
     private HubConnection? hubConnection;
     private List<string> takenSeats = new List<string>();
-
     private trip trips;
     private TRIPDETAILS TRIPDETAILS = new TRIPDETAILS();
     private List<car_seat_rentail> car_seat = new List<car_seat_rentail>();
@@ -223,6 +264,10 @@
     private string urlSeatNotNull = "http://localhost:49922/api/GuestTrip/GetSeatNotNull/";
     private string urlVNPayCreate = "http://localhost:49922/api/Payment/create-payment";
 
+
+    private string urlGetTopCus = "http://localhost:49922/api/Customer/GetTop";
+    private string urlUpdateStatusBill = "http://localhost:49922/api/GuestTrip/PutStatus2";
+
     private List<int> selectedSeats = new List<int>();
     private List<string> selectedSeatNames = new List<string>();
     private static ConcurrentDictionary<string, bool> userCheckoutStatus = new ConcurrentDictionary<string, bool>();
@@ -230,29 +275,15 @@
     private Timer? inactivityTimer;
 
     private guest_trip_create bill = new guest_trip_create();
+    private Guest_Customer customers = new Guest_Customer();
 
+    private int empId;
     private bool isHubConnected = false;
+
 
     protected override async Task OnInitializedAsync()
     {
         await LoadTripDetail();
-        // var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
-
-        // if (!string.IsNullOrEmpty(token))
-        // {
-        //     // Giải mã token
-        //     var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-        //     var jwtToken = handler.ReadJwtToken(token);
-
-        //     // Lấy giá trị của 'username' từ payload của token
-        //     var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "id");
-
-        //     if (usernameClaim != null)
-        //     {
-        //         cus_id = (int.Parse(usernameClaim.Value));
-        //         await LoadUser();
-        //     }
-        // }
         hubConnection = new HubConnectionBuilder()
              .WithUrl(Navigation.ToAbsoluteUri("http://localhost:49922/seatHub"))
              .Build();
@@ -412,48 +443,75 @@
 
     private async Task OnCheckout()
     {
+        if (selectedSeats.Count() == 0)
+        {
+            errorMessageCheckCus = "Quý khách vui lòng chọn ghế.";
+            return;
+        }
+
+        if (cus_id != 0)
+        {
+            bill.cus_id = cus_id;
+        }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(addCus.fullname) ||
+            string.IsNullOrWhiteSpace(addCus.phone_number))
+            {
+                errorMessageCheckCus = "Quý khách vui lòng điền đầy đủ thông tin hoặc đăng nhập.";
+                return;
+            }
+            var response = await httpClient.GetAsync($"http://localhost:49922/api/Validate/CheckPhoneNumberCustomer/{addCus.phone_number}");
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                Console.WriteLine("Số điện thoại chưa được đăng ký, tiếp tục thêm khách hàng.");
+                await AddCus();
+            }
+            else if (response.IsSuccessStatusCode)
+            {
+                var existingCustomer = await response.Content.ReadFromJsonAsync<Guest_Customer>();
+                if (existingCustomer != null)
+                {
+                    cus_id = existingCustomer.id;
+                    bill.cus_id = cus_id;
+                }
+            }
+            else
+            {
+                errorMessageCheckCus = "Đã xảy ra lỗi khi kiểm tra số điện thoại.";
+                Console.WriteLine(errorMessageCheckCus);
+            }
+        }
+
+        empId = await GetEmpIdFromToken();
+        bill.emp_id = empId;
+
         if (selectedSeats.Count() == 1)
         {
             //1 ghế
-            bill.emp_id = 5;
+            // bill.emp_id = 5;
             bill.trip_detail_id = id;
             bill.car_seat_id = selectedSeats.First();
             bill.parent_id = 0;
             bill.cus_id = cus_id;
             bill.price = TRIPDETAILS.sale;
 
+
             var response = await httpClient.PostAsJsonAsync(urlBill, bill);
             if (response.IsSuccessStatusCode)
             {
                 var responseTop = await httpClient.GetAsync(urlTopGuestTrip);
                 var jsonResponse = await responseTop.Content.ReadAsStringAsync();
+                Console.WriteLine("Response JSON: " + jsonResponse);
+
                 var guestTrips = JsonSerializer.Deserialize<List<guest_trip>>(jsonResponse);
                 var guestTripId = guestTrips.First().id;
-                await js.InvokeVoidAsync("sessionStorage.setItem", "billId", guestTripId);
-                var paymentRequest = new PaymentRequestModel
-                    {
-                        OrderId = guestTripId.ToString(),
-                        Amount = (int)(bill.price),
-                        OrderInfo = guestTripId.ToString(),
-                        returnUrl = "http://localhost:5112/checkouttrip"
-                    };
 
-
-                var paymentResponse = await httpClient.PostAsJsonAsync(urlVNPayCreate, paymentRequest);
-                if (paymentResponse.IsSuccessStatusCode)
+                var updateResponse = await httpClient.PutAsJsonAsync($"{urlUpdateStatusBill}/{guestTripId}", new
                 {
-                    var paymentData = await paymentResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-                    if (paymentData != null && paymentData.ContainsKey("paymentUrl"))
-                    {
-                        if (hubConnection != null)
-                        {
-                            await hubConnection.SendAsync("OnCheckout");
-                        }
-                        var paymentUrl = paymentData["paymentUrl"];
-                        Navigation.NavigateTo(paymentUrl, forceLoad: true);
-                        return;
-                    }
-                }
+                    id = guestTripId
+                });
+
             }
             else
             {
@@ -463,7 +521,7 @@
         else
         {
             //nhiều ghế
-            bill.emp_id = 5;
+            // bill.emp_id = 5;
             bill.trip_detail_id = id;
             bill.parent_id = 0;
             bill.car_seat_id = null;
@@ -478,9 +536,8 @@
                 var guestTrips = JsonSerializer.Deserialize<List<guest_trip>>(jsonResponse);
                 var guestTripId = guestTrips.First().id;
 
-                await js.InvokeVoidAsync("sessionStorage.setItem", "billId", guestTripId.ToString());
-
                 var seatPrice = TRIPDETAILS.sale / selectedSeats.Count();
+                bool allBillsCreatedSuccessfully = true;
 
                 foreach (var seatId in selectedSeats)
                 {
@@ -493,41 +550,135 @@
                     {
                         Console.WriteLine("Thêm ghế thất bại");
                     }
+
                 }
-
-                var paymentRequest = new PaymentRequestModel
-                    {
-                        OrderId = guestTripId.ToString(),
-                        Amount = (int)(bill.price),
-                        OrderInfo = guestTripId.ToString(),
-                        returnUrl = "http://localhost:5112/checkouttrip"
-                    };
-
-
-                var paymentResponse = await httpClient.PostAsJsonAsync(urlVNPayCreate, paymentRequest);
-                if (paymentResponse.IsSuccessStatusCode)
+                var updateResponse = await httpClient.PutAsJsonAsync($"{urlUpdateStatusBill}/{guestTripId}", new
                 {
-                    var paymentData = await paymentResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-                    if (paymentData != null && paymentData.ContainsKey("paymentUrl"))
-                    {
-                        if (hubConnection != null)
-                        {
-                            await hubConnection.SendAsync("OnCheckout");
-                        }
-                        var paymentUrl = paymentData["paymentUrl"];
-                        Navigation.NavigateTo(paymentUrl, forceLoad: true);
-                        return;
-                    }
-                }
+                    id = guestTripId
+                });
+
+
+
             }
             else
             {
                 Console.WriteLine("Thêm thất bại");
             }
         }
+
     }
 
+    private async Task SearchPhoneNumber()
+    {
+        if (string.IsNullOrWhiteSpace(addCus.phone_number))
+        {
+            addCus.fullname = string.Empty;
+            return;
+        }
+        var response = await httpClient.GetAsync($"http://localhost:49922/api/Validate/CheckPhoneNumberCustomer/{addCus.phone_number}");
+        if (response.IsSuccessStatusCode)
+        {
+            var responseTop = await httpClient.GetAsync(urlTopGuestTrip);
+            var jsonResponse = await responseTop.Content.ReadAsStringAsync();
+            var guestTrips = JsonSerializer.Deserialize<List<guest_trip_create>>(jsonResponse);
+            var guestTripId = guestTrips.First().id;
+            var existingCustomer = await response.Content.ReadFromJsonAsync<Guest_Customer>();
+            if (existingCustomer != null)
+            {
+                addCus.fullname = existingCustomer.fullname;
+                addCus.Id = existingCustomer.id;
+                SaveButton = true;
+            }
+            else
+            {
+                errorMessageCheckCus = "Số điện thoại chưa được đăng ký.";
+                SaveButton = false;
+            }
+        }
+        else if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            errorMessageCheckCus = "Số điện thoại không tồn tại.";
+        }
+        else
+        {
+            errorMessageCheckCus = $"Đã xảy ra lỗi khi kiểm tra số điện thoại. Mã lỗi: {response.StatusCode}";
+            Console.WriteLine($"API Error: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}");
+        }
+    }
+
+    private async Task AddCus()
+    {
+        try
+        {
+            addCus.password = "123456";
+            addCus.birthday = DateTime.Now.AddYears(-18);
+            addCus.gender = 0;
+            addCus.citizen_identity_img1 = null;
+            addCus.citizen_identity_number = null;
+            addCus.driver_license_img1 = null;
+            addCus.driver_license_number = null;
+            addCus.status = true;
+            addCus.img_cus = null;
+            var response = await httpClient.PostAsJsonAsync(urlCus, addCus);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseTop = await httpClient.GetAsync(urlGetTopCus);
+                var jsonResponse = await responseTop.Content.ReadAsStringAsync();
+                Console.WriteLine($"JSON Response: {jsonResponse}");
+
+                var customerTop = JsonSerializer.Deserialize<List<Guest_Customer>>(jsonResponse);
+                if (customerTop != null && customerTop.Any())
+                {
+                    foreach (var customer in customerTop)
+                    {
+                        Console.WriteLine($"Customer ID: {customer.id}");
+                    }
+                    var cusID = customerTop.First().id;
+                    Console.WriteLine(customerTop.FirstOrDefault().id);
+                    bill.cus_id = cusID;
+                }
+                else
+                {
+                    Console.WriteLine("Danh sách khách hàng trả về rỗng hoặc null.");
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi khi thêm khách hàng: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void CalculateChange()
+    {
+
+        decimal priceValue = Convert.ToDecimal(TRIPDETAILS.sale);
+        _tienThua = _tienKhachDua - priceValue;
+        StateHasChanged();
+    }
+
+    private async Task<int> GetEmpIdFromToken()
+    {
+        var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            var empIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "emp_id");
+            if (empIdClaim != null)
+            {
+                return int.Parse(empIdClaim.Value);
+            }
+        }
+
+        return 0;
+    }
 
 }
+
+
 
 

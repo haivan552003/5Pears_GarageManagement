@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace BE_API.ModelCustom
+﻿namespace FE_Admin.ModelCustom
 {
-    public class customers
+    public class Guest_Customer
     {
-        public int Id { get; set; }
+        public int id { get; set; }
         public string cus_code { get; set; }
         public string email { get; set; }
         public string password { get; set; }
@@ -17,6 +15,7 @@ namespace BE_API.ModelCustom
         public string driver_license_img1 { get; set; }
         public string driver_license_number { get; set; }
         public int id_role { get; set; }
+        //public string name { get; set; }
         public bool status { get; set; }
         public string img_cus { get; set; }
 
