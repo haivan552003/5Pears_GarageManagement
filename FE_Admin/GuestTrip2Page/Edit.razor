@@ -29,13 +29,13 @@
                         <MudText Typo="Typo.h6" Color="Color.Primary">Thông tin khách hàng</MudText>
                     </MudItem>
                     <MudItem xs="12" sm="6">
-                        <MudTextField ShrinkLabel @bind-Value="addCus.phone_number" Label="Số điện thoại" Margin="Margin.Dense" Variant="Variant.Outlined" OnBlur="@SearchPhoneNumber" />
+                        <MudTextField ShrinkLabel @bind-Value="addCus.phone_number" Label="Số điện thoại" Margin="Margin.Dense" Variant="Variant.Outlined" OnBlur="@SearchPhoneNumber" Required />
                     </MudItem>
                     <MudItem xs="12" sm="6">
-                        <MudTextField ShrinkLabel @bind-Value="addCus.fullname" Label="Họ và tên" Margin="Margin.Dense" Variant="Variant.Outlined"/>
+                        <MudTextField ShrinkLabel @bind-Value="addCus.fullname" Label="Họ và tên" Margin="Margin.Dense" Variant="Variant.Outlined" Required/>
                     </MudItem>
                     <MudItem xs="12" Class="d-flex justify-end">
-                        @if (!SaveButton)
+                        @if (SaveButton)
                         {
                             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddCus">Lưu</MudButton>
                         }
@@ -474,6 +474,7 @@
                 {
                     cus_id = existingCustomer.id;
                     bill.cus_id = cus_id;
+                    errorMessageCheckCus = "Thanh toán thành công";
                 }
             }
             else
@@ -495,7 +496,14 @@
             bill.parent_id = 0;
             bill.cus_id = cus_id;
             bill.price = TRIPDETAILS.sale;
-
+            if (Dense_Radio == true)
+            {
+                bill.payment_method = true;
+            }
+            else
+            {
+                bill.payment_method = false;
+            }
 
             var response = await httpClient.PostAsJsonAsync(urlBill, bill);
             if (response.IsSuccessStatusCode)
@@ -506,11 +514,15 @@
 
                 var guestTrips = JsonSerializer.Deserialize<List<guest_trip>>(jsonResponse);
                 var guestTripId = guestTrips.First().id;
+                await js.InvokeVoidAsync("sessionStorage.setItem", "billId", guestTripId);
+
 
                 var updateResponse = await httpClient.PutAsJsonAsync($"{urlUpdateStatusBill}/{guestTripId}", new
                 {
                     id = guestTripId
                 });
+                Navigation.NavigateTo($"/checkout/{guestTripId}");
+
 
             }
             else
@@ -535,6 +547,10 @@
                 var jsonResponse = await responseTop.Content.ReadAsStringAsync();
                 var guestTrips = JsonSerializer.Deserialize<List<guest_trip>>(jsonResponse);
                 var guestTripId = guestTrips.First().id;
+                await js.InvokeVoidAsync("sessionStorage.setItem", "billId", guestTripId);
+                Navigation.NavigateTo($"/checkout/{guestTripId}");
+
+
 
                 var seatPrice = TRIPDETAILS.sale / selectedSeats.Count();
                 bool allBillsCreatedSuccessfully = true;
@@ -544,21 +560,26 @@
                     bill.car_seat_id = seatId;
                     bill.parent_id = guestTripId;
                     bill.price = seatPrice;
+                    if (Dense_Radio == true)
+                    {
+                        bill.payment_method = true;
+                    }
+                    else
+                    {
+                        bill.payment_method = false;
+                    }
 
                     var response = await httpClient.PostAsJsonAsync(urlBill, bill);
                     if (!response.IsSuccessStatusCode)
                     {
                         Console.WriteLine("Thêm ghế thất bại");
                     }
+                    var updateResponse = await httpClient.PutAsJsonAsync($"{urlUpdateStatusBill}/{guestTripId}", new
+                    {
+                        id = guestTripId
+                    });
 
                 }
-                var updateResponse = await httpClient.PutAsJsonAsync($"{urlUpdateStatusBill}/{guestTripId}", new
-                {
-                    id = guestTripId
-                });
-
-
-
             }
             else
             {
@@ -573,7 +594,12 @@
         if (string.IsNullOrWhiteSpace(addCus.phone_number))
         {
             addCus.fullname = string.Empty;
+            SaveButton = false;
             return;
+        }
+        else
+        {
+            SaveButton = true;
         }
         var response = await httpClient.GetAsync($"http://localhost:49922/api/Validate/CheckPhoneNumberCustomer/{addCus.phone_number}");
         if (response.IsSuccessStatusCode)
@@ -587,12 +613,12 @@
             {
                 addCus.fullname = existingCustomer.fullname;
                 addCus.Id = existingCustomer.id;
-                SaveButton = true;
+                SaveButton = false;
             }
             else
             {
                 errorMessageCheckCus = "Số điện thoại chưa được đăng ký.";
-                SaveButton = false;
+                SaveButton = true;
             }
         }
         else if (response.StatusCode == HttpStatusCode.NotFound)
@@ -625,6 +651,7 @@
                 var responseTop = await httpClient.GetAsync(urlGetTopCus);
                 var jsonResponse = await responseTop.Content.ReadAsStringAsync();
                 Console.WriteLine($"JSON Response: {jsonResponse}");
+                Snackbar.Add("Khách hàng đã được thêm thành công!", Severity.Success);
 
                 var customerTop = JsonSerializer.Deserialize<List<Guest_Customer>>(jsonResponse);
                 if (customerTop != null && customerTop.Any())
@@ -656,6 +683,10 @@
         decimal priceValue = Convert.ToDecimal(TRIPDETAILS.sale);
         _tienThua = _tienKhachDua - priceValue;
         StateHasChanged();
+        if(_tienThua <= 0)
+        {
+            _tienThua = 0;
+        }
     }
 
     private async Task<int> GetEmpIdFromToken()
