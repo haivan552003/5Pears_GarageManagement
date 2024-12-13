@@ -19,4 +19,5 @@
         public bool status { get; set; }
         public string img_cus { get; set; }
     }
+
 }
