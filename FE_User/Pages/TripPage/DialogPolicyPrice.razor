@@ -1,0 +1,18 @@
+﻿<MudDialog Style="border: 1px solid #DDE2E8; border-radius: 1.5rem !important;">
+    <DialogContent>
+        <MudText Typo="Typo.subtitle1">- Vé đã đặt không hỗ trợ đổi hoặc trả.</MudText>
+        <MudText Typo="Typo.subtitle1">- Trong trường hợp hủy vé, chúng tôi rất tiếc không thể hoàn tiền.</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Hủy</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}
