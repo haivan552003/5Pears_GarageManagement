@@ -93,10 +93,12 @@
                                     <MudGrid>
                                         <MudItem xs="12">
                                             <MudText Class="mb-1" Typo="Typo.subtitle1">Giới Tính</MudText>
-                                            @if(drivers.gender == 0){
+                                            @if (drivers.gender == 0)
+                                            {
                                                 <MudText Typo="Typo.h6"><b>Nam</b></MudText>
                                             }
-                                            else{
+                                            else
+                                            {
                                                 <MudText Typo="Typo.h6"><b>Nữ</b></MudText>
                                             }
                                         </MudItem>
@@ -137,7 +139,7 @@
                         </MudItem>
                         <MudItem xs="6" Class="pb-2 pt-2">
 
-                            @if (_dateRange.Start != null && _dateRange.End != null)    
+                            @if (_dateRange.Start != null && _dateRange.End != null)
                             {
                                 date_number = (_dateRange.End.Value - _dateRange.Start.Value).Days;
                                 money = date_number * drivers.price;
@@ -214,28 +216,6 @@
     <MudItem xs="12">
         <MudText Typo="Typo.subtitle1" Class="fw-bold">Danh Sách Tài Xế Nổi Bật Trong Tháng</MudText>
     </MudItem>
-    <MudGrid>
-        @foreach (var item in eDriver)
-        {
-            <MudItem xs="3">
-                <MudCard Style="background-color: #FFF7F5">
-                    <MudCardContent>
-                        <MudImage Height="300" Src="@item.img_driver" Fluid="true" />
-                        <MudText Class="text-center mt-2" Typo="Typo.h6" Color="Color.Secondary">@item.fullname</MudText>
-                        <MudGrid Class="mt-2">
-                            <MudItem xs="4">
-                                <MudText>@item.birthday tuổi</MudText>
-                            </MudItem>
-                            <MudItem xs="8">
-                                <MudText>@item.trip_count chuyến xe</MudText>
-                            </MudItem>
-                        </MudGrid>
-                        <MudButton Variant="Variant.Outlined" Size="Size.Small" class="mt-4" Color="Color.Secondary">Thuê ngay</MudButton>
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
-        }
-    </MudGrid>
 </MudContainer>
 
 
@@ -393,7 +373,7 @@
                     var paymentData = await paymentResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>();
                     if (paymentData != null && paymentData.ContainsKey("paymentUrl"))
                     {
-                       
+
                         var paymentUrl = paymentData["paymentUrl"];
                         Navigation.NavigateTo(paymentUrl, forceLoad: true);
                         return;

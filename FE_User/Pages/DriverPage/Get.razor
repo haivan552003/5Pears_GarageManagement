@@ -24,62 +24,66 @@
             <MudGrid>
                 @foreach (var item in PaginatedElements)
                 {
-                    <MudItem xs="12" sm="6" md="4" Class="mb-4">
-                        <a Href="@($"/getIdDriver/{item.id}")" Class="mud-width-full" Style="text-decoration: none;">
-                            <MudPaper Class="p-4" Style="padding: 1.5rem;">
-                                <img src="@item.img_driver" alt="Hình xe" style="width:100%; height:200px; border-radius: 15%;" class="mb-3" />
-                                <MudText Typo="Typo.h6" Class="mb-1">@item.fullname</MudText>
-                                <MudItem Class="d-flex align-center">
-                                    @if(item.class_driver_license == 1)
-                                    {
-                                        <MudIcon Icon="@Icons.Material.Outlined.Class" Color="Color.Primary" />
-                                        <MudText Typo="Typo.body2" Color="Color.Dark" Class="ml-1">Bằng lái xe hạng B1</MudText>
-                                    }
-                                    else if (item.class_driver_license == 2)
-                                    {
-                                        <MudIcon Icon="@Icons.Material.Outlined.Class" Color="Color.Primary" />
-                                        <MudText Typo="Typo.body2" Color="Color.Dark" Class="ml-1">Bằng lái xe hạng B2</MudText>
-                                    }
-                                    else if (item.class_driver_license == 3)
-                                    {
-                                        <MudIcon Icon="@Icons.Material.Outlined.Class" Color="Color.Primary" />
-                                        <MudText Typo="Typo.body2" Color="Color.Dark" Class="ml-1">Bằng lái xe hạng C</MudText>
-                                    }
-                                    else if (item.class_driver_license == 4)
-                                    {
-                                        <MudIcon Icon="@Icons.Material.Outlined.Class" Color="Color.Primary" />
-                                        <MudText Typo="Typo.body2" Color="Color.Dark" Class="ml-1">Bằng lái xe hạng D</MudText>
-                                    }
+                    @if (item.status == 0)
+                    {
+                        <MudItem xs="12" sm="6" md="4" Class="mb-4">
+                            <a Href="@($"/getIdDriver/{item.id}")" Class="mud-width-full" Style="text-decoration: none;">
+                                <MudPaper Class="p-4" Style="padding: 1.5rem;">
+                                    <img src="@item.img_driver" alt="Hình xe" style="width:100%; height:200px; border-radius: 15%;" class="mb-3" />
+                                    <MudText Typo="Typo.h6" Class="mb-1">@item.fullname</MudText>
+                                    <MudItem Class="d-flex align-center">
+                                        @if (item.class_driver_license == 1)
+                                        {
+                                            <MudIcon Icon="@Icons.Material.Outlined.Class" Color="Color.Primary" />
+                                            <MudText Typo="Typo.body2" Color="Color.Dark" Class="ml-1">Bằng lái xe hạng B1</MudText>
+                                        }
+                                        else if (item.class_driver_license == 2)
+                                        {
+                                            <MudIcon Icon="@Icons.Material.Outlined.Class" Color="Color.Primary" />
+                                            <MudText Typo="Typo.body2" Color="Color.Dark" Class="ml-1">Bằng lái xe hạng B2</MudText>
+                                        }
+                                        else if (item.class_driver_license == 3)
+                                        {
+                                            <MudIcon Icon="@Icons.Material.Outlined.Class" Color="Color.Primary" />
+                                            <MudText Typo="Typo.body2" Color="Color.Dark" Class="ml-1">Bằng lái xe hạng C</MudText>
+                                        }
+                                        else if (item.class_driver_license == 4)
+                                        {
+                                            <MudIcon Icon="@Icons.Material.Outlined.Class" Color="Color.Primary" />
+                                            <MudText Typo="Typo.body2" Color="Color.Dark" Class="ml-1">Bằng lái xe hạng D</MudText>
+                                        }
 
-                                </MudItem>
-                                <MudItem Class="d-flex align-center">
-                                    <MudIcon Icon="fa-solid fa-venus-mars" Color="Color.Default" />
-                                    @if (item.gender == 0)
-                                    {
-                                        <MudText Typo="Typo.body2" Color="Color.Tertiary" Class="ml-1">
-                                            Nam
-                                        </MudText>
-                                    }
-                                    else
-                                    {
-                                        <MudText Typo="Typo.body2" Color="Color.Tertiary" Class="ml-1">
-                                            Nữ
-                                        </MudText>
-                                    }
+                                    </MudItem>
+                                    <MudItem Class="d-flex align-center">
+                                        <MudIcon Icon="fa-solid fa-venus-mars" Color="Color.Default" />
+                                        @if (item.gender == 0)
+                                        {
+                                            <MudText Typo="Typo.body2" Color="Color.Tertiary" Class="ml-1">
+                                                Nam
+                                            </MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudText Typo="Typo.body2" Color="Color.Tertiary" Class="ml-1">
+                                                Nữ
+                                            </MudText>
+                                        }
 
-                                </MudItem>
-                                <MudGrid Class="mt-3">
-                                    <MudItem xs="3" Class="d-flex align-center">
-                                        <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Success" />
-                                        <MudText Typo="Typo.subtitle2" Class="ml-1">20</MudText>
                                     </MudItem>
-                                    <MudItem xs="9">
-                                        <MudText Typo="Typo.subtitle1" Color="Color.Error">@item.price.ToString("#,##0")/Ngày</MudText>
-                                    </MudItem>
-                                </MudGrid>
-                            </MudPaper>
-                        </a>
-                    </MudItem>
+                                    <MudGrid Class="mt-3">
+                                        <MudItem xs="3" Class="d-flex align-center">
+                                            <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Success" />
+                                            <MudText Typo="Typo.subtitle2" Class="ml-1">20</MudText>
+                                        </MudItem>
+                                        <MudItem xs="9">
+                                            <MudText Typo="Typo.subtitle1" Color="Color.Error">@item.price.ToString("#,##0")/Ngày</MudText>
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudPaper>
+                            </a>
+                        </MudItem>
+
+                    }
                 }
             </MudGrid>
         </MudItem>
