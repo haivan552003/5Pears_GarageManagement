@@ -1,0 +1,104 @@
+﻿@page "/policy"
+@using MudBlazor
+
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-3">
+    <MudPaper Elevation="0">
+        <MudText Typo="Typo.h5" Class="mb-5 text-center fw-bold text-uppercase" Color="Color.Primary">
+            Chính Sách và Điều Khoản
+        </MudText>
+        <!-- Nội dung chính sách -->
+        <MudGrid Class="mt-5">
+            <MudItem xs="12" sm="8">
+                <MudExpansionPanels MultiExpansion="true">
+                    <MudExpansionPanel Text="1. Điều khoản vận chuyển" Class="fw-bold">
+                        <MudText Typo="Typo.body2" Class="fw-bold">
+                            Nhà xe cam kết cung cấp dịch vụ vận chuyển hành khách an toàn, đúng giờ và chất lượng.
+                            Khách hàng cần tuân thủ các quy định sau khi sử dụng dịch vụ:
+                        </MudText>
+                        <MudList Dense>
+                            <MudListItem>
+                                Hành khách cần xuất trình vé hợp lệ trước khi lên xe.
+                            </MudListItem>
+                            <MudListItem>
+                                Không được mang theo hàng hóa nguy hiểm, cấm theo quy định pháp luật.
+                            </MudListItem>
+                            <MudListItem>
+                                Có mặt tại Văn phòng/Bến xe trước 60 phút để làm thủ tục lên xe (đối với ngày lễ tết cần ra trước 90 phút).
+                            </MudListItem>
+                            <MudListItem>
+                                Xuất trình thông tin vé được gửi qua Email/Website hoặc liên hệ quầy vé để nhận thông tin vé trước khi lên xe.
+                            </MudListItem>
+                            <MudListItem>
+                                Không mang thức ăn/đồ uống có mùi lên xe.
+                            </MudListItem>
+                            <MudListItem>
+                                Không hút thuốc, không sử dụng đồ uống có cồn hoặc chất kích thích trên xe.
+                            </MudListItem>
+                        </MudList>
+                    </MudExpansionPanel>
+
+                    <MudExpansionPanel Text="2. Yêu cầu khi lên xe" Class="fw-bold">
+                        <MudText Typo="Typo.body2" Class="fw-bold">
+                            Để đảm bảo an toàn và sự thoải mái, hành khách cần lưu ý:
+                        </MudText>
+                        <MudList Dense>
+                            <MudListItem>
+                                Hành lý xách tay không được vượt quá 7kg và kích thước 50x40x25cm.
+                            </MudListItem>
+                            <MudListItem>
+                                Hành lý ký gửi không được vượt quá 30kg/trường.
+                            </MudListItem>
+                            <MudListItem>
+                                Nhà xe không chịu trách nhiệm đối với hành lý có giá trị cao như tiền mặt, trang sức.
+                            </MudListItem>
+                        </MudList>
+                    </MudExpansionPanel>
+
+                    <MudExpansionPanel Text="3. Chính sách huỷ vé" Class="fw-bold">
+                        <MudText Typo="Typo.body2" Class="fw-bold">
+                            Đối với khách hàng đến bến trễ sẽ hủy/trễ.
+                        </MudText>
+                        <MudList Dense>
+                            <MudListItem>
+                                Khách hàng đến bến trễ sẽ không được hoàn vé.
+                            </MudListItem>
+                            <MudListItem>
+                                Khách hàng đến nhận xe trễ quá 2 tiếng sẽ chúng tôi sẽ tính bỏ cọc.
+                            </MudListItem>
+                        </MudList>
+                    </MudExpansionPanel>
+
+                    <MudExpansionPanel Text="4. Chính sách hoàn tiền" Class="fw-bold">
+                        <MudText Typo="Typo.body2" Class="fw-bold">
+                            Nhà xe chỉ hoàn tiền trong các trường hợp:
+                        </MudText>
+                        <MudList Dense>
+                            <MudListItem>
+                                Nhà xe hủy chuyến do lý do bất khả kháng.
+                            </MudListItem>
+                        </MudList>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+            </MudItem>
+
+            <!-- Sidebar thông tin hỗ trợ -->
+            <MudItem xs="12" sm="4">
+                <MudPaper Class="p-3" Elevation="1">
+                    <MudText Typo="Typo.subtitle1" Class="fw-bold">
+                        Liên hệ hỗ trợ
+                    </MudText>
+                    <MudList Dense>
+                        <MudListItem>
+                            <MudText>Số điện thoại: 1900 1061</MudText>
+                        </MudListItem>
+                        <MudListItem>
+                            <MudText>Email: fivepearscontact@gmail.com</MudText>
+                        </MudListItem>
+                    </MudList>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+</MudContainer>
+
+
