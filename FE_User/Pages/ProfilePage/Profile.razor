@@ -12,7 +12,7 @@
         <NavProfileUser />
 
         <MudItem xs="9">
-            <MudPaper Elevation="2">
+            <MudPaper Elevation="2" Class="mb-5">
                 <MudText Class="pa-3 fw-bold text-uppercase" Typo="Typo.subtitle1">Thông tin tài khoản</MudText>
 
                 <MudGrid>
@@ -45,35 +45,6 @@
                                 </MudButton>
                             </MudCardActions>
                         </MudCard>
-
-                        <InputFile id="idCardImageInput" OnChange="@LoadEmpImage1" hidden accept=".jpg,.jpeg,.png" />
-                        <MudCard Elevation="0">
-                            @if (!string.IsNullOrEmpty(newRoleTask.citizen_identity_img1))
-                            {
-                                <MudCardMedia Image="@newRoleTask.citizen_identity_img1"
-                                              Height="200"
-                                              Class="rounded-lg" />
-                            }
-                            else
-                            {
-                                <MudCardMedia Class="d-flex justify-center align-center rounded-lg"
-                                              Style="height: 200px; background-color: #f5f5f5;">
-                                    <MudIcon Icon="@Icons.Material.Filled.Badge"
-                                             Size="Size.Large"
-                                             Color="Color.Default" />
-                                </MudCardMedia>
-                            }
-                            <MudCardActions Class="pa-0 mt-2">
-                                <MudButton HtmlTag="label"
-                                           For="idCardImageInput"
-                                           Variant="Variant.Filled"
-                                           Color="Color.Secondary"
-                                           StartIcon="@Icons.Material.Filled.CloudUpload"
-                                           FullWidth="true">
-                                    Tải lên ảnh CCCD
-                                </MudButton>
-                            </MudCardActions>
-                        </MudCard>                   
                     </MudItem>
 
                     <MudItem xs="8" Class="pa-5">
@@ -100,9 +71,89 @@
                         }
                         <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Số điện thoại</MudText>
                         <MudTextField Class="mb-3" ShrinkLabel @bind-Value="newRoleTask.phone_number" Variant="Variant.Outlined" ReadOnly Required="true" />
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
 
+            <MudPaper Elevation="2" Class="mb-5">
+                <MudGrid>
+                    <MudItem xs="4" Class="pa-5">
+                        <InputFile id="idCardImageInput" OnChange="@LoadEmpImage1" hidden accept=".jpg,.jpeg,.png" />
+                        <MudCard Elevation="0">
+                            @if (!string.IsNullOrEmpty(newRoleTask.citizen_identity_img1))
+                            {
+                                <MudCardMedia Image="@newRoleTask.citizen_identity_img1"
+                                              Height="200"
+                                              Class="rounded-lg" />
+                            }
+                            else
+                            {
+                                <MudCardMedia Class="d-flex justify-center align-center rounded-lg"
+                                              Style="height: 200px; background-color: #f5f5f5;">
+                                    <MudIcon Icon="@Icons.Material.Filled.Badge"
+                                             Size="Size.Large"
+                                             Color="Color.Default" />
+                                </MudCardMedia>
+                            }
+                            <MudCardActions Class="pa-0 mt-2">
+                                <MudButton HtmlTag="label"
+                                           For="idCardImageInput"
+                                           Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.CloudUpload"
+                                           FullWidth="true">
+                                    Tải lên ảnh CCCD
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>
                     </MudItem>
 
+                    <MudItem xs="8" Class="pa-5">
+                       
+
+                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Số CCCD</MudText>
+                        <MudTextField Class="mb-3" ShrinkLabel @bind-Value="newRoleTask.citizen_identity_number" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+
+            <MudPaper Elevation="2" Class="mb-5">
+                <MudGrid>
+                    <MudItem xs="4" Class="pa-5">
+                        <InputFile id="idCardImageInput2" OnChange="@LoadEmpImage2" hidden accept=".jpg,.jpeg,.png" />
+                        <MudCard Elevation="0">
+                            @if (!string.IsNullOrEmpty(newRoleTask.driver_license_img1))
+                            {
+                                <MudCardMedia Image="@newRoleTask.driver_license_img1"
+                                              Height="200"
+                                              Class="rounded-lg" />
+                            }
+                            else
+                            {
+                                <MudCardMedia Class="d-flex justify-center align-center rounded-lg"
+                                              Style="height: 200px; background-color: #f5f5f5;">
+                                    <MudIcon Icon="@Icons.Material.Filled.Badge"
+                                             Size="Size.Large"
+                                             Color="Color.Default" />
+                                </MudCardMedia>
+                            }
+                            <MudCardActions Class="pa-0 mt-2">
+                                <MudButton HtmlTag="label"
+                                           For="idCardImageInput2"
+                                           Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.CloudUpload"
+                                           FullWidth="true">
+                                    Tải lên ảnh GPLX
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+
+                    <MudItem xs="8" Class="pa-5">
+                        <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Số GPLX</MudText>
+                        <MudTextField Class="mb-3" ShrinkLabel @bind-Value="newRoleTask.driver_license_number" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
                 </MudGrid>
             </MudPaper>
             <div class="flex justify-end float-end items-center space-x-4 mt-4">
@@ -227,6 +278,7 @@
             newRoleTask = response;
             birthdayDate = newRoleTask.birthday;
         }
+        
     }
 
     private async Task LoadEmpImage(InputFileChangeEventArgs e)
@@ -271,6 +323,33 @@
                     var fileName = $"emp_images_cccd/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
                     var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
                     newRoleTask.citizen_identity_img1 = imageUrl;
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi tải lên hình ảnh: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+    private async Task LoadEmpImage2(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            isLoading = true;
+            var file = e.File;
+            if (file != null)
+            {
+                var base64Data = await GetBase64Image(file);
+                if (base64Data != null)
+                {
+                    var fileName = $"emp_images_gplx/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                    var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
+                    newRoleTask.driver_license_img1 = imageUrl;
                     StateHasChanged();
                 }
             }

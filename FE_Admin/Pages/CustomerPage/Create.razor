@@ -20,8 +20,8 @@
                     <MudPaper Elevation="3" Class="pa-4" Style="height:584.94px;">
                         <MudText Typo="Typo.h6" Class="mb-5">Thêm khách hàng</MudText>
                         <MudGrid>
-@*                             <MudItem xs="12" sm="6">
-                                <MudTextField ShrinkLabel @bind-Value="newDriver.cus_code" For="@(() => newDriver.cus_code)" Label="Mã khách hàng" Variant="Variant.Filled" ReadOnly="true" />
+                            @*                             <MudItem xs="12" sm="6">
+                            <MudTextField ShrinkLabel @bind-Value="newDriver.cus_code" For="@(() => newDriver.cus_code)" Label="Mã khách hàng" Variant="Variant.Filled" ReadOnly="true" />
                             </MudItem> *@
                             <MudItem xs="12" sm="6">
                                 <MudTextField ShrinkLabel @bind-Value="newDriver.fullname" Label="Họ và tên" Variant="Variant.Outlined" Required="true" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateFullName))" />
@@ -38,7 +38,7 @@
                             <MudItem xs="12" sm="6">
                                 <MudTextField ShrinkLabel @bind-Value="newDriver.phone_number" Label="Số điện thoại" Variant="Variant.Outlined" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePhone))" />
                             </MudItem>
-                            
+
                             <MudItem xs="12" sm="6">
                                 <MudSelect @bind-Value="newDriver.gender" Label="Giới tính" Required="true" Variant="Variant.Outlined" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateGender))">
                                     <MudSelectItem Value="@((byte)0)">Nam</MudSelectItem>
@@ -130,11 +130,39 @@
                                         </MudButton>
                                     </MudCardActions>
                                 </MudCard>
+                                <!-- avt Image -->
+                                <InputFile id="avt1" OnChange="@((e) => LoadAVTImage(e, 1))" hidden accept=".jpg,.jpeg,.png" />
+                                <MudCard Elevation="0">
+                                    @if (!string.IsNullOrEmpty(newDriver.img_cus))
+                                    {
+                                        <MudCardMedia Image="@newDriver.img_cus"
+                                                      Height="200"
+                                                      Class="rounded-lg" />
+                                    }
+                                    else
+                                    {
+                                        <MudCardMedia Class="d-flex justify-center align-center rounded-lg"
+                                                      Style="height: 200px; background-color: #f5f5f5;">
+                                            <MudIcon Icon="@Icons.Material.Filled.DriveEta"
+                                                     Size="Size.Large"
+                                                     Color="Color.Default" />
+                                        </MudCardMedia>
+                                    }
+                                    <MudCardActions Class="pa-0 mt-2">
+                                        <MudButton HtmlTag="label"
+                                                   For="avt1"
+                                                   Variant="Variant.Filled"
+                                                   Color="Color.Secondary"
+                                                   StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                   FullWidth="true">
+                                            Ảnh đại diện
+                                        </MudButton>
+                                    </MudCardActions>
+                                </MudCard>
                             </MudItem>
                         </MudGrid>
                     </MudPaper>
                 </MudItem>
-
             </MudGrid>
         </EditForm>
     </MudGrid>
@@ -241,12 +269,30 @@
         }
     }
 
+    private async Task LoadAVTImage(InputFileChangeEventArgs e, int index)
+    {
+        if (e.File != null)
+        {
+            isUploadingCitizenImage = true;
+            var base64Image = await GetBase64Image(e.File);
+            if (!string.IsNullOrEmpty(base64Image))
+            {
+                if (index == 1)
+                {
+                    newDriver.img_cus = await UploadImageToFirebase($"avatar_{newDriver.cus_code}", base64Image);
+                }
+            }
+            isUploadingCitizenImage = false;
+        }
+    }
+
+
     private async Task<string> UploadImageToFirebase(string fileName, string base64String)
     {
         try
         {
             var response = await js.InvokeAsync<string>("uploadImage", fileName, base64String);
-            return response; // Trả về URL tải xuống
+            return response;
         }
         catch (Exception ex)
         {
@@ -294,7 +340,7 @@
         {
             errors.Add("Vui lòng điền email.");
         }
-        else if (email.Length < 20 || email.Length > 150)
+        else if (email.Length < 10 || email.Length > 150)
         {
             errors.Add("Email không hợp lệ.");
         }
@@ -405,9 +451,5 @@
             yield return "Vui lòng chọn trạng thái.";
         }
     }
-
-
-
-
 
 }

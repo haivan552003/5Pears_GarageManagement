@@ -111,7 +111,7 @@
                         <MudPaper Elevation="3" Class="pa-4">
                             <MudText Typo="Typo.h6" Class="mb-4">Hình ảnh</MudText>
                             <MudGrid>
-                                <MudItem xs="6">
+                                <MudItem xs="4">
                                     <InputFile id="citizenIdInput1" OnChange="@((e) => LoadCitizenIdImage(e, 1))"
                                                hidden accept=".jpg,.jpeg,.png" />
                                     <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary"
@@ -131,7 +131,7 @@
                                     }
                                 </MudItem>
 
-                                <MudItem xs="6">
+                                <MudItem xs="4">
                                     <InputFile id="licenseInput1" OnChange="@((e) => LoadLicenseImage(e, 1))"
                                                hidden accept=".jpg,.jpeg,.png" />
                                     <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary"
@@ -147,6 +147,25 @@
                                     else if (!string.IsNullOrEmpty(newRoleTask.citizen_identity_img1))
                                     {
                                         <MudImage Src="@newRoleTask.citizen_identity_img1" Alt="CCCD (Trước)" Width="100" Height="100"
+                                                  ObjectFit="ObjectFit.Cover" Class="mt-2" />
+                                    }
+                                </MudItem> 
+                                <MudItem xs="4">
+                                    <InputFile id="avt1" OnChange="@((e) => LoadLicenseImageavt(e, 1))"
+                                               hidden accept=".jpg,.jpeg,.png" />
+                                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary"
+                                               StartIcon="@Icons.Material.Filled.CloudUpload" for="avt1"
+                                               FullWidth="true" Class="mud-button-small-text">
+                                        GPLX(Trước)
+                                    </MudButton>
+
+                                    @if (isLicenseImageLoading)
+                                    {
+                                        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mt-2" />
+                                    }
+                                    else if (!string.IsNullOrEmpty(newRoleTask.driver_license_img1))
+                                    {
+                                        <MudImage Src="@newRoleTask.driver_license_img1" Alt="GPLX" Width="100" Height="100"
                                                   ObjectFit="ObjectFit.Cover" Class="mt-2" />
                                     }
                                 </MudItem>
@@ -262,6 +281,10 @@
             {
                 var licenseUrl = await js.InvokeAsync<string>("getImageUrl", newRoleTask.citizen_identity_img1);
                 newRoleTask.citizen_identity_img1 = licenseUrl;
+            }if (!string.IsNullOrEmpty(newRoleTask.driver_license_img1))
+            {
+                var licenseUrl = await js.InvokeAsync<string>("getImageUrl", newRoleTask.driver_license_img1);
+                newRoleTask.driver_license_img1 = licenseUrl;
             }
         }
         catch (Exception ex)
@@ -302,6 +325,22 @@
 
         isLicenseImageLoading = false; // Ẩn MudProgressCircular sau khi tải xong
         StateHasChanged();
+    } 
+    private async Task LoadLicenseImageavt(InputFileChangeEventArgs e, int imageNumber)
+    {
+        isLicenseImageLoading = true; // Hiển thị MudProgressCircular
+        StateHasChanged();
+
+        await LoadImage(e, "avt", (url) =>
+        {
+            if (imageNumber == 1)
+            {
+                newRoleTask.driver_license_img1 = url;
+            }
+        });
+
+        isLicenseImageLoading = false;
+        StateHasChanged();
     }
     // Đóng dialog
     private void CloseDialog()
@@ -309,44 +348,44 @@
         isDialogVisible = false;
     }
 
-        // ... các biến khác
-        private string selectedRoleName;
+    // ... các biến khác
+    private string selectedRoleName;
 
-        protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        // Tải thông tin khách hàng
+        var response = await httpClient.GetFromJsonAsync<customers>($"{url}/{customerId}");
+        if (response != null)
         {
-            // Tải thông tin khách hàng
-            var response = await httpClient.GetFromJsonAsync<customers>($"{url}/{customerId}");
-            if (response != null)
-            {
-                newRoleTask = response;
-                birthdayDate = newRoleTask.birthday;
-                await LoadExistingImages(); 
+            newRoleTask = response;
+            birthdayDate = newRoleTask.birthday;
+            await LoadExistingImages(); 
 
-            }
-
-            // Tải danh sách vai trò
-            roles = await httpClient.GetFromJsonAsync<List<roles>>(roleUrl);
-
-            // Tìm vai trò theo id và gán tên
-            var selectedRole = roles.FirstOrDefault(role => role.id == newRoleTask.id_role);
-            if (selectedRole != null)
-            {
-                selectedRoleName = selectedRole.name;
-                newRoleTask.id_role = selectedRole.id; 
-            }
-
-            // Tải địa chỉ khách hàng
-            await LoadCustomerAddress();
         }
 
-        private void OnRoleChange(ChangeEventArgs e)
-        {
-            var selectedRoleId = Convert.ToInt32(e.Value);
-            var selectedRole = roles.FirstOrDefault(role => role.id == selectedRoleId);
-            selectedRoleName = selectedRole?.name ?? "Không tìm thấy vai trò";
+        // Tải danh sách vai trò
+        roles = await httpClient.GetFromJsonAsync<List<roles>>(roleUrl);
 
-            newRoleTask.id_role = selectedRoleId;
+        // Tìm vai trò theo id và gán tên
+        var selectedRole = roles.FirstOrDefault(role => role.id == newRoleTask.id_role);
+        if (selectedRole != null)
+        {
+            selectedRoleName = selectedRole.name;
+            newRoleTask.id_role = selectedRole.id; 
         }
+
+        // Tải địa chỉ khách hàng
+        await LoadCustomerAddress();
+    }
+
+    private void OnRoleChange(ChangeEventArgs e)
+    {
+        var selectedRoleId = Convert.ToInt32(e.Value);
+        var selectedRole = roles.FirstOrDefault(role => role.id == selectedRoleId);
+        selectedRoleName = selectedRole?.name ?? "Không tìm thấy vai trò";
+
+        newRoleTask.id_role = selectedRoleId;
+    }
 
 
     private async Task LoadRoles()
@@ -388,7 +427,8 @@
             var response = await httpClient.PutAsJsonAsync($"{url}/{newRoleTask.Id}", newRoleTask);
             if (response.IsSuccessStatusCode)
             {
-                Snackbar.Add($"update thành công", Severity.Success);
+                Snackbar.Add($"Sửa thành công", Severity.Success);
+                NavigationManager.NavigateTo("/getcustomer");
             }
             else
             {
