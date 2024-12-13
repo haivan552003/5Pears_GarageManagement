@@ -31,7 +31,8 @@ namespace BE_API.Models
         public string type_name { get; set; }
         public string brand_name { get; set; }
         public float price_user { get; set; }
-        public decimal rate { get; set; }
+        public int rate { get; set; }
+        public decimal rate_avg { get; set; }
 
         //public float voucher { get; set; }
         //public int number_seat { get; set; }

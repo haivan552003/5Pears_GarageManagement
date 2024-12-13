@@ -12,208 +12,219 @@
             <div class="mb-3">
                 @if (cars.car_img != null && cars.car_img.Any())
                 {
-                    <img src="@cars.car_img.First().name" Alt="Hình chiếc xe" class="img-fluid w-100 mx-auto rounded-1" Style="height:572px;" />
+                    <img src="@cars.car_img.First().name" Alt="Hình chiếc xe" class="img-fluid shadow-sm w-100 mx-auto rounded-1" Style="height:572px;" />
                 }
             </div>
-            <MudGrid Class="mb-4">
-                <MudItem xs="12">
-                    <MudText Typo="Typo.h4" Class="pb-0"><b>@cars.car_name</b></MudText>
-                </MudItem>
+            <MudPaper Elevation="0" Class="pa-2">
+                <MudGrid Class="mb-4">
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h4" Class="pb-0"><b>@cars.car_name</b></MudText>
+                    </MudItem>
 
-                <MudItem xs="2" Class="d-flex align-center">
-                    <MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Warning" />
-                    <MudText Typo="Typo.body1" Class="ml-1">4.5</MudText>
-                </MudItem>
+                    <MudItem xs="2" Class="d-flex align-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Warning" />
+                        <MudText Typo="Typo.body1" Class="ml-1">@cars.rate_avg</MudText>
+                    </MudItem>
 
-                <MudItem xs="10" Class="d-flex align-center">
-                    <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Success" />
-                    <MudText Typo="Typo.body1" Class="ml-1">20 lượt đánh giá</MudText>
-                </MudItem>
-            </MudGrid>
-
-            <MudDivider Class="mt-6 mb-6" />
-
-            <MudGrid Class="mb-4">
-                <MudItem xs="12">
-                    <MudText Typo="Typo.h5" Class="fw-bold">Đặc Điểm</MudText>
-                </MudItem>
-                <MudItem xs="4">
-                    <MudText Class="mb-1" Typo="Typo.subtitle1">Loại hộp số</MudText>
-                    @if (@cars.isAuto == 0)
-                    {
-                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Số Tự Động</MudText>
-                    }
-                    else
-                    {
-                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Số Sàn</MudText>
-                    }
-                </MudItem>
-
-                <MudItem xs="4">
-                    <MudText Class="mb-1" Typo="Typo.subtitle1">Số Ghế</MudText>
-                    <MudText Typo="Typo.subtitle1" Class=" fw-bold">@cars.number_seat ghế</MudText>
-                </MudItem>
-
-                <MudItem xs="4">
-                    <MudText Class="mb-1" Typo="Typo.subtitle1">Nhiên Liệu</MudText>
-                    @if (cars.fuel == 1)
-                    {
-                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Xăng RON 92 (E5)</MudText>
-                    }
-                    else if (cars.fuel == 2)
-                    {
-                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">RON 95-III</MudText>
-                    }
-                    else if (cars.fuel == 3)
-                    {
-                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">RON 95-IV</MudText>
-                    }
-                    else if (cars.fuel == 4)
-                    {
-                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Diesel 0,05%5</MudText>
-                    }
-                    else if (cars.fuel == 5)
-                    {
-                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Diesel 0,001%S (Diesel Euro 5)</MudText>
-                    }
-                    else if (cars.fuel == 6)
-                    {
-                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Pin Lithium-ion (Li-ion)</MudText>
-                    }
-                    else if (cars.fuel == 7)
-                    {
-                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Pin Lithium Iron Phosphate (LFP)</MudText>
-                    }
-                    else if (cars.fuel == 8)
-                    {
-                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Pin thể rắn (Solid-State Battery)</MudText>
-                    }
-                    else if (cars.fuel == 9)
-                    {
-                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Hybrid truyền thống (HEV)</MudText>
-                    }
-                    else if (cars.fuel == 10)
-                    {
-                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Plug-in Hybrid (PHEV)</MudText>
-                    }
-                    else if (cars.fuel == 11)
-                    {
-                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Pin CATL</MudText>
-                    }
-                </MudItem>
-            </MudGrid>
+                    <MudItem xs="10" Class="d-flex align-center">
+                        <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Success" />
+                        <MudText Typo="Typo.body1" Class="ml-1">@cars.rate lượt đánh giá</MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
 
             <MudDivider Class="mt-6 mb-6" />
 
-            <MudGrid Class="mb-4">
-                <MudItem xs="12">
-                    <MudText Typo="Typo.h5" Class="fw-bold">Mô Tả</MudText>
-                </MudItem>
-
-                <MudItem xs="12">
-                    <MudText Typo="Typo.subtitle1" Color="Color.Primary">
-                        @cars.car_name
-                    </MudText>
-                    <MudText Typo="Typo.subtitle1" Align="Align.Justify">
-                        @cars.description
-                    </MudText>
-                    @if (latestImages != null && latestImages.Any())
-                    {
-                        <MudText Typo="Typo.body2" Class="fst-italic" Align="Align.Justify">
-                            (*) Một số hình ảnh của xe
-                        </MudText>
-                        @foreach (var image in latestImages)
+            <MudPaper Elevation="0" Class="pa-2">
+                <MudGrid Class="mb-4">
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h5" Class="fw-bold">Đặc Điểm</MudText>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudText Class="mb-1" Typo="Typo.subtitle1">Loại hộp số</MudText>
+                        @if (@cars.isAuto == 0)
                         {
-                            <MudItem xs="6" Class="mx-auto pa-2 text-center">
-                                <img src="@image.name" class="rounded-1 w-100" />
-                            </MudItem>
+                            <MudText Typo="Typo.subtitle1" Class=" fw-bold">Số Tự Động</MudText>
                         }
-                    }
-                </MudItem>
-            </MudGrid>
+                        else
+                        {
+                            <MudText Typo="Typo.subtitle1" Class=" fw-bold">Số Sàn</MudText>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="4">
+                        <MudText Class="mb-1" Typo="Typo.subtitle1">Số Ghế</MudText>
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">@cars.number_seat ghế</MudText>
+                    </MudItem>
+
+                    <MudItem xs="4">
+                        <MudText Class="mb-1" Typo="Typo.subtitle1">Nhiên Liệu</MudText>
+                        @if (cars.fuel == 1)
+                        {
+                            <MudText Typo="Typo.subtitle1" Class=" fw-bold">Xăng RON 92 (E5)</MudText>
+                        }
+                        else if (cars.fuel == 2)
+                        {
+                            <MudText Typo="Typo.subtitle1" Class=" fw-bold">RON 95-III</MudText>
+                        }
+                        else if (cars.fuel == 3)
+                        {
+                            <MudText Typo="Typo.subtitle1" Class=" fw-bold">RON 95-IV</MudText>
+                        }
+                        else if (cars.fuel == 4)
+                        {
+                            <MudText Typo="Typo.subtitle1" Class=" fw-bold">Diesel 0,05%5</MudText>
+                        }
+                        else if (cars.fuel == 5)
+                        {
+                            <MudText Typo="Typo.subtitle1" Class=" fw-bold">Diesel 0,001%S (Diesel Euro 5)</MudText>
+                        }
+                        else if (cars.fuel == 6)
+                        {
+                            <MudText Typo="Typo.subtitle1" Class=" fw-bold">Pin Lithium-ion (Li-ion)</MudText>
+                        }
+                        else if (cars.fuel == 7)
+                        {
+                            <MudText Typo="Typo.subtitle1" Class=" fw-bold">Pin Lithium Iron Phosphate (LFP)</MudText>
+                        }
+                        else if (cars.fuel == 8)
+                        {
+                            <MudText Typo="Typo.subtitle1" Class=" fw-bold">Pin thể rắn (Solid-State Battery)</MudText>
+                        }
+                        else if (cars.fuel == 9)
+                        {
+                            <MudText Typo="Typo.subtitle1" Class=" fw-bold">Hybrid truyền thống (HEV)</MudText>
+                        }
+                        else if (cars.fuel == 10)
+                        {
+                            <MudText Typo="Typo.subtitle1" Class=" fw-bold">Plug-in Hybrid (PHEV)</MudText>
+                        }
+                        else if (cars.fuel == 11)
+                        {
+                            <MudText Typo="Typo.subtitle1" Class=" fw-bold">Pin CATL</MudText>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
 
             <MudDivider Class="mt-6 mb-6" />
 
-            <MudGrid Class="mb-4">
-                <MudItem xs="12">
-                    <MudText Typo="Typo.h5" Class="fw-bold">
-                        Các Tiện Nghi Khác
-                    </MudText>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudText Typo="Typo.subtitle1">
-                        <MudIcon Icon="@Icons.Material.Outlined.Map" />
-                        Bản đồ
-                    </MudText>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudText Typo="Typo.subtitle1">
-                        <MudIcon Icon="@Icons.Material.Outlined.Bluetooth" />
-                        Bluetooth
-                    </MudText>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudText Typo="Typo.subtitle1">
-                        <MudIcon Icon="@Icons.Material.Outlined.Camera" />
-                        Camera hành trình
-                    </MudText>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudText Typo="Typo.subtitle1">
-                        <MudIcon Icon="@Icons.Material.Outlined.Camera" />
-                        Camera lùi
-                    </MudText>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudText Typo="Typo.subtitle1">
-                        <MudIcon Icon="@Icons.Material.Outlined.EdgesensorHigh" />
-                        Cảm biến va chạm
-                    </MudText>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudText Typo="Typo.subtitle1">
-                        <MudIcon Icon="@Icons.Material.Outlined.CarCrash" />
-                        Cảnh báo tốc độ
-                    </MudText>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudText Typo="Typo.subtitle1">
-                        <MudIcon Icon="@Icons.Material.Outlined.GpsFixed" />
-                        Định vị GPS
-                    </MudText>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudText Typo="Typo.subtitle1">
-                        <MudIcon Icon="@Icons.Material.Outlined.Usb" />
-                        Khe cắm USB
-                    </MudText>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudText Typo="Typo.subtitle1">
-                        <MudIcon Icon="@Icons.Material.Outlined.TireRepair" />
-                        Lốp dự phòng
-                    </MudText>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudText Typo="Typo.subtitle1">
-                        <MudIcon Icon="@Icons.Material.Outlined.SmartDisplay" />
-                        Màn hình DVD
-                    </MudText>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudText Typo="Typo.subtitle1">
-                        <MudIcon Icon="@Icons.Material.Outlined.Assignment" />
-                        ETC
-                    </MudText>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudText Typo="Typo.subtitle1">
-                        <MudIcon Icon="@Icons.Material.Outlined.HealthAndSafety" />
-                        Túi khí an toàn
-                    </MudText>
-                </MudItem>
+            <MudPaper Elevation="0" Class="pa-2">
+                <MudGrid Class="mb-4">
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h5" Class="fw-bold">Mô Tả</MudText>
+                    </MudItem>
 
-            </MudGrid>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Class="fw-bold" Color="Color.Primary">
+                            @cars.car_name
+                        </MudText>
+                        <MudText Typo="Typo.subtitle1" Align="Align.Justify">
+                            @cars.description
+                        </MudText>
+                        @if (latestImages != null && latestImages.Any())
+                        {
+                            <MudText Typo="Typo.body2" Class="fst-italic" Align="Align.Justify">
+                                (*) Một số hình ảnh của xe
+                            </MudText>
+                            <MudGrid Class="ma-0 pa-0">
+                                @foreach (var image in latestImages)
+                                {
+                                    <MudItem xs="6">
+                                        <img src="@image.name" class="rounded-1 w-100" />
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+
+            <MudDivider Class="mt-6 mb-6" />
+
+            <MudPaper Elevation="0" Class="pa-2">
+                <MudGrid Class="mb-4">
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h5" Class="fw-bold">
+                            Các Tiện Nghi Khác
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1">
+                            <MudIcon Icon="@Icons.Material.Outlined.Map" />
+                            Bản đồ
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1">
+                            <MudIcon Icon="@Icons.Material.Outlined.Bluetooth" />
+                            Bluetooth
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1">
+                            <MudIcon Icon="@Icons.Material.Outlined.Camera" />
+                            Camera hành trình
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1">
+                            <MudIcon Icon="@Icons.Material.Outlined.Camera" />
+                            Camera lùi
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1">
+                            <MudIcon Icon="@Icons.Material.Outlined.EdgesensorHigh" />
+                            Cảm biến va chạm
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1">
+                            <MudIcon Icon="@Icons.Material.Outlined.CarCrash" />
+                            Cảnh báo tốc độ
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1">
+                            <MudIcon Icon="@Icons.Material.Outlined.GpsFixed" />
+                            Định vị GPS
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1">
+                            <MudIcon Icon="@Icons.Material.Outlined.Usb" />
+                            Khe cắm USB
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1">
+                            <MudIcon Icon="@Icons.Material.Outlined.TireRepair" />
+                            Lốp dự phòng
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1">
+                            <MudIcon Icon="@Icons.Material.Outlined.SmartDisplay" />
+                            Màn hình DVD
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1">
+                            <MudIcon Icon="@Icons.Material.Outlined.Assignment" />
+                            ETC
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.subtitle1">
+                            <MudIcon Icon="@Icons.Material.Outlined.HealthAndSafety" />
+                            Túi khí an toàn
+                        </MudText>
+                    </MudItem>
+
+                </MudGrid>
+
+            </MudPaper>
 
             <MudDivider Class="mt-6 mb-6" />
 
@@ -274,11 +285,11 @@
                 {
                     @foreach (var image in latestImages.Take(2))
                     {
-                        <img src="@image.name" class="rounded-1 mb-1 w-100" Alt="Hình chiếc xe 2" />
+                        <img src="@image.name" class="rounded-1 shadow-sm mb-1 w-100" Alt="Hình chiếc xe 2" />
                     }
                 }
             </div>
-            <MudPaper Class="p-4" MaxWidth="MaxWidth.Medium" Elevation="1">
+            <MudPaper Class="p-4" MaxWidth="MaxWidth.Medium" Elevation="0">
                 <MudGrid>
                     <MudItem xs="12" Class="pb-0 pt-0">
                         <MudText Typo="Typo.h6" Class="fw-bold" Color="Color.Primary">
@@ -344,7 +355,7 @@
 
             @if (cus_id != 0)
             {
-                <MudPaper Class="p-4 mt-4" Elevation="1">
+                <MudPaper Class="p-4 mt-4" Elevation="0">
                     <MudGrid>
                         <MudItem xs="12">
                             <MudText Typo="Typo.h6" Color="Color.Primary">THÔNG TIN KHÁCH HÀNG</MudText>
