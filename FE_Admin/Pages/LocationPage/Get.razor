@@ -3,7 +3,30 @@
 @inject IJSRuntime js
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255); /* Màu trắng với độ mờ 50% */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999; /* Đảm bảo overlay hiển thị trên các thành phần khác */
+    }
 
+</style>
+
+@if (isLoading)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudImage Src="/Image/404.jpg" Alt="NOT FOUND" Elevation="0" Fluid="true" />
+        </MudItem>
+    </div>
+}
 <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
     @if (isLoading)
     {
@@ -81,7 +104,7 @@
 </MudContainer>
 
 @code {
-    private bool isLoading = true;
+    // private bool isLoading = true;
     [Parameter] public int Id { get; set; }
     private IEnumerable<location> Elements = new List<location>();
     private Dictionary<int, string> CategoryDict = new Dictionary<int, string>();
@@ -89,6 +112,68 @@
     private bool _sortNameByLength;
     private List<string> _events = new();
     private string url = "http://localhost:49922/api/Location";
+    private string userRole;
+    private bool isInitialized = false;
+    private bool isLoading = false;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isInitialized)
+        {
+            isInitialized = true;
+
+            var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                try
+                {
+                    var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+
+                    if (handler.CanReadToken(token))
+                    {
+                        var jwtToken = handler.ReadJwtToken(token);
+
+                        var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
+
+                        if (roleClaim != null)
+                        {
+                            userRole = roleClaim.Value;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Role claim not found in the token.");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Lỗi khi giải mã token: {ex.Message}");
+                }
+            }
+            CheckRole();
+            StateHasChanged();
+        }
+    }
+
+    private void CheckRole()
+    {
+        if (userRole == "1")
+        {
+            Console.WriteLine("User is an Admin.");
+        }
+        else if (userRole == "2")
+        {
+            Console.WriteLine("User is a regular User.");
+        }
+        else if (userRole == "3")
+        {
+            Console.WriteLine("User is a regular Driver.");
+        }
+        else
+        {
+            isLoading = true;
+        }
+    }
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
             {
