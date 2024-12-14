@@ -19,9 +19,11 @@
         public string emp_name { get; set; }
         public string cus_name { get; set; }
         public bool payment_method { get; set; }
+        public string email { get; set; }
+        public string phone_number { get; set; }
+        public string car_number { get; set; }
+
     }
-
-
     public class guest_car_create
     {
         public int id { get; set; }

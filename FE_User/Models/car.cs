@@ -8,7 +8,6 @@ namespace FE_User.Models
         public int id { get; set; }
         public string car_name { get; set; }
         public string img_name { get; set; }
-
         public string car_number { get; set; }
         public string color { get; set; }
         public DateTime vehicle_registration_start { get; set; }
@@ -21,15 +20,13 @@ namespace FE_User.Models
 
         public int brand_id { get; set; }
         public string brand_name { get; set; }
-
         public DateTime year_production { get; set; }
         public float odo { get; set; }
         public float insurance_fee { get; set; }
-
-        public int fuel {  get; set; }
-        public string description {  get; set; }
-        public float voucher {  get; set; }
-        public int number_seat {  get; set; }
+        public int fuel { get; set; }
+        public string description { get; set; }
+        public float voucher { get; set; }
+        public int number_seat { get; set; }
         public List<car_img> car_img { get; set; }
 
 
