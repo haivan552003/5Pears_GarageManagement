@@ -89,6 +89,9 @@
                         <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
                             <MudButton OnClick="@(async () => await OpenDetailCreateDialog(null))" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
                                 Thêm mới
+                            </MudButton> 
+                            <MudButton OnClick="@(async () => await OpenGenDialog(null))" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.AutoFixHigh" Color="Color.Warning" Size="Size.Small">
+                                Gen chuyến
                             </MudButton>
                         </MudItem>
                     </ToolBarContent>
@@ -136,12 +139,12 @@
 </MudContainer>
 
 <script>
-     window.triggerSelectClick = () => {
-        const selectElements = document.querySelectorAll('.mud-select');
+    window.triggerSelectClick = () => {
+    const selectElements = document.querySelectorAll('.mud-select');
 
-        selectElements.forEach(select => {
-            select.click();
-        });
+    selectElements.forEach(select => {
+    select.click();
+    });
     };
 </script>
 @code {
@@ -163,8 +166,8 @@
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Chuyến đi", href: null, icon: @Icons.Material.Outlined.LocationOn),
-        new BreadcrumbItem("Danh sách chuyến đi", href: "/gettrip", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Tuyến xe", href: null, icon: @Icons.Material.Outlined.LocationOn),
+        new BreadcrumbItem("Danh sách tuyến xe", href: "/gettrip", icon: @Icons.Material.Outlined.List),
         new BreadcrumbItem("Cập nhật", href: null, icon: @Icons.Material.Filled.Edit),
     };
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -290,13 +293,29 @@
             { "SelectedTrip", selectedTrip ?? new trip_detail_create()}
         };
 
-        var dialog = DialogService.Show<Add_Detail>("Thêm chi tiết chuyến xe", parameters);
+        var dialog = DialogService.Show<Add_Detail>("Thêm chuyến xe", parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled && result.Data is trip_detail_create newTripDetail)
         {
             this.newTripDetail = newTripDetail;
             // await AddTripDetail();
+        }
+    }
+
+    private async Task OpenGenDialog(trip_detail_create selectedTrip = null)
+    {
+        var parameters = new DialogParameters
+        {
+            { "SelectedTrip", selectedTrip ?? new trip_detail_create()}
+        };
+
+        var dialog = DialogService.Show<Add_Gen>("Gen chuyến xe", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled && result.Data is trip_detail_create newTripDetail)
+        {
+            this.newTripDetail = newTripDetail;
         }
     }
     private async Task OpenDetailUpdateDialog(trip_detail selectedTrip = null)
@@ -395,7 +414,6 @@
         }
     }
 
-
     private async Task DeleteTripDetail(trip_detail trip_detail)
     {
         try
@@ -431,5 +449,10 @@
     void SelectedItemsChanged(HashSet<trip_detail> items)
     {
         Console.WriteLine($"Selected items changed: {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+
+    private async Task GenTripdetail()
+    {
+
     }
 }
