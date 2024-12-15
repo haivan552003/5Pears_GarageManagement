@@ -22,7 +22,7 @@
                     </MudItem>
 
                     <MudItem xs="6" Class="mb-4">
-                        <MudNumericField T="float" Label="Khoảng cách" @bind-Value="SelectedTrip.distance"
+                        <MudNumericField T="float" Label="Khoảng cách(km)" @bind-Value="SelectedTrip.distance"
                         Placeholder="Nhập khoảng cách" Variant="Variant.Outlined" Required="true" />
                     </MudItem>
                     <MudItem xs="6" Class="mb-4">
@@ -95,19 +95,34 @@
     private List<dropdown> locationsfrom = new List<dropdown>(); // điểm đến
     private List<dropdown> cars = new List<dropdown>(); // Danh sách xe
     private List<dropdown> locationsto = new List<dropdown>(); // điểm khởi hành
-
+    private trip tripInfo = new trip();
     private string LastSegment;
     private int time;
+    private string urlTrip = "http://localhost:49922/api/Trips/trip";
+
 
     protected override async Task OnInitializedAsync()
     {
-        drivers = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/driver");
+        try
+        {
+            var uri = Navigation.Uri;
+            LastSegment = GetLastSegment(uri);
+            var response = await httpClient.GetFromJsonAsync<trip>($"{urlTrip}/{int.Parse(LastSegment)}");
+            tripInfo = response;
 
-        locationsfrom = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/location");
+            drivers = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/driver");
 
-        cars = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/car");
+            locationsfrom = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/location");
 
-        locationsto = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/location");
+            cars = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/car");
+
+            locationsto = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/location");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi tải chuyến đi: {ex.Message}", Severity.Error);
+        }
+       
     }
 
     private string GetLastSegment(string url)
@@ -123,20 +138,19 @@
         {
             try
             {
-                // Kiểm tra ngày bắt đầu và thời gian chạy
                 if (!SelectedTrip.DateStart.HasValue || time == null || time <= 0)
                 {
-                    Snackbar.Add("Vui lòng nhập ngày bắt đầu và thời gian chạy hợp lệ!", Severity.Warning);
+                    Snackbar.Add("Vui lòng nhập ngày bắt đầu và thời gian chạy hợp lệ", Severity.Warning);
                     return;
                 }
 
                 // Xác định thời gian chuyến đầu tiên
-                var startTime = SelectedTrip.DateStart.Value.Date.AddHours(6); // Bắt đầu lúc 6h sáng
-                var tripDuration = TimeSpan.FromHours(time); // Thời gian chạy mỗi chuyến
+                var startTime = SelectedTrip.DateStart.Value.Date.AddHours(6); 
+                var tripDuration = TimeSpan.FromHours(time); 
                 var endTime = startTime + tripDuration;
 
                 // Lặp để sinh chuyến trong ngày
-                while (startTime.TimeOfDay < TimeSpan.FromHours(22)) // Dừng khi startTime vượt quá 22:00
+                while (startTime.TimeOfDay < TimeSpan.FromHours(22)) 
                 {
                     // Gán giá trị thời gian bắt đầu và kết thúc cho chuyến đi
                     SelectedTrip.time_start = startTime;
@@ -157,11 +171,10 @@
                     }
 
                     // Cập nhật thời gian cho chuyến tiếp theo
-                    startTime = endTime.AddHours(1); // time_start của chuyến sau
-                    endTime = startTime + tripDuration; // time_end của chuyến sau
+                    startTime = endTime.AddHours(1); 
+                    endTime = startTime + tripDuration; 
 
-                    // Kiểm tra nếu endTime vượt quá 22:00, thì thoát vòng lặp
-                    if (endTime.TimeOfDay >= TimeSpan.FromHours(22)) break;
+                    if (endTime.TimeOfDay > TimeSpan.FromHours(22)) break;
                 }
 
 

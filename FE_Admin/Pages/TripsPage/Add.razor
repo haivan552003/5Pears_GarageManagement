@@ -46,16 +46,25 @@
                             </MudPaper>
                         </MudItem>
                         <MudGrid Gutter="true">
-                            <MudItem xs="6" Class="mb-4">
-                                <MudTextField Label="Điểm khởi hành" @bind-Value="newTrip.from" Placeholder="Từ"
-                                              Variant="Variant.Outlined" Required="true"
-                                              Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidateFullName))" />
-
+                            <MudItem xs="6">
+                                <MudStack>
+                                    <MudSelect @bind-Value="newTrip.from" Variant="Variant.Outlined" Label="Chọn điểm đi" RequiredError="Vui lòng chọn thông tin">
+                                        @foreach (var location in LocationFroms)
+                                        {
+                                            <MudSelectItem Value="@location">@location</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudStack>
                             </MudItem>
-                            <MudItem xs="6" Class="mb-4">
-                                <MudTextField Label="Điểm đến" @bind-Value="newTrip.to" Placeholder="Đến"
-                                              Variant="Variant.Outlined" Required="true"
-                                              Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidateFullDiemden))" />
+                            <MudItem xs="6">
+                                <MudStack>
+                                    <MudSelect @bind-Value="newTrip.to" Variant="Variant.Outlined" Label="Chọn điểm đến" RequiredError="Vui lòng chọn thông tin">
+                                        @foreach (var location in LocationTos)
+                                        {
+                                            <MudSelectItem Value="@location">@location</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudStack>
                             </MudItem>
                             @*   <MudItem xs="6" Class="mb-4">
                             <MudTextField Label="Hình ảnh chuyến đi" @bind-Value="newTrip.img_trip" Placeholder="URL Hình Ảnh"
@@ -161,13 +170,22 @@
 
     private async Task Addtrip()
     {
+        if (newTrip.is_return == null ||
+            newTrip.to == null ||
+            newTrip.from == null ||
+            newTrip.status == null)
+        {
+            Snackbar.Add("Vui điền đầy đủ thông tin", Severity.Warning);
+            return;
+        }
+
         newTrip.emp_create = 5;
         try
         {
             var response = await httpClient.PostAsJsonAsync(url, newTrip);
             if (response.IsSuccessStatusCode)
             {
-                Snackbar.Add("Thêm thành công!", Severity.Success);
+                Snackbar.Add("Thêm thành công", Severity.Success);
                 Navigation.NavigateTo("/gettrip");
             }
             else
@@ -185,24 +203,65 @@
     {
         if (string.IsNullOrWhiteSpace(fullName))
         {
-            yield return "Vui lòng điền điểm khởi hành .";
+            yield return "Vui lòng điền điểm khởi hành";
         }
         else if (fullName.Length < 2 || fullName.Length > 150)
         {
-            yield return "Điểm khởi hành không hợp lệ.";
+            yield return "Điểm khởi hành không hợp lệ";
         }
-       
+
     }
     private IEnumerable<string> EmployeeValidateFullDiemden(string DiemDen)
     {
         if (string.IsNullOrWhiteSpace(DiemDen))
         {
-            yield return "Vui lòng điền điểm đến.";
+            yield return "Vui lòng điền điểm đến";
         }
         else if (DiemDen.Length < 2 || DiemDen.Length > 150)
         {
-            yield return "Điểm đến không hợp lệ.";
+            yield return "Điểm đến không hợp lệ";
         }
-       
+
     }
+
+    private List<string> LocationFroms = new()
+    {
+    "An Giang", "Bà Rịa - Vũng Tàu", "Bắc Giang", "Bắc Kạn",
+    "Bạc Liêu", "Bắc Ninh", "Bến Tre", "Bình Dương",
+    "Bình Định", "Bình Phước", "Bình Thuận", "Cà Mau",
+    "Cần Thơ", "Cao Bằng", "Đà Nẵng", "Đắk Lắk",
+    "Đắk Nông", "Điện Biên", "Đồng Nai", "Đồng Tháp",
+    "Gia Lai", "Hà Giang", "Hà Nam", "Hà Nội",
+    "Hà Tĩnh", "Hải Dương", "Hải Phòng", "Hậu Giang",
+    "Hòa Bình", "Hưng Yên", "Khánh Hòa", "Kiên Giang",
+    "Kon Tum", "Lai Châu", "Lâm Đồng", "Lạng Sơn",
+    "Lào Cai", "Long An", "Nam Định", "Nghệ An",
+    "Ninh Bình", "Ninh Thuận", "Phú Thọ", "Phú Yên",
+    "Quảng Bình", "Quảng Nam", "Quảng Ngãi", "Quảng Ninh",
+    "Quảng Trị", "Sóc Trăng", "Sơn La", "Tây Ninh",
+    "Thái Bình", "Thái Nguyên", "Thanh Hóa", "Thừa Thiên Huế",
+    "Tiền Giang", "TP. Hồ Chí Minh", "Trà Vinh", "Tuyên Quang",
+    "Vĩnh Long", "Vĩnh Phúc", "Yên Bái"
+};
+
+
+    private List<string> LocationTos = new()
+    {
+    "An Giang", "Bà Rịa - Vũng Tàu", "Bắc Giang", "Bắc Kạn",
+    "Bạc Liêu", "Bắc Ninh", "Bến Tre", "Bình Dương",
+    "Bình Định", "Bình Phước", "Bình Thuận", "Cà Mau",
+    "Cần Thơ", "Cao Bằng", "Đà Nẵng", "Đắk Lắk",
+    "Đắk Nông", "Điện Biên", "Đồng Nai", "Đồng Tháp",
+    "Gia Lai", "Hà Giang", "Hà Nam", "Hà Nội",
+    "Hà Tĩnh", "Hải Dương", "Hải Phòng", "Hậu Giang",
+    "Hòa Bình", "Hưng Yên", "Khánh Hòa", "Kiên Giang",
+    "Kon Tum", "Lai Châu", "Lâm Đồng", "Lạng Sơn",
+    "Lào Cai", "Long An", "Nam Định", "Nghệ An",
+    "Ninh Bình", "Ninh Thuận", "Phú Thọ", "Phú Yên",
+    "Quảng Bình", "Quảng Nam", "Quảng Ngãi", "Quảng Ninh",
+    "Quảng Trị", "Sóc Trăng", "Sơn La", "Tây Ninh",
+    "Thái Bình", "Thái Nguyên", "Thanh Hóa", "Thừa Thiên Huế",
+    "Tiền Giang", "TP. Hồ Chí Minh", "Trà Vinh", "Tuyên Quang",
+    "Vĩnh Long", "Vĩnh Phúc", "Yên Bái"
+};
 }
