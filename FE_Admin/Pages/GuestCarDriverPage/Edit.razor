@@ -28,159 +28,167 @@
         </MudItem>
     </div>
 }
-
-
-
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid>
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
-        <MudItem xs="12" Class="mx-auto">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudItem xs="12">
-                    <MudPaper Elevation="4" Class="p-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Thông tin hóa đơn đặt vé xe</MudText>
-                        <MudForm @ref="form" Style="height:auto">
-                            <MudGrid>
-                                <MudItem xs="2" Class="mb-4">
-                                    <MudTextField ShrinkLabel Label="Mã hóa đơn" T="string" @bind-Value="@bill.guest_car_code" ReadOnly="true" Variant="Variant.Outlined" />
-                                </MudItem>
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" Class="mx-auto">
+                <MudPaper Elevation="0" Class="pa-3">
+                    <MudItem xs="12">
+                        <MudPaper Elevation="4" Class="p-4">
+                            <MudText Typo="Typo.h6" Class="mb-5">Thông tin hóa đơn đặt vé xe</MudText>
+                            <MudForm @ref="form" Style="height:auto">
+                                <MudGrid>
+                                    <MudItem xs="2" Class="mb-4">
+                                        <MudTextField ShrinkLabel Label="Mã hóa đơn" T="string" @bind-Value="@bill.guest_car_code" ReadOnly="true" Variant="Variant.Outlined" />
+                                    </MudItem>
 
-                                <MudItem xs="3" Class="mb-4">
-                                    <MudSelect Variant="Variant.Outlined" T="int" @bind-Value="@bill.cus_id" Label="Khách hàng" ReadOnly="true">
-                                        @foreach (var item in customer)
-                                        {
-                                            <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </MudItem>
+                                    <MudItem xs="3" Class="mb-4">
+                                        <MudSelect Variant="Variant.Outlined" T="int" @bind-Value="@bill.cus_id" Label="Khách hàng" ReadOnly="true">
+                                            @foreach (var item in customer)
+                                            {
+                                                <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
 
-                                <MudItem xs="3" Class="mb-4">
-                                    <MudSelect Variant="Variant.Outlined" T="int" @bind-Value="@bill.car_id" Label="Xe" ReadOnly="true">
-                                        @foreach (var item in car)
-                                        {
-                                            <MudSelectItem Value="item.id">@item.name</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </MudItem>
-                                <MudItem xs="2" Class="mb-4">
-                                    <MudTextField ShrinkLabel
-                                                  Label="Tổng tiền"
-                                                  @bind-Value="bill.price"
-                                                  Variant="Variant.Outlined"
-                                                  Required="true"
-                                                  ReadOnly="true" />
-                                </MudItem>
+                                    <MudItem xs="3" Class="mb-4">
+                                        <MudSelect Variant="Variant.Outlined" T="int" @bind-Value="@bill.car_id" Label="Xe" ReadOnly="true">
+                                            @foreach (var item in car)
+                                            {
+                                                <MudSelectItem Value="item.id">@item.name</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="2" Class="mb-4">
+                                        <MudTextField ShrinkLabel
+                                                      Label="Tổng tiền"
+                                                      @bind-Value="bill.price"
+                                                      Variant="Variant.Outlined"
+                                                      Required="true"
+                                                      ReadOnly="true" />
+                                    </MudItem>
+
+                                    @if (bill.status == 1)
+                                    {
+                                        <MudItem xs="3" Class="mb-4">
+                                            <MudTextField ShrinkLabel
+                                                          Label="Trạng thái"
+                                                          T="string"
+                                                          @bind-Value="statusText"
+                                                          Variant="Variant.Outlined"
+                                                          ReadOnly="true" />
+                                        </MudItem>
+                                    }
+                                    else if (bill.status == 2)
+                                    {
+                                        <MudItem xs="3" Class="mb-4">
+                                            <MudTextField ShrinkLabel
+                                                          Label="Trạng thái"
+                                                          T="string"
+                                                          @bind-Value="statusText"
+                                                          Variant="Variant.Outlined"
+                                                          ReadOnly="true" />
+                                        </MudItem>
+                                        <MudItem xs="3" Class="mb-4">
+                                            <MudTextField ShrinkLabel
+                                                          Label="Ngày thanh toán"
+                                                          T="DateTime"
+                                                          @bind-Value="bill.pay_date"
+                                                          Variant="Variant.Outlined"
+                                                          ReadOnly="true" />
+                                        </MudItem>
+                                    }
+                                    else if (bill.status == 6)
+                                    {
+                                        <MudItem xs="3" Class="mb-4">
+                                            <MudTextField ShrinkLabel
+                                                          Label="Trạng thái"
+                                                          T="string"
+                                                          @bind-Value="statusText"
+                                                          Variant="Variant.Outlined"
+                                                          ReadOnly="true" />
+                                        </MudItem>
+                                    }
+                                    else if (bill.status == 8)
+                                    {
+                                        <MudItem xs="3" Class="mb-4">
+                                            <MudTextField ShrinkLabel
+                                                          Label="Trạng thái"
+                                                          T="string"
+                                                          @bind-Value="statusText"
+                                                          Variant="Variant.Outlined"
+                                                          ReadOnly="true" />
+                                        </MudItem>
+                                    }
+                                    else if (bill.status == 9)
+                                    {
+                                        <MudItem xs="2" Class="mb-4">
+                                            <MudTextField ShrinkLabel
+                                                          Label="Hoàn tiền"
+                                                          T="float"
+                                                          @bind-Value="bill.return_money"
+                                                          Variant="Variant.Outlined"
+                                                          ReadOnly="true" />
+                                        </MudItem>
+                                        <MudItem xs="3" Class="mb-4">
+                                            <MudTextField ShrinkLabel
+                                                          Label="Trạng thái"
+                                                          T="string"
+                                                          @bind-Value="statusText"
+                                                          Variant="Variant.Outlined"
+                                                          ReadOnly="true" />
+                                        </MudItem>
+                                    }
+
+                                    <MudItem xs="2" Class="mb-4">
+                                        <MudSelect Variant="Variant.Outlined" T="bool" Label="Hình thức thanh toán" ReadOnly="true" @bind-Value="bill.payment_method">
+                                            <MudSelectItem Value="true">Tiền mặt</MudSelectItem>
+                                            <MudSelectItem Value="false">Chuyển khoản</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+
+                                    <MudItem xs="3" Class="mb-4">
+                                        <MudSelect Variant="Variant.Outlined" T="int" @bind-Value="@bill.emp_id" Label="Người tạo" ReadOnly="true">
+                                            @foreach (var item in emp)
+                                            {
+                                                <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                </MudGrid>
 
                                 @if (bill.status == 1)
                                 {
-                                    <MudItem xs="3" Class="mb-4">
-                                        <MudTextField ShrinkLabel
-                                                      Label="Trạng thái"
-                                                      T="string"
-                                                      @bind-Value="statusText"
-                                                      Variant="Variant.Outlined"
-                                                      ReadOnly="true" />
-                                    </MudItem>
-                                }
-                                else if (bill.status == 2)
-                                {
-                                    <MudItem xs="3" Class="mb-4">
-                                        <MudTextField ShrinkLabel
-                                                      Label="Trạng thái"
-                                                      T="string"
-                                                      @bind-Value="statusText"
-                                                      Variant="Variant.Outlined"
-                                                      ReadOnly="true" />
-                                    </MudItem> 
-                                    <MudItem xs="3" Class="mb-4">
-                                        <MudTextField ShrinkLabel
-                                                      Label="Ngày thanh toán"
-                                                      T="DateTime"
-                                                      @bind-Value="bill.pay_date"
-                                                      Variant="Variant.Outlined"
-                                                      ReadOnly="true" />
-                                    </MudItem>
-                                }
-                                else if (bill.status == 6)
-                                {
-                                    <MudItem xs="3" Class="mb-4">
-                                        <MudTextField ShrinkLabel
-                                                      Label="Trạng thái"
-                                                      T="string"
-                                                      @bind-Value="statusText"
-                                                      Variant="Variant.Outlined"
-                                                      ReadOnly="true" />
-                                    </MudItem>
+                                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateStatusBill2" Class="mt-3">Thanh toán</MudButton>
+                                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Warning" OnClick="UpdateStatusBill6" Class="mt-3">Hủy đơn</MudButton>
                                 }
                                 else if (bill.status == 8)
                                 {
-                                    <MudItem xs="3" Class="mb-4">
-                                        <MudTextField ShrinkLabel
-                                                      Label="Trạng thái"
-                                                      T="string"
-                                                      @bind-Value="statusText"
-                                                      Variant="Variant.Outlined"
-                                                      ReadOnly="true" />
-                                    </MudItem>
-                                }
-                                else if (bill.status == 9)
-                                {
-                                    <MudItem xs="2" Class="mb-4">
-                                        <MudTextField ShrinkLabel
-                                                      Label="Hoàn tiền"
-                                                      T="float"
-                                                      @bind-Value="bill.return_money"
-                                                      Variant="Variant.Outlined"
-                                                      ReadOnly="true" />
-                                    </MudItem>
-                                    <MudItem xs="3" Class="mb-4">
-                                        <MudTextField ShrinkLabel
-                                                      Label="Trạng thái"
-                                                      T="string"
-                                                      @bind-Value="statusText"
-                                                      Variant="Variant.Outlined"
-                                                      ReadOnly="true" />
-                                    </MudItem>
+                                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Tertiary" OnClick="UpdateStatusBill9" Class="mt-3">Hoàn tiền</MudButton>
                                 }
 
-                                <MudItem xs="2" Class="mb-4">
-                                    <MudSelect Variant="Variant.Outlined" T="bool" Label="Hình thức thanh toán" ReadOnly="true" @bind-Value="bill.payment_method">
-                                        <MudSelectItem Value="true">Tiền mặt</MudSelectItem>
-                                        <MudSelectItem Value="false">Chuyển khoản</MudSelectItem>
-                                    </MudSelect>
-                                </MudItem>
-
-                                <MudItem xs="3" Class="mb-4">
-                                    <MudSelect Variant="Variant.Outlined" T="int" @bind-Value="@bill.emp_id" Label="Người tạo" ReadOnly="true">
-                                        @foreach (var item in emp)
-                                        {
-                                            <MudSelectItem Value="@item.id">@item.name</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </MudItem>
-                            </MudGrid>
-
-                            @if (bill.status == 1)
-                            {
-                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateStatusBill2" Class="mt-3">Thanh toán</MudButton>
-                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Warning" OnClick="UpdateStatusBill6" Class="mt-3">Hủy đơn</MudButton>
-                            }
-                            else if (bill.status == 8)
-                            {
-                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Tertiary" OnClick="UpdateStatusBill9" Class="mt-3">Hoàn tiền</MudButton>
-                            }
-
-                        </MudForm>
-                    </MudPaper>
-                </MudItem>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+                            </MudForm>
+                        </MudPaper>
+                    </MudItem>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
 <script>
     // Lấy token từ localStorage
     function getAuthToken() {
@@ -221,6 +229,7 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -258,6 +267,7 @@
                 }
             }
             CheckRole();
+            isLoadingProgress = false;
             StateHasChanged();
         }
     }

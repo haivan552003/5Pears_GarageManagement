@@ -28,115 +28,124 @@
         </MudItem>
     </div>
 }
-
-
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid>
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
-        <MudItem xs="12" Class="mx-auto">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudItem xs="12" md="12">
-                    <MudPaper Elevation="4" Class="p-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Cập nhật thông tin chuyến đi</MudText>
-                        <MudForm @ref="form" Style="height:auto">
-                            <MudGrid>
-                                <MudItem xs="3">
-                                    <MudTextField ShrinkLabel @bind-Value="tripInfo.from" Label="Điểm khởi hành" Variant="Variant.Outlined" Required="true" />
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" Class="mx-auto">
+                <MudPaper Elevation="0" Class="pa-3">
+                    <MudItem xs="12" md="12">
+                        <MudPaper Elevation="4" Class="p-4">
+                            <MudText Typo="Typo.h6" Class="mb-5">Cập nhật thông tin chuyến đi</MudText>
+                            <MudForm @ref="form" Style="height:auto">
+                                <MudGrid>
+                                    <MudItem xs="3">
+                                        <MudTextField ShrinkLabel @bind-Value="tripInfo.from" Label="Điểm khởi hành" Variant="Variant.Outlined" Required="true" />
 
-                                </MudItem>
-                                <MudItem xs="3">
-                                    <MudTextField ShrinkLabel @bind-Value="tripInfo.to" Label="Điểm đến" Variant="Variant.Outlined" Required="true" />
-                                </MudItem>
-                                <MudItem xs="3">
-                                    <MudSelect @bind-Value="tripInfo.status" Label="Trạng thái" Variant="Variant.Outlined" Required="true">
-                                        <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
-                                        <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
-                                    </MudSelect>
-                                </MudItem>
-                                <MudItem xs="3" Class="mb-4">
-                                    <MudSelect @bind-Value="tripInfo.is_return" Label="Trở về" Variant="Variant.Outlined" Disabled="true">
-                                        <MudSelectItem Value="true">Khứ hồi</MudSelectItem>
-                                        <MudSelectItem Value="false">Một chiều</MudSelectItem>
-                                    </MudSelect>
-                                </MudItem>
-                            </MudGrid>
+                                    </MudItem>
+                                    <MudItem xs="3">
+                                        <MudTextField ShrinkLabel @bind-Value="tripInfo.to" Label="Điểm đến" Variant="Variant.Outlined" Required="true" />
+                                    </MudItem>
+                                    <MudItem xs="3">
+                                        <MudSelect @bind-Value="tripInfo.status" Label="Trạng thái" Variant="Variant.Outlined" Required="true">
+                                            <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
+                                            <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="3" Class="mb-4">
+                                        <MudSelect @bind-Value="tripInfo.is_return" Label="Trở về" Variant="Variant.Outlined" Disabled="true">
+                                            <MudSelectItem Value="true">Khứ hồi</MudSelectItem>
+                                            <MudSelectItem Value="false">Một chiều</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+                                </MudGrid>
 
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateTrip" Class="mt-3">Cập nhật</MudButton>
-                        </MudForm>
-                    </MudPaper>
-                </MudItem>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateTrip" Class="mt-3">Cập nhật</MudButton>
+                            </MudForm>
+                        </MudPaper>
+                    </MudItem>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
 
-    <MudGrid Class="pa-0">
-        <MudItem xs="12">
-            <MudPaper Elevation="4" Class="p-4">
-                <MudText Typo="Typo.h6" Class="mb-5">Chi tiết chuyến đi</MudText>
-                <MudDataGrid Class="mx-auto pa-2" T="trip_detail" Dense="true" Hover="true" Bordered="true" Striped="true"
-                             MultiSelection="true" Items="@tripDetails" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
-                             Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
-                    <ToolBarContent>
-                        <MudItem xs="4" Elevation="0" Class="pb-3">
-                            <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
-                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-                        </MudItem>
+        <MudGrid Class="pa-0">
+            <MudItem xs="12">
+                <MudPaper Elevation="4" Class="p-4">
+                    <MudText Typo="Typo.h6" Class="mb-5">Chi tiết chuyến đi</MudText>
+                    <MudDataGrid Class="mx-auto pa-2" T="trip_detail" Dense="true" Hover="true" Bordered="true" Striped="true"
+                                 MultiSelection="true" Items="@tripDetails" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                                 Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+                        <ToolBarContent>
+                            <MudItem xs="4" Elevation="0" Class="pb-3">
+                                <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
+                                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                            </MudItem>
 
-                        <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
-                            <MudButton OnClick="@(async () => await OpenDetailCreateDialog(null))" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
-                                Thêm mới
-                            </MudButton> 
-                            <MudButton OnClick="@(async () => await OpenGenDialog(null))" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.AutoFixHigh" Color="Color.Warning" Size="Size.Small">
+                            <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
+                                <MudButton OnClick="@(async () => await OpenDetailCreateDialog(null))" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                                    Thêm mới
+                                </MudButton>
+                                  <MudButton OnClick="@(async () => await OpenGenDialog(null))" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.AutoFixHigh" Color="Color.Warning" Size="Size.Small">
                                 Gen chuyến
                             </MudButton>
-                        </MudItem>
-                    </ToolBarContent>
-                    <Columns>
-                        <PropertyColumn T="trip_detail" TProperty="string" Property="x => x.trip_detail_code" Class="fw-bold" Title="Mã CT Chuyến" Width="150px" />
-                        <PropertyColumn T="trip_detail" TProperty="string" Property="x => x.location_from" Class="fw-bold" Title="Điểm Đi" Width="150px" />
-                        <PropertyColumn T="trip_detail" TProperty="string" Property="x => x.location_to" Class="fw-bold" Title="Điểm Đến" Width="200px" />
-                        <PropertyColumn T="trip_detail" TProperty="DateTime" Property="x => x.time_start" Class="fw-bold" Title="Bắt Đầu" Width="150px" />
-                        <PropertyColumn T="trip_detail" TProperty="DateTime" Property="x => x.time_end" Class="fw-bold" Title="Kết Thúc" Width="150px" />
-                        <TemplateColumn T="trip_detail" Class="fw-bold" Title="Trạng Thái" Width="150px">
-                            <CellTemplate Context="element">
-                                @if (element.Item.status)
-                                {
-                                    <MudChip Color="Color.Success" Size="Size.Small" Variant="Variant.Text">Đang hoạt động</MudChip>
-                                }
-                                else
-                                {
-                                    <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Ngưng hoạt động</MudChip>
-                                }
-                            </CellTemplate>
-                        </TemplateColumn>
-                        <TemplateColumn T="trip_detail" Class="fw-bold" Title="Chức năng" Width="150px">
-                            <CellTemplate Context="element">
-                                <MudTooltip Text="Đặt vé">
-                                    <MudIconButton Href="@($"/rentail_guest_trip/{element.Item.id}")" Icon="@Icons.Material.Outlined.AddCircle" Color="Color.Secondary" Size="Size.Small" />
-                                </MudTooltip>
-                                <MudTooltip Text="Chỉnh sửa">
-                                    <MudIconButton OnClick="@(async () => await OpenDetailUpdateDialog(element.Item))" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
-                                </MudTooltip>
-                                <MudTooltip Text="Xóa">
-                                    <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small"
-                                                   OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" />
-                                </MudTooltip>
-                            </CellTemplate>
-                        </TemplateColumn>
-                    </Columns>
-                    <PagerContent>
-                        <MudDataGridPager T="trip_detail" />
-                    </PagerContent>
-                </MudDataGrid>
+                            </MudItem>
+                        </ToolBarContent>
+                        <Columns>
+                            <PropertyColumn T="trip_detail" TProperty="string" Property="x => x.trip_detail_code" Class="fw-bold" Title="Mã CT Chuyến" Width="150px" />
+                            <PropertyColumn T="trip_detail" TProperty="string" Property="x => x.location_from" Class="fw-bold" Title="Điểm Đi" Width="150px" />
+                            <PropertyColumn T="trip_detail" TProperty="string" Property="x => x.location_to" Class="fw-bold" Title="Điểm Đến" Width="200px" />
+                            <PropertyColumn T="trip_detail" TProperty="DateTime" Property="x => x.time_start" Class="fw-bold" Title="Bắt Đầu" Width="150px" />
+                            <PropertyColumn T="trip_detail" TProperty="DateTime" Property="x => x.time_end" Class="fw-bold" Title="Kết Thúc" Width="150px" />
+                            <TemplateColumn T="trip_detail" Class="fw-bold" Title="Trạng Thái" Width="150px">
+                                <CellTemplate Context="element">
+                                    @if (element.Item.status)
+                                    {
+                                        <MudChip Color="Color.Success" Size="Size.Small" Variant="Variant.Text">Đang hoạt động</MudChip>
+                                    }
+                                    else
+                                    {
+                                        <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Ngưng hoạt động</MudChip>
+                                    }
+                                </CellTemplate>
+                            </TemplateColumn>
+                            <TemplateColumn T="trip_detail" Class="fw-bold" Title="Chức năng" Width="150px">
+                                <CellTemplate Context="element">
+                                    <MudTooltip Text="Đặt vé">
+                                        <MudIconButton Href="@($"/rentail_guest_trip/{element.Item.id}")" Icon="@Icons.Material.Outlined.AddCircle" Color="Color.Secondary" Size="Size.Small" />
+                                    </MudTooltip>
+                                    <MudTooltip Text="Chỉnh sửa">
+                                        <MudIconButton OnClick="@(async () => await OpenDetailUpdateDialog(element.Item))" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                    </MudTooltip>
+                                    <MudTooltip Text="Xóa">
+                                        <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small"
+                                                       OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" />
+                                    </MudTooltip>
+                                </CellTemplate>
+                            </TemplateColumn>
+                        </Columns>
+                        <PagerContent>
+                            <MudDataGridPager T="trip_detail" />
+                        </PagerContent>
+                    </MudDataGrid>
 
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
 
 <script>
     window.triggerSelectClick = () => {
@@ -162,7 +171,7 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
-
+    private bool isLoadingProgress = true;
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -237,6 +246,8 @@
             tripDetails = response.TripDetails.ToList();
             var uri = Navigation.Uri;
             LastSegment = GetLastSegment(uri);
+            isLoadingProgress = false;
+            StateHasChanged();
         }
         catch (Exception ex)
         {

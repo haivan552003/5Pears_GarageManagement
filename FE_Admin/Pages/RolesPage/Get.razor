@@ -4,58 +4,85 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid Class="pa-0">
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
-            <MudPaper Elevation="0">
-                <MudDataGrid Class="mx-auto pa-2" T="roles" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements"
-                             SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
-                             Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
-                    <ToolBarContent>
-                        <MudItem xs="4" Elevation="0" Class="pb-3">
-                            <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
-                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-                        </MudItem>
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255); /* Màu trắng với độ mờ 50% */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999; /* Đảm bảo overlay hiển thị trên các thành phần khác */
+    }
 
-                        <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
-                            <MudButton Href="/addroles" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
-                                Thêm mới
-                            </MudButton>
+</style>
+@if (isLoadingProgress)
+{
+<div class="loading-overlay">
+    <MudItem xs="12" Class="text-center">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    </MudItem>
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        <MudGrid Class="pa-0">
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+                <MudPaper Elevation="0">
+                    <MudDataGrid Class="mx-auto pa-2" T="roles" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements"
+                                 SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                                 Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+                        <ToolBarContent>
+                            <MudItem xs="4" Elevation="0" Class="pb-3">
+                                <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
+                                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                            </MudItem>
 
-                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
-                                Nhập file
-                            </MudButton>
+                            <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
+                                <MudButton Href="/addroles" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                                    Thêm mới
+                                </MudButton>
 
-                            <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
-                                Xuất file
-                            </MudButton>
-                        </MudItem>
-                    </ToolBarContent>
-                    <Columns>
-                        <SelectColumn T="roles" />
-                        <PropertyColumn T="roles" Style="width: 80%;" TProperty="string" Property="x => x.name" SortBy="@_sortBy" Class="fw-bold" Title="Name" />
-                        <TemplateColumn T="roles" Class="fw-bold" Title="Chức năng">
-                            <CellTemplate Context="element">
-                                <MudTooltip Text="Chỉnh sửa">
-                                    <MudIconButton Href="@($"/editroles/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
-                                </MudTooltip>
-                                <MudTooltip Text="Xóa">
-                                    <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" OnClick="@(() => OpenDeleteDialog(element.Item))" />
-                                </MudTooltip>
-                            </CellTemplate>
-                        </TemplateColumn>
-                    </Columns>
-                    <PagerContent>
-                        <MudDataGridPager T="roles" />
-                    </PagerContent>
-                </MudDataGrid>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+                                <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
+                                    Nhập file
+                                </MudButton>
+
+                                <MudButton Href="/addproduct" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
+                                    Xuất file
+                                </MudButton>
+                            </MudItem>
+                        </ToolBarContent>
+                        <Columns>
+                            <SelectColumn T="roles" />
+                            <PropertyColumn T="roles" Style="width: 80%;" TProperty="string" Property="x => x.name" SortBy="@_sortBy" Class="fw-bold" Title="Name" />
+                            <TemplateColumn T="roles" Class="fw-bold" Title="Chức năng">
+                                <CellTemplate Context="element">
+                                    <MudTooltip Text="Chỉnh sửa">
+                                        <MudIconButton Href="@($"/editroles/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                    </MudTooltip>
+                                    <MudTooltip Text="Xóa">
+                                        <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" OnClick="@(() => OpenDeleteDialog(element.Item))" />
+                                    </MudTooltip>
+                                </CellTemplate>
+                            </TemplateColumn>
+                        </Columns>
+                        <PagerContent>
+                            <MudDataGridPager T="roles" />
+                        </PagerContent>
+                    </MudDataGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
+
 
 @code {
     [Parameter] public int Id { get; set; }
@@ -65,6 +92,7 @@
     private bool _sortNameByLength;
     private List<string> _events = new();
     private string url = "http://localhost:49922/api/Roles";
+    private bool isLoadingProgress = true;
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -94,10 +122,14 @@
         try
         {
             Elements = await httpClient.GetFromJsonAsync<List<roles>>(url);
+            isLoadingProgress = false;
+            StateHasChanged();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
+            isLoadingProgress = false;
+            StateHasChanged();
         }
     }
 

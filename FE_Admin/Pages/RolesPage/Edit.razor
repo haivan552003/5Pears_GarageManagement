@@ -5,31 +5,57 @@
 @inject ISnackbar Snackbar
 @using Microsoft.AspNetCore.Components;
 
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid>
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="6" Class="mx-auto">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudItem xs="12">
-                    <MudPaper Elevation="4" Class="p-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Thông tin công việc</MudText>
-                        <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
-                            <MudTextField ShrinkLabel @bind-Value="RoleTask.name" Label="Name"
-                                          Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
-                                          Placeholder="Name" Variant="Variant.Outlined" Required="true" />
-                            <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Variant="Variant.Filled" OnClick="SubmitForm">Lưu</MudButton>
-                            <MudButton Class="mt-3 pl-3" StartIcon="@Icons.Material.Outlined.ArrowForward" Variant="Variant.Outlined" OnClick="Cancel">Trở về</MudButton>
-                        </MudForm>
-                    </MudPaper>
-                </MudItem>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255); /* Màu trắng với độ mờ 50% */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999; /* Đảm bảo overlay hiển thị trên các thành phần khác */
+    }
+
+</style>
+@if (isLoadingProgress)
+{
+<div class="loading-overlay">
+    <MudItem xs="12" Class="text-center">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    </MudItem>
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6" Class="mx-auto">
+                <MudPaper Elevation="0" Class="pa-3">
+                    <MudItem xs="12">
+                        <MudPaper Elevation="4" Class="p-4">
+                            <MudText Typo="Typo.h6" Class="mb-5">Thông tin công việc</MudText>
+                            <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
+                                <MudTextField ShrinkLabel @bind-Value="RoleTask.name" Label="Name"
+                                              Validation="@(new Func<string, IEnumerable<string>>(RoleTaskValidate))"
+                                              Placeholder="Name" Variant="Variant.Outlined" Required="true" />
+                                <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Variant="Variant.Filled" OnClick="SubmitForm">Lưu</MudButton>
+                                <MudButton Class="mt-3 pl-3" StartIcon="@Icons.Material.Outlined.ArrowForward" Variant="Variant.Outlined" OnClick="Cancel">Trở về</MudButton>
+                            </MudForm>
+                        </MudPaper>
+                    </MudItem>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
 
 @code {
     [Parameter] public int Id { get; set; }
@@ -37,6 +63,7 @@
     private bool isFormValid = false;
     private MudForm form;
     private string url = "http://localhost:49922/api/Roles";
+    private bool isLoadingProgress = true;
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -48,11 +75,14 @@
     protected override async Task OnInitializedAsync()
     {
         var response = await httpClient.GetFromJsonAsync<role_task>(url + "/" + Id);
+        isLoadingProgress = false;
+        StateHasChanged();
         RoleTask = new roles
             {
                 id = response.id,
                 name = response.name,
             };
+        
     }
 
     private IEnumerable<string> RoleTaskValidate(string name)

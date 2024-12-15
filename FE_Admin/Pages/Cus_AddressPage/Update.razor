@@ -27,48 +27,58 @@
         </MudItem>
     </div>
 }
-
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    @if (showSuccess)
-    {
-        <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
-            Cập nhật thành công
-        </MudAlert>
-    }
-    else if (showError)
-    {
-        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
-            Cập nhật thất bại
-        </MudAlert>
-    }
-
-    <MudGrid>
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-3">
-                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
-        <MudItem xs="6" Class="mx-auto">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudItem xs="12">
-                    <MudPaper Elevation="4" Class="p-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Cập nhật địa chỉ khách hàng</MudText>
-                        <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
-                            <MudTextField ShrinkLabel @bind-Value="newAddress.address" Label="Địa chỉ" Placeholder="Địa chỉ" Variant="Variant.Outlined" Required="true" />
-                            <MudTextField ShrinkLabel @bind-Value="newAddress.id_cus" Label="ID Khách Hàng" Placeholder="ID Khách Hàng" Variant="Variant.Outlined" Required="true" />
-                            <MudTextField ShrinkLabel @bind-Value="newAddress.type" Label="Loại" Placeholder="Loại" Variant="Variant.Outlined" Required="true" />
-                            <MudSelect @bind-Value="newAddress.status" Label="Trạng thái" Required="true">
-                                <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
-                                <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
-                            </MudSelect>
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateAddress" Class="mt-3" Disabled="!isFormValid">Cập nhật</MudButton>
-                        </MudForm>
-                    </MudPaper>
-                </MudItem>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        @if (showSuccess)
+        {
+            <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
+                Cập nhật thành công
+            </MudAlert>
+        }
+        else if (showError)
+        {
+            <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
+                Cập nhật thất bại
+            </MudAlert>
+        }
+
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="pa-3 mb-3">
+                    <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6" Class="mx-auto">
+                <MudPaper Elevation="0" Class="pa-3">
+                    <MudItem xs="12">
+                        <MudPaper Elevation="4" Class="p-4">
+                            <MudText Typo="Typo.h6" Class="mb-5">Cập nhật địa chỉ khách hàng</MudText>
+                            <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
+                                <MudTextField ShrinkLabel @bind-Value="newAddress.address" Label="Địa chỉ" Placeholder="Địa chỉ" Variant="Variant.Outlined" Required="true" />
+                                <MudTextField ShrinkLabel @bind-Value="newAddress.id_cus" Label="ID Khách Hàng" Placeholder="ID Khách Hàng" Variant="Variant.Outlined" Required="true" />
+                                <MudTextField ShrinkLabel @bind-Value="newAddress.type" Label="Loại" Placeholder="Loại" Variant="Variant.Outlined" Required="true" />
+                                <MudSelect @bind-Value="newAddress.status" Label="Trạng thái" Required="true">
+                                    <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
+                                </MudSelect>
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateAddress" Class="mt-3" Disabled="!isFormValid">Cập nhật</MudButton>
+                            </MudForm>
+                        </MudPaper>
+                    </MudItem>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
 
 @code {
     [Parameter] public int Id { get; set; }
@@ -82,6 +92,7 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -155,6 +166,8 @@
         try
         {
             var response = await httpClient.GetFromJsonAsync<cus_address>($"{url}/{Id}");
+            isLoadingProgress = false;
+            StateHasChanged();
             if (response != null)
             {
                 newAddress = response;
@@ -164,6 +177,8 @@
             {
                 Snackbar.Add("Không tìm thấy địa chỉ.", Severity.Warning);
                 Navigation.NavigateTo("/getaddress");
+                isLoadingProgress = false;
+                StateHasChanged();
             }
         }
         catch (Exception ex)

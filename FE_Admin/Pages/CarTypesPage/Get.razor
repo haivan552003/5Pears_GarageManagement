@@ -27,62 +27,67 @@
         </MudItem>
     </div>
 }
-
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid Class="pa-0">
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
-            <MudPaper Elevation="0">
-                <MudDataGrid Class="mx-auto pa-2" T="car_types" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
-                             Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
-                    <ToolBarContent>
-                        <MudItem xs="4" Elevation="0" Class="pb-3">
-                            <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
-                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-                        </MudItem>
-
-                        <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
-                            <MudButton Href="/addcartypes" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
-                                Thêm mới
-                            </MudButton>
-                        </MudItem>
-                    </ToolBarContent>
-                    <Columns>
-                        
-                        @* <PropertyColumn T="role_task" TProperty="int" Property="x => x.id_role_task" /> *@
-
-                        <PropertyColumn T="car_types" Style="width: 80%;" TProperty="string" Property="x => x.name" SortBy="@_sortBy" Class="fw-bold" Title="Tên Loại Xe" />
-
-                        <TemplateColumn T="car_types" Class="fw-bold" Title="Chức năng">
-                            <CellTemplate Context="element">
-                                <MudTooltip Text="Chỉnh sửa">
-                                    <MudIconButton Href="@($"/editcartypes/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
-                                </MudTooltip>
-                                <MudTooltip Text="Xóa">
-                                    <MudIconButton OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" Disabled="@isLoading" Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
-                                </MudTooltip>
-                                <MudItem xs="12" Class="d-flex justify-center mt-4">
-                                    @if (isLoading)
-                                    {
-                                        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
-                                    }
-                                </MudItem>
-                            </CellTemplate>
-                        </TemplateColumn>
-                    </Columns>
-                    <PagerContent>
-                        <MudDataGridPager T="car_types" />
-                    </PagerContent>
-                </MudDataGrid>
-            </MudPaper>
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
-    </MudGrid>
-</MudContainer>
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        <MudGrid Class="pa-0">
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+                <MudPaper Elevation="0">
+                    <MudDataGrid Class="mx-auto pa-2" T="car_types" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                                 Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+                        <ToolBarContent>
+                            <MudItem xs="4" Elevation="0" Class="pb-3">
+                                <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
+                                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                            </MudItem>
+
+                            <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
+                                <MudButton Href="/addcartypes" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                                    Thêm mới
+                                </MudButton>
+                            </MudItem>
+                        </ToolBarContent>
+                        <Columns>
+
+                            @* <PropertyColumn T="role_task" TProperty="int" Property="x => x.id_role_task" /> *@
+
+                            <PropertyColumn T="car_types" Style="width: 80%;" TProperty="string" Property="x => x.name" SortBy="@_sortBy" Class="fw-bold" Title="Tên Loại Xe" />
+
+                            <TemplateColumn T="car_types" Class="fw-bold" Title="Chức năng">
+                                <CellTemplate Context="element">
+                                    <MudTooltip Text="Chỉnh sửa">
+                                        <MudIconButton Href="@($"/editcartypes/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                    </MudTooltip>
+                                    <MudTooltip Text="Xóa">
+                                        <MudIconButton OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" />
+                                    </MudTooltip>
+                                </CellTemplate>
+                            </TemplateColumn>
+                        </Columns>
+                        <PagerContent>
+                            <MudDataGridPager T="car_types" />
+                        </PagerContent>
+                    </MudDataGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
 
 @code {
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
     [Parameter] public int Id { get; set; }
     private IEnumerable<car_types> Elements = new List<car_types>();
     private Dictionary<int, string> CategoryDict = new Dictionary<int, string>();
@@ -198,10 +203,14 @@
         try
         {
             Elements = await httpClient.GetFromJsonAsync<List<car_types>>(url);
+            isLoadingProgress = false;
+            StateHasChanged();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
+            isLoadingProgress = false;
+            StateHasChanged();
         }
     }
     private async Task OpenDeleteDialog(car_types car_types)
@@ -226,7 +235,6 @@
     }
     private async Task DeleteCarTypes(int id)
     {
-        isLoading = true;
         try
         {
             var response = await httpClient.GetFromJsonAsync<ApiResponse>($"http://localhost:49922/api/Validate/ValidateCarTypes/{id}");
@@ -256,7 +264,7 @@
         }
         finally
         {
-            isLoading = false;
+
         }
     }
     public class ApiResponse

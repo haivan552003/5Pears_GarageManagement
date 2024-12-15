@@ -28,231 +28,248 @@
         </MudItem>
     </div>
 }
-
-<MudContainer MaxWidth="MaxWidth.False" Class="mt-14 pa-0">
-    <MudGrid>
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-1" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
+    </div>
+}
+else
+{
+    <MudContainer MaxWidth="MaxWidth.False" Class="mt-14 pa-0">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="pa-3 mb-1" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+            </MudItem>
 
-        <MudItem xs="12">
-            <MudForm @ref="form">
-                <MudGrid>
-                    <MudItem xs="12" md="8">
-                        <MudPaper Class="equal-paper mud-elevation-12 p-4" Style="height:600px">
-                            <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-4">Thêm Nhân Viên</MudText>
-                            <MudGrid>
-                                <!-- Personal Information -->
-                                <MudItem xs="12" sm="6">
-                                    <MudTextField @bind-Value="newEmployee.fullname"
-                                                  Label="Họ và tên"
-                                                  Required="true"
-                                                  RequiredError="Vui lòng nhập họ tên"
-                                                  Variant="Variant.Outlined"
-                                                  Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidateFullName))"
-                                                  Immediate="true"
-                                                 Placeholder="Họ và tên" />
-                                </MudItem>
+            <MudItem xs="12">
+                <MudForm @ref="form">
+                    <MudGrid>
+                        <MudItem xs="12" md="8">
+                            <MudPaper Class="equal-paper mud-elevation-12 p-4" Style="height:600px">
+                                <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-4">Thêm Nhân Viên</MudText>
+                                <MudGrid>
+                                    <!-- Personal Information -->
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField @bind-Value="newEmployee.fullname"
+                                                      Label="Họ và tên"
+                                                      Required="true"
+                                                      RequiredError="Vui lòng nhập họ tên"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidateFullName))"
+                                                      Immediate="true"
+                                                      Placeholder="Họ và tên" />
+                                    </MudItem>
 
-                                <MudItem xs="12" sm="6">
-                                    <MudTextField @bind-Value="newEmployee.email"
-                                                  Label="Email"
-                                                  Required="true"
-                                                  RequiredError="Vui lòng nhập email"
-                                                  Variant="Variant.Outlined"
-                                                  Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidateEmail))"
-                                                  Immediate="true"
-                                                  Placeholder="Email" />
-                                </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField @bind-Value="newEmployee.email"
+                                                      Label="Email"
+                                                      Required="true"
+                                                      RequiredError="Vui lòng nhập email"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidateEmail))"
+                                                      Immediate="true"
+                                                      Placeholder="Email" />
+                                    </MudItem>
 
-                                <MudItem xs="12" sm="6">
-                                    <MudTextField @bind-Value="newEmployee.phone_number"
-                                                  Label="Số điện thoại"
-                                                  Required="true"
-                                                  RequiredError="Vui lòng nhập số điện thoại"
-                                                  Variant="Variant.Outlined"
-                                                  Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidatephone))"
-                                                  Immediate="true"
-                                                  Placeholder="Số điện thoại" />
-                                </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField @bind-Value="newEmployee.phone_number"
+                                                      Label="Số điện thoại"
+                                                      Required="true"
+                                                      RequiredError="Vui lòng nhập số điện thoại"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidatephone))"
+                                                      Immediate="true"
+                                                      Placeholder="Số điện thoại" />
+                                    </MudItem>
 
-                                <MudItem xs="12" sm="6">
-                                    <MudTextField @bind-Value="newEmployee.citizen_identity_number"
-                                                  Label="Số CCCD"
-                                                  Required="true"
-                                                  RequiredError="Vui lòng nhập số CCCD"
-                                                  Variant="Variant.Outlined"
-                                                  Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidateCCCD))"
-                                                  Immediate="true"
-                                                  Placeholder="Số CCCD" />
-                                </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField @bind-Value="newEmployee.citizen_identity_number"
+                                                      Label="Số CCCD"
+                                                      Required="true"
+                                                      RequiredError="Vui lòng nhập số CCCD"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidateCCCD))"
+                                                      Immediate="true"
+                                                      Placeholder="Số CCCD" />
+                                    </MudItem>
 
-                                <MudItem xs="12" sm="6">
-                                    <MudDatePicker @bind-Date="birthdayDate"
-                                                   Label="Ngày sinh"
+                                    <MudItem xs="12" sm="6">
+                                        <MudDatePicker @bind-Date="birthdayDate"
+                                                       Label="Ngày sinh"
+                                                       Required="true"
+                                                       RequiredError="Vui lòng chọn ngày sinh"
+                                                       Variant="Variant.Outlined"
+                                                       DateFormat="dd/MM/yyyy"
+                                                       MaxDate="@DateTime.Now.AddYears(-18)"
+                                                       MinDate="@DateTime.Now.AddYears(-65)"
+                                                       Placeholder="Ngày Sinh" />
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField @bind-Value="newEmployee.password"
+                                                      Label="Mật khẩu"
+                                                      Required="true"
+                                                      RequiredError="Vui lòng nhập mật khẩu"
+                                                      Variant="Variant.Outlined"
+                                                      InputType="@PasswordInput"
+                                                      Adornment="Adornment.End"
+                                                      AdornmentIcon="@PasswordInputIcon"
+                                                      OnAdornmentClick="TogglePasswordVisibility"
+                                                      Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidatePassword))"
+                                                      Immediate="true"
+                                                      Placeholder="Mật khẩu" />
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="4">
+                                        <MudSelect @bind-Value="newEmployee.status"
+                                                   Label="Trạng thái"
                                                    Required="true"
-                                                   RequiredError="Vui lòng chọn ngày sinh"
+                                                   RequiredError="Vui lòng chọn trạng thái"
                                                    Variant="Variant.Outlined"
-                                                   DateFormat="dd/MM/yyyy"
-                                                   MaxDate="@DateTime.Now.AddYears(-18)"
-                                                   MinDate="@DateTime.Now.AddYears(-65)"
-                                                   Placeholder="Ngày Sinh" />
-                                </MudItem>
+                                                   Placeholder="Trạng thái">
+                                            <MudSelectItem Value="true">
+                                                <div class="d-flex align-center">
+                                                    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="mr-2" />
+                                                    Đang hoạt động
+                                                </div>
+                                            </MudSelectItem>
+                                            <MudSelectItem Value="false">
+                                                <div class="d-flex align-center">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Cancel" Color="Color.Error" Class="mr-2" />
+                                                    Ngưng hoạt động
+                                                </div>
+                                            </MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
 
-                                <MudItem xs="12" sm="6">
-                                    <MudTextField @bind-Value="newEmployee.password"
-                                                  Label="Mật khẩu"
-                                                  Required="true"
-                                                  RequiredError="Vui lòng nhập mật khẩu"
-                                                  Variant="Variant.Outlined"
-                                                  InputType="@PasswordInput"
-                                                  Adornment="Adornment.End"
-                                                  AdornmentIcon="@PasswordInputIcon"
-                                                  OnAdornmentClick="TogglePasswordVisibility"
-                                                  Validation="@(new Func<string, IEnumerable<string>>(EmployeeValidatePassword))"
-                                                  Immediate="true"
-                                                  Placeholder="Mật khẩu" />
-                                </MudItem>
+                                    <MudItem xs="12" sm="4">
+                                        <MudSelect @bind-Value="newEmployee.gender"
+                                                   Label="Giới tính"
+                                                   Required="true"
+                                                   RequiredError="Vui lòng chọn giới tính"
+                                                   Variant="Variant.Outlined"
+                                                   Placeholder="Giới tính">
+                                            <MudSelectItem Value="true">Nam</MudSelectItem>
+                                            <MudSelectItem Value="false">Nữ</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
 
-                                <MudItem xs="12" sm="4">
-                                    <MudSelect @bind-Value="newEmployee.status"
-                                               Label="Trạng thái"
-                                               Required="true"
-                                               RequiredError="Vui lòng chọn trạng thái"
-                                               Variant="Variant.Outlined"
-                                               Placeholder="Trạng thái">
-                                        <MudSelectItem Value="true">
-                                            <div class="d-flex align-center">
-                                                <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="mr-2" />
-                                                Đang hoạt động
-                                            </div>
-                                        </MudSelectItem>
-                                        <MudSelectItem Value="false">
-                                            <div class="d-flex align-center">
-                                                <MudIcon Icon="@Icons.Material.Filled.Cancel" Color="Color.Error" Class="mr-2" />
-                                                Ngưng hoạt động
-                                            </div>
-                                        </MudSelectItem>
-                                    </MudSelect>
-                                </MudItem>
-
-                                <MudItem xs="12" sm="4">
-                                    <MudSelect @bind-Value="newEmployee.gender"
-                                               Label="Giới tính"
-                                               Required="true"
-                                               RequiredError="Vui lòng chọn giới tính"
-                                               Variant="Variant.Outlined"
-                                               Placeholder="Giới tính">
-                                        <MudSelectItem Value="true">Nam</MudSelectItem>
-                                        <MudSelectItem Value="false">Nữ</MudSelectItem>
-                                    </MudSelect>
-                                </MudItem>
-
-                                <MudItem xs="12" sm="4">
-                                    <MudSelect @bind-Value="newEmployee.role_id"
-                                               Label="Vai trò"
-                                               Required="true"
-                                               RequiredError="Vui lòng chọn vai trò"
-                                               Variant="Variant.Outlined"
-                                               Placeholder="Vai trò">
-                                        @if (roles != null)
-                                        {
-                                            @foreach (var role in roles)
+                                    <MudItem xs="12" sm="4">
+                                        <MudSelect @bind-Value="newEmployee.role_id"
+                                                   Label="Vai trò"
+                                                   Required="true"
+                                                   RequiredError="Vui lòng chọn vai trò"
+                                                   Variant="Variant.Outlined"
+                                                   Placeholder="Vai trò">
+                                            @if (roles != null)
                                             {
-                                                <MudSelectItem Value="@role.id">@role.name</MudSelectItem>
+                                                @foreach (var role in roles)
+                                                {
+                                                    <MudSelectItem Value="@role.id">@role.name</MudSelectItem>
+                                                }
                                             }
-                                        }
-                                    </MudSelect>
-                                </MudItem>   
-                                  <MudItem xs="4" sm="12">
-                                    <MudPaper Elevation="0" Class="d-flex justify-space-between mt-4 float-end">
-                                        <MudButton Variant="Variant.Filled"
-                                                   StartIcon="@Icons.Material.Filled.Save"
-                                                   Color="Color.Primary"
-                                                   OnClick="AddEmp">
-                                            <MudText>Lưu thông tin</MudText>
-                                        </MudButton>
-                                    </MudPaper>
-                                </MudItem>
-
-                            </MudGrid>
-                        </MudPaper>
-                    </MudItem>
-
-                    <!-- Image Upload Section -->
-                    <MudItem xs="12" md="4">
-                        <MudPaper Class="equal-paper mud-elevation-4 p-4">
-                            <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-4">Hình ảnh</MudText>
-                            <MudGrid>
-                                <MudItem xs="12">
-                                    <InputFile id="empImageInput" OnChange="@LoadEmpImage" hidden accept=".jpg,.jpeg,.png" />
-                                    <MudCard Elevation="0" Class="mb-4">
-                                        @if (!string.IsNullOrEmpty(newEmployee.img_emp))
-                                        {
-                                            <MudCardMedia Image="@newEmployee.img_emp"
-                                                          Height="200"
-                                                          Class="rounded-lg" />
-                                        }
-                                        else
-                                        {
-                                            <MudCardMedia Class="d-flex justify-center align-center rounded-lg"
-                                                          Style="height: 200px; background-color: #f5f5f5;">
-                                                <MudIcon Icon="@Icons.Material.Filled.PersonOutline"
-                                                         Size="Size.Large"
-                                                         Color="Color.Default" />
-                                            </MudCardMedia>
-                                        }
-                                        <MudCardActions Class="pa-0 mt-2">
-                                            <MudButton HtmlTag="label"
-                                                       For="empImageInput"
-                                                       Variant="Variant.Filled"
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="4" sm="12">
+                                        <MudPaper Elevation="0" Class="d-flex justify-space-between mt-4 float-end">
+                                            <MudButton Variant="Variant.Filled"
+                                                       StartIcon="@Icons.Material.Filled.Save"
                                                        Color="Color.Primary"
-                                                       StartIcon="@Icons.Material.Filled.CloudUpload"
-                                                       FullWidth="true">
-                                                Tải lên ảnh đại diện
+                                                       OnClick="AddEmp">
+                                                <MudText>Lưu thông tin</MudText>
                                             </MudButton>
-                                        </MudCardActions>
-                                    </MudCard>
+                                        </MudPaper>
+                                    </MudItem>
 
-                                    <InputFile id="empIdentityImageInput" OnChange="@LoadEmpImage1" hidden accept=".jpg,.jpeg,.png" />
-                                    <MudCard Elevation="0">
-                                        @if (!string.IsNullOrEmpty(newEmployee.citizen_identity_img))
-                                        {
-                                            <MudCardMedia Image="@newEmployee.citizen_identity_img"
-                                                          Height="200"
-                                                          Class="rounded-lg" />
-                                        }
-                                        else
-                                        {
-                                            <MudCardMedia Class="d-flex justify-center align-center rounded-lg"
-                                                          Style="height: 200px; background-color: #f5f5f5;">
-                                                <MudIcon Icon="@Icons.Material.Filled.Badge"
-                                                         Size="Size.Large"
-                                                         Color="Color.Default" />
-                                            </MudCardMedia>
-                                        }
-                                        <MudCardActions Class="pa-0 mt-2">
-                                            <MudButton HtmlTag="label"
-                                                       For="empIdentityImageInput"
-                                                       Variant="Variant.Filled"
-                                                       Color="Color.Secondary"
-                                                       StartIcon="@Icons.Material.Filled.CloudUpload"
-                                                       FullWidth="true">
-                                                Tải lên ảnh CCCD
-                                            </MudButton>
-                                        </MudCardActions>
-                                    </MudCard>
-                                </MudItem>
-                            </MudGrid>
-                        </MudPaper>                      
-                    </MudItem>
-                </MudGrid>
-            </MudForm>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+                                </MudGrid>
+                            </MudPaper>
+                        </MudItem>
+
+                        <!-- Image Upload Section -->
+                        <MudItem xs="12" md="4">
+                            <MudPaper Class="equal-paper mud-elevation-4 p-4">
+                                <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-4">Hình ảnh</MudText>
+                                <MudGrid>
+                                    <MudItem xs="12">
+                                        <InputFile id="empImageInput" OnChange="@LoadEmpImage" hidden accept=".jpg,.jpeg,.png" />
+                                        <MudCard Elevation="0" Class="mb-4">
+                                            @if (!string.IsNullOrEmpty(newEmployee.img_emp))
+                                            {
+                                                <MudCardMedia Image="@newEmployee.img_emp"
+                                                              Height="200"
+                                                              Class="rounded-lg" />
+                                            }
+                                            else
+                                            {
+                                                <MudCardMedia Class="d-flex justify-center align-center rounded-lg"
+                                                              Style="height: 200px; background-color: #f5f5f5;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.PersonOutline"
+                                                             Size="Size.Large"
+                                                             Color="Color.Default" />
+                                                </MudCardMedia>
+                                            }
+                                            <MudCardActions Class="pa-0 mt-2">
+                                                <MudButton HtmlTag="label"
+                                                           For="empImageInput"
+                                                           Variant="Variant.Filled"
+                                                           Color="Color.Primary"
+                                                           StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                           FullWidth="true">
+                                                    Tải lên ảnh đại diện
+                                                </MudButton>
+                                            </MudCardActions>
+                                            @if (isLoadingIMG1)
+                                            {
+                                                <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-5" />
+                                            }
+                                        </MudCard>
+                                        <InputFile id="empIdentityImageInput" OnChange="@LoadEmpImage1" hidden accept=".jpg,.jpeg,.png" />
+                                        <MudCard Elevation="0">
+                                            @if (!string.IsNullOrEmpty(newEmployee.citizen_identity_img))
+                                            {
+                                                <MudCardMedia Image="@newEmployee.citizen_identity_img"
+                                                              Height="200"
+                                                              Class="rounded-lg" />
+                                            }
+                                            else
+                                            {
+                                                <MudCardMedia Class="d-flex justify-center align-center rounded-lg"
+                                                              Style="height: 200px; background-color: #f5f5f5;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Badge"
+                                                             Size="Size.Large"
+                                                             Color="Color.Default" />
+                                                </MudCardMedia>
+                                            }
+                                            <MudCardActions Class="pa-0 mt-2">
+                                                <MudButton HtmlTag="label"
+                                                           For="empIdentityImageInput"
+                                                           Variant="Variant.Filled"
+                                                           Color="Color.Secondary"
+                                                           StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                           FullWidth="true">
+                                                    Tải lên ảnh CCCD
+                                                </MudButton>
+                                            </MudCardActions>
+                                            @if (isLoadingIMG)
+                                            {
+                                                <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-5" />
+                                            }
+                                        </MudCard>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudPaper>
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
 
 <script>
     // Lấy token từ localStorage
@@ -276,6 +293,9 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
+    private bool isLoadingIMG = false;
+    private bool isLoadingIMG1 = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -313,6 +333,7 @@
                 }
             }
             CheckRole();
+            isLoadingProgress = false;
             StateHasChanged();
         }
     }
@@ -493,7 +514,7 @@
     {
         try
         {
-            isLoading = true;
+            isLoadingIMG1 = true;
             var file = e.File;
             if (file != null)
             {
@@ -513,7 +534,7 @@
         }
         finally
         {
-            isLoading = false;
+            isLoadingIMG1 = false;
         }
     }
 
@@ -521,7 +542,7 @@
     {
         try
         {
-            isLoading = true;
+            isLoadingIMG = true;
             var file = e.File;
             if (file != null)
             {
@@ -541,7 +562,7 @@
         }
         finally
         {
-            isLoading = false;
+            isLoadingIMG = false;
         }
     }
 
@@ -556,7 +577,6 @@
 
             if (form.IsValid)
             {
-                isLoading = true;
                 var response = await httpClient.PostAsJsonAsync(url, newEmployee);
                 if (response.IsSuccessStatusCode)
                 {
@@ -581,7 +601,6 @@
         }
         finally
         {
-            isLoading = false;
         }
     }
 

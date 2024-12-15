@@ -28,86 +28,96 @@
         </MudItem>
     </div>
 }
-
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid Class="pa-0">
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
-            <MudPaper Elevation="0">
-                <MudDataGrid Class="mx-auto pa-2" T="employees" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true"
-                             Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
-                             Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
-
-                    <ToolBarContent>
-                        <MudItem xs="4" Elevation="0" Class="pb-3">
-                            <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
-                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-
-                        </MudItem>
-                        <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
-                            <MudButton Href="/addemp" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
-                                Thêm mới
-                            </MudButton>
-                            <MudButton Href="/importemployees" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
-                                Nhập file
-                            </MudButton>
-                            <MudButton Href="/exportemployees" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
-                                Xuất file
-                            </MudButton>
-                        </MudItem>
-                    </ToolBarContent>
-
-                    <!-- DataGrid Columns -->
-                    <Columns>
-                        
-                        <PropertyColumn T="employees" Class="fw-bold" TProperty="string" Property="x => x.emp_code" Title="Mã nhân viên"
-                                        Style="width: 15%; white-space: nowrap;" />
-                        <PropertyColumn T="employees" Class="fw-bold" TProperty="string" Property="x => x.fullname" Title="Họ và Tên"
-                                        Style="width: 20%; white-space: nowrap;" />
-
-                        <TemplateColumn T="employees" Class="fw-bold" Title="Giới tính" Style="white-space: nowrap;">
-                            <CellTemplate Context="element">
-                                @(element.Item.gender ? "Nam" : "Nữ")
-                            </CellTemplate>
-                        </TemplateColumn>
-                        <PropertyColumn T="employees" Class="fw-bold" TProperty="string" Property="x => x.citizen_identity_number" Title="Số CCCD"
-                                        Style="width: 15%; white-space: nowrap;" />
-                        <TemplateColumn T="employees"  Style="width: 80%; white-space: nowrap;" Class="fw-bold" Title="Trạng Thái">
-                            <CellTemplate Context="element">
-                                @if (element.Item.status)
-                                {
-                                    <MudChip Color="Color.Success" Size="Size.Small" Variant="Variant.Text">Đang hoạt động</MudChip>
-                                }
-                                else
-                                {
-                                    <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Ngưng hoạt động</MudChip>
-                                }
-                            </CellTemplate>
-                        </TemplateColumn>
-
-                        <TemplateColumn T="employees" Class="fw-bold" Title="Chức năng" Style="white-space: nowrap;">
-                            <CellTemplate Context="element">
-                                <MudTooltip Text="Chỉnh sửa">
-                                    <MudIconButton Href="@($"/editemp/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
-                                </MudTooltip>
-                                <MudTooltip Text="Xóa">
-                                    <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" />
-                                </MudTooltip>
-                            </CellTemplate>
-                        </TemplateColumn>
-                    </Columns>
-
-                    <!-- Pagination -->
-                    <PagerContent>
-                        <MudDataGridPager T="employees" />
-                    </PagerContent>
-                </MudDataGrid>
-            </MudPaper>
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
-    </MudGrid>
-</MudContainer>
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        <MudGrid Class="pa-0">
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+                <MudPaper Elevation="0">
+                    <MudDataGrid Class="mx-auto pa-2" T="employees" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true"
+                                 Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                                 Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+
+                        <ToolBarContent>
+                            <MudItem xs="4" Elevation="0" Class="pb-3">
+                                <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
+                                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+
+                            </MudItem>
+                            <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
+                                <MudButton Href="/addemp" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                                    Thêm mới
+                                </MudButton>
+                                <MudButton Href="/importemployees" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-upload" Color="Color.Tertiary" Size="Size.Small">
+                                    Nhập file
+                                </MudButton>
+                                <MudButton Href="/exportemployees" Class="ml-2" Variant="Variant.Outlined" StartIcon="fas fa-download" Color="Color.Tertiary" Size="Size.Small">
+                                    Xuất file
+                                </MudButton>
+                            </MudItem>
+                        </ToolBarContent>
+
+                        <!-- DataGrid Columns -->
+                        <Columns>
+
+                            <PropertyColumn T="employees" Class="fw-bold" TProperty="string" Property="x => x.emp_code" Title="Mã nhân viên"
+                                            Style="width: 15%; white-space: nowrap;" />
+                            <PropertyColumn T="employees" Class="fw-bold" TProperty="string" Property="x => x.fullname" Title="Họ và Tên"
+                                            Style="width: 20%; white-space: nowrap;" />
+
+                            <TemplateColumn T="employees" Class="fw-bold" Title="Giới tính" Style="white-space: nowrap;">
+                                <CellTemplate Context="element">
+                                    @(element.Item.gender ? "Nam" : "Nữ")
+                                </CellTemplate>
+                            </TemplateColumn>
+                            <PropertyColumn T="employees" Class="fw-bold" TProperty="string" Property="x => x.citizen_identity_number" Title="Số CCCD"
+                                            Style="width: 15%; white-space: nowrap;" />
+                            <TemplateColumn T="employees" Style="width: 80%; white-space: nowrap;" Class="fw-bold" Title="Trạng Thái">
+                                <CellTemplate Context="element">
+                                    @if (element.Item.status)
+                                    {
+                                        <MudChip Color="Color.Success" Size="Size.Small" Variant="Variant.Text">Đang hoạt động</MudChip>
+                                    }
+                                    else
+                                    {
+                                        <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Ngưng hoạt động</MudChip>
+                                    }
+                                </CellTemplate>
+                            </TemplateColumn>
+
+                            <TemplateColumn T="employees" Class="fw-bold" Title="Chức năng" Style="white-space: nowrap;">
+                                <CellTemplate Context="element">
+                                    <MudTooltip Text="Chỉnh sửa">
+                                        <MudIconButton Href="@($"/editemp/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                    </MudTooltip>
+                                    <MudTooltip Text="Xóa">
+                                        <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small" OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" />
+                                    </MudTooltip>
+                                </CellTemplate>
+                            </TemplateColumn>
+                        </Columns>
+
+                        <!-- Pagination -->
+                        <PagerContent>
+                            <MudDataGridPager T="employees" />
+                        </PagerContent>
+                    </MudDataGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
 
 @code {
     private IEnumerable<employees> Elements = new List<employees>();
@@ -118,6 +128,7 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
 
 
 
@@ -140,6 +151,8 @@
     {
         await LoadRoles(); 
         await LoadEmployees();
+        isLoadingProgress = false;
+        StateHasChanged();
     }
 
     private async Task LoadEmployees()
