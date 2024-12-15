@@ -25,14 +25,23 @@
         </MudItem>
     </div>
 }
-
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid Class="pa-0">
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
-            <MudPaper Elevation="0">
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+        </MudItem>
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        <MudGrid Class="pa-0">
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+                <MudPaper Elevation="0">
                     <MudDataGrid Class="mx-auto pa-2"
                                  T="guest_trip"
                                  Dense="true"
@@ -55,7 +64,7 @@
                             </MudItem>
 
                             <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
-                            <MudButton Href="/addguesttrip" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                                <MudButton Href="/addguesttrip" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
                                     Thêm mới
                                 </MudButton>
                             </MudItem>
@@ -67,7 +76,7 @@
                             <PropertyColumn T="guest_trip" TProperty="string" style="width:100px" Property="x => x.location_from" SortBy="@_sortBy" Class="fw-bold" Title="Điểm đi" />
                             <PropertyColumn T="guest_trip" TProperty="string" style="width:100px" Property="x => x.location_to" SortBy="@_sortBy" Class="fw-bold" Title="Điểm đến" />
                             <PropertyColumn T="guest_trip" TProperty="string" style="width:100px" Property="x => x.time_start.ToShortDateString()" SortBy="@_sortBy" Class="fw-bold" Title="Bắt đầu" />
-                                                       <PropertyColumn T="guest_trip" style="width:100px" TProperty="float" Property="x => x.price" SortBy="@_sortBy" Class="fw-bold" Title="Tổng tiền" />
+                            <PropertyColumn T="guest_trip" style="width:100px" TProperty="float" Property="x => x.price" SortBy="@_sortBy" Class="fw-bold" Title="Tổng tiền" />
                             <TemplateColumn T="guest_trip" style="width:100px" Class="fw-bold" Title="Trạng Thái">
                                 <CellTemplate Context="element">
                                     @if (element.Item.status == 1)
@@ -96,15 +105,15 @@
                                 </CellTemplate>
                             </TemplateColumn>
                         </Columns>
-                    <PagerContent>
-                        <MudDataGridPager T="guest_trip" />
-                    </PagerContent>
+                        <PagerContent>
+                            <MudDataGridPager T="guest_trip" />
+                        </PagerContent>
                     </MudDataGrid>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
-
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
 
 @code {
     [Parameter] public int Id { get; set; }
@@ -117,6 +126,7 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -219,10 +229,14 @@
         try
         {
             Elements = await httpClient.GetFromJsonAsync<List<guest_trip>>(url);
+            isLoadingProgress = false;
+            StateHasChanged();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
+            isLoadingProgress = false;
+            StateHasChanged();
         }
     }
 

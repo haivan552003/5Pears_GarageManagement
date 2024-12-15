@@ -27,146 +27,155 @@
         </MudItem>
     </div>
 }
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+        </MudItem>
+    </div>
+}
+else
+{
+    <MudContainer MaxWidth="MaxWidth.False" Class="mt-14 pa-0">
+        <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+            <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+        </MudPaper>
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h5" Class="mb-4">Thêm xe mới</MudText>
+            <MudForm @ref="form">
+                <MudGrid>
 
+                    <MudItem xs="12">
 
-<MudContainer MaxWidth="MaxWidth.False" Class="mt-14 pa-0">
-    <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-        <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
-    </MudPaper>
-    <MudPaper Class="pa-4">
-        <MudText Typo="Typo.h5" Class="mb-4">Thêm xe mới</MudText>
-        <MudForm @ref="form">
-            <MudGrid>
-
-                <MudItem xs="12">
-
-                </MudItem>
-                <MudItem xs="4">
-                    <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.car_number" Label="Biển số xe" Placeholder="Nhập biển số xe" Required="true" RequiredError="Biển số xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateCarNumber))" />
-                </MudItem>
-                <MudItem xs="4">
-                    <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.car_name" Label="Tên xe" Placeholder="Nhập tên xe" Required="true" RequiredError="Tên xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateCarName))" />
-                </MudItem>
-                <MudItem xs="4">
-                    <MudSelect Variant="Variant.Outlined" @bind-Value="newCar.fuel" Placeholder="Nhập nhiên liệu" Label="Nhiên liệu" Required="true" RequiredError="Nhiên liệu là bắt buộc">
-                        <MudSelectItem Value="1">Xăng RON 92 (E5)</MudSelectItem>
-                        <MudSelectItem Value="2">RON 95-III</MudSelectItem>
-                        <MudSelectItem Value="3">RON 95-IV</MudSelectItem>
-                        <MudSelectItem Value="4">Diesel 0,05%S</MudSelectItem>
-                        <MudSelectItem Value="5">Diesel 0,001%S (Diesel Euro 5)</MudSelectItem>
-                        <MudSelectItem Value="6">Pin Lithium-ion (Li-ion)</MudSelectItem>
-                        <MudSelectItem Value="7">Pin Lithium Iron Phosphate (LFP)</MudSelectItem>
-                        <MudSelectItem Value="8">Pin thể rắn (Solid-State Battery)</MudSelectItem>
-                        <MudSelectItem Value="9">Hybrid truyền thống (HEV)</MudSelectItem>
-                        <MudSelectItem Value="10">Plug-in Hybrid (PHEV)</MudSelectItem>
-                        <MudSelectItem Value="11">Pin CATL</MudSelectItem>
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="4">
-                    <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.color" Label="Màu xe"  Placeholder="Nhập màu xe" Required="true" RequiredError="Màu xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateColor))" />
-                </MudItem>
-                <MudItem xs="4">
-                    <MudDatePicker @bind-Date="vehicle_registration_start" Variant="Variant.Outlined" Placeholder="Ngày đăng kiểm" Label="Ngày đăng kiểm" Required="true" RequiredError="Ngày đăng kiểm là bắt buộc" />
-                </MudItem>
-                <MudItem xs="4">
-                    <MudDatePicker @bind-Date="vehicle_registration_end" Label="Ngày hết hạn đăng kiểm" Placeholder="Ngày hết hạn đăng kiểm" Variant="Variant.Outlined" Required="true" RequiredError="Ngày hết hạn đăng kiểm là bắt buộc" />
-                </MudItem>
-                <MudItem xs="4">
-                    <MudNumericField Variant="Variant.Outlined" @bind-Value="newCar.price" Label="Giá xe" Placeholder="Nhập giá xe" Min="0" Step="1000" Required="true" RequiredError="Giá xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidatePrice))" />
-                </MudItem>
-                <MudItem xs="4">
-                    <MudSelect @bind-Value="newCar.type_id" Label="Loại xe" Required="true" Variant="Variant.Outlined">
-                        @if (car_types != null)
-                        {
-                            @foreach (var role in car_types)
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.car_number" Label="Biển số xe" Placeholder="Nhập biển số xe" Required="true" RequiredError="Biển số xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateCarNumber))" />
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.car_name" Label="Tên xe" Placeholder="Nhập tên xe" Required="true" RequiredError="Tên xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateCarName))" />
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudSelect Variant="Variant.Outlined" @bind-Value="newCar.fuel" Placeholder="Nhập nhiên liệu" Label="Nhiên liệu" Required="true" RequiredError="Nhiên liệu là bắt buộc">
+                            <MudSelectItem Value="1">Xăng RON 92 (E5)</MudSelectItem>
+                            <MudSelectItem Value="2">RON 95-III</MudSelectItem>
+                            <MudSelectItem Value="3">RON 95-IV</MudSelectItem>
+                            <MudSelectItem Value="4">Diesel 0,05%S</MudSelectItem>
+                            <MudSelectItem Value="5">Diesel 0,001%S (Diesel Euro 5)</MudSelectItem>
+                            <MudSelectItem Value="6">Pin Lithium-ion (Li-ion)</MudSelectItem>
+                            <MudSelectItem Value="7">Pin Lithium Iron Phosphate (LFP)</MudSelectItem>
+                            <MudSelectItem Value="8">Pin thể rắn (Solid-State Battery)</MudSelectItem>
+                            <MudSelectItem Value="9">Hybrid truyền thống (HEV)</MudSelectItem>
+                            <MudSelectItem Value="10">Plug-in Hybrid (PHEV)</MudSelectItem>
+                            <MudSelectItem Value="11">Pin CATL</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.color" Label="Màu xe" Placeholder="Nhập màu xe" Required="true" RequiredError="Màu xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateColor))" />
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudDatePicker @bind-Date="vehicle_registration_start" Variant="Variant.Outlined" Placeholder="Ngày đăng kiểm" Label="Ngày đăng kiểm" Required="true" RequiredError="Ngày đăng kiểm là bắt buộc" />
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudDatePicker @bind-Date="vehicle_registration_end" Label="Ngày hết hạn đăng kiểm" Placeholder="Ngày hết hạn đăng kiểm" Variant="Variant.Outlined" Required="true" RequiredError="Ngày hết hạn đăng kiểm là bắt buộc" />
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudNumericField Variant="Variant.Outlined" @bind-Value="newCar.price" Label="Giá xe" Placeholder="Nhập giá xe" Min="0" Step="1000" Required="true" RequiredError="Giá xe là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidatePrice))" />
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudSelect @bind-Value="newCar.type_id" Label="Loại xe" Required="true" Variant="Variant.Outlined">
+                            @if (car_types != null)
                             {
-                                <MudSelectItem Value="role.id">@role.name</MudSelectItem>
+                                @foreach (var role in car_types)
+                                {
+                                    <MudSelectItem Value="role.id">@role.name</MudSelectItem>
+                                }
                             }
-                        }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="4">
-                    <MudSelect @bind-Value="newCar.brand_id" Label="Hãng xe" Required="true" Variant="Variant.Outlined">
-                        @if (car_brands != null)
-                        {
-                            @foreach (var role in car_brands)
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudSelect @bind-Value="newCar.brand_id" Label="Hãng xe" Required="true" Variant="Variant.Outlined">
+                            @if (car_brands != null)
                             {
-                                <MudSelectItem Value="role.id">@role.name</MudSelectItem>
+                                @foreach (var role in car_brands)
+                                {
+                                    <MudSelectItem Value="role.id">@role.name</MudSelectItem>
+                                }
                             }
-                        }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudSelect @bind-Value="newCar.isAuto"
-                               Label="Loại hộp số"
-                               Required="true"
-                               RequiredError="Vui lòng chọn loại hộp số"
-                               Variant="Variant.Outlined">
-                        <MudSelectItem Value="@((byte)0)">Số tự động</MudSelectItem>
-                        <MudSelectItem Value="@((byte)1)">Số sàn</MudSelectItem>
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudDatePicker @bind-Date="year_production" Label="Năm sản xuất" OpenTo="OpenTo.Year" FixMonth="@DateTime.Today.Month" FixDay="@DateTime.Today.Day" DateFormat="yyyy" Placeholder="Năm sản xuất" Variant="Variant.Outlined" Required="true" RequiredError="Năm sản xuất là bắt buộc" PickerVariant="PickerVariant.Dialog" />
-                </MudItem>
-                <MudItem xs="3">
-                    <MudNumericField Variant="Variant.Outlined" @bind-Value="newCar.odo" Label="Số km đã đi" Placeholder="Số KM đã đi" Required="true" RequiredError="Số km đã đi là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateOdo))" />
-                </MudItem>
-                <MudItem xs="3">
-                    <MudNumericField Variant="Variant.Outlined"
-                                     @bind-Value="newCar.insurance_fee"
-                                     Label="Phí bảo hiểm"
-                                     Placeholder="Phí bảo hiểm"
-                                     Required="true"
-                                      Min="0" Step="1000"
-                                     RequiredError="Phí bảo hiểm là bắt buộc"
-                                     Validation="@(new Func<float, string>(ValidateInsuranceFee))"
-                                     />
-                </MudItem>
-                <MudItem xs="3">
-                    <MudSelect Variant="Variant.Outlined" @bind-Value="newCar.is_retail" Label="Loại xe" Required="true" Placeholder="Loại xe" RequiredError="Loại xe là bắt buộc">
-                        <MudSelectItem Value="@((byte)0)">Xe dịch vụ</MudSelectItem>
-                        <MudSelectItem Value="@((byte)1)">Xe cho thuê</MudSelectItem>
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="3">
-                    <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.location_car" Label="Vị trí xe" Placeholder="Nhập vị trí xe" ReadOnly />
-                </MudItem>
-                <MudItem xs="3">
-                    <MudNumericField Variant="Variant.Outlined"
-                                     @bind-Value="newCar.voucher"
-                                     Label="Voucher"
-                                    Step="1000"
-                                     Placeholder="Nhập giá trị voucher"
-                                     Validation="@(new Func<float, string>(ValidateVoucher))"
-                                     Min="0" />
-                </MudItem>
-                <MudItem xs="3">
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudSelect @bind-Value="newCar.isAuto"
+                                   Label="Loại hộp số"
+                                   Required="true"
+                                   RequiredError="Vui lòng chọn loại hộp số"
+                                   Variant="Variant.Outlined">
+                            <MudSelectItem Value="@((byte)0)">Số tự động</MudSelectItem>
+                            <MudSelectItem Value="@((byte)1)">Số sàn</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudDatePicker @bind-Date="year_production" Label="Năm sản xuất" OpenTo="OpenTo.Year" FixMonth="@DateTime.Today.Month" FixDay="@DateTime.Today.Day" DateFormat="yyyy" Placeholder="Năm sản xuất" Variant="Variant.Outlined" Required="true" RequiredError="Năm sản xuất là bắt buộc" PickerVariant="PickerVariant.Dialog" />
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudNumericField Variant="Variant.Outlined" @bind-Value="newCar.odo" Label="Số km đã đi" Placeholder="Số KM đã đi" Required="true" RequiredError="Số km đã đi là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateOdo))" />
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudNumericField Variant="Variant.Outlined"
+                                         @bind-Value="newCar.insurance_fee"
+                                         Label="Phí bảo hiểm"
+                                         Placeholder="Phí bảo hiểm"
+                                         Required="true"
+                                         Min="0" Step="1000"
+                                         RequiredError="Phí bảo hiểm là bắt buộc"
+                                         Validation="@(new Func<float, string>(ValidateInsuranceFee))" />
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudSelect Variant="Variant.Outlined" @bind-Value="newCar.is_retail" Label="Loại xe" Required="true" Placeholder="Loại xe" RequiredError="Loại xe là bắt buộc">
+                            <MudSelectItem Value="@((byte)0)">Xe dịch vụ</MudSelectItem>
+                            <MudSelectItem Value="@((byte)1)">Xe cho thuê</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.location_car" Label="Vị trí xe" Placeholder="Nhập vị trí xe" ReadOnly />
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudNumericField Variant="Variant.Outlined"
+                                         @bind-Value="newCar.voucher"
+                                         Label="Voucher"
+                                         Step="1000"
+                                         Placeholder="Nhập giá trị voucher"
+                                         Validation="@(new Func<float, string>(ValidateVoucher))"
+                                         Min="0" />
+                    </MudItem>
+                    <MudItem xs="3">
 
-                    <MudSelect T="int" @bind-Value="newCar.number_seat"
-                               Label="Số ghế"
-                               Required="true"
-                               RequiredError="Số ghế là bắt buộc"
-                               Variant="Variant.Outlined">
-                        <MudSelectItem Value="4">4 chỗ</MudSelectItem>
-                        <MudSelectItem Value="5">5 chỗ</MudSelectItem>
-                        <MudSelectItem Value="6">6 chỗ</MudSelectItem>
-                        <MudSelectItem Value="7">7 chỗ</MudSelectItem>
-                        <MudSelectItem Value="8">8 chỗ</MudSelectItem>
-                        <MudSelectItem Value="16">16 chỗ</MudSelectItem>
-                        <MudSelectItem Value="24">24 chỗ</MudSelectItem>
-                        <MudSelectItem Value="36">36 chỗ</MudSelectItem>
-                        <MudSelectItem Value="45">45 chỗ</MudSelectItem>
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.description" Label="Mô tả" Placeholder="Nhập mô tả" Required="true" Lines="3" RequiredError="Mô tả là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateDescription))" />
-                </MudItem>
-            </MudGrid>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" OnClick="AddCar">Thêm xe</MudButton>
-        </MudForm>
-    </MudPaper>
-</MudContainer>
+                        <MudSelect T="int" @bind-Value="newCar.number_seat"
+                                   Label="Số ghế"
+                                   Required="true"
+                                   RequiredError="Số ghế là bắt buộc"
+                                   Variant="Variant.Outlined">
+                            <MudSelectItem Value="4">4 chỗ</MudSelectItem>
+                            <MudSelectItem Value="5">5 chỗ</MudSelectItem>
+                            <MudSelectItem Value="6">6 chỗ</MudSelectItem>
+                            <MudSelectItem Value="7">7 chỗ</MudSelectItem>
+                            <MudSelectItem Value="8">8 chỗ</MudSelectItem>
+                            <MudSelectItem Value="16">16 chỗ</MudSelectItem>
+                            <MudSelectItem Value="24">24 chỗ</MudSelectItem>
+                            <MudSelectItem Value="36">36 chỗ</MudSelectItem>
+                            <MudSelectItem Value="45">45 chỗ</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.description" Label="Mô tả" Placeholder="Nhập mô tả" Required="true" Lines="3" RequiredError="Mô tả là bắt buộc" Validation="@(new Func<string, IEnumerable<string>>(CarValidateDescription))" />
+                    </MudItem>
+                </MudGrid>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" OnClick="AddCar">Thêm xe</MudButton>
+            </MudForm>
+        </MudPaper>
+    </MudContainer>
+}
+
 
 @code {
     private car_create newCar = new car_create();
@@ -180,6 +189,7 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -257,6 +267,8 @@
     {
         await LoadType();
         await LoadBrand();
+        isLoadingProgress = false;
+        StateHasChanged();
     }
 
     private async Task LoadType()
@@ -272,6 +284,7 @@
         catch (Exception ex)
         {
             Snackbar.Add($"Lỗi khi tải danh sách vai trò: {ex.Message}", Severity.Error);
+
         }
     }
     private async Task LoadBrand()

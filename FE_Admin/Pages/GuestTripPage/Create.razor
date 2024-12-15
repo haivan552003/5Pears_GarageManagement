@@ -27,104 +27,114 @@
         </MudItem>
     </div>
 }
-
-
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid>
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
-        <MudItem xs="12" Class="mx-auto">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudItem xs="12">
-                    <MudPaper Elevation="4" Class="p-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Thêm hóa đơn đặt vé xe</MudText>
-                        <MudForm @ref="form" Style="height:auto">
-                            <MudGrid>
-                                <MudItem xs="4" Class="mb-4">
-                                    <MudSelect Variant="Variant.Outlined" T="int" Label="Tuyến xe" ValueChanged="OnTripChanged">
-                                        @foreach (var item in trip) 
-                                        {
-                                            <MudSelectItem Value="item.id">@item.name</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </MudItem>
-                                <MudItem xs="5" Class="mb-4">
-                
-                                    <MudSelect Variant="Variant.Outlined" T="int" Label="Chuyến xe" Disabled="selectedTripId == 0" ValueChanged="OnTripDetailChanged">
-                                        @foreach (var item in tripdetail)
-                                        {
-                                            <MudSelectItem Value="item.id">@item.name</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </MudItem>
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" Class="mx-auto">
+                <MudPaper Elevation="0" Class="pa-3">
+                    <MudItem xs="12">
+                        <MudPaper Elevation="4" Class="p-4">
+                            <MudText Typo="Typo.h6" Class="mb-5">Thêm hóa đơn đặt vé xe</MudText>
+                            <MudForm @ref="form" Style="height:auto">
+                                <MudGrid>
+                                    <MudItem xs="4" Class="mb-4">
+                                        <MudSelect Variant="Variant.Outlined" T="int" Label="Tuyến xe" ValueChanged="OnTripChanged">
+                                            @foreach (var item in trip)
+                                            {
+                                                <MudSelectItem Value="item.id">@item.name</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="5" Class="mb-4">
 
-                                <MudItem xs="3" Class="mb-4">
-                                    @*   <MudSelect Variant="Variant.Outlined" T="int" Label="Ghế" @bind-Value="bill.car_seat_id">
+                                        <MudSelect Variant="Variant.Outlined" T="int" Label="Chuyến xe" Disabled="selectedTripId == 0" ValueChanged="OnTripDetailChanged">
+                                            @foreach (var item in tripdetail)
+                                            {
+                                                <MudSelectItem Value="item.id">@item.name</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+
+                                    <MudItem xs="3" Class="mb-4">
+                                        @*   <MudSelect Variant="Variant.Outlined" T="int" Label="Ghế" @bind-Value="bill.car_seat_id">
                                     @foreach (var item in carseat)
                                     {
                                     <MudSelectItem Value="item.id">@item.name</MudSelectItem>
                                     }
                                     </MudSelect> *@
-                                    <MudSelect MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))"
-                                               MultiSelection="true"
-                                               @bind-SelectedValues="selectedSeats"
-                                               T="int"
-                                               Label="Ghế"
-                                               Variant="Variant.Outlined"
-                                               Disabled="selectedTripDetailId == 0">
-                                        @foreach (var item in carseat)
-                                        {
-                                            <MudSelectItem T="int" Value="item.id">@item.name</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </MudItem>
+                                        <MudSelect MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))"
+                                                   MultiSelection="true"
+                                                   @bind-SelectedValues="selectedSeats"
+                                                   T="int"
+                                                   Label="Ghế"
+                                                   Variant="Variant.Outlined"
+                                                   Disabled="selectedTripDetailId == 0">
+                                            @foreach (var item in carseat)
+                                            {
+                                                <MudSelectItem T="int" Value="item.id">@item.name</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
 
-                                <MudItem xs="3" Class="mb-4">
-                                    <MudTextField ShrinkLabel Label="Mã hóa đơn" T="string" Variant="Variant.Outlined" ReadOnly="true" />
-                                </MudItem>
-                                <MudItem xs="3" Class="mb-4">
-                                    <MudSelect Variant="Variant.Outlined" T="int" Label="Khách hàng" @bind-Value="bill.cus_id">
-                                        @foreach (var item in customer)
-                                        {
-                                            <MudSelectItem Value="item.id">@item.name</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </MudItem>
-                                <MudItem xs="3" Class="mb-4">
-                                    <MudTextField ShrinkLabel
-                                                  Label="Giá vé"
-                                                  @bind-Value="bill.price"
-                                                  Variant="Variant.Outlined"
-                                                  Required="true"
-                                                  ReadOnly="true" />
-                                </MudItem>
+                                    <MudItem xs="3" Class="mb-4">
+                                        <MudTextField ShrinkLabel Label="Mã hóa đơn" T="string" Variant="Variant.Outlined" ReadOnly="true" />
+                                    </MudItem>
+                                    <MudItem xs="3" Class="mb-4">
+                                        <MudSelect Variant="Variant.Outlined" T="int" Label="Khách hàng" @bind-Value="bill.cus_id">
+                                            @foreach (var item in customer)
+                                            {
+                                                <MudSelectItem Value="item.id">@item.name</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="3" Class="mb-4">
+                                        <MudTextField ShrinkLabel
+                                                      Label="Giá vé"
+                                                      @bind-Value="bill.price"
+                                                      Variant="Variant.Outlined"
+                                                      Required="true"
+                                                      ReadOnly="true" />
+                                    </MudItem>
 
-                                <MudItem xs="3" Class="mb-4">
-                                    <MudSelect Variant="Variant.Outlined" T="bool" Label="Hình thức thanh toán" @bind-Value="bill.payment_method">
-                                        <MudSelectItem Value="true">Tiền mặt</MudSelectItem>
-                                        <MudSelectItem Value="false">Chuyển khoản</MudSelectItem>
-                                    </MudSelect>
-                                </MudItem>
-                            </MudGrid>
+                                    <MudItem xs="3" Class="mb-4">
+                                        <MudSelect Variant="Variant.Outlined" T="bool" Label="Hình thức thanh toán" @bind-Value="bill.payment_method">
+                                            <MudSelectItem Value="true">Tiền mặt</MudSelectItem>
+                                            <MudSelectItem Value="false">Chuyển khoản</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+                                </MudGrid>
 
-                            <MudGrid>
-                                <MudItem xs="12" class="d-flex justify-end">
-                                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddBill" Class="mt-3">
-                                        Lưu
-                                    </MudButton>
-                                </MudItem>
-                            </MudGrid>
+                                <MudGrid>
+                                    <MudItem xs="12" class="d-flex justify-end">
+                                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddBill" Class="mt-3">
+                                            Lưu
+                                        </MudButton>
+                                    </MudItem>
+                                </MudGrid>
 
-                        </MudForm>
-                    </MudPaper>
-                </MudItem>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+                            </MudForm>
+                        </MudPaper>
+                    </MudItem>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
+
 <script>
     // Lấy token từ localStorage
     function getAuthToken() {
@@ -159,6 +169,7 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -196,6 +207,7 @@
                 }
             }
             CheckRole();
+            isLoadingProgress = false;
             StateHasChanged();
         }
     }

@@ -26,59 +26,69 @@
         </MudItem>
     </div>
 }
-
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    @if (showSuccess)
-    {
-        <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
-            Thêm thành công
-        </MudAlert>
-    }
-    else if (showError)
-    {
-        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
-            Thêm thất bại
-        </MudAlert>
-    }
-
-    <MudGrid>
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
-        <MudItem xs="6" Class="mx-auto">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudItem xs="12">
-                    <MudPaper Elevation="4" Class="p-4" Style="height: 400px">
-                        <MudText Typo="Typo.h6" Class="mb-5">Thêm Địa Chỉ</MudText>
-                        <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
-                            <MudTextField ShrinkLabel @bind-Value="Location.name" Label="Địa Chỉ"
-                                          Validation="@(new Func<string, IEnumerable<string>>(LocationValidateName))"
-                                          Placeholder="Địa Chỉ" Variant="Variant.Outlined" Required="true" />
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        @if (showSuccess)
+        {
+            <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
+                Thêm thành công
+            </MudAlert>
+        }
+        else if (showError)
+        {
+            <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
+                Thêm thất bại
+            </MudAlert>
+        }
 
-                            <MudTextField ShrinkLabel @bind-Value="Location.address" Label="Thành Phố"
-                                          Validation="@(new Func<string, IEnumerable<string>>(LocationValidateAddress))"
-                                          Placeholder="Thành Phố" Variant="Variant.Outlined" Required="true" />
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6" Class="mx-auto">
+                <MudPaper Elevation="0" Class="pa-3">
+                    <MudItem xs="12">
+                        <MudPaper Elevation="4" Class="p-4" Style="height: 400px">
+                            <MudText Typo="Typo.h6" Class="mb-5">Thêm Địa Chỉ</MudText>
+                            <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
+                                <MudTextField ShrinkLabel @bind-Value="Location.name" Label="Địa Chỉ"
+                                              Validation="@(new Func<string, IEnumerable<string>>(LocationValidateName))"
+                                              Placeholder="Địa Chỉ" Variant="Variant.Outlined" Required="true" />
 
-                            <MudTextField ShrinkLabel @bind-Value="Location.phone_number" Label="Số Điện Thoại"
-                                          Validation="@(new Func<string, IEnumerable<string>>(LocationValidatePhone))"
-                                          Placeholder="Số Điện Thoại" Variant="Variant.Outlined" Required="true" />
+                                <MudTextField ShrinkLabel @bind-Value="Location.address" Label="Thành Phố"
+                                              Validation="@(new Func<string, IEnumerable<string>>(LocationValidateAddress))"
+                                              Placeholder="Thành Phố" Variant="Variant.Outlined" Required="true" />
 
-                            <MudSelect @bind-Value="Location.status" Label="Trạng Thái" Variant="Variant.Outlined" Required="true">
-                                <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
-                                <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
-                            </MudSelect>
+                                <MudTextField ShrinkLabel @bind-Value="Location.phone_number" Label="Số Điện Thoại"
+                                              Validation="@(new Func<string, IEnumerable<string>>(LocationValidatePhone))"
+                                              Placeholder="Số Điện Thoại" Variant="Variant.Outlined" Required="true" />
+
+                                <MudSelect @bind-Value="Location.status" Label="Trạng Thái" Variant="Variant.Outlined" Required="true">
+                                    <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
+                                </MudSelect>
 
 
-                            <MudButton Variant="Variant.Filled" Style="float: right;" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddLocation" Class="mt-3">Lưu</MudButton>
-                        </MudForm>
-                    </MudPaper>
-                </MudItem>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+                                <MudButton Variant="Variant.Filled" Style="float: right;" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddLocation" Class="mt-3">Lưu</MudButton>
+                            </MudForm>
+                        </MudPaper>
+                    </MudItem>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
 
 @code {
     private location Location = new location();
@@ -90,6 +100,7 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !isInitialized)
@@ -126,6 +137,7 @@
                 }
             }
             CheckRole();
+            isLoadingProgress = false;
             StateHasChanged();
         }
     }

@@ -27,78 +27,79 @@
         </MudItem>
     </div>
 }
-
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid>
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
-        <MudItem xs="4" Class="mx-auto">
-            <MudPaper Elevation="4" Class="pa-3">
-                <MudText Typo="Typo.h6" Class="mb-5">Chỉnh sửa thông tin công việc</MudText>
-                <MudGrid>
-                    <MudItem xs="12" Class="mx-auto">
-                        <MudForm @ref="form" Style="height:auto" Class="mud-width-full">
-                           
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="4" Class="mx-auto">
+                <MudPaper Elevation="4" Class="pa-3">
+                    <MudText Typo="Typo.h6" Class="mb-5">Chỉnh sửa thông tin công việc</MudText>
+                    <MudGrid>
+                        <MudItem xs="12" Class="mx-auto">
+                            <MudForm @ref="form" Style="height:auto" Class="mud-width-full">
 
-                            <MudTextField ShrinkLabel @bind-Value="News.title" Label="Tiêu đề"
-                                          Class="py-3"
-                                          Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
-                                          Placeholder="Tiêu đề công việc" Variant="Variant.Outlined" Required="true" />
 
-                            <MudTextField ShrinkLabel @bind-Value="News.id_emp" Label="Người tạo"
-                                          Class="py-3"
-                                          Disabled="true"
-                                          Placeholder="Người tạo" Variant="Variant.Outlined" Required="true" />
+                                <MudTextField ShrinkLabel @bind-Value="News.title" Label="Tiêu đề"
+                                              Class="py-3"
+                                              Validation="@(new Func<string, IEnumerable<string>>(NewsValidate))"
+                                              Placeholder="Tiêu đề công việc" Variant="Variant.Outlined" Required="true" />
 
-                            <CKeditor Id="newsContent" @bind-Value="News.content" />
+                                <MudTextField ShrinkLabel @bind-Value="News.id_emp" Label="Người tạo"
+                                              Class="py-3"
+                                              Disabled="true"
+                                              Placeholder="Người tạo" Variant="Variant.Outlined" Required="true" />
 
-                            <MudSelect @bind-Value="News.status" Label="Trạng thái" Variant="Variant.Outlined" Class="py-3" Required="true">
-                                <MudSelectItem Value="@true">Đang hoạt động</MudSelectItem>
-                                <MudSelectItem Value="@false">Ngưng hoạt động</MudSelectItem>
-                            </MudSelect>
-                            @if (!string.IsNullOrEmpty(News.news_img))
-                            {
-                                <MudImage Fluid="false" Src="@News.news_img" Class="rounded-lg mb-2 w-100 mx-auto d-block" Height="260" />
-                            }
-                            <MudButton HtmlTag="label" For="newsImageInput" Size="Size.Small" Variant="Variant.Outlined"  Color="Color.Secondary"
-                                       StartIcon="@Icons.Material.Outlined.CloudUpload"
-                                       FullWidth="true" Class="mud-button-small-text">
-                                Chọn hình ảnh mới
-                            </MudButton>
-                            <MudItem xs="12" Class="d-flex justify-center mt-4">
-                                @if (isLoading1)
+                                <CKeditor Id="newsContent" @bind-Value="News.content" />
+
+                                <MudSelect @bind-Value="News.status" Label="Trạng thái" Variant="Variant.Outlined" Class="py-3" Required="true">
+                                    <MudSelectItem Value="@true">Đang hoạt động</MudSelectItem>
+                                    <MudSelectItem Value="@false">Ngưng hoạt động</MudSelectItem>
+                                </MudSelect>
+                                @if (!string.IsNullOrEmpty(News.news_img))
                                 {
-                                    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+                                    <MudImage Fluid="false" Src="@News.news_img" Class="rounded-lg mb-2 w-100 mx-auto d-block" Height="260" />
                                 }
-                            </MudItem>
+                                <MudButton HtmlTag="label" For="newsImageInput" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary"
+                                           StartIcon="@Icons.Material.Outlined.CloudUpload"
+                                           FullWidth="true" Class="mud-button-small-text">
+                                    Chọn hình ảnh mới
+                                </MudButton>
+                                @if (isLoadingIMG)
+                                {
+                                    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-5" />
+                                }
 
-                            <InputFile id="newsImageInput" OnChange="LoadNewsImage" accept="image/*" style="display: none;" />
+                                <InputFile id="newsImageInput" OnChange="LoadNewsImage" accept="image/*" style="display: none;" />
 
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Disabled="@isLoading" Color="Color.Primary"
-                                       OnClick="SubmitForm" Class="mt-3">
-                                Lưu
-                            </MudButton>
-                            <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.ArrowBack"
-                                       OnClick="Cancel" Class="mt-3 ml-3">
-                                Trở về
-                            </MudButton>
-                        </MudForm>
-                    </MudItem>
-                </MudGrid>
-            </MudPaper>
-            <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="full-height">
-                @if (isLoading)
-                {
-                    <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
-                }
-            </MudGrid>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
-
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary"
+                                           OnClick="SubmitForm" Class="mt-3">
+                                    Lưu
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.ArrowBack"
+                                           OnClick="Cancel" Class="mt-3 ml-3">
+                                    Trở về
+                                </MudButton>
+                            </MudForm>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
 
 @code {
     [Parameter] public int Id { get; set; }
@@ -107,7 +108,8 @@
     private MudForm form;
     private readonly string url = "http://localhost:49922/api/News";
     private bool isLoading= false;
-    private bool isLoading1 = false;
+    private bool isLoadingIMG = false;
+    private bool isLoadingProgress = true;
     private string userRole;
     private bool isInitialized = false;
 
@@ -183,11 +185,15 @@
         try
         {
             News = await httpClient.GetFromJsonAsync<news>($"{url}/{Id}");
+            isLoadingProgress = false;
+            StateHasChanged();
         }
         catch (Exception ex)
         {
             Snackbar.Add($"Lỗi khi tải dữ liệu: {ex.Message}", Severity.Error);
             navigationManager.NavigateTo("/getnews");
+            isLoadingProgress = false;
+            StateHasChanged();
         }
     }
 
@@ -216,9 +222,10 @@
 
     private async Task LoadNewsImage(InputFileChangeEventArgs e)
     {
-        isLoading1 = true;
         try
         {
+            isLoadingIMG = true;
+            StateHasChanged();
             await Task.Delay(2000);
             var file = e.File;
             if (file != null)
@@ -229,7 +236,6 @@
                     var fileName = $"news_images/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
                     var imageUrl = await js.InvokeAsync<string>("uploadImage", fileName, base64Data);
                     News.news_img = imageUrl;
-                    StateHasChanged();
                 }
             }
         }
@@ -239,13 +245,13 @@
         }
         finally
         {
-            isLoading1 = false;
+            isLoadingIMG = false;
+            StateHasChanged();
         }
     }
 
     private async Task EditNews()
     {
-        isLoading = true;
         try
         {
             await Task.Delay(2000);
@@ -266,7 +272,6 @@
         }
         finally
         {
-            isLoading = false;
         }
     }
 

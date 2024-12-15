@@ -2,7 +2,16 @@
 @inject HttpClient httpClient
 @inject NavigationManager Navigation
 
-
+@if (isLoadingProgress)
+{
+<div class="loading-overlay">
+    <MudItem xs="12" Class="text-center">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    </MudItem>
+</div>
+}
+else
+{
 <MudDialog MaxWidth="MaxWidth.Medium">
     <DialogContent>
         <MudPaper Elevation="0">
@@ -14,7 +23,7 @@
                         <MudTimePicker Label="Giờ bắt đầu" @bind-Time="SelectedTrip.TimeStart" Variant="Variant.Outlined" />
                     </MudItem>
                     <MudItem xs="6" Class="mb-4">
-                        <MudDatePicker Label="Ngày kết thúc" @bind-Date="SelectedTrip.DateEnd"  Variant="Variant.Outlined"  MinDate="@(SelectedTrip.DateStart ?? DateTime.Today)" />
+                        <MudDatePicker Label="Ngày kết thúc" @bind-Date="SelectedTrip.DateEnd" Variant="Variant.Outlined" MinDate="@(SelectedTrip.DateStart ?? DateTime.Today)" />
                         <MudTimePicker Label="Giờ kết thúc" @bind-Time="SelectedTrip.TimeEnd" Variant="Variant.Outlined" />
                     </MudItem>
 
@@ -78,12 +87,14 @@
         <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">Lưu</MudButton>
     </DialogActions>
 </MudDialog>
+}
 
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public string ContentText { get; set; }
     [Parameter]
     public trip_detail_create SelectedTrip { get; set; } = new trip_detail_create();
+    private bool isLoadingProgress = true;
 
     private MudForm form;
 
@@ -104,6 +115,7 @@
         cars = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/car");
 
         locationsto = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/location");
+        isLoadingProgress = false;
     }
 
     private string GetLastSegment(string url)

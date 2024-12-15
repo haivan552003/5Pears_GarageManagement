@@ -28,55 +28,66 @@
         </MudItem>
     </div>
 }
-
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid Class="pa-0">
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
-            <MudPaper Elevation="0">
-                <MudDataGrid Class="mx-auto pa-2" T="banner" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
-                             Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
-                    <ToolBarContent>
-                        <MudItem xs="4" Elevation="0" Class="pb-3">
-                            <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
-                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-                        </MudItem>
-
-                        <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
-                            <MudButton Href="/addbanner" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
-                                Thêm mới
-                            </MudButton>
-                        </MudItem>
-                    </ToolBarContent>
-                    <Columns>
-                        <SelectColumn T="banner" />
-                        <PropertyColumn T="banner" TProperty="string" Property="x => x.title" SortBy="@_sortBy" Class="fw-bold text-center" Title="Tiêu đề" />
-                        <PropertyColumn T="banner" TProperty="string" Property="x => x.fullname" SortBy="@_sortBy" Class="fw-bold text-center" Title="Người tạo" />
-                        <TemplateColumn T="banner" Class="fw-bold text-center" Style="width: 10px" Title="Chức năng">
-                            <CellTemplate Context="element">
-                                <div class="d-flex justify-content-center align-items-center">
-                                    <MudTooltip Text="Chỉnh sửa">
-                                        <MudIconButton Href="@($"/editbanner/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
-                                    </MudTooltip>
-                                    <MudTooltip Text="Xóa">
-                                        <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small"
-                                                       OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" />
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </TemplateColumn>
-
-                    </Columns>
-                    <PagerContent>
-                        <MudDataGridPager T="banner" />
-                    </PagerContent>
-                </MudDataGrid>
-            </MudPaper>
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
-    </MudGrid>
-</MudContainer>
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        <MudGrid Class="pa-0">
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-3" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+                <MudPaper Elevation="0">
+                    <MudDataGrid Class="mx-auto pa-2" T="banner" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                                 Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+                        <ToolBarContent>
+                            <MudItem xs="4" Elevation="0" Class="pb-3">
+                                <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" Immediate="true"
+                                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                            </MudItem>
+
+                            <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
+                                <MudButton Href="/addbanner" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                                    Thêm mới
+                                </MudButton>
+                            </MudItem>
+                        </ToolBarContent>
+                        <Columns>
+                            <SelectColumn T="banner" />
+                            <PropertyColumn T="banner" TProperty="string" Property="x => x.title" SortBy="@_sortBy" Class="fw-bold text-center" Title="Tiêu đề" />
+                            <PropertyColumn T="banner" TProperty="string" Property="x => x.fullname" SortBy="@_sortBy" Class="fw-bold text-center" Title="Người tạo" />
+                            <TemplateColumn T="banner" Class="fw-bold text-center" Style="width: 10px" Title="Chức năng">
+                                <CellTemplate Context="element">
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <MudTooltip Text="Chỉnh sửa">
+                                            <MudIconButton Href="@($"/editbanner/{element.Item.id}")" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
+                                        </MudTooltip>
+                                        <MudTooltip Text="Xóa">
+                                            <MudIconButton Icon="far fa-trash-alt" Color="Color.Error" Size="Size.Small"
+                                                           OnClick="@(async () => { await OpenDeleteDialog(element.Item); })" />
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </TemplateColumn>
+
+                        </Columns>
+                        <PagerContent>
+                            <MudDataGridPager T="banner" />
+                        </PagerContent>
+                    </MudDataGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
+
 
 
 @code {
@@ -91,6 +102,7 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -194,10 +206,14 @@
         try
         {
             Elements = await httpClient.GetFromJsonAsync<List<banner>>(url);
+            isLoadingProgress = false;
+            StateHasChanged();
         }
         catch (Exception ex)
         {
             Snackbar.Add($"Lỗi khi tải danh sách banner: {ex.Message}", Severity.Error);
+            isLoadingProgress = false;
+            StateHasChanged();
         }
     }
 

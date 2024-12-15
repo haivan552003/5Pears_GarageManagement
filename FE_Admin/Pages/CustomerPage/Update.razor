@@ -30,184 +30,191 @@
         </MudItem>
     </div>
 }
-
-
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-
-
-    <!-- Form Cập nhật công việc -->
-    <MudGrid>
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
-        <MudItem xs="12" md="12">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudGrid>
-                    <MudItem xs="12" md="12">
-                        @*                     <DataAnnotationsValidator />
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+
+
+        <!-- Form Cập nhật công việc -->
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="12">
+                <MudPaper Elevation="0" Class="pa-3">
+                    <MudGrid>
+                        <MudItem xs="12" md="12">
+                            @*                     <DataAnnotationsValidator />
                         *@                    <MudPaper Elevation="3" Class="pa-4">
-                            <MudText Typo="Typo.h6" Class="mb-5">Chỉnh sửa khách hàng</MudText>
-                            <MudGrid>
-                                <MudItem xs="12" sm="6">
-                                    <MudTextField ShrinkLabel @bind-Value="newRoleTask.cus_code" For="@(() => newRoleTask.cus_code)"
-                                                  Label="Mã khách hàng"
-                                                  Variant="Variant.Outlined"
-                                                  ReadOnly = "true" Disabled/>
-                                </MudItem>
+                                <MudText Typo="Typo.h6" Class="mb-5">Chỉnh sửa khách hàng</MudText>
+                                <MudGrid>
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField ShrinkLabel @bind-Value="newRoleTask.cus_code" For="@(() => newRoleTask.cus_code)"
+                                                      Label="Mã khách hàng"
+                                                      Variant="Variant.Outlined"
+                                                      ReadOnly="true" Disabled />
+                                    </MudItem>
 
-                                <MudItem xs="12" sm="6">
-                                    <MudTextField ShrinkLabel @bind-Value="newRoleTask.email" For="@(() => newRoleTask.email)"
-                                                  Label="Email"
-                                                  Variant="Variant.Outlined"
-                                                  Validation="@(new Func<string, Task<IEnumerable<string>>>(CustomerValidateEmail))"/>
-                                </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField ShrinkLabel @bind-Value="newRoleTask.email" For="@(() => newRoleTask.email)"
+                                                      Label="Email"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, Task<IEnumerable<string>>>(CustomerValidateEmail))" />
+                                    </MudItem>
 
-                                <MudItem xs="12" sm="6">
-                                    <MudTextField ShrinkLabel @bind-Value="newRoleTask.password" For="@(() => newRoleTask.password)"
-                                                  Label="Mật khẩu"
-                                                  Variant="Variant.Outlined" 
-                                                  Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePassword))" />
-                                </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField ShrinkLabel @bind-Value="newRoleTask.password" For="@(() => newRoleTask.password)"
+                                                      Label="Mật khẩu"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePassword))" />
+                                    </MudItem>
 
-                                <MudItem xs="12" sm="6">
-                                    <MudTextField ShrinkLabel @bind-Value="newRoleTask.fullname" For="@(() => newRoleTask.fullname)"
-                                                  Label="Họ và tên"
-                                                  Variant="Variant.Outlined" 
-                                                  Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateFullName))" />
-                                </MudItem>
-                                <MudItem xs="12" sm="6">
-                                    <MudTextField ShrinkLabel @bind-Value="newRoleTask.phone_number" For="@(() => newRoleTask.phone_number)"
-                                                  Label="Số điện thoại"
-                                                  Variant="Variant.Outlined"
-                                                  Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePhone))" />
-                                </MudItem>
-                                <MudItem xs="12" sm="6">
-                                    <MudDatePicker @bind-Date="birthdayDate" For="@(() => newRoleTask.birthday)"
-                                                   Label="Ngày sinh" Required="true" RequiredError="Vui lòng chọn ngày sinh"
-                                                   Variant="Variant.Outlined" DateFormat="dd/MM/yyyy"
-                                                   MaxDate="@DateTime.Now" 
-                                                   Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateBirthday))" />
-                                </MudItem>
-                                <MudItem xs="12" sm="6">
-                                    <MudSelect @bind-Value="newRoleTask.gender" For="@(() => newRoleTask.gender)"
-                                               Label="Giới tính" Required="true" RequiredError="Vui lòng chọn giới tính"
-                                               Variant="Variant.Outlined" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateGender))">
-                                        <MudSelectItem Value="@((byte)0)">Nam</MudSelectItem>
-                                        <MudSelectItem Value="@((byte)1)">Nữ</MudSelectItem>
-                                    </MudSelect>
-                                </MudItem>
-                                <MudItem xs="12" sm="6">
-                                    <MudTextField ShrinkLabel @bind-Value="newRoleTask.citizen_identity_number" For="@(() => newRoleTask.citizen_identity_number)"
-                                                  Label="Số CCCD" Required="true" RequiredError="Vui lòng nhập số CCCD"
-                                                  Variant="Variant.Outlined" 
-                                                  Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateCitizenIdentity))" />
-                                </MudItem>
-                                <MudItem xs="12" sm="6">
-                                    <MudTextField ShrinkLabel @bind-Value="newRoleTask.driver_license_number" For="@(() => newRoleTask.driver_license_number)"
-                                                  Label="Số bằng lái" Required="true" RequiredError="Vui lòng nhập số bằng lái"
-                                                  Variant="Variant.Outlined" 
-                                                  Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateDriverLicense))" />
-                                </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField ShrinkLabel @bind-Value="newRoleTask.fullname" For="@(() => newRoleTask.fullname)"
+                                                      Label="Họ và tên"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateFullName))" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField ShrinkLabel @bind-Value="newRoleTask.phone_number" For="@(() => newRoleTask.phone_number)"
+                                                      Label="Số điện thoại"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePhone))" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudDatePicker @bind-Date="birthdayDate" For="@(() => newRoleTask.birthday)"
+                                                       Label="Ngày sinh" Required="true" RequiredError="Vui lòng chọn ngày sinh"
+                                                       Variant="Variant.Outlined" DateFormat="dd/MM/yyyy"
+                                                       MaxDate="@DateTime.Now"
+                                                       Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateBirthday))" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudSelect @bind-Value="newRoleTask.gender" For="@(() => newRoleTask.gender)"
+                                                   Label="Giới tính" Required="true" RequiredError="Vui lòng chọn giới tính"
+                                                   Variant="Variant.Outlined" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateGender))">
+                                            <MudSelectItem Value="@((byte)0)">Nam</MudSelectItem>
+                                            <MudSelectItem Value="@((byte)1)">Nữ</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField ShrinkLabel @bind-Value="newRoleTask.citizen_identity_number" For="@(() => newRoleTask.citizen_identity_number)"
+                                                      Label="Số CCCD" Required="true" RequiredError="Vui lòng nhập số CCCD"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateCitizenIdentity))" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField ShrinkLabel @bind-Value="newRoleTask.driver_license_number" For="@(() => newRoleTask.driver_license_number)"
+                                                      Label="Số bằng lái" Required="true" RequiredError="Vui lòng nhập số bằng lái"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateDriverLicense))" />
+                                    </MudItem>
 
-                             
 
-                                <MudItem xs="12" sm="6">
-                                    <MudSelect @bind-Value="newRoleTask.status" For="@(() => newRoleTask.status)"
-                                               Label="Trạng thái" Required="true" Variant="Variant.Outlined" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateStatus))">
-                                        <MudSelectItem Value="true">Hoạt động</MudSelectItem>
-                                        <MudSelectItem Value="false">Không hoạt động</MudSelectItem>
-                                    </MudSelect>
-                                </MudItem>
-                               
 
-                            </MudGrid>
-@*                             <MudItem xs="12" Class="d-flex justify-end mt-6">
-                                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mr-2"
-                                           OnClick="@(() => NavigationManager.NavigateTo("/getDriver"))">Hủy</MudButton>
-                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                                           StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary">Lưu</MudButton>
+                                    <MudItem xs="12" sm="6">
+                                        <MudSelect @bind-Value="newRoleTask.status" For="@(() => newRoleTask.status)"
+                                                   Label="Trạng thái" Required="true" Variant="Variant.Outlined" Validation="@(new Func<string, IEnumerable<string>>(CustomerValidateStatus))">
+                                            <MudSelectItem Value="true">Hoạt động</MudSelectItem>
+                                            <MudSelectItem Value="false">Không hoạt động</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+
+
+                                </MudGrid>
+                                @*                             <MudItem xs="12" Class="d-flex justify-end mt-6">
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mr-2"
+                            OnClick="@(() => NavigationManager.NavigateTo("/getDriver"))">Hủy</MudButton>
+                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                            StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary">Lưu</MudButton>
                             </MudItem> *@
-                        </MudPaper>
-                    </MudItem>
+                            </MudPaper>
+                        </MudItem>
 
-                    <MudItem xs="12" md="12">
-                        <MudPaper Elevation="3" Class="pa-4">
-                            <MudText Typo="Typo.h6" Class="mb-4">Hình ảnh</MudText>
-                            <MudGrid>
-                                <MudItem xs="4">
-                                    <InputFile id="citizenIdInput1" OnChange="@((e) => LoadCitizenIdImage(e, 1))"
-                                               hidden accept=".jpg,.jpeg,.png" />
-                                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary"
-                                               StartIcon="@Icons.Material.Filled.CloudUpload" for="citizenIdInput1"
-                                               FullWidth="true" Class="mud-button-small-text">
-                                        Ảnh đại diện
-                                    </MudButton>
+                        <MudItem xs="12" md="12">
+                            <MudPaper Elevation="3" Class="pa-4">
+                                <MudText Typo="Typo.h6" Class="mb-4">Hình ảnh</MudText>
+                                <MudGrid>
+                                    <MudItem xs="4">
+                                        <InputFile id="citizenIdInput1" OnChange="@((e) => LoadCitizenIdImage(e, 1))"
+                                                   hidden accept=".jpg,.jpeg,.png" />
+                                        <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary"
+                                                   StartIcon="@Icons.Material.Filled.CloudUpload" for="citizenIdInput1"
+                                                   FullWidth="true" Class="mud-button-small-text">
+                                            Ảnh đại diện
+                                        </MudButton>
+                                        @if (!string.IsNullOrEmpty(newRoleTask.img_cus))
+                                        {
+                                            <MudImage Src="@newRoleTask.img_cus" Alt="CCCD (Trước)" Width="100" Height="100"
+                                                      ObjectFit="ObjectFit.Cover" Class="mt-2" />
+                                        }
+                                        @if (isLoadingIMG)
+                                        {
+                                            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-5" />
+                                        }
+                                    </MudItem>
 
-                                    @if (isCitizenImageLoading)
-                                    {
-                                        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mt-2" />
-                                    }
-                                    else if (!string.IsNullOrEmpty(newRoleTask.img_cus))
-                                    {
-                                        <MudImage Src="@newRoleTask.img_cus" Alt="CCCD (Trước)" Width="100" Height="100"
-                                                  ObjectFit="ObjectFit.Cover" Class="mt-2" />
-                                    }
-                                </MudItem>
+                                    <MudItem xs="4">
+                                        <InputFile id="licenseInput1" OnChange="@((e) => LoadLicenseImage(e, 1))"
+                                                   hidden accept=".jpg,.jpeg,.png" />
+                                        <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary"
+                                                   StartIcon="@Icons.Material.Filled.CloudUpload" for="licenseInput1"
+                                                   FullWidth="true" Class="mud-button-small-text">
+                                            CCCD (Trước)
+                                        </MudButton>
 
-                                <MudItem xs="4">
-                                    <InputFile id="licenseInput1" OnChange="@((e) => LoadLicenseImage(e, 1))"
-                                               hidden accept=".jpg,.jpeg,.png" />
-                                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary"
-                                               StartIcon="@Icons.Material.Filled.CloudUpload" for="licenseInput1"
-                                               FullWidth="true" Class="mud-button-small-text">
-                                        CCCD (Trước)
-                                    </MudButton>
+                                        @if (!string.IsNullOrEmpty(newRoleTask.citizen_identity_img1))
+                                        {
+                                            <MudImage Src="@newRoleTask.citizen_identity_img1" Alt="CCCD (Trước)" Width="100" Height="100"
+                                                      ObjectFit="ObjectFit.Cover" Class="mt-2" />
+                                        }
+                                        @if (isLoadingIMG1)
+                                        {
+                                            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-5" />
+                                        }
+                                    </MudItem>
+                                    <MudItem xs="4">
+                                        <InputFile id="avt1" OnChange="@((e) => LoadLicenseImageavt(e, 1))"
+                                                   hidden accept=".jpg,.jpeg,.png" />
+                                        <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary"
+                                                   StartIcon="@Icons.Material.Filled.CloudUpload" for="avt1"
+                                                   FullWidth="true" Class="mud-button-small-text">
+                                            GPLX(Trước)
+                                        </MudButton>
+                                        @if (!string.IsNullOrEmpty(newRoleTask.driver_license_img1))
+                                        {
+                                            <MudImage Src="@newRoleTask.driver_license_img1" Alt="GPLX" Width="100" Height="100"
+                                                      ObjectFit="ObjectFit.Cover" Class="mt-2" />
+                                        }
+                                        @if (isLoadingIMG2)
+                                        {
+                                            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-5" />
+                                        }
+                                    </MudItem>
+                                </MudGrid>
+                            </MudPaper>
+                        </MudItem>
+                    </MudGrid>
 
-                                    @if (isLicenseImageLoading)
-                                    {
-                                        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mt-2" />
-                                    }
-                                    else if (!string.IsNullOrEmpty(newRoleTask.citizen_identity_img1))
-                                    {
-                                        <MudImage Src="@newRoleTask.citizen_identity_img1" Alt="CCCD (Trước)" Width="100" Height="100"
-                                                  ObjectFit="ObjectFit.Cover" Class="mt-2" />
-                                    }
-                                </MudItem> 
-                                <MudItem xs="4">
-                                    <InputFile id="avt1" OnChange="@((e) => LoadLicenseImageavt(e, 1))"
-                                               hidden accept=".jpg,.jpeg,.png" />
-                                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Secondary"
-                                               StartIcon="@Icons.Material.Filled.CloudUpload" for="avt1"
-                                               FullWidth="true" Class="mud-button-small-text">
-                                        GPLX(Trước)
-                                    </MudButton>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
 
-                                    @if (isLicenseImageLoading)
-                                    {
-                                        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mt-2" />
-                                    }
-                                    else if (!string.IsNullOrEmpty(newRoleTask.driver_license_img1))
-                                    {
-                                        <MudImage Src="@newRoleTask.driver_license_img1" Alt="GPLX" Width="100" Height="100"
-                                                  ObjectFit="ObjectFit.Cover" Class="mt-2" />
-                                    }
-                                </MudItem>
-                            </MudGrid>
-                        </MudPaper>
-                    </MudItem>
-                </MudGrid>
-
-            </MudPaper>
+        <!-- Nút Cập nhật cho cả hai form -->
+        <MudItem xs="12" Class="mx-auto">
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateData" Class="mt-3">Cập nhật</MudButton>
         </MudItem>
-    </MudGrid>
-
-    <!-- Nút Cập nhật cho cả hai form -->
-    <MudItem xs="12" Class="mx-auto">
-        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateData" Class="mt-3">Cập nhật</MudButton>
-    </MudItem>
-</MudContainer>
+    </MudContainer>
+}
 <MudDialog @bind-IsVisible="isDialogVisible" MaxWidth="MaxWidth.Medium">
     <DialogContent>
         <MudTextField ShrinkLabel @bind-Value="newAddress.address" Label="Địa chỉ" Placeholder="Địa chỉ" Variant="Variant.Outlined" Required="true" />
@@ -245,6 +252,10 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private bool isLoadingIMG = false;
+    private bool isLoadingIMG1 = false;
+    private bool isLoadingIMG2 = false;
+    private bool isLoadingProgress = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -282,6 +293,7 @@
                 }
             }
             CheckRole();
+            isLoadingProgress = false;
             StateHasChanged();
         }
     }
@@ -383,7 +395,7 @@
 
     private async Task LoadCitizenIdImage(InputFileChangeEventArgs e, int imageNumber)
     {
-        isCitizenImageLoading = true; // Hiển thị MudProgressCircular
+        isLoadingIMG = true;
         StateHasChanged();
 
         await LoadImage(e, "citizen_id_images", (url) =>
@@ -394,13 +406,13 @@
             }
         });
 
-        isCitizenImageLoading = false; // Ẩn MudProgressCircular sau khi tải xong
+        isLoadingIMG = false;
         StateHasChanged();
     }
 
     private async Task LoadLicenseImage(InputFileChangeEventArgs e, int imageNumber)
     {
-        isLicenseImageLoading = true; // Hiển thị MudProgressCircular
+        isLoadingIMG1 = true;
         StateHasChanged();
 
         await LoadImage(e, "license_images", (url) =>
@@ -411,12 +423,12 @@
             }
         });
 
-        isLicenseImageLoading = false; // Ẩn MudProgressCircular sau khi tải xong
+        isLoadingIMG1 = false;
         StateHasChanged();
     } 
     private async Task LoadLicenseImageavt(InputFileChangeEventArgs e, int imageNumber)
     {
-        isLicenseImageLoading = true; // Hiển thị MudProgressCircular
+        isLoadingIMG2 = true;
         StateHasChanged();
 
         await LoadImage(e, "avt", (url) =>
@@ -427,7 +439,7 @@
             }
         });
 
-        isLicenseImageLoading = false;
+        isLoadingIMG2 = false;
         StateHasChanged();
     }
     // Đóng dialog

@@ -28,40 +28,44 @@
         </MudItem>
     </div>
 }
-
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid>
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
-        <MudItem xs="6" Class="mx-auto">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudItem xs="12">
-                    <MudPaper Elevation="4" Class="p-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Thông tin hãng xe</MudText>
-                        <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6" Class="mx-auto">
+                <MudPaper Elevation="0" Class="pa-3">
+                    <MudItem xs="12">
+                        <MudPaper Elevation="4" Class="p-4">
+                            <MudText Typo="Typo.h6" Class="mb-5">Thông tin hãng xe</MudText>
+                            <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
 
-                            <MudTextField ShrinkLabel @bind-Value="CarBrands.name" Label="Tên Hãng Xe"
-                                          Validation="@(new Func<string, IEnumerable<string>>(CarBrandsValidate))"
-                                          Placeholder="Tên Hãng Xe" Variant="Variant.Outlined" Required="true" />
+                                <MudTextField ShrinkLabel @bind-Value="CarBrands.name" Label="Tên Hãng Xe"
+                                              Validation="@(new Func<string, IEnumerable<string>>(CarBrandsValidate))"
+                                              Placeholder="Tên Hãng Xe" Variant="Variant.Outlined" Required="true" />
 
-                            <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Disabled="@isLoading" Variant="Variant.Filled" OnClick="SubmitForm">Lưu</MudButton>
-                            <MudButton Class="mt-3 pl-3" StartIcon="@Icons.Material.Outlined.ArrowForward" Disabled="@isLoading" Variant="Variant.Outlined" OnClick="Cancel">Trở về</MudButton>
-                        </MudForm>
-                    </MudPaper>
-                    <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="full-height">
-                        @if (isLoading)
-                        {
-                            <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
-                        }
-                    </MudGrid>
-                </MudItem>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+                                <MudButton Class="mt-3" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Variant="Variant.Filled" OnClick="SubmitForm">Lưu</MudButton>
+                                <MudButton Class="mt-3 pl-3" StartIcon="@Icons.Material.Outlined.ArrowForward" Variant="Variant.Outlined" OnClick="Cancel">Trở về</MudButton>
+                            </MudForm>
+                        </MudPaper>
+                    </MudItem>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
 
 @code {
     [Parameter] public int Id { get; set; }
@@ -70,6 +74,7 @@
     private bool showSuccess = false;
     private bool showError = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
     private bool showWarning = false;
     private MudForm form;
     private string url = "http://localhost:49922/api/CarBrands";
@@ -149,6 +154,8 @@
     {
         var response = await httpClient.GetFromJsonAsync<car_brands>(url + "/" + Id);
         CarBrands = response;
+        isLoadingProgress = false;
+        StateHasChanged();
     }
 
     private IEnumerable<string> CarBrandsValidate(string name)
@@ -169,7 +176,6 @@
 
     private async Task EditCarBrands()
     {
-        isLoading = true;
         try
         {
             await Task.Delay(2000);
@@ -196,7 +202,6 @@
         }
         finally
         {
-            isLoading = false;
         }
     }
 

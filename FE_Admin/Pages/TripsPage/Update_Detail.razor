@@ -1,85 +1,96 @@
 ﻿@inject MudBlazor.ISnackbar Snackbar
 @inject HttpClient httpClient // Thêm inject HttpClient
 
+@if (isLoadingProgress)
+{
+<div class="loading-overlay">
+    <MudItem xs="12" Class="text-center">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    </MudItem>
+    </div>
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <MudText Typo="Typo.h6">@ContentText</MudText>
+            <MudForm @ref="form">
+                <MudGrid Gutter="true">
+                    <MudItem xs="6" Class="mx-auto">
+                        <MudTextField Label="Mã CT chuyến đi" @bind-Value="SelectedTrip.trip_detail_code"
+                                      Placeholder="Nhập mã CT chuyến đi" Variant="Variant.Outlined" Disabled="true" />
+                    </MudItem>
+                    <MudItem xs="6" Class="mb-4">
+                        <MudTextField Label="Thời gian bắt đầu" Value="@SelectedTrip.time_start.ToString("dd/MM/yyyy HH:mm")"
+                                      Placeholder="Bắt đầu" Variant="Variant.Outlined" Required="true" Disabled="true" />
+                    </MudItem>
+                    <MudItem xs="6" Class="mb-4">
+                        <MudTextField Label="Thời gian kết thúc" Value="@SelectedTrip.time_end.ToString("dd/MM/yyyy HH:mm")"
+                                      Placeholder="Kết thúc" Variant="Variant.Outlined" Required="true" Disabled="true" />
+                    </MudItem>
+                    <MudItem xs="6" Class="mb-4">
+                        <MudNumericField T="float" Label="Khoảng cách" @bind-Value="SelectedTrip.distance"
+                                         Placeholder="Nhập khoảng cách" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="6" Class="mb-4">
+                        <MudTextField T="float" Label="Giá" @bind-Value="SelectedTrip.price"
+                                      Placeholder="Nhập giá" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="6" Class="mb-4">
+                        <MudSelect @bind-Value="SelectedTrip.driver_id" Label="Mã Tài Xế" Variant="Variant.Outlined" Required="true">
+                            @foreach (var driver in drivers)
+                            {
+                                <MudSelectItem Value="@driver.id">@driver.name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="6" Class="mb-4">
+                        <MudSelect @bind-Value="SelectedTrip.location_from_id" Label="Điểm đến" Variant="Variant.Outlined" Required="true">
+                            @foreach (var location in locationsfrom)
+                            {
+                                <MudSelectItem Value="@location.id">@location.name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="6" Class="mb-4">
+                        <MudSelect @bind-Value="SelectedTrip.car_id" Label="Xe" Variant="Variant.Outlined" Required="true">
+                            @foreach (var car in cars)
+                            {
+                                <MudSelectItem Value="@car.id">@car.name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="6" Class="mb-4">
+                        <MudSelect @bind-Value="SelectedTrip.location_to_id" Label="Điểm khởi hành" Variant="Variant.Outlined" Required="true">
+                            @foreach (var locations in locationsto)
+                            {
+                                <MudSelectItem Value="@locations.id">@locations.name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="6" Class="mb-4">
+                        <MudSelect Variant="Variant.Outlined" @bind-Value="SelectedTrip.status" Label="Trạng thái" Required="true" RequiredError="Trạng thái là bắt buộc">
+                            <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
+                            <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" Class="mb-4">
+                        <MudTextField Label="Voucher" @bind-Value="SelectedTrip.voucher"
+                                      Placeholder="Mã voucher" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
 
-<MudDialog>
-    <DialogContent>
-        <MudText Typo="Typo.h6">@ContentText</MudText>
-        <MudForm @ref="form">
-            <MudGrid Gutter="true">
-                <MudItem xs="6" Class="mx-auto">
-                    <MudTextField Label="Mã CT chuyến đi" @bind-Value="SelectedTrip.trip_detail_code"
-                                  Placeholder="Nhập mã CT chuyến đi" Variant="Variant.Outlined" Disabled="true" />
-                </MudItem>
-                <MudItem xs="6" Class="mb-4">
-                    <MudTextField Label="Thời gian bắt đầu" Value="@SelectedTrip.time_start.ToString("dd/MM/yyyy HH:mm")"
-                                  Placeholder="Bắt đầu" Variant="Variant.Outlined" Required="true" Disabled="true" />
-                </MudItem>
-                <MudItem xs="6" Class="mb-4">
-                    <MudTextField Label="Thời gian kết thúc" Value="@SelectedTrip.time_end.ToString("dd/MM/yyyy HH:mm")"
-                                  Placeholder="Kết thúc" Variant="Variant.Outlined" Required="true" Disabled="true" />
-                </MudItem>
-                <MudItem xs="6" Class="mb-4">
-                    <MudNumericField T="float" Label="Khoảng cách" @bind-Value="SelectedTrip.distance"
-                                     Placeholder="Nhập khoảng cách" Variant="Variant.Outlined" Required="true" />
-                </MudItem>
-                <MudItem xs="6" Class="mb-4">
-                    <MudTextField T="float" Label="Giá" @bind-Value="SelectedTrip.price"
-                                  Placeholder="Nhập giá" Variant="Variant.Outlined" Required="true" />
-                </MudItem>
-                <MudItem xs="6" Class="mb-4">
-                    <MudSelect @bind-Value="SelectedTrip.driver_id" Label="Mã Tài Xế" Variant="Variant.Outlined" Required="true">
-                        @foreach (var driver in drivers)
-                        {
-                            <MudSelectItem Value="@driver.id">@driver.name</MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="6" Class="mb-4">
-                    <MudSelect @bind-Value="SelectedTrip.location_from_id" Label="Điểm đến" Variant="Variant.Outlined" Required="true">
-                        @foreach (var location in locationsfrom)
-                        {
-                            <MudSelectItem Value="@location.id">@location.name</MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="6" Class="mb-4">
-                    <MudSelect @bind-Value="SelectedTrip.car_id" Label="Xe" Variant="Variant.Outlined" Required="true">
-                        @foreach (var car in cars)
-                        {
-                            <MudSelectItem Value="@car.id">@car.name</MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="6" Class="mb-4">
-                    <MudSelect @bind-Value="SelectedTrip.location_to_id" Label="Điểm khởi hành" Variant="Variant.Outlined" Required="true">
-                        @foreach (var locations in locationsto)
-                        {
-                            <MudSelectItem Value="@locations.id">@locations.name</MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="6" Class="mb-4">
-                    <MudSelect Variant="Variant.Outlined" @bind-Value="SelectedTrip.status" Label="Trạng thái" Required="true" RequiredError="Trạng thái là bắt buộc">
-                        <MudSelectItem Value="true">Đang hoạt động</MudSelectItem>
-                        <MudSelectItem Value="false">Ngưng hoạt động</MudSelectItem>
-                    </MudSelect>
-                </MudItem>
-                               <MudItem xs="12" Class="mb-4">
-                    <MudTextField Label="Voucher" @bind-Value="SelectedTrip.voucher"
-                                  Placeholder="Mã voucher" Variant="Variant.Outlined" Required="true" />
-                </MudItem>
-            </MudGrid>
-        </MudForm>
-
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="Cancel">Hủy</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">Lưu</MudButton>
-    </DialogActions>
-</MudDialog>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="Cancel">Hủy</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">Lưu</MudButton>
+        </DialogActions>
+    </MudDialog>
+}
 
 @code {
+    private bool isLoadingProgress = true;
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public string ContentText { get; set; }
     [Parameter]
@@ -102,6 +113,7 @@
         cars = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/car");
 
         locationsto = await httpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/location");
+        isLoadingProgress = false;
     }
 
     void Submit()

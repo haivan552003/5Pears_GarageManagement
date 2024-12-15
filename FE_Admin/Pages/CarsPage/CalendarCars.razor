@@ -30,143 +30,145 @@
         </MudItem>
     </div>
 }
-
-<MudContainer>
-    <MudPaper Elevation="3" Class="pa-4">
-        <MudText Typo="Typo.h5" Class="mb-4">Lịch Xe @CarId</MudText>
-
-        @if (isLoading)
-        {
-            <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
-        }
-        else
-        {
-            @if (isServiceCar)
-            {
-                @if (serviceCarCalendars != null && serviceCarCalendars.Any(x => x.date.HasValue))
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+        </MudItem>
+    </div>
+}
+else
+{
+    <MudContainer>
+        <MudPaper Elevation="3" Class="pa-4">
+            <MudText Typo="Typo.h5" Class="mb-4">Lịch Xe @CarId</MudText>
+                @if (isServiceCar)
                 {
-                    <MudTable Items="@serviceCarCalendars.Where(x => x.date.HasValue)"
-                              Hover="true"
-                              Breakpoint="Breakpoint.Sm"
-                              Dense="true"
-                              Bordered="true">
-                        <HeaderContent>
-                            <MudTh>Ngày</MudTh>
-                            <MudTh>Giờ Bắt Đầu</MudTh>
-                            <MudTh>Giờ Kết Thúc</MudTh>
-                            <MudTh>Tên Tài Xế</MudTh>
-                            <MudTh>Số Điện Thoại</MudTh>
-                            <MudTh>Email</MudTh>
-                            <MudTh>Mã Lái Xe</MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd>@context.date?.ToString("dd/MM/yyyy")</MudTd>
-                            <MudTd>@context.date_start?.ToString("HH:mm")</MudTd>
-                            <MudTd>@context.date_end?.ToString("HH:mm")</MudTd>
-                            <MudTd>@context.name_drivers</MudTd>
-                            <MudTd>@context.sdt_driver</MudTd>
-                            <MudTd>@context.email_driver</MudTd>
-                            <MudTd>@context.code_driver</MudTd>
-                        </RowTemplate>
-                        <PagerContent>
-                            <MudTablePager />
-                        </PagerContent>
-                    </MudTable>
+                    @if (serviceCarCalendars != null && serviceCarCalendars.Any(x => x.date.HasValue))
+                    {
+                        <MudTable Items="@serviceCarCalendars.Where(x => x.date.HasValue)"
+                                  Hover="true"
+                                  Breakpoint="Breakpoint.Sm"
+                                  Dense="true"
+                                  Bordered="true">
+                            <HeaderContent>
+                                <MudTh>Ngày</MudTh>
+                                <MudTh>Giờ Bắt Đầu</MudTh>
+                                <MudTh>Giờ Kết Thúc</MudTh>
+                                <MudTh>Tên Tài Xế</MudTh>
+                                <MudTh>Số Điện Thoại</MudTh>
+                                <MudTh>Email</MudTh>
+                                <MudTh>Mã Lái Xe</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>@context.date?.ToString("dd/MM/yyyy")</MudTd>
+                                <MudTd>@context.date_start?.ToString("HH:mm")</MudTd>
+                                <MudTd>@context.date_end?.ToString("HH:mm")</MudTd>
+                                <MudTd>@context.name_drivers</MudTd>
+                                <MudTd>@context.sdt_driver</MudTd>
+                                <MudTd>@context.email_driver</MudTd>
+                                <MudTd>@context.code_driver</MudTd>
+                            </RowTemplate>
+                            <PagerContent>
+                                <MudTablePager />
+                            </PagerContent>
+                        </MudTable>
+                    }
+                    else
+                    {
+                        <MudAlert Severity="Severity.Info" Class="mt-4">
+                            Không có lịch cho xe dịch vụ này
+                        </MudAlert>
+                    }
                 }
                 else
                 {
-                    <MudAlert Severity="Severity.Info" Class="mt-4">
-                        Không có lịch cho xe dịch vụ này
-                    </MudAlert>
+                    <MudTabs Elevation="2" Rounded="true" Centered="true" Color="@Color.Primary">
+                        <MudTabPanel Text="Thuê Xe">
+                            @if (guestCarCalendars != null && guestCarCalendars.Any(x => x.date.HasValue))
+                            {
+                                <MudTable Items="@guestCarCalendars.Where(x => x.date.HasValue)"
+                                          Hover="true"
+                                          Breakpoint="Breakpoint.Sm"
+                                          Dense="true"
+                                          Bordered="true">
+                                    <HeaderContent>
+                                        <MudTh>Ngày</MudTh>
+                                        <MudTh>Ngày Bắt Đầu</MudTh>
+                                        <MudTh>Ngày Kết Thúc</MudTh>
+                                        <MudTh>Tên Khách Hàng</MudTh>
+                                        <MudTh>Số Điện Thoại</MudTh>
+                                        <MudTh>Email</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd>@context.date?.ToString("dd/MM/yyyy")</MudTd>
+                                        <MudTd>@context.date_start?.ToString("dd/MM/yyyy")</MudTd>
+                                        <MudTd>@context.date_end?.ToString("dd/MM/yyyy")</MudTd>
+                                        <MudTd>@context.name_cus</MudTd>
+                                        <MudTd>@context.phone</MudTd>
+                                        <MudTd>@context.email</MudTd>
+                                    </RowTemplate>
+                                    <PagerContent>
+                                        <MudTablePager />
+                                    </PagerContent>
+                                </MudTable>
+                            }
+                            else
+                            {
+                                <MudAlert Severity="Severity.Info" Class="mt-4">
+                                    Không có lịch thuê xe
+                                </MudAlert>
+                            }
+                        </MudTabPanel>
+
+                        <MudTabPanel Text="Thuê Xe Có Tài Xế">
+                            @if (guestCarDriverCalendars != null && guestCarDriverCalendars.Any(x => x.date.HasValue))
+                            {
+                                <MudTable Items="@guestCarDriverCalendars.Where(x => x.date.HasValue)"
+                                          Hover="true"
+                                          Breakpoint="Breakpoint.Sm"
+                                          Dense="true"
+                                          Bordered="true">
+                                    <HeaderContent>
+                                        <MudTh>Ngày</MudTh>
+                                        <MudTh>Ngày Bắt Đầu</MudTh>
+                                        <MudTh>Ngày Kết Thúc</MudTh>
+                                        <MudTh>Tên Khách Hàng</MudTh>
+                                        <MudTh>Tên Tài Xế</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd>@context.date?.ToString("dd/MM/yyyy")</MudTd>
+                                        <MudTd>@context.date_start?.ToString("dd/MM/yyyy")</MudTd>
+                                        <MudTd>@context.date_end?.ToString("dd/MM/yyyy")</MudTd>
+                                        <MudTd>@context.name_cus</MudTd>
+                                        <MudTd>@context.name_drivers</MudTd>
+                                    </RowTemplate>
+                                    <PagerContent>
+                                        <MudTablePager />
+                                    </PagerContent>
+                                </MudTable>
+                            }
+                            else
+                            {
+                                <MudAlert Severity="Severity.Info" Class="mt-4">
+                                    Không có lịch thuê xe và tài xế
+                                </MudAlert>
+                            }
+                        </MudTabPanel>
+                    </MudTabs>
                 }
-            }
-            else
-            {
-                <MudTabs Elevation="2" Rounded="true" Centered="true" Color="@Color.Primary">
-                    <MudTabPanel Text="Thuê Xe">
-                        @if (guestCarCalendars != null && guestCarCalendars.Any(x => x.date.HasValue))
-                        {
-                            <MudTable Items="@guestCarCalendars.Where(x => x.date.HasValue)"
-                                      Hover="true"
-                                      Breakpoint="Breakpoint.Sm"
-                                      Dense="true"
-                                      Bordered="true">
-                                <HeaderContent>
-                                    <MudTh>Ngày</MudTh>
-                                    <MudTh>Ngày Bắt Đầu</MudTh>
-                                    <MudTh>Ngày Kết Thúc</MudTh>
-                                    <MudTh>Tên Khách Hàng</MudTh>
-                                    <MudTh>Số Điện Thoại</MudTh>
-                                    <MudTh>Email</MudTh>
-                                </HeaderContent>
-                                <RowTemplate>
-                                    <MudTd>@context.date?.ToString("dd/MM/yyyy")</MudTd>
-                                    <MudTd>@context.date_start?.ToString("dd/MM/yyyy")</MudTd>
-                                    <MudTd>@context.date_end?.ToString("dd/MM/yyyy")</MudTd>
-                                    <MudTd>@context.name_cus</MudTd>
-                                    <MudTd>@context.phone</MudTd>
-                                    <MudTd>@context.email</MudTd>
-                                </RowTemplate>
-                                <PagerContent>
-                                    <MudTablePager />
-                                </PagerContent>
-                            </MudTable>
-                        }
-                        else
-                        {
-                            <MudAlert Severity="Severity.Info" Class="mt-4">
-                                Không có lịch thuê xe
-                            </MudAlert>
-                        }
-                    </MudTabPanel>
 
-                    <MudTabPanel Text="Thuê Xe Có Tài Xế">
-                        @if (guestCarDriverCalendars != null && guestCarDriverCalendars.Any(x => x.date.HasValue))
-                        {
-                            <MudTable Items="@guestCarDriverCalendars.Where(x => x.date.HasValue)"
-                                      Hover="true"
-                                      Breakpoint="Breakpoint.Sm"
-                                      Dense="true"
-                                      Bordered="true">
-                                <HeaderContent>
-                                    <MudTh>Ngày</MudTh>
-                                    <MudTh>Ngày Bắt Đầu</MudTh>
-                                    <MudTh>Ngày Kết Thúc</MudTh>
-                                    <MudTh>Tên Khách Hàng</MudTh>
-                                    <MudTh>Tên Tài Xế</MudTh>
-                                </HeaderContent>
-                                <RowTemplate>
-                                    <MudTd>@context.date?.ToString("dd/MM/yyyy")</MudTd>
-                                    <MudTd>@context.date_start?.ToString("dd/MM/yyyy")</MudTd>
-                                    <MudTd>@context.date_end?.ToString("dd/MM/yyyy")</MudTd>
-                                    <MudTd>@context.name_cus</MudTd>
-                                    <MudTd>@context.name_drivers</MudTd>
-                                </RowTemplate>
-                                <PagerContent>
-                                    <MudTablePager />
-                                </PagerContent>
-                            </MudTable>
-                        }
-                        else
-                        {
-                            <MudAlert Severity="Severity.Info" Class="mt-4">
-                                Không có lịch thuê xe và tài xế
-                            </MudAlert>
-                        }
-                    </MudTabPanel>
-                </MudTabs>
-            }
-        }
-
-        <div class="mt-4 d-flex justify-center">
-            <MudButton Variant="Variant.Outlined"
-                       Color="Color.Primary"
-                       OnClick="@(() => NavigationManager.NavigateTo("/getcars"))">
-                Quay Lại Danh Sách Xe
-            </MudButton>
-        </div>
-    </MudPaper>
-</MudContainer>
+            <div class="mt-4 d-flex justify-center">
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Primary"
+                           OnClick="@(() => NavigationManager.NavigateTo("/getcars"))">
+                    Quay Lại Danh Sách Xe
+                </MudButton>
+            </div>
+        </MudPaper>
+    </MudContainer>
+}
 
 @code {
     [Parameter]
@@ -177,6 +179,7 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
 
 
     private List<carlendarCar> serviceCarCalendars;
@@ -246,13 +249,14 @@
     protected override async Task OnInitializedAsync()
     {
         await FetchCarCalendar();
+        isLoadingProgress = false;
+        StateHasChanged();
     }
 
     private async Task FetchCarCalendar()
     {
         try
         {
-            isLoading = true;
 
             // Lấy thông tin xe để xác định isRetail
             var carTypeResponse = await HttpClient.GetFromJsonAsync<CarTypeResponse>($"http://localhost:49922/api/Cars/{CarId}");
@@ -306,7 +310,6 @@
         }
         finally
         {
-            isLoading = false;
         }
     }
 

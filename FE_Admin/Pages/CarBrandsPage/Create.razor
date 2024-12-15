@@ -27,55 +27,60 @@
         </MudItem>
     </div>
 }
-
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    @if (showSuccess)
-    {
-        <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
-            Thêm thành công
-        </MudAlert>
-    }
-    else if (showError)
-    {
-        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
-            Thêm thất bại
-        </MudAlert>
-    }
-
-    
-    <MudGrid>
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
-        <MudItem xs="6" Class="mx-auto">
-            <MudPaper Elevation="0" Class="pa-3">
-                <MudItem xs="12">
-                    <MudPaper Elevation="4" Class="p-4">
-                        <MudText Typo="Typo.h6" Class="mb-5">Thêm Hãng Xe</MudText>
-                        <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        @if (showSuccess)
+        {
+            <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
+                Thêm thành công
+            </MudAlert>
+        }
+        else if (showError)
+        {
+            <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Style="position:fixed; top:60px; right:20px; z-index:9999;">
+                Thêm thất bại
+            </MudAlert>
+        }
 
-                            <MudTextField ShrinkLabel @bind-Value="CarBrands.name" Label="Tên Hãng Xe"
-                                          Validation="@(new Func<string, IEnumerable<string>>(CarBrandsValidate))"
-                                          Placeholder="Tên Hãng Xe" Variant="Variant.Outlined" Required="true" />
 
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" Disabled="@isLoading" OnClick="AddCarBrands" Class="mt-3">Lưu</MudButton>
-                            
-                        </MudForm>
-                    </MudPaper>
-                </MudItem>
-            </MudPaper>
-            <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="full-height">
-                @if (isLoading)
-                {
-                    <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
-                }
-            </MudGrid>
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6" Class="mx-auto">
+                <MudPaper Elevation="0" Class="pa-3">
+                    <MudItem xs="12">
+                        <MudPaper Elevation="4" Class="p-4">
+                            <MudText Typo="Typo.h6" Class="mb-5">Thêm Hãng Xe</MudText>
+                            <MudForm @ref="form" @bind-IsValid="isFormValid" Style="height:auto">
 
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+                                <MudTextField ShrinkLabel @bind-Value="CarBrands.name" Label="Tên Hãng Xe"
+                                              Validation="@(new Func<string, IEnumerable<string>>(CarBrandsValidate))"
+                                              Placeholder="Tên Hãng Xe" Variant="Variant.Outlined" Required="true" />
+
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddCarBrands" Class="mt-3">Lưu</MudButton>
+
+                            </MudForm>
+                        </MudPaper>
+                    </MudItem>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
+
+
 
 @code {
     private car_brands CarBrands = new car_brands();
@@ -83,6 +88,7 @@
     private bool showSuccess = false;
     private bool showError = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
     private MudForm form;
     private string url = "http://localhost:49922/api/CarBrands";
     private string userRole;
@@ -124,6 +130,7 @@
                 }
             }
             CheckRole();
+            isLoadingProgress = false;
             StateHasChanged();
         }
     }
@@ -173,7 +180,6 @@
 
     private async Task AddCarBrands()
     {
-        isLoading = true;
         try
         {
             await Task.Delay(2000);
@@ -197,8 +203,6 @@
             Snackbar.Add($"Thêm thất bại", Severity.Warning);
         }
         finally
-        {
-            isLoading = false;
-        }
+        {}
     }
 }

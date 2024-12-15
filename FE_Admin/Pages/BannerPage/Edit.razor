@@ -27,58 +27,70 @@
         </MudItem>
     </div>
 }
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
-    <MudGrid>
-        <MudItem xs="12">
-            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
-                <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
-            </MudPaper>
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
-        <MudItem xs="4" Class="mx-auto">
-            <MudPaper Elevation="4" Class="pa-3">
-                <MudText Typo="Typo.h6" Class="mb-5">Chỉnh sửa banner</MudText>
-                <MudGrid>
-                    <MudItem xs="12" Class="mx-auto">
-                        <MudForm @ref="form" Style="height:auto" Class="mud-width-full">
-                            @if (!string.IsNullOrEmpty(Banner.img_banner))
-                            {
-                                <MudImage Fluid="false" Src="@Banner.img_banner" Class="rounded-lg mb-2 w-100 mx-auto d-block" Height="260" />
-                            }
-
-                            <MudButton HtmlTag="label" For="newsImageInput" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary"
-                                       StartIcon="@Icons.Material.Outlined.CloudUpload"
-                                       FullWidth="true" Class="mud-button-small-text">
-                                Chọn hình ảnh mới
-                            </MudButton>
-
-                            <InputFile id="newsImageInput" OnChange="LoadNewsImage" accept="image/*" style="display: none;" />
-                            <MudItem xs="12" Class="d-flex justify-center mt-4">
-                                @if (isLoading1)
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Elevation="0" Class="pa-3 mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
+                    <MudBreadcrumbs Class="pa-0" Items="_items"></MudBreadcrumbs>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="4" Class="mx-auto">
+                <MudPaper Elevation="4" Class="pa-3">
+                    <MudText Typo="Typo.h6" Class="mb-5">Chỉnh sửa banner</MudText>
+                    <MudGrid>
+                        <MudItem xs="12" Class="mx-auto">
+                            <MudForm @ref="form" Style="height:auto" Class="mud-width-full">
+                                @if (!string.IsNullOrEmpty(Banner.img_banner))
                                 {
-                                    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+                                    <MudImage Fluid="false" Src="@Banner.img_banner" Class="rounded-lg mb-2 w-100 mx-auto d-block" Height="260" />
                                 }
-                            </MudItem>
 
-                            <MudTextField ShrinkLabel @bind-Value="Banner.title" Label="Tiêu đề"
-                                          Class="py-3"
-                                          Validation="@(new Func<string, IEnumerable<string>>(BannerValidate))"
-                                          Placeholder="Tên công việc" Variant="Variant.Outlined" Required="true" />
+                                <MudButton HtmlTag="label" For="newsImageInput" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary"
+                                           StartIcon="@Icons.Material.Outlined.CloudUpload"
+                                           FullWidth="true" Class="mud-button-small-text">
+                                    Chọn hình ảnh mới
+                                </MudButton>
 
-                            <MudTextField ShrinkLabel @bind-Value="Banner.fullname" Label="Người tạo"
-                                          Class="py-3"
-                                          Disabled="true"
-                                          Placeholder="Người tạo" Variant="Variant.Outlined" Required="true" />
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="SubmitForm" Class="mt-3 float-end">Lưu</MudButton>
+                                <InputFile id="newsImageInput" OnChange="LoadNewsImage" accept="image/*" style="display: none;" />
+                                <MudItem xs="12" Class="d-flex justify-center mt-4">
+                                    @if (isLoading1)
+                                    {
+                                        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+                                    }
+                                </MudItem>
 
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Cancel" Color="Color.Error" Class="mr-2 mt-3 float-end"
-                                       OnClick="@Cancel">Hủy</MudButton>
-                        </MudForm>
-                    </MudItem>
-                </MudGrid>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+                                <MudTextField ShrinkLabel @bind-Value="Banner.title" Label="Tiêu đề"
+                                              Class="py-3"
+                                              Validation="@(new Func<string, IEnumerable<string>>(BannerValidate))"
+                                              Placeholder="Tên công việc" Variant="Variant.Outlined" Required="true" />
+
+                                <MudTextField ShrinkLabel @bind-Value="Banner.fullname" Label="Người tạo"
+                                              Class="py-3"
+                                              Disabled="true"
+                                              Placeholder="Người tạo" Variant="Variant.Outlined" Required="true" />
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="SubmitForm" Class="mt-3 float-end">Lưu</MudButton>
+
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Cancel" Color="Color.Error" Class="mr-2 mt-3 float-end"
+                                           OnClick="@Cancel">Hủy</MudButton>
+                            </MudForm>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
+
 
 @code {
     [Parameter] public int Id { get; set; }
@@ -93,6 +105,7 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !isInitialized)
@@ -232,6 +245,8 @@
             dropdowns = await httpClient.GetFromJsonAsync<List<dropdown>>(urlDropdown);
             var response = await httpClient.GetFromJsonAsync<banner>(url + "/" + Id);
             Banner = response;
+            isLoadingProgress = false;
+            StateHasChanged();
 
             if (!string.IsNullOrEmpty(Banner.img_banner))
             {
@@ -241,6 +256,8 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
+            isLoadingProgress = false;
+            StateHasChanged();
         }
     }
 

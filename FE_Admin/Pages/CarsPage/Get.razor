@@ -28,8 +28,17 @@
         </MudItem>
     </div>
 }
-
-<MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+        </MudItem>
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0" MaxWidth="MaxWidth.False">
     <MudGrid Class="pa-0">
         <MudItem xs="12">
             <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
@@ -114,6 +123,7 @@
         </MudItem>
     </MudGrid>
 </MudContainer>
+}
 
 @code {
     private IEnumerable<car> Elements = new List<car>();
@@ -122,6 +132,7 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -200,6 +211,8 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadCars();
+        isLoadingProgress = false;
+        StateHasChanged();
     }
 
     private async Task LoadCars()

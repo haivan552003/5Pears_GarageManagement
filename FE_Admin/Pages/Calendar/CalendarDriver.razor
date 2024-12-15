@@ -27,127 +27,136 @@
         </MudItem>
     </div>
 }
-
-
-<MudContainer Class="mt-14 pa-0">
-    <MudGrid>
-        <MudItem xs="8" Class="mx-auto">
-            <MudCard Elevation="4">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3">
-                            <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Color="Color.Primary" Size="Size.Large" />
-                            <MudText Typo="Typo.h5" Color="Color.Primary">Lịch Làm Việc Của Tài Xế</MudText>
-                        </MudStack>
-                    </CardHeaderContent>
-                </MudCardHeader>
-
-                <MudCardContent>
-                    <MudStack Row="true" Spacing="3" AlignItems="AlignItems.Center" Class="mb-4">
-                        <MudAutocomplete T="DriverDropdown"
-                                         Value="@SelectedDriver"
-                                         SearchFunc="@SearchDrivers"
-                                         ValueChanged="@OnDriverSelected"
-                                         Clearable="true"
-                                         Variant="Variant.Outlined"
-                                         ToStringFunc="@(x => x?.name)"
-                                         AnchorOrigin="Origin.BottomCenter">
-                            <ItemTemplate Context="driver">
-                                <MudStack Row="true" AlignItems="AlignItems.Center">
-                                    <MudText>@driver.name</MudText>
-                                </MudStack>
-                            </ItemTemplate>
-                        </MudAutocomplete>
-                    </MudStack>
-
-                    <MudTabs Rounded="true" Centered="true" Color="Color.Primary">
-                        <MudTabPanel Text="Lịch Chính">
-                            @if (MainCalendarEvents.Any())
-                            {
-                                <MudTable Items="@MainCalendarEvents"
-                                          Hover="true"
-                                          Dense="true"
-                                          Striped="true"
-                                          FixedHeader="true"
-                                          Class="mt-4"
-                                          Height="450px">
-                                    <HeaderContent>
-                                        <MudTh>Ngày</MudTh>
-                                        <MudTh>Giờ Bắt Đầu</MudTh>
-                                        <MudTh>Giờ Kết Thúc</MudTh>
-                                    </HeaderContent>
-                                    <RowTemplate>
-                                        <MudTd>@context.date.ToString("dd/MM/yyyy")</MudTd>
-                                        <MudTd>@context.date_start?.ToString(@"hh\:mm")</MudTd>
-                                        <MudTd>@context.date_end?.ToString(@"hh\:mm")</MudTd>
-                                    </RowTemplate>
-                                </MudTable>
-                            }
-                            else
-                            {
-                                <MudAlert Severity="Severity.Info" Class="mt-4">Không có lịch làm việc cho tài xế này.</MudAlert>
-                            }
-                        </MudTabPanel>
-                        <MudTabPanel Text="Lịch Khách">
-                            @if (GuestDriverCalendar.Any())
-                            {
-                                <MudTable Items="@GuestDriverCalendar"
-                                          Hover="true"
-                                          Dense="true"
-                                          Striped="true"
-                                          FixedHeader="true"
-                                          Class="mt-4"
-                                          Height="450px">
-                                    <HeaderContent>
-                                        <MudTh>Ngày</MudTh>
-                                        <MudTh>Giờ Bắt Đầu</MudTh>
-                                        <MudTh>Giờ Kết Thúc</MudTh>
-                                    </HeaderContent>
-                                    <RowTemplate>
-                                        <MudTd>@context.date.ToString("dd/MM/yyyy")</MudTd>
-                                        <MudTd>@context.date_start?.ToString(@"hh\:mm")</MudTd>
-                                        <MudTd>@context.date_end?.ToString(@"hh\:mm")</MudTd>
-                                    </RowTemplate>
-                                </MudTable>
-                            }
-                            else
-                            {
-                                <MudAlert Severity="Severity.Info" Class="mt-4">Không có lịch khách cho tài xế này.</MudAlert>
-                            }
-                        </MudTabPanel>
-
-                        <MudTabPanel Text="Lịch Xe Khách">
-                            @if (GuestCarDriverCalendar.Any())
-                            {
-                                <MudTable Items="@GuestCarDriverCalendar"
-                                          Hover="true"
-                                          Dense="true"
-                                          Striped="true"
-                                          Class="mt-4"
-                                          FixedHeader="true"
-                                          Height="450px">
-                                    <HeaderContent>
-                                        <MudTh>Ngày Bắt Đầu</MudTh>
-                                        <MudTh>Ngày Kết Thúc</MudTh>
-                                    </HeaderContent>
-                                    <RowTemplate>
-                                        <MudTd>@context.date_start?.ToString("dd/MM/yyyy")</MudTd>
-                                        <MudTd>@context.date_end?.ToString("dd/MM/yyyy")</MudTd>
-                                    </RowTemplate>
-                                </MudTable>
-                            }
-                            else
-                            {
-                                <MudAlert Severity="Severity.Info" Class="mt-4">Không có lịch xe khách cho tài xế này.</MudAlert>
-                            }
-                        </MudTabPanel>
-                    </MudTabs>
-                </MudCardContent>
-            </MudCard>
-
+else if (isLoadingProgress)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
         </MudItem>
-    </MudGrid>
-</MudContainer>
+    </div>
+}
+else
+{
+    <MudContainer Class="mt-14 pa-0">
+        <MudGrid>
+            <MudItem xs="8" Class="mx-auto">
+                <MudCard Elevation="4">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3">
+                                <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Color="Color.Primary" Size="Size.Large" />
+                                <MudText Typo="Typo.h5" Color="Color.Primary">Lịch Làm Việc Của Tài Xế</MudText>
+                            </MudStack>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+
+                    <MudCardContent>
+                        <MudStack Row="true" Spacing="3" AlignItems="AlignItems.Center" Class="mb-4">
+                            <MudAutocomplete T="DriverDropdown"
+                                             Value="@SelectedDriver"
+                                             SearchFunc="@SearchDrivers"
+                                             ValueChanged="@OnDriverSelected"
+                                             Clearable="true"
+                                             Variant="Variant.Outlined"
+                                             ToStringFunc="@(x => x?.name)"
+                                             AnchorOrigin="Origin.BottomCenter">
+                                <ItemTemplate Context="driver">
+                                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                                        <MudText>@driver.name</MudText>
+                                    </MudStack>
+                                </ItemTemplate>
+                            </MudAutocomplete>
+                        </MudStack>
+
+                        <MudTabs Rounded="true" Centered="true" Color="Color.Primary">
+                            <MudTabPanel Text="Lịch Chính">
+                                @if (MainCalendarEvents.Any())
+                                {
+                                    <MudTable Items="@MainCalendarEvents"
+                                              Hover="true"
+                                              Dense="true"
+                                              Striped="true"
+                                              FixedHeader="true"
+                                              Class="mt-4"
+                                              Height="450px">
+                                        <HeaderContent>
+                                            <MudTh>Ngày</MudTh>
+                                            <MudTh>Giờ Bắt Đầu</MudTh>
+                                            <MudTh>Giờ Kết Thúc</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            <MudTd>@context.date.ToString("dd/MM/yyyy")</MudTd>
+                                            <MudTd>@context.date_start?.ToString(@"hh\:mm")</MudTd>
+                                            <MudTd>@context.date_end?.ToString(@"hh\:mm")</MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                }
+                                else
+                                {
+                                    <MudAlert Severity="Severity.Info" Class="mt-4">Không có lịch làm việc cho tài xế này.</MudAlert>
+                                }
+                            </MudTabPanel>
+                            <MudTabPanel Text="Lịch Khách">
+                                @if (GuestDriverCalendar.Any())
+                                {
+                                    <MudTable Items="@GuestDriverCalendar"
+                                              Hover="true"
+                                              Dense="true"
+                                              Striped="true"
+                                              FixedHeader="true"
+                                              Class="mt-4"
+                                              Height="450px">
+                                        <HeaderContent>
+                                            <MudTh>Ngày</MudTh>
+                                            <MudTh>Giờ Bắt Đầu</MudTh>
+                                            <MudTh>Giờ Kết Thúc</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            <MudTd>@context.date.ToString("dd/MM/yyyy")</MudTd>
+                                            <MudTd>@context.date_start?.ToString(@"hh\:mm")</MudTd>
+                                            <MudTd>@context.date_end?.ToString(@"hh\:mm")</MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                }
+                                else
+                                {
+                                    <MudAlert Severity="Severity.Info" Class="mt-4">Không có lịch khách cho tài xế này.</MudAlert>
+                                }
+                            </MudTabPanel>
+
+                            <MudTabPanel Text="Lịch Xe Khách">
+                                @if (GuestCarDriverCalendar.Any())
+                                {
+                                    <MudTable Items="@GuestCarDriverCalendar"
+                                              Hover="true"
+                                              Dense="true"
+                                              Striped="true"
+                                              Class="mt-4"
+                                              FixedHeader="true"
+                                              Height="450px">
+                                        <HeaderContent>
+                                            <MudTh>Ngày Bắt Đầu</MudTh>
+                                            <MudTh>Ngày Kết Thúc</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            <MudTd>@context.date_start?.ToString("dd/MM/yyyy")</MudTd>
+                                            <MudTd>@context.date_end?.ToString("dd/MM/yyyy")</MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                }
+                                else
+                                {
+                                    <MudAlert Severity="Severity.Info" Class="mt-4">Không có lịch xe khách cho tài xế này.</MudAlert>
+                                }
+                            </MudTabPanel>
+                        </MudTabs>
+                    </MudCardContent>
+                </MudCard>
+
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
 
 @code {
     private List<DriverDropdown> Drivers = new();
@@ -160,6 +169,7 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private bool isLoadingProgress = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -238,10 +248,14 @@
                 SelectedDriver = Drivers.First();
                 await LoadDriverCalendars(SelectedDriver.id);
             }
+            isLoadingProgress = false;
+            StateHasChanged();
         }
         catch (Exception ex)
         {
             Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+            isLoadingProgress = false;
+            StateHasChanged();
         }
     }
 
