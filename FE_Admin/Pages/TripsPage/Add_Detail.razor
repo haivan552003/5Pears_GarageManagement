@@ -19,7 +19,7 @@
                     </MudItem>
 
                     <MudItem xs="6" Class="mb-4">
-                        <MudNumericField T="float" Label="Khoảng cách" @bind-Value="SelectedTrip.distance"
+                        <MudNumericField T="float" Label="Khoảng cách(km)" @bind-Value="SelectedTrip.distance"
                                          Placeholder="Nhập khoảng cách" Variant="Variant.Outlined" Required="true" />
                     </MudItem>
                     <MudItem xs="6" Class="mb-4">
@@ -138,7 +138,7 @@
                     var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Trips/tripdetail", SelectedTrip);
                     if (response.IsSuccessStatusCode)
                     {
-                        Snackbar.Add("Thêm chi tiết chuyến đi thành công!", Severity.Success);
+                        Snackbar.Add("Thêm chi tiết chuyến đi thành công", Severity.Success);
                         MudDialog.Close(DialogResult.Ok(SelectedTrip));
                         StateHasChanged();
                     }
