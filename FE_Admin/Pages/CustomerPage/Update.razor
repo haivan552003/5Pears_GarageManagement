@@ -65,11 +65,20 @@
                                 </MudItem>
 
                                 <MudItem xs="12" sm="6">
-                                    <MudTextField ShrinkLabel @bind-Value="newRoleTask.password" For="@(() => newRoleTask.password)"
+                                    <MudTextField @bind-Value="newRoleTask.password"
                                                   Label="Mật khẩu"
-                                                  Variant="Variant.Outlined" 
-                                                  Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePassword))" />
+                                                  Required="true"
+                                                  RequiredError="Vui lòng nhập mật khẩu"
+                                                  Variant="Variant.Outlined"
+                                                  InputType="@PasswordInput"
+                                                  Adornment="Adornment.End"
+                                                  AdornmentIcon="@PasswordInputIcon"
+                                                  OnAdornmentClick="TogglePasswordVisibility"
+                                                  Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePassword))"
+                                                  Immediate="true"
+                                                  Placeholder="Mật khẩu" />
                                 </MudItem>
+
 
                                 <MudItem xs="12" sm="6">
                                     <MudTextField ShrinkLabel @bind-Value="newRoleTask.fullname" For="@(() => newRoleTask.fullname)"
@@ -245,6 +254,15 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private InputType PasswordInput => isShowPassword ? InputType.Text : InputType.Password;
+    private string PasswordInputIcon => isShowPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
+    private bool isShowPassword = false;
+
+
+    private void TogglePasswordVisibility()
+    {
+        isShowPassword = !isShowPassword;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

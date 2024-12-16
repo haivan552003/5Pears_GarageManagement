@@ -15,40 +15,41 @@
                             @if (!isOtpSent)
                             {
                                 <MudText Typo="Typo.h4" Color="Color.Primary" Class="fw-bold text-center pt-5">Đăng ký tài khoản</MudText>
-                                <MudCardContent Class="pa-4">
-                                    <MudTextField Label="Email" Class="mt-3"
-                                                @bind-Value="model.email"
-                                                For="@(() => model.email)"
-                                                Variant="Variant.Outlined"
-                                                Placeholder="Email"
-                                                Required="true"
-                                                RequiredError="Email là bắt buộc"
-                                                Adornment="Adornment.Start"
-                                                AdornmentIcon="@Icons.Material.Filled.Email" 
-                                                Disabled="@isProcessing"/>
+                        <MudCardContent Class="pa-4">
+                            <MudTextField Label="Email" Class="mt-3"
+                                          @bind-Value="model.email"
+                                          For="@(() => model.email)"
+                                          Variant="Variant.Outlined"
+                                          Placeholder="Email"
+                                          Required="true"
+                                          RequiredError="Email là bắt buộc"
+                                          Adornment="Adornment.End"
+                                          AdornmentIcon="@Icons.Material.Filled.Email"
+                                          Disabled="@isProcessing" />
 
-                                    <MudTextField Label="Mật khẩu" Class="mt-3"
-                                                @bind-Value="model.pass_word"
-                                                For="@(() => model.pass_word)"
-                                                Variant="Variant.Outlined"
-                                                Placeholder="Mật khẩu"
-                                                Required="true"
-                                                RequiredError="Mật khẩu là bắt buộc"
-                                                InputType="InputType.Password"
-                                                Adornment="Adornment.Start"
-                                                AdornmentIcon="@Icons.Material.Filled.Lock" 
-                                                Disabled="@isProcessing"/>
+                            <MudTextField Label="Mật khẩu" Class="mt-3"
+                                          @bind-Value="model.pass_word"
+                                          For="@(() => model.pass_word)"
+                                          Variant="Variant.Outlined"
+                                          Placeholder="Mật khẩu"
+                                          Required="true"
+                                          RequiredError="Mật khẩu là bắt buộc"
+                                          InputType="@PasswordInput"
+                                          Adornment="Adornment.End"
+                                          AdornmentIcon="@PasswordInputIcon"
+                                          OnAdornmentClick="TogglePasswordVisibility"
+                                          Disabled="@isProcessing" />
 
-                                    <MudTextField Label="Họ tên" Class="mt-3"
-                                                @bind-Value="model.full_name"
-                                                For="@(() => model.full_name)"
-                                                Variant="Variant.Outlined"
-                                                Placeholder="Họ tên"
-                                                Required="true"
-                                                RequiredError="Họ tên là bắt buộc"
-                                                Adornment="Adornment.Start"
-                                                AdornmentIcon="@Icons.Material.Filled.Person" 
-                                                Disabled="@isProcessing"/>
+                            <MudTextField Label="Họ tên" Class="mt-3"
+                                          @bind-Value="model.full_name"
+                                          For="@(() => model.full_name)"
+                                          Variant="Variant.Outlined"
+                                          Placeholder="Họ tên"
+                                          Required="true"
+                                          RequiredError="Họ tên là bắt buộc"
+                                          Adornment="Adornment.End"
+                                          AdornmentIcon="@Icons.Material.Filled.Person"
+                                          Disabled="@isProcessing" />
 
                                     <MudDatePicker Label="Ngày sinh" Class="mt-3"
                                                  @bind-Date="model.birthday"
@@ -59,16 +60,16 @@
                                                  RequiredError="Ngày sinh là bắt buộc" 
                                                  Disabled="@isProcessing"/>
 
-                                    <MudTextField Label="Số điện thoại" Class="mt-3"
-                                                @bind-Value="model.phone_number"
-                                                For="@(() => model.phone_number)"
-                                                Variant="Variant.Outlined"
-                                                Placeholder="Số điện thoại"
-                                                Required="true"
-                                                RequiredError="Số điện thoại là bắt buộc"
-                                                Adornment="Adornment.Start"
-                                                AdornmentIcon="@Icons.Material.Filled.Phone" 
-                                                Disabled="@isProcessing"/>
+                            <MudTextField Label="Số điện thoại" Class="mt-3"
+                                          @bind-Value="model.phone_number"
+                                          For="@(() => model.phone_number)"
+                                          Variant="Variant.Outlined"
+                                          Placeholder="Số điện thoại"
+                                          Required="true"
+                                          RequiredError="Số điện thoại là bắt buộc"
+                                          Adornment="Adornment.End"
+                                          AdornmentIcon="@Icons.Material.Filled.Phone"
+                                          Disabled="@isProcessing" />
 
                                     <MudRadioGroup T="byte"
                                                  @bind-Value="model.gender"
@@ -181,6 +182,15 @@
     private int remainingTime = 0;
     private System.Threading.Timer otpTimer;
     private bool isProcessing = false;
+
+    private bool isShowPassword = false;
+    private InputType PasswordInput => isShowPassword ? InputType.Text : InputType.Password;
+    private string PasswordInputIcon => isShowPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
+
+    private void TogglePasswordVisibility()
+    {
+        isShowPassword = !isShowPassword;
+    }
 
     public class add_model_customer
     {
