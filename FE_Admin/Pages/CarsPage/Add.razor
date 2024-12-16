@@ -149,14 +149,10 @@
                                RequiredError="Số ghế là bắt buộc"
                                Variant="Variant.Outlined">
                         <MudSelectItem Value="4">4 chỗ</MudSelectItem>
-                        <MudSelectItem Value="5">5 chỗ</MudSelectItem>
-                        <MudSelectItem Value="6">6 chỗ</MudSelectItem>
                         <MudSelectItem Value="7">7 chỗ</MudSelectItem>
-                        <MudSelectItem Value="8">8 chỗ</MudSelectItem>
                         <MudSelectItem Value="16">16 chỗ</MudSelectItem>
-                        <MudSelectItem Value="24">24 chỗ</MudSelectItem>
-                        <MudSelectItem Value="36">36 chỗ</MudSelectItem>
-                        <MudSelectItem Value="45">45 chỗ</MudSelectItem>
+                        <MudSelectItem Value="29">29 chỗ</MudSelectItem>                    
+                        <MudSelectItem Value="44">44 chỗ</MudSelectItem>
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="12">
@@ -403,103 +399,10 @@
                 col = 1
             });
 
-        // Tạo layout dựa trên số ghế
-        switch (seatCount)
-        {
-            case 16:
-                GenerateLayout16Seats(seats, carId);
-                break;
-            case 24:
-                GenerateLayout24Seats(seats, carId);
-                break;
-            case 36:
-                GenerateLayout36Seats(seats, carId);
-                break;
-            case 45:
-                GenerateLayout45Seats(seats, carId);
-                break;
-        }
-
+      
         return seats;
     }
 
-    private void GenerateLayout16Seats(List<car_seat> seats, int carId)
-    {
-        var seatLayout = new[]
-        {
-            new { name = "A1", row = 2, col = 1 },
-            new { name = "A2", row = 2, col = 2 },
-            new { name = "A3", row = 2, col = 3 },
-            new { name = "A4", row = 3, col = 1 },
-            new { name = "A5", row = 3, col = 2 },
-            new { name = "A6", row = 3, col = 3 },
-            new { name = "A7", row = 4, col = 1 },
-            new { name = "A8", row = 4, col = 2 },
-            new { name = "A9", row = 4, col = 3 },
-            new { name = "A10", row = 5, col = 1 },
-            new { name = "A11", row = 5, col = 2 },
-            new { name = "A12", row = 5, col = 3 },
-            new { name = "A13", row = 6, col = 1 },
-            new { name = "A14", row = 6, col = 2 },
-            new { name = "A15", row = 6, col = 3 }
-        };
-
-        foreach (var seat in seatLayout)
-        {
-            seats.Add(new car_seat
-                {
-                    car_id = carId,
-                    name = seat.name,
-                    row = seat.row,
-                    col = seat.col
-                });
-        }
-    }
-
-    private void GenerateLayout24Seats(List<car_seat> seats, int carId)
-    {
-        // Layout cho xe 24 chỗ
-        for (int i = 1; i <= 23; i++) // 23 ghế + 1 ghế tài xế
-        {
-            seats.Add(new car_seat
-                {
-                    car_id = carId,
-                    name = $"B{i}",
-                    row = (i - 1) / 3 + 2, // 3 ghế mỗi hàng, bắt đầu từ hàng 2
-                    col = (i - 1) % 3 + 1
-                });
-        }
-    }
-
-    private void GenerateLayout36Seats(List<car_seat> seats, int carId)
-    {
-        // Layout cho xe 36 chỗ
-        for (int i = 1; i <= 35; i++) // 35 ghế + 1 ghế tài xế
-        {
-            seats.Add(new car_seat
-                {
-                    car_id = carId,
-                    name = $"C{i}",
-                    row = (i - 1) / 4 + 2, // 4 ghế mỗi hàng, bắt đầu từ hàng 2
-                    col = (i - 1) % 4 + 1
-                });
-        }
-    }
-
-    private void GenerateLayout45Seats(List<car_seat> seats, int carId)
-    {
-        // Layout cho xe 45 chỗ
-        for (int i = 1; i <= 44; i++) // 44 ghế + 1 ghế tài xế
-        {
-            seats.Add(new car_seat
-                {
-                    car_id = carId,
-                    name = $"D{i}",
-                    row = (i - 1) / 4 + 2, // 4 ghế mỗi hàng, bắt đầu từ hàng 2
-                    col = (i - 1) % 4 + 1
-                });
-        }
-    }
 
     private string CleanAndValidateCarNumber(string rawText)
     {
