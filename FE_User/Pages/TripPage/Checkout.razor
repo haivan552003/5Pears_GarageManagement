@@ -53,6 +53,12 @@
                             </MudText>
                         </MudItem>
                     </MudGrid>
+                    <div class="d-flex justify-center mt-3">
+                        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="PrintTicketDetails">
+                            <MudIcon Icon="@Icons.Material.Filled.Print" Class="mr-2" />
+                            In Chi Tiết
+                        </MudButton>
+                    </div>
                 </MudPaper>
             </MudItem>
 
@@ -97,62 +103,23 @@
                         </Columns>
                     </MudDataGrid>
                 </MudPaper>
-            </MudItem>
+            </MudItem>        
         </MudGrid>
     </MudPaper>
+    <div id="printableTicketDetails">
+        <MudCard Class="mt-5" Elevation="0" Style="border: 1px solid #DDE2E8; border-radius: 1.5rem !important;">
+            <MudCardHeader Class="py-2 d-flex justify-center align-center" Style="background-color: #F7F7F7;">
+                <MudText Typo="Typo.h6" Style="font-weight: 600 !important;">THÔNG TIN MUA VÉ</MudText>
+            </MudCardHeader>
 
-    <!-- Thông báo mua vé thành công -->
-    <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
-        <MudImage Src="/success.png" Alt="success" />
-    </div>
-    <MudText Class="mt-3 text-center" Typo="Typo.h6" Style="font-size: 1.5rem !important; font-weight: 500 !important;">Mua vé thành công</MudText>
-
-    <MudCard Class="mt-5" Elevation="0" Style="border: 1px solid #DDE2E8; border-radius: 1.5rem !important;">
-        <MudCardHeader Class="py-2 d-flex justify-center align-center" Style="background-color: #F7F7F7;">
-            <MudText Typo="Typo.h6" Style="font-weight: 600 !important;">THÔNG TIN MUA VÉ</MudText>
-        </MudCardHeader>
-
-        <MudCardContent Class="mb-6">
-            <MudGrid>
-                <MudItem xs="6">
-                    <MudGrid>
-                        <MudItem xs="4">
-                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Họ và tên:</MudText>
-                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Số điện thoại:</MudText>
-                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Email:</MudText>
-                        </MudItem>
-                        <MudItem xs="8">
-                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style="">Lê Tấn Bảo</MudText>
-                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style="">091xxxx799</MudText>
-                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style="">let******Xgmail.com</MudText>
-                        </MudItem>
-                    </MudGrid>
-                </MudItem>
-                <MudItem xs="6">
-                    <MudGrid>
-                        <MudItem xs="4">
-                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Tổng giá vé:</MudText>
-                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">PTTT:</MudText>
-                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Trạng thái:</MudText>
-                        </MudItem>
-                        <MudItem xs="8">
-                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style="">165.000đ</MudText>
-                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style="">VNPay</MudText>
-                            <MudText Class="mb-2 fw-bold" Typo="Typo.subtitle1" Color="Color.Success" Style="">Thành công</MudText>
-                        </MudItem>
-                    </MudGrid>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudText Typo="Typo.h6">15:59 Thứ 5, 12/12</MudText>
-                </MudItem>
-                <MudItem xs="12" Class="d-flex justify-center align-center">
-                    <MudPaper Class="p-3" Elevation="0" Style="border: 1px solid #DDE2E8; border-radius: 1rem !important; width: 400px;">
+            <MudCardContent Class="mb-6">
+                <MudGrid>
+                    <MudItem xs="6">
                         <MudGrid>
-                            <MudItem xs="6" Class="pb-0">
-                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Mã đặt vé</MudText>
-                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Tuyến xe</MudText>
-                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Thời gian xuất bến</MudText>
-                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Số ghế</MudText>
+                            <MudItem xs="4">
+                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Họ và tên:</MudText>
+                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Số điện thoại:</MudText>
+                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Email:</MudText>
                             </MudItem>
                             <MudItem xs="6" Class="pb-0">
                                 <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">TX241212</MudText>
@@ -213,14 +180,144 @@
                             </MudItem>
 
                         </MudGrid>
-                    </MudPaper>
-                </MudItem>
-            </MudGrid>
-        </MudCardContent>
-    </MudCard>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudGrid>
+                            <MudItem xs="4">
+                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Tổng giá vé:</MudText>
+                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">PTTT:</MudText>
+                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Trạng thái:</MudText>
+                            </MudItem>
+                            <MudItem xs="8">
+                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style="">165.000đ</MudText>
+                                <MudText Class="mb-2" Typo="Typo.subtitle1" Style="">VNPay</MudText>
+                                <MudText Class="mb-2 fw-bold" Typo="Typo.subtitle1" Color="Color.Success" Style="">Thành công</MudText>
+                            </MudItem>
+                        </MudGrid>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h6">15:59 Thứ 5, 12/12</MudText>
+                    </MudItem>
+                    <MudItem xs="12" Class="d-flex justify-center align-center">
+                        <MudPaper Class="p-3" Elevation="0" Style="border: 1px solid #DDE2E8; border-radius: 1rem !important; width: 400px;">
+                            <MudGrid>
+                                <MudItem xs="6" Class="pb-0">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Mã đặt vé</MudText>
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Tuyến xe</MudText>
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Thời gian xuất bến</MudText>
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Số ghế</MudText>
+                                </MudItem>
+                                <MudItem xs="6" Class="pb-0">
+                                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">TX241212</MudText>
+                                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">Can Tho - Ho Chi Minh</MudText>
+                                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">15:59 - 12/12/2024</MudText>
+                                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">B01</MudText>
+                                </MudItem>
 
+                                <MudItem xs="8" Class="pt-0 pb-0">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Thời gian tới điểm lên xe</MudText>
+                                </MudItem>
+                                <MudItem xs="4" Class="pt-0 pb-0">
+                                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Error">Trước 15:44 <br /> 12/12/2024</MudText>
+                                </MudItem>
+
+                                <MudItem xs="12" Class="pt-0 pb-0">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">
+                                        Quý khách vui lòng có mặt tại bến xe
+                                        <b style="color: #594AE2; font-weight: none;">BX Cần Thơ</b>
+                                        <b style="color: #F44336; font-weight: none;">trước 15:44 12/12/2024</b>
+                                        để kiểm tra thông tin trước khi lên xe.
+                                    </MudText>
+                                </MudItem>
+
+                                <MudItem xs="12" Class="pt-0 pb-0">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Điểm lên xe</MudText>
+                                </MudItem>
+                                <MudItem xs="12" Class="pt-0 pb-0 pl-0 ml-6">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=""><b style="color: #594AE2; font-weight: none;">BX Cần Thơ</b> <br />VP BX Cần Thơ: Quốc lộ 1, Hưng Thạnh, Cái Răng, TP. Cần Thơ</MudText>
+                                </MudItem>
+
+                                <MudItem xs="12" Class="pt-0 pb-0 ">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">
+                                        Điểm trả khách
+                                        <MudButton OnClick="@(() => OpenDialogDown(_policyDown))" Color="Color.Transparent" Style="min-width: 0; padding: 0;">
+                                            <MudIcon Icon="@Icons.Material.Filled.Info" Color="Color.Warning" Title="Info" />
+                                        </MudButton>
+                                    </MudText>
+                                </MudItem>
+                                <MudItem xs="12" Class="pt-0 pb-0 pl-0 ml-6">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1">395 Kinh Dương Vương, P.An Lạc, Q.Bình Tân, TP.HCM</MudText>
+                                </MudItem>
+
+                                <MudItem xs="6" Class="pb-0">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">
+                                        Giá vé
+                                        <MudButton OnClick="@(() => OpenDialogPrice(_policyPrice))" Color="Color.Transparent" Style="min-width: 0; padding: 0;">
+                                            <MudIcon Icon="@Icons.Material.Filled.Info" Color="Color.Warning" Title="Info" />
+                                        </MudButton>
+                                    </MudText>
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Biển số xe</MudText>
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Mã tra cứu hóa đơn</MudText>
+                                </MudItem>
+                                <MudItem xs="6" Class="pb-0">
+                                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">165.000đ</MudText>
+                                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">59F-040.87</MudText>
+                                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">GT241212</MudText>
+                                </MudItem>
+
+                            </MudGrid>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </div>
 </MudContainer>
+<script type="module">
+    window.printElement = (elementId) => {
+        // Lưu lại nội dung ban đầu của trang
+        const originalContents = document.body.innerHTML;
 
+        // Lấy nội dung phần muốn in
+        const printContents = document.getElementById(elementId).innerHTML;
+
+        // Thay thế toàn bộ nội dung trang bằng nội dung in
+        document.body.innerHTML = `
+                <div class="print-container">
+                    ${printContents}
+                </div>
+            `;
+
+        // Thêm CSS tùy chỉnh để định dạng trang in
+        const style = document.createElement('style');
+        style.innerHTML = `
+    @@media print {
+                    body * {
+                        visibility: hidden;
+                    }
+                    .print-container, .print-container * {
+                        visibility: visible;
+                    }
+                    .print-container {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                    }
+                }
+            `;
+        document.head.appendChild(style);
+
+        // Gọi hàm in
+        window.print();
+
+        // Khôi phục lại nội dung ban đầu
+        document.body.innerHTML = originalContents;
+
+        // Loại bỏ style in
+        style.remove();
+    };
+</script>
 @code {
     private guest_trip bill = new guest_trip();
     private guest_trip_update bill_update = new guest_trip_update();
@@ -267,7 +364,10 @@
         }
         await js.InvokeVoidAsync("sessionStorage.removeItem", "billId");
     }
-
+    private async Task PrintTicketDetails()
+    {
+        await js.InvokeVoidAsync("printElement", "printableTicketDetails");
+    }
     private async Task UpdateStatusBill2()
     {
         try

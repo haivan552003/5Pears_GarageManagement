@@ -11,11 +11,11 @@
 @inject ISnackbar Snackbar
 
 <style>
-    .fs-14{
+    .fs-14 {
         font-size: 14px;
     }
 
-    .text-gray{
+    .text-gray {
         color: #637280;
     }
 
@@ -32,13 +32,12 @@
         z-index: 9999; /* Đảm bảo overlay hiển thị trên các thành phần khác */
     }
 </style>
-
 @if (isLoadingProgress)
 {
-<div class="loading-overlay">
-    <MudItem xs="12" Class="text-center">
-        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
-    </MudItem>
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+        </MudItem>
     </div>
 }
 else
@@ -70,6 +69,157 @@ else
                         <MudItem xs="12" Class="mx-auto">
                             <MudText Typo="Typo.h6" Color="Color.Primary">Chọn ghế</MudText>
                         </MudItem>
+
+                        @{
+                            int seatCount = car_seat.Count();
+                        }
+                        @if (seatCount == 17)
+                        {
+                            <MudItem xs="4">
+                            </MudItem>
+                            <MudItem xs="4">
+                                <div class="bus-seat-layout">
+                                    @foreach (var item in car_seat)
+                                    {
+                                        var isDisabled = item.status == "Đã đặt" || takenSeats.Contains(item.id.ToString()) || item.name.ToLower() == "tài xế";
+                                        <button class="btn btn-outline-primary @((isDisabled ? "disabled" : "")) @(selectedSeats.Contains(item.id) ? "btn-outline-success" : "")"
+                                                style="grid-row: @item.row; grid-column: @item.col;"
+                                                disabled="@isDisabled"
+                                                @onclick="() => OnSeatSelected(item.id, item.name)">
+                                            @item.name
+                                        </button>
+                                    }
+                                </div>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudGrid>
+                                    <MudItem xs="12" Class="d-flex align-items-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Default" />
+                                        <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đã bán</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" Class="d-flex align-items-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Primary" />
+                                        <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Còn trống</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" Class="d-flex align-items-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Success" />
+                                        <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đang chọn</MudText>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudItem>
+                        }
+                        else if (seatCount == 30)
+                        {
+                            <MudItem xs="3">
+                            </MudItem>
+                            <MudItem xs="5">
+                                <div class="bus-seat-layout29">
+                                    @foreach (var item in car_seat)
+                                    {
+                                        var isDisabled = item.status == "Đã đặt" || takenSeats.Contains(item.id.ToString()) || item.name.ToLower() == "tài xế";
+                                        <button class="btn btn-outline-primary @((isDisabled ? "disabled" : "")) @(selectedSeats.Contains(item.id) ? "btn-outline-success" : "")"
+                                                style="grid-row: @item.row; grid-column: @item.col;"
+                                                disabled="@isDisabled"
+                                                @onclick="() => OnSeatSelected(item.id, item.name)">
+                                            @item.name
+                                        </button>
+                                    }
+                                </div>
+                            </MudItem>
+                            <MudItem xs="4" Class="mt-4">
+                                <MudGrid>
+                                    <MudItem xs="12" Class="d-flex align-items-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Default" />
+                                        <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đã bán</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" Class="d-flex align-items-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Primary" />
+                                        <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Còn trống</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" Class="d-flex align-items-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Success" />
+                                        <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đang chọn</MudText>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudItem>
+                        }
+                        else if (seatCount == 45)
+                        {
+                            <MudGrid>
+                                <MudItem xs="3"></MudItem>
+                                <MudItem xs="5">
+                                    <div class="bus-seat-layout44">
+                                        @foreach (var item in car_seat.Where(seat => int.Parse(seat.id.ToString()) % 2 != 0))
+                                        {
+                                            var isDisabled = item.status == "Đã đặt" || takenSeats.Contains(item.id.ToString()) || item.name.ToLower() == "tài xế";
+                                            <button class="btn btn-outline-primary @((isDisabled ? "disabled" : "")) @(selectedSeats.Contains(item.id) ? "btn-outline-success" : "")"
+                                                    style="grid-row: @item.row; grid-column: @item.col;"
+                                                    disabled="@isDisabled"
+                                                    @onclick="() => OnSeatSelected(item.id, item.name)">
+                                                @item.name
+                                            </button>
+                                        }
+                                    </div>
+                                </MudItem>
+                                <MudItem xs="4" Class="mt-6">
+                                    <MudGrid>
+                                        <MudItem xs="12" Class="d-flex align-items-center">
+                                            <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Default" />
+                                            <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đã bán</MudText>
+                                        </MudItem>
+                                        <MudItem xs="12" Class="d-flex align-items-center">
+                                            <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Primary" />
+                                            <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Còn trống</MudText>
+                                        </MudItem>
+                                        <MudItem xs="12" Class="d-flex align-items-center">
+                                            <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Success" />
+                                            <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đang chọn</MudText>
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudItem>
+                            </MudGrid>
+                            <MudGrid>
+
+                                <MudItem xs="3"></MudItem>
+                                <MudItem xs="5">
+                                    <div class="bus-seat-layout44">
+                                        @foreach (var item in car_seat.Where(seat => int.Parse(seat.id.ToString()) % 2 == 0))
+                                        {
+                                            var isDisabled = item.status == "Đã đặt" || takenSeats.Contains(item.id.ToString()) || item.name.ToLower() == "tài xế";
+                                            <button class="btn btn-outline-primary @((isDisabled ? "disabled" : "")) @(selectedSeats.Contains(item.id) ? "btn-outline-success" : "")"
+                                                    style="grid-row: @item.row; grid-column: @item.col;"
+                                                    disabled="@isDisabled"
+                                                    @onclick="() => OnSeatSelected(item.id, item.name)">
+                                                @item.name
+                                            </button>
+                                        }
+                                    </div>
+                                </MudItem>
+                            </MudGrid>
+
+
+
+                        }
+                        else
+                        {
+                            <MudText>Số ghế không hợp lệ: @seatCount</MudText>
+                        }
+                        @*  <MudItem xs="4">
+                    <MudGrid>
+                    <MudItem xs="12" Class="d-flex align-items-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Default" />
+                    <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đã bán</MudText>
+                    </MudItem>
+                    <MudItem xs="12" Class="d-flex align-items-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Primary" />
+                    <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Còn trống</MudText>
+                    </MudItem>
+                    <MudItem xs="12" Class="d-flex align-items-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Success" />
+                    <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đang chọn</MudText>
+                    </MudItem>
+                    </MudGrid>
+                    </MudItem> *@
 
                         <MudItem xs="10">
                             <MudGrid>
@@ -110,145 +260,143 @@ else
                     </MudGrid>
                 </MudPaper>
 
-
-            </MudItem>
-
-            <MudItem xs="4">
-                <MudPaper Class="p-4 mb-5" Elevation="1">
-                    <MudGrid>
-                        <MudItem xs="12">
-                            <MudText Typo="Typo.h6" Color="Color.Primary">Thông tin vé</MudText>
-                        </MudItem>
-                        <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
-                            <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Tuyến Xe</MudText>
-                        </MudItem>
-                        <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
-                            <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.from - @TRIPDETAILS.to</MudText>
-                        </MudItem>
-
-                        <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
-                            <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Khởi hành</MudText>
-                        </MudItem>
-                        <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
-                            <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1" Style="color: #00613D;">@TRIPDETAILS.time_start</MudText>
-                        </MudItem>
-
-                        <MudItem xs="4" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
-                            <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Số Lượng Ghế</MudText>
-                        </MudItem>
-                        <MudItem xs="8" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
-                            <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1">@selectedSeats.Count</MudText>
-                        </MudItem>
-
-                        <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
-                            <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Tên ghế</MudText>
-                        </MudItem>
-                        <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
-                            <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1"> @string.Join(", ", selectedSeatNames)</MudText>
-                        </MudItem>
-                    </MudGrid>
-                </MudPaper>
-
-                <MudItem xs="12" Style="margin-top:-5px;margin-bottom:10px;text-align:center">
-                    <MudRadioGroup @bind-Value="Dense_Radio">
-                        <MudRadio Value="true" Color="Color.Primary" Dense="true" Size="Size.Medium">
-                            <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-16">Tiền Mặt</MudText>
-                        </MudRadio>
-                        <MudRadio Value="false" Color="Color.Secondary" Dense="false" Size="Size.Medium">
-                            <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-16">Chuyển Khoản</MudText>
-                        </MudRadio>
-                    </MudRadioGroup>
-                </MudItem>
-
-
                 @if (Dense_Radio == true)
                 {
                     <MudPaper Class="p-4" Elevation="1">
                         <MudGrid>
                             <MudItem xs="12">
-                                <MudText Typo="Typo.h6" Color="Color.Primary">Chi tiết giá</MudText>
+                                <MudText Typo="Typo.h6" Color="Color.Primary">Thông tin vé</MudText>
+                            </MudItem>
+                            <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
+                                <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Tuyến Xe</MudText>
+                            </MudItem>
+                            <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
+                                <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.from - @TRIPDETAILS.to</MudText>
                             </MudItem>
 
                             <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
-                                <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Giá vé</MudText>
+                                <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Khởi hành</MudText>
                             </MudItem>
                             <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
-                                <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.price.ToString("#,##0") VNĐ</MudText>
+                                <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1" Style="color: #00613D;">@TRIPDETAILS.time_start</MudText>
                             </MudItem>
 
-                            <MudItem xs="12">
-                                <MudTextField ShrinkLabel @bind-Value="_tienKhachDua" Label="Tiền khách đưa" Margin="Margin.Dense" Variant="Variant.Outlined" OnBlur="@CalculateChange" />
+                            <MudItem xs="4" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
+                                <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Số Lượng Ghế</MudText>
                             </MudItem>
-
-                            <MudItem xs="12">
-                                <MudTextField ShrinkLabel @bind-Value="_tienThua" Label="Tiền thừa" Margin="Margin.Dense" Variant="Variant.Outlined" Disabled="true" />
-                            </MudItem>
-
-                            <MudItem xs="12" Class="pb-4">
-                                <MudDivider Style="border: 1px;" />
-                            </MudItem>
-                            <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
-                                <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Tổng Tiền</MudText>
-                            </MudItem>
-                            <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
-                                <MudText Align="Align.End" Color="Color.Secondary" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.sale.ToString("#,##0") VNĐ</MudText>
-                            </MudItem>
-
-                            <MudItem xs="12">
-                                <MudButton Variant="Variant.Filled" Class="w-100" Color="Color.Primary" Size="Size.Medium" OnClick="@OnCheckout">Thanh Toán</MudButton>
-                            </MudItem>
-
-                        </MudGrid>
-                    </MudPaper>
-                    @if (errorMessageCheckCus != null)
-                    {
-                        <MudItem xs="12">
-                            <MudText Color="Color.Error" Class="mt-2 text-center">
-                                @errorMessageCheckCus
-                            </MudText>
-                        </MudItem>
-                    }
-
-                }
-                else
-                {
-                    <MudPaper Class="p-4" Elevation="1">
-                        <MudGrid>
-                            <MudItem xs="12">
-                                <MudText Typo="Typo.h6" Color="Color.Primary">Chi tiết giá</MudText>
+                            <MudItem xs="8" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
+                                <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1">@selectedSeats.Count</MudText>
                             </MudItem>
 
                             <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
-                                <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Giá vé</MudText>
+                                <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Tên ghế</MudText>
                             </MudItem>
                             <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
-                                <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.price.ToString("#,##0") VNĐ</MudText>
-                            </MudItem>
-                            <MudItem xs="12" Class="pb-4">
-                                <MudDivider Style="border: 1px;" />
-                            </MudItem>
-                            <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
-                                <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Tổng Tiền</MudText>
-                            </MudItem>
-                            <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
-                                <MudText Align="Align.End" Color="Color.Secondary" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.sale.ToString("#,##0") VNĐ</MudText>
-                            </MudItem>
-
-                            <MudItem xs="12">
-                                <MudButton Variant="Variant.Filled" Class="w-100" Color="Color.Primary" Size="Size.Medium" OnClick="@OnCheckout">Thanh Toán</MudButton>
+                                <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1"> @string.Join(", ", selectedSeatNames)</MudText>
                             </MudItem>
                         </MudGrid>
                     </MudPaper>
-                    @if (errorMessageCheckCus != null)
+
+                    <MudItem xs="12" Style="margin-top:-5px;margin-bottom:10px;text-align:center">
+                        <MudRadioGroup @bind-Value="Dense_Radio">
+                            <MudRadio Value="true" Color="Color.Primary" Dense="true" Size="Size.Medium">
+                                <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-16">Tiền Mặt</MudText>
+                            </MudRadio>
+                            <MudRadio Value="false" Color="Color.Secondary" Dense="false" Size="Size.Medium">
+                                <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-16">Chuyển Khoản</MudText>
+                            </MudRadio>
+                        </MudRadioGroup>
+                    </MudItem>
+
+
+                    @if (Dense_Radio == true)
                     {
-                        <MudItem xs="12">
-                            <MudText Color="Color.Error" Class="mt-2 text-center">
-                                @errorMessageCheckCus
-                            </MudText>
-                        </MudItem>
+                        <MudPaper Class="p-4" Elevation="1">
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudText Typo="Typo.h6" Color="Color.Primary">Chi tiết giá</MudText>
+                                </MudItem>
+
+                                <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
+                                    <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Giá vé</MudText>
+                                </MudItem>
+                                <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
+                                    <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.price.ToString("#,##0") VNĐ</MudText>
+                                </MudItem>
+
+                                <MudItem xs="12">
+                                    <MudTextField ShrinkLabel @bind-Value="_tienKhachDua" Label="Tiền khách đưa" Margin="Margin.Dense" Variant="Variant.Outlined" OnBlur="@CalculateChange" />
+                                </MudItem>
+
+                                <MudItem xs="12">
+                                    <MudTextField ShrinkLabel @bind-Value="_tienThua" Label="Tiền thừa" Margin="Margin.Dense" Variant="Variant.Outlined" Disabled="true" />
+                                </MudItem>
+
+                                <MudItem xs="12" Class="pb-4">
+                                    <MudDivider Style="border: 1px;" />
+                                </MudItem>
+                                <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
+                                    <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Tổng Tiền</MudText>
+                                </MudItem>
+                                <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
+                                    <MudText Align="Align.End" Color="Color.Secondary" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.sale.ToString("#,##0") VNĐ</MudText>
+                                </MudItem>
+
+                                <MudItem xs="12">
+                                    <MudButton Variant="Variant.Filled" Class="w-100" Color="Color.Primary" Size="Size.Medium" OnClick="@OnCheckout">Thanh Toán</MudButton>
+                                </MudItem>
+
+                            </MudGrid>
+                        </MudPaper>
+                        @if (errorMessageCheckCus != null)
+                        {
+                            <MudItem xs="12">
+                                <MudText Color="Color.Error" Class="mt-2 text-center">
+                                    @errorMessageCheckCus
+                                </MudText>
+                            </MudItem>
+                        }
+
+                    }
+                    else
+                    {
+                        <MudPaper Class="p-4" Elevation="1">
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudText Typo="Typo.h6" Color="Color.Primary">Chi tiết giá</MudText>
+                                </MudItem>
+
+                                <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
+                                    <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Giá vé</MudText>
+                                </MudItem>
+                                <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
+                                    <MudText Align="Align.End" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.price.ToString("#,##0") VNĐ</MudText>
+                                </MudItem>
+                                <MudItem xs="12" Class="pb-4">
+                                    <MudDivider Style="border: 1px;" />
+                                </MudItem>
+                                <MudItem xs="3" Class="pb-2" Style="padding: 0px; padding-left: 12px;">
+                                    <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-14">Tổng Tiền</MudText>
+                                </MudItem>
+                                <MudItem xs="9" Class="pb-2" Style="padding: 0px; padding-right: 12px;">
+                                    <MudText Align="Align.End" Color="Color.Secondary" Class="fw-bold fs-14" Typo="Typo.subtitle1">@TRIPDETAILS.sale.ToString("#,##0") VNĐ</MudText>
+                                </MudItem>
+
+                                <MudItem xs="12">
+                                    <MudButton Variant="Variant.Filled" Class="w-100" Color="Color.Primary" Size="Size.Medium" OnClick="@OnCheckout">Thanh Toán</MudButton>
+                                </MudItem>
+                            </MudGrid>
+                        </MudPaper>
+                        @if (errorMessageCheckCus != null)
+                        {
+                            <MudItem xs="12">
+                                <MudText Color="Color.Error" Class="mt-2 text-center">
+                                    @errorMessageCheckCus
+                                </MudText>
+                            </MudItem>
+                        }
                     }
                 }
-
             </MudItem>
         </MudGrid>
     </MudContainer>
@@ -260,6 +408,45 @@ else
         return localStorage.getItem("authToken");
     }
 </script>
+<style>
+    .bus-seat-layout, .bus-seat-layout29, .bus-seat-layout44 {
+        display: grid;
+        grid-gap: 10px;
+        padding: 2px;
+        justify-items: center;
+    }
+
+    .bus-seat-layout {
+        grid-template-columns: repeat(4, 40px);
+        grid-template-rows: repeat(5, 30px);
+    }
+
+    .bus-seat-layout29 {
+        grid-template-columns: repeat(5, 40px);
+        grid-template-rows: repeat(7, 30px);
+    }
+
+    .bus-seat-layout44 {
+        grid-template-columns: repeat(5, 40px);
+        grid-template-rows: repeat(7, 30px);
+    }
+
+    .btn {
+        width: 40px;
+        height: 35px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 10px;
+        padding: 0;
+    }
+
+        .btn:disabled {
+            cursor: not-allowed;
+            background-color: lightgrey
+        }
+
+</style>
 @code {
     private customer addCus = new customer();
     private string errorMessageCheckCus;
@@ -711,7 +898,7 @@ else
         decimal priceValue = Convert.ToDecimal(TRIPDETAILS.sale);
         _tienThua = _tienKhachDua - priceValue;
         StateHasChanged();
-        if(_tienThua <= 0)
+        if (_tienThua <= 0)
         {
             _tienThua = 0;
         }
