@@ -46,12 +46,17 @@ else
                 </MudPaper>
                 <MudPaper Elevation="0">
                     <MudDataGrid Class="mx-auto pa-2" T="trip" Dense="true" Hover="true" Bordered="true" Striped="true" MultiSelection="true"
-                                 Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter"
+                                 Items="@Elements" SortMode="SortMode.Multiple" Filterable="false" QuickFilter="@_quickFilter1"
                                  Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
 
                         <ToolBarContent>
                             <MudItem xs="4">
-                                <MudTextField @bind-Value="_searchString" Placeholder="Tìm kiếm..."
+                                <MudTextField @bind-Value="_searchFrom" Placeholder="Tìm điểm khởi hành..."
+                                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                              Immediate="true" IconSize="Size.Medium" Class="mt-0" />
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudTextField @bind-Value="_searchTo" Placeholder="Tìm điểm đến..."
                                               Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
                                               Immediate="true" IconSize="Size.Medium" Class="mt-0" />
                             </MudItem>
@@ -253,4 +258,15 @@ else
     {
         Console.WriteLine($"Selected items changed: {System.Text.Json.JsonSerializer.Serialize(items)}");
     }
+    private string _searchFrom;
+    private string _searchTo;
+
+    private Func<trip, bool> _quickFilter1 => x =>
+    {
+        var matchesFrom = string.IsNullOrWhiteSpace(_searchFrom) || x.from.Contains(_searchFrom, StringComparison.OrdinalIgnoreCase);
+        var matchesTo = string.IsNullOrWhiteSpace(_searchTo) || x.to.Contains(_searchTo, StringComparison.OrdinalIgnoreCase);
+
+        return matchesFrom && matchesTo;
+    };
+
 }

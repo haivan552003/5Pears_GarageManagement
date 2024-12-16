@@ -73,10 +73,18 @@ else
                                     </MudItem>
 
                                     <MudItem xs="12" sm="6">
-                                        <MudTextField ShrinkLabel @bind-Value="newRoleTask.password" For="@(() => newRoleTask.password)"
-                                                      Label="Mật khẩu"
-                                                      Variant="Variant.Outlined"
-                                                      Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePassword))" />
+                                         <MudTextField @bind-Value="newRoleTask.password"
+                                                  Label="Mật khẩu"
+                                                  Required="true"
+                                                  RequiredError="Vui lòng nhập mật khẩu"
+                                                  Variant="Variant.Outlined"
+                                                  InputType="@PasswordInput"
+                                                  Adornment="Adornment.End"
+                                                  AdornmentIcon="@PasswordInputIcon"
+                                                  OnAdornmentClick="TogglePasswordVisibility"
+                                                  Validation="@(new Func<string, IEnumerable<string>>(CustomerValidatePassword))"
+                                                  Immediate="true"
+                                                  Placeholder="Mật khẩu" />
                                     </MudItem>
 
                                     <MudItem xs="12" sm="6">
@@ -256,6 +264,15 @@ else
     private bool isLoadingIMG1 = false;
     private bool isLoadingIMG2 = false;
     private bool isLoadingProgress = true;
+    private InputType PasswordInput => isShowPassword ? InputType.Text : InputType.Password;
+    private string PasswordInputIcon => isShowPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
+    private bool isShowPassword = false;
+
+
+    private void TogglePasswordVisibility()
+    {
+        isShowPassword = !isShowPassword;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
