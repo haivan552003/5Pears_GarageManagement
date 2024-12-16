@@ -184,44 +184,16 @@ namespace BE_API.Controllers
 
             if (cars.number_seat > 0)
             {
-                using (SqlConnection conn = new SqlConnection(_connectionString))
-                {
-                    await conn.OpenAsync();
-
-                    // Create driver's seat
-                    SqlCommand driverSeatCmd = new SqlCommand("sp_create_car_seats", conn);
-                    driverSeatCmd.CommandType = CommandType.StoredProcedure;
-                    driverSeatCmd.Parameters.AddWithValue("@name", "TÀI XẾ");
-                    driverSeatCmd.Parameters.AddWithValue("@car_id", carId);
-                    driverSeatCmd.Parameters.AddWithValue("@row", 1);
-                    driverSeatCmd.Parameters.AddWithValue("@col", 1);
-                    await driverSeatCmd.ExecuteNonQueryAsync();
-
-                    // Create additional seats
-                    for (int i = 1; i <= cars.number_seat - 1; i++)
-                    {
-                        SqlCommand seatCmd = new SqlCommand("sp_create_car_seats", conn);
-                        seatCmd.CommandType = CommandType.StoredProcedure;
-
-                        string seatName = GetSeatName(cars.number_seat, i);
-
-                        seatCmd.Parameters.AddWithValue("@name", seatName);
-                        seatCmd.Parameters.AddWithValue("@car_id", carId);
-                        seatCmd.Parameters.AddWithValue("@row",  1);
-                        seatCmd.Parameters.AddWithValue("@col", 1);
-                        await seatCmd.ExecuteNonQueryAsync();
-                    }
-                }
+                await CreateCarSeats(carId, cars.number_seat);
             }
 
             return CreatedAtAction(nameof(GetAllCars), new { id = carId }, cars);
         }
-
-
+        //thêm nhiều xe
         [HttpPost("PostCarsss")]
         public async Task<ActionResult<AddCarss>> PostCarsss(AddCarss cars)
         {
-            int carId =0;
+            List<int> createdCarIds = new List<int>();
 
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -231,66 +203,589 @@ namespace BE_API.Controllers
                 cmd.Parameters.Add("@quantity", SqlDbType.Int).Value = cars.quantity;
 
                 await conn.OpenAsync();
-                var reader = await cmd.ExecuteReaderAsync();             
-                if (reader.Read())
+                var reader = await cmd.ExecuteReaderAsync();
+
+                // Lặp qua từng xe được tạo ra và lấy ID
+                while (reader.Read())
                 {
-                    carId = Convert.ToInt32(reader["id"]);
-                }
+                    int carId = Convert.ToInt32(reader["id"]);
+                    createdCarIds.Add(carId);
 
-            }
-                // Tạo ghế cho từng xe đã tạo
-                if (cars.number_seat > 0)
-            {
-                using (SqlConnection conn = new SqlConnection(_connectionString))
-                {
-                    await conn.OpenAsync();
-
-                    // Create driver's seat
-                    SqlCommand driverSeatCmd = new SqlCommand("sp_create_car_seats", conn);
-                    driverSeatCmd.CommandType = CommandType.StoredProcedure;
-                    driverSeatCmd.Parameters.AddWithValue("@name", "TÀI XẾ");
-                    driverSeatCmd.Parameters.AddWithValue("@car_id", carId);
-                    driverSeatCmd.Parameters.AddWithValue("@row", 1);
-                    driverSeatCmd.Parameters.AddWithValue("@col", 1);
-                    await driverSeatCmd.ExecuteNonQueryAsync();
-
-                    // Create additional seats
-                    for (int i = 1; i <= cars.number_seat - 1; i++)
+                    // Thêm ghế cho mỗi chiếc xe
+                    if (cars.number_seat > 0)
                     {
-                        SqlCommand seatCmd = new SqlCommand("sp_create_car_seats", conn);
-                        seatCmd.CommandType = CommandType.StoredProcedure;
-
-                        string seatName = GetSeatName(cars.number_seat, i);
-
-                        seatCmd.Parameters.AddWithValue("@name", seatName);
-                        seatCmd.Parameters.AddWithValue("@car_id", carId);
-                        seatCmd.Parameters.AddWithValue("@row", 1);
-                        seatCmd.Parameters.AddWithValue("@col", 1);
-                        await seatCmd.ExecuteNonQueryAsync();
+                        await CreateCarSeats(carId, cars.number_seat);
                     }
                 }
-
-                return CreatedAtAction(nameof(GetAllCars), new { id = carId }, cars);
             }
 
-            // Add this else block to handle cases when no seats are created
-            return BadRequest("Number of seats must be greater than 0.");
+            if (createdCarIds.Count > 0)
+            {
+                return CreatedAtAction(nameof(GetAllCars), new { ids = createdCarIds }, cars);
+            }
+
+            return BadRequest("Could not create cars.");
         }
 
-        // Helper method to generate seat names
+        private async Task CreateCarSeats(int carId, int numberOfSeats)
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+
+                await CreateCarSeat(conn, carId, "TÀI XẾ", 1, 1);
+
+                // Create additional seats
+                for (int i = 1; i <= numberOfSeats; i++)
+                {
+                    var (row, col) = GetSeatPosition(numberOfSeats, i);
+                    await CreateCarSeat(conn, carId, GetSeatName(numberOfSeats, i), row, col);
+                }
+            }
+        }
+
+        private async Task CreateCarSeat(SqlConnection conn, int carId, string name, int row, int col)
+        {
+            SqlCommand cmd = new SqlCommand("sp_create_car_seats", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@name", name);
+            cmd.Parameters.AddWithValue("@car_id", carId);
+            cmd.Parameters.AddWithValue("@row", row);
+            cmd.Parameters.AddWithValue("@col", col);
+            await cmd.ExecuteNonQueryAsync();
+        }
+
         private string GetSeatName(int totalSeats, int seatNumber)
         {
             char prefix = totalSeats switch
             {
                 16 => 'A',
-                24 => 'B',
-                36 => 'C',
-                45 => 'D',
+                29 => 'B',
+                44 => 'D',
                 _ => 'X'
             };
             return $"{prefix}{seatNumber}";
         }
 
+        private (int row, int col) GetSeatPosition(int totalSeats, int seatNumber)
+        {
+            int row = 0;
+            int col = 0;
+            switch (totalSeats)
+            {
+                case 4:
+                    if (seatNumber == 1)
+                    {
+                        row = 1;
+                        col = 1;
+                    }
+                    else if (seatNumber == 2)
+                    {
+                        row = 1;
+                        col = 1;
+                    }
+                    else if (seatNumber == 3)
+                    {
+                        row = 1;
+                        col = 1;
+                    }
+                    else if (seatNumber == 4)
+                    {
+                        row = 1;
+                        col = 1;
+                    }
+                    break;
+                case 7:
+                    if (seatNumber == 1)
+                    {
+                        row = 1;
+                        col = 1;
+                    }
+                    else if (seatNumber == 2)
+                    {
+                        row = 1;
+                        col = 1;
+                    }
+                    else if (seatNumber == 3)
+                    {
+                        row = 1;
+                        col = 1;
+                    }
+                    else if (seatNumber == 4)
+                    {
+                        row = 1;
+                        col = 1;
+                    } else if (seatNumber == 5)
+                    {
+                        row = 1;
+                        col = 1;
+                    }
+                    else if (seatNumber == 6)
+                    {
+                        row = 1;
+                        col = 1;
+                    }
+                    else if (seatNumber == 8)
+                    {
+                        row = 1;
+                        col = 1;
+                    }
+                    break;
+                case 16:                  
+                    if (seatNumber == 1)
+                    {
+                        row = 1;
+                        col = 2;
+                    }
+                    else if (seatNumber == 2)
+                    {
+                        row = 1;
+                        col = 3;
+                    }
+                    else if (seatNumber == 3)
+                    {
+                        row = 1;
+                        col = 4;
+                    }
+                    else if (seatNumber == 4)
+                    {
+                        row = 2;
+                        col = 1;
+                    }
+                    else if (seatNumber == 5)
+                    {
+                        row = 2;
+                        col = 2;
+                    }
+                    else if (seatNumber == 6)
+                    {
+                        row = 2;
+                        col = 3;
+                    }
+                    else if (seatNumber == 7)
+                    {
+                        row = 3;
+                        col = 1;
+                    }
+                    else if (seatNumber == 8)
+                    {
+                        row = 3;
+                        col = 2;
+                    }
+                    else if (seatNumber == 9)
+                    {
+                        row = 3;
+                        col = 3;
+                    }
+                    else if (seatNumber == 10)
+                    {
+                        row = 4;
+                        col = 1;
+                    }
+                    else if (seatNumber == 11)
+                    {
+                        row = 4;
+                        col = 2;
+                    }
+                    else if (seatNumber == 12)
+                    {
+                        row = 4;
+                        col = 3;
+                    }
+                    else if (seatNumber == 13)
+                    {
+                        row = 5;
+                        col = 1;
+                    }
+                    else if (seatNumber == 14)
+                    {
+                        row = 5;
+                        col = 2;
+                    }
+                    else if (seatNumber == 15)
+                    {
+                        row = 5;
+                        col = 3;
+                    }
+                    else if (seatNumber == 16)
+                    {
+                        row = 5;
+                        col = 4;
+                    }
+                    break;
+                case 29:
+                    if (seatNumber == 1)
+                    {
+                        row = 2;
+                        col = 1;
+                    }
+                    else if (seatNumber == 2)
+                    {
+                        row = 2;
+                        col = 2;
+                    }
+                    else if (seatNumber == 3)
+                    {
+                        row = 2;
+                        col = 4;
+                    }
+                    else if (seatNumber == 4)
+                    {
+                        row = 2;
+                        col = 5;
+                    }
+                    else if (seatNumber == 5)
+                    {
+                        row = 3;
+                        col = 1;
+                    }
+                    else if (seatNumber == 6)
+                    {
+                        row = 3;
+                        col = 2;
+                    }
+                    else if (seatNumber == 7)
+                    {
+                        row = 3;
+                        col = 4;
+                    }
+                    else if (seatNumber == 8)
+                    {
+                        row = 3;
+                        col = 5;
+                    }
+                    else if (seatNumber == 9)
+                    {
+                        row = 4;
+                        col = 1;
+                    }
+                    else if (seatNumber == 10)
+                    {
+                        row = 4;
+                        col = 2;
+                    }
+                    else if (seatNumber == 11)
+                    {
+                        row = 4;
+                        col = 4;
+                    }
+                    else if (seatNumber == 12)
+                    {
+                        row = 4;
+                        col = 5;
+                    }
+                    else if (seatNumber == 13)
+                    {
+                        row = 5;
+                        col = 1;
+                    }
+                    else if (seatNumber == 14)
+                    {
+                        row = 5;
+                        col = 2;
+                    }
+                    else if (seatNumber == 15)
+                    {
+                        row = 5;
+                        col = 4;
+                    }
+                    else if (seatNumber == 16) 
+                    {
+                        row = 5;
+                        col = 5;
+                    }
+                    else if (seatNumber == 17)
+                    {
+                        row = 6;
+                        col = 1;
+                    }
+                    else if (seatNumber == 18)
+                    {
+                        row = 6;
+                        col = 2;
+                    }
+                    else if (seatNumber == 19)
+                    {
+                        row = 6;
+                        col = 4;
+                    }
+                    else if (seatNumber == 20)
+                    {
+                        row = 6;
+                        col = 5;
+                    }
+                    else if (seatNumber == 21)
+                    {
+                        row = 7;
+                        col = 1;
+                    }
+                    else if (seatNumber == 22)
+                    {
+                        row = 7;
+                        col = 2;
+                    } else if (seatNumber == 23)
+                    {
+                        row = 7;
+                        col = 4;
+                    }
+                    else if (seatNumber == 24)
+                    {
+                        row = 7;
+                        col = 5;
+                    }
+                    else if (seatNumber == 25)
+                    {
+                        row = 8;
+                        col = 1;
+                    }
+                    else if (seatNumber == 26)
+                    {
+                        row = 8;
+                        col = 2;
+                    }
+                    else if (seatNumber == 27)
+                    {
+                        row = 8;
+                        col = 3;
+                    } else if (seatNumber == 28)
+                    {
+                        row = 8;
+                        col = 4;
+                    }
+                    else if (seatNumber == 29)
+                    {
+                        row = 8;
+                        col = 5;
+                    }
+                    break;
+                case 44:
+                    if (seatNumber == 1)
+                    {
+                        row = 2;
+                        col = 1;
+                    }
+                    else if (seatNumber == 2)
+                    {
+                        row = 2;
+                        col = 1;
+                    }
+                    else if (seatNumber == 3)
+                    {
+                        row = 2;
+                        col = 3;
+                    }
+                    else if (seatNumber == 4)
+                    {
+                        row = 2;
+                        col = 3;
+                    }
+                    else if (seatNumber == 5)
+                    {
+                        row = 2;
+                        col = 5;
+                    }
+                    else if (seatNumber == 6)
+                    {
+                        row = 2;
+                        col = 5;
+                    }
+                    else if (seatNumber == 7)
+                    {
+                        row = 3;
+                        col = 1;
+                    }
+                    else if (seatNumber == 8)
+                    {
+                        row = 3;
+                        col = 1;
+                    }
+                    else if (seatNumber == 9)
+                    {
+                        row = 3;
+                        col = 3;
+                    }
+                    else if (seatNumber == 10)
+                    {
+                        row = 3;
+                        col = 3;
+                    }
+                    else if (seatNumber == 11)
+                    {
+                        row = 3;
+                        col = 5;
+                    }
+                    else if (seatNumber == 12)
+                    {
+                        row = 3;
+                        col = 5;
+                    }
+                    else if (seatNumber == 13)
+                    {
+                        row = 4;
+                        col = 1;
+                    }
+                    else if (seatNumber == 14)
+                    {
+                        row = 4;
+                        col = 1;
+                    }
+                    else if (seatNumber == 15)
+                    {
+                        row = 4;
+                        col = 3;
+                    }
+                    else if (seatNumber == 16)
+                    {
+                        row = 4;
+                        col = 3;
+                    }
+                    else if (seatNumber == 17)
+                    {
+                        row = 4;
+                        col = 5;
+                    }
+                    else if (seatNumber == 18)
+                    {
+                        row = 4;
+                        col = 5;
+                    }
+                    else if (seatNumber == 19)
+                    {
+                        row = 5;
+                        col = 1;
+                    }
+                    else if (seatNumber == 20)
+                    {
+                        row = 5;
+                        col = 1;
+                    }
+                    else if (seatNumber == 21)
+                    {
+                        row = 5;
+                        col = 3;
+                    }
+                    else if (seatNumber == 22)
+                    {
+                        row = 5;
+                        col = 3;
+                    }
+                    else if (seatNumber == 23)
+                    {
+                        row = 5;
+                        col = 5;
+                    }
+                    else if (seatNumber == 24)
+                    {
+                        row = 5;
+                        col = 5;
+                    }
+                    else if (seatNumber == 25)
+                    {
+                        row = 6;
+                        col = 1;
+                    }
+                    else if (seatNumber == 26)
+                    {
+                        row = 6;
+                        col = 1;
+                    }
+                    else if (seatNumber == 27)
+                    {
+                        row = 6;
+                        col = 3;
+                    }
+                    else if (seatNumber == 28)
+                    {
+                        row = 6;
+                        col = 3;
+                    }
+                    else if (seatNumber == 29) 
+                    {
+                        row = 6;
+                        col = 5;
+                    }  else if (seatNumber == 30)
+                    {
+                        row = 6;
+                        col = 5;
+                    }
+                    else if (seatNumber == 31)
+                    {
+                        row = 7;
+                        col = 1;
+                    }
+                    else if (seatNumber == 32)
+                    {
+                        row = 7;
+                        col = 1;
+                    }
+                    else if (seatNumber == 33)
+                    {
+                        row = 7;
+                        col = 5;
+                    }
+                    else if (seatNumber == 34)
+                    {
+                        row = 7;
+                        col = 5;
+                    }
+                    else if (seatNumber == 35)
+                    {
+                        row = 8;
+                        col = 1;
+                    }
+                    else if (seatNumber == 36)
+                    {
+                        row = 8;
+                        col = 1;
+                    }
+                    else if (seatNumber == 37)
+                    {
+                        row = 8;
+                        col = 2;
+                    }
+                    else if (seatNumber == 38)
+                    {
+                        row = 8;
+                        col = 2;
+                    }
+                    else if (seatNumber == 39)
+                    {
+                        row = 8;
+                        col = 3;
+                    }
+                    else if (seatNumber == 40)
+                    {
+                        row = 8;
+                        col = 3;
+                    }
+                    else if (seatNumber == 41) 
+                    {
+                        row = 8;
+                        col = 4;
+                    } else if (seatNumber == 42)
+                    {
+                        row = 8;
+                        col = 4;
+                    }
+                    else if (seatNumber == 43)
+                    {
+                        row = 8;
+                        col = 5;
+                    }
+                    else if (seatNumber == 44) 
+                    {
+                        row = 8;
+                        col = 5;
+                    }
+                    break;
+                default:
+                    row = 1;
+                    col = seatNumber;
+                    break;
+            }
+
+            return (row, col);
+        }
 
 
         [HttpPost("PostCarSeat")]
@@ -320,6 +815,8 @@ namespace BE_API.Controllers
 
             return CreatedAtAction(nameof(GetAllCars), createdSeats);
         }
+
+        
         [HttpPut("putCars/{id}")]
         public async Task<IActionResult> PutCars(int id, car_create cars)
         {
