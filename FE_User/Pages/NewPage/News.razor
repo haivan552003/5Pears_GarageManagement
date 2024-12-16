@@ -3,7 +3,7 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
-<MudContainer Class="pa-0" style="margin-top:95px">
+<MudContainer Class="pa-0" style="margin-top:95px; max-width: 1200px; padding: 0 16px;">
     <div class="border-bottom pb-4 mb-6">
         <MudText Typo="Typo.h5" Class="mb-4">TIN TỨC NỔI BẬT</MudText>
 
@@ -45,7 +45,7 @@
                         </MudCard>
                     }
                 </MudItem>
-                <MudItem xs="12" md="6">
+                <MudItem xs="12" md="6" Class="d-none d-md-block">
                     <MudGrid Spacing="3">
                         @foreach (var news in _news.Skip(1).Take(2))
                         {
