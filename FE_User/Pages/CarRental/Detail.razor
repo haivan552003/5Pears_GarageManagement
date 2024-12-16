@@ -5,6 +5,7 @@
 @inject IJSRuntime js
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
+@inject IDialogService DialogService
 
 
 <MudContainer Class="pt-5">
@@ -468,8 +469,17 @@
     {
         if (customer.driver_license_img1 == null)
         {
-            Snackbar.Add("Cần phải có ảnh giấy phép lái xe", Severity.Error);
-            Navigation.NavigateTo("/profile");
+            bool? result = await DialogService.ShowMessageBox(
+                "Thiếu ảnh giấy phép lái xe",
+                "Bạn chưa tải ảnh giấy phép lái xe. Bạn có muốn chuyển đến trang hồ sơ để cập nhật không?",
+                yesText: "Đi đến Hồ sơ",
+                cancelText: "Hủy"
+            );
+
+            if (result == true)
+            {
+                Navigation.NavigateTo("/profile");
+            }
         }
         else
         {
