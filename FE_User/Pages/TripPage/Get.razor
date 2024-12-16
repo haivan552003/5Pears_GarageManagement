@@ -18,22 +18,32 @@
                     {
                         <MudItem xs="3">
                             <MudStack>
-                                <MudSelect @bind-Value="searchRequest.location_from" Variant="Variant.Outlined" Label="Chọn điểm đi" RequiredError="Vui lòng chọn thông tin">
-                                    @foreach (var location in LocationFroms)
-                                    {
-                                        <MudSelectItem Value="@location">@location</MudSelectItem>
-                                    }
-                                </MudSelect>
+                                <MudAutocomplete T="string"
+                                                 @bind-Value="searchRequest.location_from"
+                                                 Label="Chọn điểm đi"
+                                                 Variant="Variant.Outlined"
+                                                 SearchFunc="SearchLocationAsync"
+                                                 ToStringFunc="(item) => item"
+                                                 ResetValueOnEmptyText="true"
+                                                 OpenIcon="@Icons.Material.Filled.Search"
+                                                 AdornmentIcon="@Icons.Material.Filled.LocationOn"
+                                                 AdornmentColor="Color.Primary"
+                                                 Placeholder="Nhập điểm đi..." />
                             </MudStack>
                         </MudItem>
                         <MudItem xs="3">
                             <MudStack>
-                                <MudSelect @bind-Value="searchRequest.location_to" Variant="Variant.Outlined" Label="Chọn điểm đến" RequiredError="Vui lòng chọn thông tin">
-                                    @foreach (var location in LocationTos)
-                                    {
-                                        <MudSelectItem Value="@location">@location</MudSelectItem>
-                                    }
-                                </MudSelect>
+                                <MudAutocomplete T="string"
+                                                 @bind-Value="searchRequest.location_to"
+                                                 Label="Chọn điểm đến"
+                                                 Variant="Variant.Outlined"
+                                                 SearchFunc="SearchLocationToAsync"
+                                                 ToStringFunc="(item) => item"
+                                                 ResetValueOnEmptyText="true"
+                                                 OpenIcon="@Icons.Material.Filled.Search"
+                                                 AdornmentIcon="@Icons.Material.Filled.LocationOn"
+                                                 AdornmentColor="Color.Primary"
+                                                 Placeholder="Nhập điểm đến..." />
                             </MudStack>
                         </MudItem>
                         <MudItem xs="3">
@@ -49,24 +59,35 @@
                     }
                     else
                     {
-                        <MudItem xs="4">
+                         <MudItem xs="4">
                             <MudStack>
-                                <MudSelect @bind-Value="searchRequest.location_from" Variant="Variant.Outlined" Label="Chọn điểm đi" RequiredError="Vui lòng chọn thông tin">
-                                    @foreach (var location in LocationFroms)
-                                    {
-                                        <MudSelectItem Value="@location">@location</MudSelectItem>
-                                    }
-                                </MudSelect>
+                                <MudAutocomplete T="string"
+                                                 @bind-Value="searchRequest.location_from"
+                                                 Label="Chọn điểm đi"
+                                                 Variant="Variant.Outlined"
+                                                 SearchFunc="SearchLocationAsync"
+                                                 ToStringFunc="(item) => item"
+                                                 ResetValueOnEmptyText="true"
+                                                 OpenIcon="@Icons.Material.Filled.Search"
+                                                 AdornmentIcon="@Icons.Material.Filled.LocationOn"
+                                                 AdornmentColor="Color.Primary"
+                                                 Placeholder="Nhập điểm đi..." />
                             </MudStack>
+                            
                         </MudItem>
                         <MudItem xs="4">
                             <MudStack>
-                                <MudSelect @bind-Value="searchRequest.location_to" Variant="Variant.Outlined" Label="Chọn điểm đến" RequiredError="Vui lòng chọn thông tin">
-                                    @foreach (var location in LocationTos)
-                                    {
-                                        <MudSelectItem Value="@location">@location</MudSelectItem>
-                                    }
-                                </MudSelect>
+                                <MudAutocomplete T="string"
+                                                 @bind-Value="searchRequest.location_to"
+                                                 Label="Chọn điểm đến"
+                                                 Variant="Variant.Outlined"
+                                                 SearchFunc="SearchLocationToAsync"
+                                                 ToStringFunc="(item) => item"
+                                                 ResetValueOnEmptyText="true"
+                                                 OpenIcon="@Icons.Material.Filled.Search"
+                                                 AdornmentIcon="@Icons.Material.Filled.LocationOn"
+                                                 AdornmentColor="Color.Primary"
+                                                 Placeholder="Nhập điểm đến..." />
                             </MudStack>
                         </MudItem>
                         <MudItem xs="4">
@@ -664,5 +685,49 @@
             navigationManager.NavigateTo(url, forceLoad: true);
         }
         StateHasChanged();
+    }
+    private Task<IEnumerable<string>> SearchLocationAsync(string searchText)
+    {
+        IEnumerable<string> result;
+
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            // Trả về danh sách trống khi không nhập gì
+            result = Enumerable.Empty<string>();
+        }
+        else
+        {
+            // Lọc dữ liệu dựa trên từ khóa
+            result = LocationFroms
+                .Where(x => x.Contains(searchText, StringComparison.InvariantCultureIgnoreCase))
+                .ToList();
+        }
+
+        return Task.FromResult(result);
+    }
+    private Task<IEnumerable<string>> SearchLocationToAsync(string searchText)
+    {
+        IEnumerable<string> result;
+
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            // Trả về danh sách trống khi không nhập gì
+            result = Enumerable.Empty<string>();
+        }
+        else
+        {
+            // Lọc dữ liệu dựa trên từ khóa
+            result = LocationTos
+                .Where(x => x.Contains(searchText, StringComparison.InvariantCultureIgnoreCase))
+                .ToList();
+        }
+
+        return Task.FromResult(result);
+    }
+
+    public class SearchRequest
+    {
+        public string location_from { get; set; }
+        public string location_to { get; set; }
     }
 }

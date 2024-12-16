@@ -1,0 +1,23 @@
+﻿<MudDialog Style="border: 1px solid #DDE2E8; border-radius: 1.5rem !important;">
+    <DialogContent>
+        <MudText Typo="Typo.subtitle1" Align="Align.Justify">- <b>Khách hàng:</b> Vui lòng có mặt đúng giờ để làm thủ tục nhận xe.</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Justify">- <b>Giấy phép lái xe :</b> Vui lòng mang theo giấy phép lái xe và căn cước công dân để làm thủ tục.</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Justify">- <b>Quy định:</b></MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Justify" Class="ml-5">* Đối với trường hợp không mang căn cước công dân hoặc giấy phép lái xe thì sẽ không nhận được xe và không hoàn cọc .</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Justify" Class="ml-5">* Đối với trường hợp không đúng thông tin căn cước công dân và giấy phép lái xe thì sẽ không nhận được xe và không hoàn cọc. </MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Justify" Class="ml-5 mb-5">* Hóa đơn sẽ tự hủy khi khách hàng đến trễ hơn 2 tiếng.</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Justify"><b style="color: #F44336;">(*)</b> Chúng tôi mong quý khách tuân thủ các quy định và thoải mái cho tất cả mọi người. Cảm ơn sự hợp tác của bạn!</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Hủy</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}
