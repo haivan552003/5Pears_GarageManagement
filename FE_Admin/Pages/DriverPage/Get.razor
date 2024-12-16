@@ -107,7 +107,61 @@
         </MudItem>
     </MudGrid>
 </MudContainer>
+<script type="module">
+    window.printMultipleEntries = function (options) {
+        // Tạo container chứa các bảng in
+        const printContainer = document.createElement('div');
+        printContainer.id = 'printable-container';
 
+        // Tạo từng bảng riêng cho mỗi entry
+        options.entries.forEach((entry, index) => {
+            // Tạo table
+            const table = document.createElement('table');
+            table.style.marginBottom = '20px'; // Khoảng cách giữa các bảng
+
+            // Tạo tiêu đề
+            const titleRow = document.createElement('caption');
+            titleRow.innerHTML = `<h2>${options.title} ${index + 1}</h2>`;
+            table.appendChild(titleRow);
+
+            // Tạo header
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            options.headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Tạo body
+            const tbody = document.createElement('tbody');
+            const dataRow = document.createElement('tr');
+
+            options.headers.forEach(header => {
+                const td = document.createElement('td');
+                td.textContent = entry[header] || '';
+                dataRow.appendChild(td);
+            });
+
+            tbody.appendChild(dataRow);
+            table.appendChild(tbody);
+
+            // Thêm bảng vào container
+            printContainer.appendChild(table);
+        });
+
+        // Thêm container vào body
+        document.body.appendChild(printContainer);
+
+        // In
+        window.print();
+
+        // Xóa container sau khi in
+        document.body.removeChild(printContainer);
+    };
+</script>
 @code {
     private IEnumerable<driver> Elements = new List<driver>();
     private string _searchString;

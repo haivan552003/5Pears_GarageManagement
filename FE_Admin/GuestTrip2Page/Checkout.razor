@@ -4,6 +4,7 @@
 @inject IJSRuntime js
 @inject NavigationManager Navigation
 @inject IDialogService Dialog
+@inject ISnackbar Snackbar
 
 
 <MudContainer Class="mt-8 mb-5" MaxWidth="MaxWidth.Medium">
@@ -100,11 +101,207 @@
             </MudItem>
         </MudGrid>
     </MudPaper>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+        <MudImage Src="/success.png" Alt="success" />
+    </div>
+    <MudText Class="mt-3 text-center" Typo="Typo.h6" Style="font-size: 1.5rem !important; font-weight: 500 !important;">Mua vé thành công</MudText>
+
+    <MudCard Class="mt-5" Elevation="0" Style="border: 1px solid #DDE2E8; border-radius: 1.5rem !important;">
+        <MudCardHeader Class="py-2 d-flex justify-center align-center" Style="background-color: #F7F7F7;">
+            <MudText Typo="Typo.h6" Style="font-weight: 600 !important;">THÔNG TIN MUA VÉ</MudText>
+        </MudCardHeader>
+
+        <MudCardContent Class="mb-6">
+            <MudGrid>
+                <MudItem xs="6" Class="pb-0">
+                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Mã vé</MudText>
+                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Tuyến xe</MudText>
+                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Thời gian xuất bến</MudText>
+                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Số ghế</MudText>
+                </MudItem>
+
+                <MudItem xs="6" Class="pb-0" Style="display: flex; flex-wrap: wrap; justify-content: flex-end;">              
+                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">@bill.guest_trip_code</MudText>
+                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary" Style="word-wrap: break-word; max-width: 100%;">@bill.location_from (@bill.from) - @bill.location_to (@bill.to)</MudText>
+                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">@bill.time_start</MudText>
+                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">@guest_trip_child.Count()</MudText>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudGrid>
+                        <MudItem xs="4">
+                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Tổng giá vé:</MudText>
+                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">PTTT:</MudText>
+                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Trạng thái:</MudText>
+                        </MudItem>
+                        <MudItem xs="8">
+                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style="">@bill.price</MudText>
+                            <MudText Class="mb-2" Typo="Typo.subtitle1" Style="">VNPay</MudText>
+                            <MudText Class="mb-2 fw-bold" Typo="Typo.subtitle1" Color="Color.Success" Style="">Thành công</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+                 @foreach (var seat in guest_trip_child)
+                    {
+                    <MudItem xs="12" Class="d-flex justify-center align-center">
+                   
+                        <MudPaper Class="p-3" Elevation="0" Style="border: 1px solid #DDE2E8; border-radius: 1rem !important; width: 400px;">
+                            <MudGrid>
+                                <!-- Mỗi MudItem chiếm toàn bộ chiều rộng (xs="12"), tạo chiều dọc -->
+                                <MudItem xs="6" Class="pb-0">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Mã vé</MudText>
+                                </MudItem>
+                                <MudItem xs="6" Class="pb-0">
+                                    <MudText Class="mb-2 fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">@bill.guest_trip_code</MudText>
+                                </MudItem>
+                                <MudItem xs="6" Class="pb-0">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Tuyến xe</MudText>
+                                </MudItem>
+                                <MudItem xs="6" Class="pb-0">
+                                    <MudText Class="mb-2 fw-bold" Typo="Typo.subtitle1" Color="Color.Primary" Style="word-wrap: break-word; max-width: 100%;">@bill.location_from (@bill.from) - @bill.location_to (@bill.to)</MudText>
+                                </MudItem>
+                                <MudItem xs="6" Class="pb-0">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Thời gian xuất bến</MudText>
+                                </MudItem>
+                                <MudItem xs="6" Class="pb-0">
+                                    <MudText Class="mb-2  fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">@bill.time_start</MudText>
+                                </MudItem>
+                                <MudItem xs="6" Class="pb-0">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Số ghế</MudText>
+                                </MudItem>
+                                <MudItem xs="6" Class="pb-0">
+                                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">@seat.seat_name</MudText>
+                                </MudItem>
+                                <MudItem xs="12" Class="pt-0 pb-0">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">
+                                        Quý khách vui lòng có mặt tại bến xe
+                                        <b style="color: #594AE2; font-weight: none;">@bill.location_from (@bill.from)</b>
+                                        <b style="color: #F44336; font-weight: none;">Trước @bill.time_start</b>
+                                        để kiểm tra thông tin trước khi lên xe.
+                                    </MudText>
+                                </MudItem>
+                                <MudItem xs="12" Class="pt-0 pb-0 ">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">
+                                        Điểm trả khách
+                                        <MudButton OnClick="@(() => OpenDialogDown(_policyDown))" Color="Color.Transparent" Style="min-width: 0; padding: 0;">
+                                            <MudIcon Icon="@Icons.Material.Filled.Info" Color="Color.Warning" Title="Info" />
+                                        </MudButton>
+                                    </MudText>
+                                </MudItem>
+                                <MudItem xs="12" Class="pt-0 pb-0 pl-0 ml-6">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1">@bill.location_from (@bill.to)</MudText>
+                                </MudItem>
+                                <MudItem xs="6" Class="pb-0">
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Biển số xe</MudText>
+                                    <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Mã tra cứu hóa đơn</MudText>
+                                </MudItem>
+                                <MudItem xs="6" Class="pb-0">
+                                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">@bill.car_number</MudText>
+                                    <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">@bill.guest_trip_code</MudText>
+                                </MudItem>
+                            </MudGrid>
+                        </MudPaper>
+                   
+                </MudItem>
+                }
+
+                
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+    <MudButton Color="Color.Primary"
+               Variant="Variant.Filled"
+               Class="mt-4 d-block mx-auto"
+         
+               OnClick="PrintTicket"
+               StartIcon="@Icons.Material.Filled.Print">
+        In Vé
+    </MudButton>
 
 </MudContainer>
 
+@* <script type="module">
+    alert("ádsaadassadad");
+    window.printTicketFromBlazor = function (data) {
+        try {
+            // Tạo cửa sổ in
+            var printWindow = window.open('', '', 'width=800,height=600');
+
+            if (!printWindow) {
+                alert('Trình duyệt chặn cửa sổ popup. Vui lòng cho phép popup để in vé.');
+                return;
+            }
+
+            // Tạo nội dung HTML
+            printWindow.document.write('<html><head><title>Vé Xe</title>');
+
+            // CSS in
+            printWindow.document.write(`
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            margin: 20px;
+                        }
+                        .ticket {
+                            border: 1px solid #ddd;
+                            margin-bottom: 20px;
+                            padding: 15px;
+                            page-break-after: always;
+                        }
+                        .ticket-header {
+                            text-align: center;
+                            font-weight: bold;
+                            margin-bottom: 15px;
+                        }
+                        @@media print {
+                            body { margin: 0; }
+                            .ticket {
+                                border: none;
+                                margin: 0;
+                            }
+                        }
+                    </style>
+                `);
+
+            printWindow.document.write('</head><body>');
+
+            // Tiêu đề chung
+            printWindow.document.write(`
+                    <div class="ticket-header">
+                        <h1>VÉ XE</h1>
+                        <p>Mã vé: ${data.Bill.guest_trip_code}</p>
+                    </div>
+                `);
+
+            // In từng vé
+            data.Tickets.forEach(ticket => {
+                printWindow.document.write(`
+                        <div class="ticket">
+                            <h2>Chi Tiết Vé</h2>
+                            <p><strong>Tuyến:</strong> ${data.Bill.location_from} - ${data.Bill.location_to}</p>
+                            <p><strong>Khách Hàng:</strong> ${data.Bill.cus_name}</p>
+                            <p><strong>Số Ghế:</strong> ${ticket.seat_name}</p>
+                            <p><strong>Giá Vé:</strong> ${ticket.price.toLocaleString()} VNĐ</p>
+                            <p><strong>Thời Gian:</strong> ${data.Bill.time_start}</p>
+                        </div>
+                    `);
+            });
+
+            printWindow.document.write('</body></html>');
+
+            // Đóng và in
+            printWindow.document.close();
+            printWindow.print();
+            printWindow.close();
+        } catch (error) {
+            console.error('Lỗi in vé:', error);
+            alert('Có lỗi xảy ra khi in vé.');
+        }
+    };
+</script>
+ *@
 @code {
     private guest_trip_checkout bill = new guest_trip_checkout();
+
     private guest_trip_update bill_update = new guest_trip_update();
     private List<guest_trip_child> guest_trip_child = new List<guest_trip_child>();
     private readonly DialogOptions _policyDown = new() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
@@ -113,37 +310,431 @@
     private string urlUpdateStatusBill = "http://localhost:49922/api/GuestTrip/PutStatus2";
     [Parameter] public int billId { get; set; }
     private string responseCode;
+    private bool _isRendered = false;
 
     protected override async Task OnInitializedAsync()
     {
-        // billId = await js.InvokeAsync<string>("sessionStorage.getItem", "billId");
         try
         {
             var response = await httpClient.GetFromJsonAsync<guest_trip_checkout>($"{url}/{billId}");
 
             bill = response;
             guest_trip_child = response.guest_trip_child.ToList();
+
+            Snackbar.Add("Lấy thông tin hóa đơn thành công", Severity.Success);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Lỗi khi gọi API: {ex.Message}");
+            Snackbar.Add($"Lỗi khi gọi API: {ex.Message}", Severity.Error);
         }
 
         string currentUrl = Navigation.Uri;
-
         var uri = new Uri(currentUrl);
         var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
-
         responseCode = queryParams["vnp_ResponseCode"];
 
         if (responseCode == "00")
         {
             await UpdateStatusBill2();
         }
-        // await js.InvokeVoidAsync("sessionStorage.removeItem", "billId");
-
+        else
+        {
+            Snackbar.Add("Thanh toán chưa thành công", Severity.Warning);
+        }
     }
 
+    // private async Task PrintTicket()
+    // {
+    //     try
+    //     {
+    //         if (bill == null || guest_trip_child == null || !guest_trip_child.Any())
+    //         {
+    //             Snackbar.Add("Không có dữ liệu để in vé", Severity.Warning);
+    //             return;
+    //         }
+
+    //         // Chuyển đổi dữ liệu sang JSON để kiểm tra
+    //         var printData = new
+    //         {
+    //             Bill = bill,
+    //             Tickets = guest_trip_child
+    //         };
+
+    //         // Chuyển đổi sang chuỗi JSON để debug
+    //         var jsonData = JsonSerializer.Serialize(printData);
+    //         Console.WriteLine("Print Data JSON: " + jsonData);
+
+    //         // Đăng ký hàm JavaScript một cách rõ ràng
+    //         await js.InvokeVoidAsync("eval", @"
+    //             window.printTicketFromBlazor = function (jsonData) {
+    //                 try {
+    //                     // Parse dữ liệu JSON
+    //                     console.log('Received JSON data:', jsonData);
+    //                     var data = JSON.parse(jsonData);
+
+    //                     // Kiểm tra dữ liệu
+    //                     console.log('Parsed Bill:', data.Bill);
+    //                     console.log('Parsed Tickets:', data.Tickets);
+
+    //                     // Tạo cửa sổ in
+    //                     var printWindow = window.open('', 'PrintTicket', 'width=800,height=600');
+
+    //                     if (!printWindow) {
+    //                         alert('Trình duyệt chặn cửa sổ popup. Vui lòng cho phép popup để in vé.');
+    //                         return;
+    //                     }
+
+    //                     // Tạo nội dung HTML
+    //                     printWindow.document.write('<html><head><title>Vé Xe</title>');
+
+    //                     // CSS in
+    //                     printWindow.document.write(`
+    //                         <style>
+    //                             body {
+    //                                 font-family: Arial, sans-serif;
+    //                                 margin: 20px;
+    //                             }
+    //                             .ticket {
+    //                                 border: 1px solid #ddd;
+    //                                 margin-bottom: 20px;
+    //                                 padding: 15px;
+    //                                 page-break-after: always;
+    //                             }
+    //                             .ticket-header {
+    //                                 text-align: center;
+    //                                 font-weight: bold;
+    //                                 margin-bottom: 15px;
+    //                             }
+    //                             @media print {
+    //                                 body { margin: 0; }
+    //                                 .ticket {
+    //                                     border: none;
+    //                                     margin: 0;
+    //                                 }
+    //                             }
+    //                         </style>
+    //                     `);
+
+    //                     printWindow.document.write('</head><body>');
+
+    //                     // Kiểm tra và in dữ liệu
+    //                     if (!data || !data.Bill) {
+    //                         printWindow.document.write('<h1>Không có dữ liệu vé</h1>');
+    //                     } else {
+    //                         // Tiêu đề chung
+    //                         printWindow.document.write(`
+    //                             <div class='ticket-header'>
+    //                                 <h1>VÉ XE</h1>
+    //                                 <p>Mã vé: ${data.Bill.guest_trip_code || 'Không có mã vé'}</p>
+    //                             </div>
+    //                         `);
+
+    //                         // In từng vé
+    //                         if (data.Tickets && data.Tickets.length > 0) {
+    //                             data.Tickets.forEach(ticket => {
+    //                                 printWindow.document.write(`
+    //                                     <div class='ticket'>
+    //                                         <h2>Chi Tiết Vé</h2>
+    //                                         <p><strong>Tuyến:</strong> ${data.Bill.location_from || 'Chưa xác định'} - ${data.Bill.location_to || 'Chưa xác định'}</p>
+    //                                         <p><strong>Khách Hàng:</strong> ${data.Bill.cus_name || 'Không tên'}</p>
+    //                                         <p><strong>Số Ghế:</strong> ${ticket.seat_name || 'Chưa chọn ghế'}</p>
+    //                                         <p><strong>Giá Vé:</strong> ${ticket.price ? ticket.price.toLocaleString() + ' VNĐ' : 'Chưa có giá'}</p>
+    //                                         <p><strong>Thời Gian:</strong> ${data.Bill.time_start || 'Chưa xác định'}</p>
+    //                                     </div>
+    //                                 `);
+    //                             });
+    //                         } else {
+    //                             printWindow.document.write('<p>Không có thông tin vé chi tiết</p>');
+    //                         }
+    //                     }
+
+    //                     printWindow.document.write('</body></html>');
+
+    //                     // Đóng và in
+    //                     printWindow.document.close();
+
+    //                     // Thêm log để kiểm tra
+    //                     console.log('Document content:', printWindow.document.body.innerHTML);
+
+    //                     printWindow.print();
+    //                     printWindow.close();
+    //                 } catch (error) {
+    //                     console.error('Lỗi in vé:', error);
+    //                     alert('Có lỗi xảy ra khi in vé: ' + error.message);
+    //                 }
+    //             };
+    //         ");
+
+    //         // Gọi hàm JavaScript để in vé
+    //         await js.InvokeVoidAsync("printTicketFromBlazor", jsonData);
+
+    //         Snackbar.Add("Đang thực hiện in vé", Severity.Info);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Snackbar.Add($"Lỗi in vé: {ex.Message}", Severity.Error);
+    //         Console.WriteLine($"Chi tiết lỗi: {ex}");
+    //     }
+    // }
+
+
+
+
+
+
+    private async Task PrintTicket()
+    {
+        try
+        {
+            if (bill == null || guest_trip_child == null || !guest_trip_child.Any())
+            {
+                Snackbar.Add("Không có dữ liệu để in vé", Severity.Warning);
+                return;
+            }
+
+            // Chuyển đổi dữ liệu sang JSON để kiểm tra
+            var printData = new
+            {
+                Bill = bill,
+                Tickets = guest_trip_child
+            };
+
+            // Chuyển đổi sang chuỗi JSON để debug
+            var jsonData = JsonSerializer.Serialize(printData);
+            Console.WriteLine("Print Data JSON: " + jsonData);
+
+            // Đăng ký hàm JavaScript một cách rõ ràng
+            await js.InvokeVoidAsync("eval", @"
+            window.printTicketFromBlazor = function (jsonData) {
+                try {
+                    // Parse dữ liệu JSON
+                    console.log('Received JSON data:', jsonData);
+                    var data = JSON.parse(jsonData);
+
+                    // Kiểm tra dữ liệu
+                    console.log('Parsed Bill:', data.Bill);
+                    console.log('Parsed Tickets:', data.Tickets);
+
+                    // Tạo cửa sổ in
+                    var printWindow = window.open('', 'PrintTicket', 'width=800,height=600');
+
+                    if (!printWindow) {
+                        alert('Trình duyệt chặn cửa sổ popup. Vui lòng cho phép popup để in vé.');
+                        return;
+                    }
+
+                    // Tạo nội dung HTML
+                    printWindow.document.write('<html><head><title>Vé Xe Chi Tiết</title>');
+
+                    // CSS in
+                    printWindow.document.write(`
+                        <style>
+                            @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+                            * { margin: 0; padding: 0; box-sizing: border-box; }
+
+                            body {
+                                font-family: 'Roboto', Arial, sans-serif;
+                                width: 188.976px;
+                                margin: 0 auto;
+                                padding: 10px;
+                                font-size: 10px;
+                                line-height: 1.4;
+                            }
+
+                            .ticket-container {
+                                border: 1px solid #DDE2E8;
+                                border-radius: 15px;
+                                padding: 10px;
+                                page-break-before: always; /* Force a page break before each ticket */
+                            }
+
+                            .ticket-header {
+                                text-align: center;
+                                margin-bottom: 10px;
+                                border-bottom: 1px solid #e0e0e0;
+                                padding-bottom: 5px;
+                            }
+
+                            .ticket-header h1 {
+                                color: #594AE2;
+                                font-size: 14px;
+                                margin-bottom: 5px;
+                            }
+
+                            .ticket-info {
+                                display: flex;
+                                justify-content: space-between;
+                                margin-bottom: 5px;
+                            }
+
+                            .ticket-info-label {
+                                color: #637280;
+                                font-weight: 400;
+                            }
+
+                            .ticket-info-value {
+                                color: #594AE2;
+                                font-weight: 500;
+                                text-align: right;
+                            }
+
+                            .ticket-section {
+                                margin-bottom: 10px;
+                                border-bottom: 1px solid #e0e0e0;
+                                padding-bottom: 5px;
+                            }
+
+                            .ticket-section-title {
+                                color: #594AE2;
+                                font-weight: 600;
+                                margin-bottom: 5px;
+                            }
+
+                            .ticket-notice {
+                                font-size: 9px;
+                                color: #637280;
+                                margin-top: 5px;
+                            }
+
+                            .text-primary { color: #594AE2; }
+                            .text-danger { color: #F44336; }
+                            .text-success { color: #4CAF50; }
+
+                            @media print {
+                                body {
+                                    width: 100%;
+                                    margin: 0;
+                                }
+                                .ticket-container {
+                                    border: none;
+                                }
+                            }
+                        </style>
+                    `);
+
+                    printWindow.document.write('</head><body>');
+
+                    // Lặp qua mỗi vé và ghế
+                    data.Tickets.forEach(function(ticket, index) {
+                        // In thông tin vé cho từng số ghế, mỗi vé trên một trang
+                        printWindow.document.write(`
+                            <div class='ticket-container'>
+                                <div class='ticket-header'>
+                                    <h1>VÉ XE KHÁCH</h1>
+                                    <div class='ticket-info'>
+                                        <span class='ticket-info-label'>Mã vé:</span>
+                                        <span class='ticket-info-value'>${data.Bill.guest_trip_code || 'N/A'}</span>
+                                    </div>
+                                </div>
+
+                                <div class='ticket-section'>
+                                    <h2 class='ticket-section-title'>Thông Tin Chuyến Xe</h2>
+                                    <div class='ticket-info'>
+                                        <span class='ticket-info-label'>Tuyến:</span>
+                                        <span class='ticket-info-value'>${data.Bill.location_from} - ${data.Bill.location_to}</span>
+                                    </div>
+                                    <div class='ticket-info'>
+                                        <span class='ticket-info-label'>Thời Gian:</span>
+                                        <span class='ticket-info-value'>${data.Bill.time_start}</span>
+                                    </div>
+                                </div>
+
+                                <div class='ticket-section'>
+                                    <h2 class='ticket-section-title'>Thông Tin Khách Hàng</h2>
+                                    <div class='ticket-info'>
+                                        <span class='ticket-info-label'>Tên:</span>
+                                        <span class='ticket-info-value'>${data.Bill.cus_name}</span>
+                                    </div>
+                                    <div class='ticket-info'>
+                                        <span class='ticket-info-label'>Số ĐT:</span>
+                                        <span class='ticket-info-value'>${data.Bill.phone_number || 'Chưa có'}</span>
+                                    </div>
+                                </div>
+
+                                <div class='ticket-section'>
+                                    <h2 class='ticket-section-title'>Chi Tiết Vé</h2>
+                                    <div class='ticket-info'>
+                                        <span class='ticket-info-label'>Số Ghế:</span>
+                                        <span class='ticket-info-value'>${ticket.seat_name || 'Chưa chọn ghế'}</span>
+                                    </div>
+                                    <div class='ticket-info'>
+                                        <span class='ticket-info-label'>Giá Vé:</span>
+                                        <span class='ticket-info-value'>${ticket.price ? ticket.price.toLocaleString() + ' VNĐ' : 'Chưa có giá'}</span>
+                                    </div>
+                                </div>
+
+                                <div class='ticket-section'>
+                                    <h2 class='ticket-section-title'>Điểm Đón/Trả</h2>
+                                    <div class='ticket-info'>
+                                        <span class='ticket-info-label'>Điểm Đón:</span>
+                                        <span class='ticket-info-value'>${data.Bill.location_from}</span>
+                                    </div>
+                                    <div class='ticket-info'>
+                                        <span class='ticket-info-label'>Điểm Trả:</span>
+                                        <span class='ticket-info-value'>${data.Bill.location_to}</span>
+                                    </div>
+                                </div>
+
+                                <div class='ticket-notice'>
+                                    <p>
+                                        Quý khách vui lòng có mặt tại
+                                        <span class='text-primary'>${data.Bill.location_from}</span>
+                                        <span class='text-danger'>Trước ${data.Bill.time_start}</span>
+                                        để kiểm tra thông tin trước khi lên xe.
+                                    </p>
+                                </div>
+
+                                <div class='ticket-section'>
+                                    <div class='ticket-info'>
+                                        <span class='ticket-info-label'>Biển Số Xe:</span>
+                                        <span class='ticket-info-value'>${data.Bill.car_number}</span>
+                                    </div>
+                                    <div class='ticket-info'>
+                                        <span class='ticket-info-label'>Trạng Thái:</span>
+                                        <span class='text-success'>Đã Thanh Toán</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                    });
+
+                    printWindow.document.write('</body></html>');
+                    printWindow.document.close();
+                    printWindow.print();
+                    printWindow.close();
+                } catch (error) {
+                    console.error('Lỗi in vé:', error);
+                    alert('Có lỗi xảy ra khi in vé: ' + error.message);
+                }
+            };
+        ");
+
+            // Gọi hàm JavaScript để in vé
+            await js.InvokeVoidAsync("printTicketFromBlazor", jsonData);
+
+            Snackbar.Add("Đang thực hiện in vé", Severity.Info);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi in vé: {ex.Message}", Severity.Error);
+            Console.WriteLine($"Chi tiết lỗi: {ex}");
+        }
+    }
+
+
+
+
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && responseCode == "00")
+        {
+            await PrintTicket();
+        }
+    }
     private async Task UpdateStatusBill2()
     {
         try

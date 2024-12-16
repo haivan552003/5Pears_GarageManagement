@@ -32,6 +32,8 @@ namespace BE_API.Models
         public string email { get; set; }
         public string phone_number { get; set; }
         public string car_name { get; set; }
+        public string car_number { get; set; }
+
         public string from { get; set; }
         public string to { get; set; }
 

@@ -10,6 +10,7 @@
         public int location_from_id { get; set; }
         public int location_to_id { get; set; }
         public int car_id { get; set; }
+        public string car_number { get; set; }
         public string guest_trip_code { get; set; }
         public string trip_detail_code { get; set; }
         public string emp_name { get; set; }
@@ -68,6 +69,8 @@
         public string email { get; set; }
         public string phone_number { get; set; }
         public string car_name { get; set; }
+        public string car_number { get; set; }
+
         public string from { get; set; }
         public string to { get; set; }
         public List<guest_trip_child> guest_trip_child { get; set; }

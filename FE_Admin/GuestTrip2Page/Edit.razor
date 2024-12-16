@@ -11,11 +11,11 @@
 @inject ISnackbar Snackbar
 
 <style>
-    .fs-14{
+    .fs-14 {
         font-size: 14px;
     }
 
-    .text-gray{
+    .text-gray {
         color: #637280;
     }
 </style>
@@ -32,7 +32,7 @@
                         <MudTextField ShrinkLabel @bind-Value="addCus.phone_number" Label="Số điện thoại" Margin="Margin.Dense" Variant="Variant.Outlined" OnBlur="@SearchPhoneNumber" Required />
                     </MudItem>
                     <MudItem xs="12" sm="6">
-                        <MudTextField ShrinkLabel @bind-Value="addCus.fullname" Label="Họ và tên" Margin="Margin.Dense" Variant="Variant.Outlined" Required/>
+                        <MudTextField ShrinkLabel @bind-Value="addCus.fullname" Label="Họ và tên" Margin="Margin.Dense" Variant="Variant.Outlined" Required />
                     </MudItem>
                     <MudItem xs="12" Class="d-flex justify-end">
                         @if (SaveButton)
@@ -48,47 +48,162 @@
                         <MudText Typo="Typo.h6" Color="Color.Primary">Chọn ghế</MudText>
                     </MudItem>
 
-                    <MudItem xs="10">
-                        <MudGrid>
-                            @foreach (var item in car_seat)
-                            {
-                                var isDisabled = item.status == "Đã đặt" || takenSeats.Contains(item.id.ToString()) || item.name.ToLower() == "tài xế"; ;
-                                var buttonColor = selectedSeats.Contains(item.id) ? Color.Success : Color.Primary;
-
-                                <MudItem xs="2">
-                                    <MudButton Variant="Variant.Outlined"
-                                               Color="@buttonColor"
-                                               Size="Size.Small"
-                                               Disabled="@isDisabled"
-                                               OnClick="() => OnSeatSelected(item.id, item.name)">
+                    @{
+                        int seatCount = car_seat.Count();
+                    }
+                    @if (seatCount == 17)
+                    {
+                        <MudItem xs="4">
+                        </MudItem>
+                        <MudItem xs="4">
+                            <div class="bus-seat-layout">
+                                @foreach (var item in car_seat)
+                                {
+                                    var isDisabled = item.status == "Đã đặt" || takenSeats.Contains(item.id.ToString()) || item.name.ToLower() == "tài xế";
+                                    <button class="btn btn-outline-primary @((isDisabled ? "disabled" : "")) @(selectedSeats.Contains(item.id) ? "btn-outline-success" : "")"
+                                            style="grid-row: @item.row; grid-column: @item.col;"
+                                            disabled="@isDisabled"
+                                            @onclick="() => OnSeatSelected(item.id, item.name)">
                                         @item.name
-                                    </MudButton>
+                                    </button>
+                                }
+                            </div>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudGrid>
+                                <MudItem xs="12" Class="d-flex align-items-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Default" />
+                                    <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đã bán</MudText>
                                 </MudItem>
-                            }
-                        </MudGrid>
-                    </MudItem>
-                    <MudItem xs="2">
+                                <MudItem xs="12" Class="d-flex align-items-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Primary" />
+                                    <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Còn trống</MudText>
+                                </MudItem>
+                                <MudItem xs="12" Class="d-flex align-items-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Success" />
+                                    <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đang chọn</MudText>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+                    }
+                    else if (seatCount == 30)
+                    {
+                        <MudItem xs="3">
+                        </MudItem>
+                        <MudItem xs="5">
+                            <div class="bus-seat-layout29">
+                                @foreach (var item in car_seat)
+                                {
+                                    var isDisabled = item.status == "Đã đặt" || takenSeats.Contains(item.id.ToString()) || item.name.ToLower() == "tài xế";
+                                    <button class="btn btn-outline-primary @((isDisabled ? "disabled" : "")) @(selectedSeats.Contains(item.id) ? "btn-outline-success" : "")"
+                                            style="grid-row: @item.row; grid-column: @item.col;"
+                                            disabled="@isDisabled"
+                                            @onclick="() => OnSeatSelected(item.id, item.name)">
+                                        @item.name
+                                    </button>
+                                }
+                            </div>
+                        </MudItem>
+                        <MudItem xs="4" Class="mt-4">
+                            <MudGrid>
+                                <MudItem xs="12" Class="d-flex align-items-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Default" />
+                                    <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đã bán</MudText>
+                                </MudItem>
+                                <MudItem xs="12" Class="d-flex align-items-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Primary" />
+                                    <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Còn trống</MudText>
+                                </MudItem>
+                                <MudItem xs="12" Class="d-flex align-items-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Success" />
+                                    <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đang chọn</MudText>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+                    }
+                    else if (seatCount == 45)
+                    {
                         <MudGrid>
-                            <MudItem xs="12" Class="d-flex align-items-center">
-                                <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Default" />
-                                <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đã bán</MudText>
+                            <MudItem xs="3"></MudItem>
+                            <MudItem xs="5">
+                                <div class="bus-seat-layout44">
+                                    @foreach (var item in car_seat.Where(seat => int.Parse(seat.id.ToString()) % 2 != 0))
+                                    {
+                                        var isDisabled = item.status == "Đã đặt" || takenSeats.Contains(item.id.ToString()) || item.name.ToLower() == "tài xế";
+                                        <button class="btn btn-outline-primary @((isDisabled ? "disabled" : "")) @(selectedSeats.Contains(item.id) ? "btn-outline-success" : "")"
+                                                style="grid-row: @item.row; grid-column: @item.col;"
+                                                disabled="@isDisabled"
+                                                @onclick="() => OnSeatSelected(item.id, item.name)">
+                                            @item.name
+                                        </button>
+                                    }
+                                </div>
                             </MudItem>
-                            <MudItem xs="12" Class="d-flex align-items-center">
-                                <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Primary" />
-                                <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Còn trống</MudText>
-                            </MudItem>
-                            <MudItem xs="12" Class="d-flex align-items-center">
-                                <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Success" />
-                                <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đang chọn</MudText>
+                            <MudItem xs="4" Class="mt-6">
+                                <MudGrid>
+                                    <MudItem xs="12" Class="d-flex align-items-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Default" />
+                                        <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đã bán</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" Class="d-flex align-items-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Primary" />
+                                        <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Còn trống</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" Class="d-flex align-items-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Success" />
+                                        <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đang chọn</MudText>
+                                    </MudItem>
+                                </MudGrid>
                             </MudItem>
                         </MudGrid>
+                        <MudGrid>
+
+                            <MudItem xs="3"></MudItem>
+                            <MudItem xs="5">
+                                <div class="bus-seat-layout44">
+                                    @foreach (var item in car_seat.Where(seat => int.Parse(seat.id.ToString()) % 2 == 0))
+                                    {
+                                        var isDisabled = item.status == "Đã đặt" || takenSeats.Contains(item.id.ToString()) || item.name.ToLower() == "tài xế";
+                                        <button class="btn btn-outline-primary @((isDisabled ? "disabled" : "")) @(selectedSeats.Contains(item.id) ? "btn-outline-success" : "")"
+                                                style="grid-row: @item.row; grid-column: @item.col;"
+                                                disabled="@isDisabled"
+                                                @onclick="() => OnSeatSelected(item.id, item.name)">
+                                            @item.name
+                                        </button>
+                                    }
+                                </div>
+                            </MudItem>
+                        </MudGrid>
+
+
+
+                    }
+                    else
+                    {
+                        <MudText>Số ghế không hợp lệ: @seatCount</MudText>
+                    }
+                    @*  <MudItem xs="4">
+                    <MudGrid>
+                    <MudItem xs="12" Class="d-flex align-items-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Default" />
+                    <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đã bán</MudText>
                     </MudItem>
+                    <MudItem xs="12" Class="d-flex align-items-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Primary" />
+                    <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Còn trống</MudText>
+                    </MudItem>
+                    <MudItem xs="12" Class="d-flex align-items-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Chair" Color="Color.Success" />
+                    <MudText Typo="Typo.h6" Style="font-size: 12px;" Class="ml-1">Đang chọn</MudText>
+                    </MudItem>
+                    </MudGrid>
+                    </MudItem> *@
 
                 </MudGrid>
             </MudPaper>
 
-            
-                   </MudItem>
+
+        </MudItem>
 
         <MudItem xs="4">
             <MudPaper Class="p-4 mb-5" Elevation="1">
@@ -137,8 +252,8 @@
                 </MudRadioGroup>
             </MudItem>
 
-            
-            @if(Dense_Radio == true)
+
+            @if (Dense_Radio == true)
             {
                 <MudPaper Class="p-4" Elevation="1">
                     <MudGrid>
@@ -235,6 +350,45 @@
         return localStorage.getItem("authToken");
     }
 </script>
+<style>
+    .bus-seat-layout, .bus-seat-layout29, .bus-seat-layout44 {
+        display: grid;
+        grid-gap: 10px;
+        padding: 2px;
+        justify-items: center;
+    }
+
+    .bus-seat-layout {
+        grid-template-columns: repeat(4, 40px);
+        grid-template-rows: repeat(5, 30px);
+    }
+
+    .bus-seat-layout29 {
+        grid-template-columns: repeat(5, 40px);
+        grid-template-rows: repeat(7, 30px);
+    }
+
+    .bus-seat-layout44 {
+        grid-template-columns: repeat(5, 40px);
+        grid-template-rows: repeat(7, 30px);
+    }
+
+    .btn {
+        width: 40px;
+        height: 35px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 10px;
+        padding: 0;
+    }
+
+        .btn:disabled {
+            cursor: not-allowed;
+            background-color: lightgrey
+        }
+
+</style>
 @code {
     private customer addCus = new customer();
     private string errorMessageCheckCus;
@@ -683,7 +837,7 @@
         decimal priceValue = Convert.ToDecimal(TRIPDETAILS.sale);
         _tienThua = _tienKhachDua - priceValue;
         StateHasChanged();
-        if(_tienThua <= 0)
+        if (_tienThua <= 0)
         {
             _tienThua = 0;
         }
