@@ -7,17 +7,26 @@
 
 <style>
     .loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255); /* Màu trắng với độ mờ 50% */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999; /* Đảm bảo overlay hiển thị trên các thành phần khác */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255); /* Màu trắng với độ mờ 50% */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999; /* Đảm bảo overlay hiển thị trên các thành phần khác */
     }
+
+    .mud-card1 {
+        transition: all 0.2s ease-in-out;
+    }
+
+        .mud-card1:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
 
 </style>
 
@@ -33,64 +42,60 @@
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
     <MudGrid>
         <MudItem xs="4">
-
-            <MudCard>
+            <MudLink Href="/gettrip" Class="">
+                <MudCard Class="mud-card1">
                 <MudCardMedia Image="https://th.bing.com/th/id/R.f7be4eedf292d3bab905a5a1656e2fe9?rik=ZETwh%2faJudg0TA&pid=ImgRaw&r=0" Height="250" />
-                <MudCardContent>
-                    <MudText Typo="Typo.subtitle2" Class=" fw-bold text-center">TUYẾN XE</MudText>
-                </MudCardContent>
+               
+                    <MudText Typo="Typo.subtitle2" Class="fw-bold text-center">TUYẾN XE</MudText>
+               
             </MudCard>
-
+            </MudLink>
         </MudItem>
         <MudItem xs="4">
-
-            <MudCard>
+            <MudLink Href="/getcars">
+                <MudCard Class="mud-card1">
                 <MudCardMedia Image="https://th.bing.com/th/id/OIP.sc9mvO-miU9EAO60sOJIQgHaE7?rs=1&pid=ImgDetMain" Height="250" />
-                <MudCardContent>
-                    <MudText Typo="Typo.subtitle2" Class=" fw-bold text-center">XE</MudText>
-                </MudCardContent>
+                
+                    <MudText Typo="Typo.subtitle2" Class="fw-bold text-center">XE</MudText>
+                
             </MudCard>
-
+            </MudLink>
         </MudItem>
         <MudItem xs="4">
-
-            <MudCard>
+            <MudLink Href="/getemp" >
+                <MudCard Class="mud-card1">
                 <MudCardMedia Image="https://th.bing.com/th/id/OIP.prqU3vHWYm2fOQHjj1GlTwHaFO?rs=1&pid=ImgDetMain" Height="250" />
-                <MudCardContent>
-                    <MudText Typo="Typo.subtitle2" Class=" fw-bold text-center">NHÂN VIÊN</MudText>
-                </MudCardContent>
+                
+                    <MudText Typo="Typo.subtitle2" Class="fw-bold text-center">NHÂN VIÊN</MudText>
+               
             </MudCard>
-
+            </MudLink>
         </MudItem>
         <MudItem xs="4">
-
-            <MudCard>
+             <MudLink Href="/getdriver">
+                <MudCard Class="mud-card1">
                 <MudCardMedia Image="https://th.bing.com/th/id/OIP.05pqdFP-RHBKqVXCBZidzQHaE8?rs=1&pid=ImgDetMain" Height="250" />
-                <MudCardContent>
-                    <MudText Typo="Typo.subtitle2" Class=" fw-bold text-center">TÀI XẾ</MudText>
-                </MudCardContent>
+                    <MudText Typo="Typo.subtitle2" Class="fw-bold text-center">TÀI XẾ</MudText>          
             </MudCard>
-
+            </MudLink>
         </MudItem>
         <MudItem xs="4">
-
-            <MudCard>
+            <MudLink Href="/getcustomer">
+                <MudCard Class="mud-card1">
                 <MudCardMedia Image="https://th.bing.com/th/id/R.aa01b55dd7311e4b789a3f05a80988ea?rik=yQat5WYkbcrrug&pid=ImgRaw&r=0" Height="250" />
-                <MudCardContent>
-                    <MudText Typo="Typo.subtitle2" Class=" fw-bold text-center">KHÁCH HÀNG</MudText>
-                </MudCardContent>
+                
+                    <MudText Typo="Typo.subtitle2" Class="fw-bold text-center">KHÁCH HÀNG</MudText>
+               
             </MudCard>
-
+            </MudLink>
         </MudItem>
         <MudItem xs="4">
-
-            <MudCard>
-                <MudCardMedia Image="https://th.bing.com/th/id/OIP.ChW3VAOH2nLYjNPbs8KEXQHaE8?rs=1&pid=ImgDetMain" Height="250" />
-                <MudCardContent>
-                    <MudText Typo="Typo.subtitle2" Class=" fw-bold text-center">DỊCH VỤ</MudText>
-                </MudCardContent>
-            </MudCard>
-
+            <MudLink Href="/index" Class="text-decoration-none">
+                <MudCard Class="mud-card1">
+                    <MudCardMedia Image="https://th.bing.com/th/id/OIP.ChW3VAOH2nLYjNPbs8KEXQHaE8?rs=1&pid=ImgDetMain" Height="250" />
+                        <MudText Typo="Typo.subtitle2" Class="fw-bold text-center">DỊCH VỤ</MudText>
+                </MudCard>
+            </MudLink>
         </MudItem>
     </MudGrid>
 </MudContainer>
@@ -98,7 +103,7 @@
 <script>
     // Lấy token từ localStorage
     function getAuthToken() {
-    return localStorage.getItem("authToken");
+        return localStorage.getItem("authToken");
     }
 </script>
 

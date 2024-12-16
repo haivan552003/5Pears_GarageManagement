@@ -1,4 +1,6 @@
 ﻿@page "/getidcar/{id:int}"
+@using FE_User.Pages.HomePage
+@using FE_User.Pages.TripPage
 @using MudBlazor
 @using System.Text.Json
 @inject HttpClient httpClient
@@ -7,6 +9,7 @@
 @inject NavigationManager Navigation
 @inject IDialogService DialogService
 
+@inject IDialogService Dialog
 
 <MudContainer Class="pt-5">
     <MudGrid>
@@ -232,7 +235,13 @@
 
             <MudGrid Class="mb-4">
                 <MudItem xs="12">
-                    <MudText Typo="Typo.h5" Class="fw-bold">Giấy Tờ Thuê Xe</MudText>
+                    <MudText Typo="Typo.h5" Class="fw-bold">
+                        Giấy Tờ Thuê Xe 
+                        <MudButton OnClick="@(() => OpenDialogDown(_policyDown))" Color="Color.Transparent" Style="min-width: 0; padding: 0;">
+                            <MudIcon Icon="@Icons.Material.Filled.Info" Color="Color.Warning" Title="Info" />
+                        </MudButton>
+                    </MudText>
+                   
                 </MudItem>
                 <MudPaper Elevation="0" Class="pa-4 border-l-4 border-solid mud-border-warning w-100" Style="@($"background:{Colors.Amber.Lighten5};")">
                     <MudGrid>
@@ -268,10 +277,6 @@
 
             <MudGrid Class="mb-4">
                 <MudTable Hover="false" Bordered="true" Elevation="0" Items="elements">
-                    <HeaderContent>
-                        <MudTh>Thời điểm hủy chuyến</MudTh>
-                        <MudTh>Phí hủy chuyến</MudTh>
-                    </HeaderContent>
                     <RowTemplate>
                         <MudTd DataLabel="Nr">Trong vòng 1h sau giữ chỗ</MudTd>
                         <MudTd DataLabel="Sign">Trước chuyến đi >7 ngày</MudTd>
@@ -404,6 +409,7 @@
     private guest_car_create bill = new guest_car_create();
     private List<guest_car_create> elements = new List<guest_car_create>();
     private customer customer = new customer();
+    private readonly DialogOptions _policyDown = new() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
 
     private List<car_img> latestImages;
     private bool loading = false;
@@ -570,5 +576,8 @@
             Console.WriteLine($"Lỗi: {ex.Message}", Severity.Error);
         }
     }
-
+    private Task OpenDialogDown(DialogOptions options)
+    {
+        return Dialog.ShowAsync<DialogCaridDown>("Chính sách thuê xe ", options);
+    }
 }

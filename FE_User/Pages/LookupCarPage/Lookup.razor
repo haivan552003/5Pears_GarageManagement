@@ -1,99 +1,173 @@
 ﻿@page "/lookup"
 @using System.ComponentModel.DataAnnotations
+@using FE_User.Pages.TripPage
 @inject HttpClient Http
+@inject IDialogService Dialog
 
-<main class="container">
-    <div class="d-flex justify-content-center align-items-center pt-50">
-        <div class="card p-4 border-0" style="width: 60%;">
-            <div class="card-body">
-                <h6 class="card-title text-center fw-bold fs-4 mb-5" style="font-size: 1.25rem!important; color: #00613d;">TRA CỨU THÔNG TIN ĐẶT VÉ</h6>
-                <EditForm Model="@lookupModel" OnValidSubmit="OnSubmit"> 
-                    <DataAnnotationsValidator />
-                    <div style="height: 90px;">
-                        <MudGrid>
-                            <MudItem xs="12">
-                                <MudTextField Style="background: #ffff" @bind-Value="lookupModel.PhoneNumber" Label="Số điện thoại" Placeholder="Vui lòng nhập số điện thoại" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                                <p class="text-danger" style="font-size: 14px;">
-                                    <ValidationMessage For="@(() => lookupModel.PhoneNumber)" />
-                                </p>
+<MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="pt-5">
+    <MudItem xs="12" sm="10" md="8">
+        <MudCard Class="p-4" Style="width: 100%; border: none;">
+            <MudCardContent>
+                <MudText Align="Align.Center" Variant="Variant.H6" Class="fw-bold" Style="font-size: 1.25rem!important; color: #00613d;">
+                    TRA CỨU THÔNG TIN ĐẶT VÉ
+                </MudText>
+            </MudCardContent>
+
+            <EditForm Model="@lookupModel" OnValidSubmit="OnSubmit">
+                <DataAnnotationsValidator />
+
+                <!-- Số điện thoại -->
+                <MudGrid Spacing="3" Class="mb-2">
+                    <MudItem xs="12">
+                        <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                            Số điện thoại
+                        </MudText>
+                        <MudTextField T="string"
+                                      @bind-Value="lookupModel.PhoneNumber"
+                                      Variant="Variant.Outlined"
+                                      Placeholder="Vui lòng nhập số điện thoại "
+                                      Margin="Margin.Dense"
+                                      Class="input-field" />
+                        <MudText Color="Color.Error" Typo="Typo.body2" Class="validation-message">
+                            <ValidationMessage For="@(() => lookupModel.PhoneNumber)" />
+                        </MudText>
+                    </MudItem>
+                </MudGrid>
+
+                <!-- Mã vé xe -->
+                <MudGrid Spacing="3" Class="mb-2">
+                    <MudItem xs="12">
+                        <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                            Mã chuyến xe
+                        </MudText>
+                        <MudTextField T="string"
+                                      @bind-Value="lookupModel.TicketCode"
+                                      Variant="Variant.Outlined"
+                                      Placeholder="Vui lòng nhập mã chuyến xe  "
+                                      Margin="Margin.Dense"
+                                      Class="input-field" />
+                        <MudText Color="Color.Error" Typo="Typo.body2" Class="validation-message">
+                            <ValidationMessage For="@(() => lookupModel.TicketCode)" />
+                        </MudText>
+                    </MudItem>
+                </MudGrid>
+
+                <!-- Nút Tra Cứu -->
+                <MudGrid Justify="Justify.Center">
+                    <MudItem xs="12" Class="text-center">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Class="lookup-button"
+                                   OnClick="OnSubmit">
+                            Tra Cứu
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </EditForm>
+
+            @if (lookupResults != null && lookupResults.Count > 0)
+            {
+                @foreach (var result in lookupResults)
+                {
+                    <MudCardContent Class="mb-6 ">
+                        <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center">
+                            <MudItem xs="12" sm="10" md="8">
+                                <MudCard Class="pa-4" Style="background-color: #FFFFFF; border-radius: 1.25rem; border: 1px solid #DDE2E8; width: 100%;">
+                                    <MudText Align="Align.Center" Variant="Variant.H6" Style="font-weight: 600; color: #1976D2;"><strong>THÔNG TIN MUA VÉ</strong></MudText>
+                                    <MudDivider Class="mb-4" Style="border-color: #1976D2;" />
+                                    <MudGrid>
+                                        <!-- Thông tin khách hàng và chuyến đi -->
+                                        <MudItem xs="12" md="6">
+                                            <MudText Style="font-weight: 600; color: #637280; margin-bottom: 8px;"><strong>Họ và tên:</strong></MudText>
+                                            <MudText Style="font-weight: 600; color: #637280; margin-bottom: 8px;"><strong>Số điện thoại:</strong></MudText>
+                                            <MudText Style="font-weight: 600; color: #637280; margin-bottom: 8px;"><strong>Email:</strong></MudText>
+                                            <MudText Style="font-weight: 600; color: #333333; margin-bottom: 8px; width : 150px"><strong>Ngày khởi hành:</strong></MudText>
+                                            <MudText Style="font-weight: 600; color: #333333; margin-bottom: 8px;"><strong>Ngày kết thúc:</strong></MudText>
+                                            <MudText Style="font-weight: 600; color: #333333; margin-bottom: 8px;"><strong>Điểm đón:</strong></MudText>
+                                            <MudText Style="font-weight: 600; color: #333333; margin-bottom: 8px;"><strong>Điểm đến:</strong></MudText>
+                                            <MudText Style="font-weight: 600; color: #333333; margin-bottom: 8px;">
+                                                <strong>
+                                                    Giá vé:  <MudButton OnClick="@(() => OpenDialogPrice(_policyPrice))" Color="Color.Transparent" Style="min-width: 0; padding: 0;">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Info" Color="Color.Warning" Title="Info" />
+                                                    </MudButton>
+                                                </strong>
+                                            </MudText>
+                                        </MudItem>
+                                        <MudItem xs="12" md="6" Style="display: flex; flex-direction: column; align-items: flex-end;">
+                                            <MudText Style="color: #594AE2; margin-bottom: 8px; text-align: right;"><strong>@result.CustomerName</strong></MudText>
+                                            <MudText Style="color: #594AE2; margin-bottom: 8px; text-align: right;"><strong>@result.PhoneNumber</strong></MudText>
+                                            <MudText Style="color: #594AE2; margin-bottom: 8px; width: 500px; text-align: right;"><strong>@result.Email</strong></MudText>
+                                            <MudText Style="color: #D32F2F; margin-bottom: 8px; text-align: right;"><strong>@result.TripStartDate.ToString("dd/MM/yyyy")</strong></MudText>
+                                            <MudText Style="color: #594AE2; margin-bottom: 8px; text-align: right;"><strong>@result.TripEndDate.ToString("dd/MM/yyyy")</strong></MudText>
+                                            <MudText Style="color: #333333; margin-bottom: 8px; text-align: right;"><strong>@result.TripFrom</strong></MudText>
+                                            <MudText Style="color: #333333; margin-bottom: 8px; text-align: right;"><strong>@result.TripTo</strong></MudText>
+                                            <MudText Style="color: #D32F2F; margin-bottom: 8px; text-align: right;"><strong>@result.TripPrice</strong></MudText>
+                                        </MudItem>
+                                    </MudGrid>
+
+                                    <MudDivider Class="my-4" Style="border-color: #594AE2;" />
+
+                                    <!-- Thông tin chuyến đi chi tiết -->
+                                    <MudGrid>
+                                        <MudItem xs="12" md="6">
+                                            <MudText Style="font-weight: 600; color: #637280; margin-bottom: 8px;"><strong>Tên tài xế:</strong></MudText>
+                                            <MudText Style="font-weight: 600; color: #637280; margin-bottom: 8px;"><strong>Biển Số xe</strong></MudText>
+                                            <MudText Style="font-weight: 600; color: #637280; margin-bottom: 8px;"><strong>Màu xe:</strong></MudText>
+                                            <MudText Style="font-weight: 600; color: #637280; margin-bottom: 8px;"><strong>Tên xe:</strong></MudText>
+                                            <MudText Style="font-weight: 600; color: #637280; margin-bottom: 8px;"><strong>Số ghế:</strong></MudText>
+                                        </MudItem>
+                                        <MudItem xs="12" md="6" Style="display: flex; flex-direction: column; align-items: flex-end;">
+                                            <MudText Style="color: #594AE2; margin-bottom: 8px; text-align: right;"><strong>@result.DriverName</strong></MudText>
+                                            <MudText Style="color: #594AE2; margin-bottom: 8px; text-align: right;"><strong>@result.CarNumber</strong></MudText>
+                                            <MudText Style="color: #594AE2; margin-bottom: 8px; text-align: right;"><strong>@result.CarColor</strong></MudText>
+                                            <MudText Style="color: #594AE2; margin-bottom: 8px; text-align: right;"><strong>@result.CarName</strong></MudText>
+                                            <MudText Style="color: #594AE2; margin-bottom: 8px; text-align: right;"><strong>B01</strong></MudText>
+                                        </MudItem>
+                                    </MudGrid>
+
+                                    <MudDivider Class="my-4" Style="border-color: #594AE2;" />
+
+                                    <!-- Thông tin thêm -->
+                                    <MudGrid>
+                                        <MudItem xs="12" Style="margin-bottom: 8px;">
+                                            <MudText Style="color: #333333;">Quý khách vui lòng có mặt tại bến xe trước 1 tiếng ngày thường và trước 1h30 vào ngày lễ</MudText>
+                                        </MudItem>
+
+                                        <MudItem xs="12" Class="pb-0">
+                                            <MudText Style="color: #637280; margin-bottom: 8px;"><strong>Điểm lên xe:</strong></MudText>
+                                            <MudText Style="color: #333333; margin-bottom: 8px;">Khách hàng vui lòng có mặt trước 30p tại bến xe</MudText>
+                                        </MudItem>
+
+                                        <MudItem xs="12" Class="pb-0">
+                                            <MudText Style="color: #637280; margin-bottom: 8px;">
+                                                <strong>
+                                                    Điểm trả khách:
+                                                    <MudButton OnClick="@(() => OpenDialogDown(_policyDown))" Color="Color.Transparent" Style="min-width: 0; padding: 0;">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Info" Color="Color.Warning" Title="Info" />
+                                                    </MudButton>
+                                                </strong>
+                                            </MudText>
+                                            <MudText Style="color: #333333; margin-bottom: 8px;">Khách hàng vui lòng xuống xe kiểm tra kỷ vật tư các nhân nếu có mất ác khi quý khách xuống xe BOXCARS sẽ không chịu trách nhiệm </MudText>
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudCard>
                             </MudItem>
                         </MudGrid>
-                    </div>
-                    <div style="height: 90px;">
-                        <MudGrid>
-                            <MudItem xs="12">
-                                <MudTextField Style="background: #ffff" @bind-Value="lookupModel.TicketCode" Label="Mã vé xe" Placeholder="Vui lòng nhập mã vé" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                                <p class="text-danger" style="font-size: 14px;">
-                                    <ValidationMessage For="@(() => lookupModel.TicketCode)" />
-                                </p>
-                            </MudItem>
-                        </MudGrid>   
-                    </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary" style="width: 224px; font-size: 14px!important; border-radius: 32px;">Tra Cứu</button>
-                    </div>
-                </EditForm>
-
-                @if (lookupResults != null && lookupResults.Count > 0)
-                {
-                    <div class="modal fade show" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog" style="display: block;">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Kết Quả Tra Cứu</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="CloseModal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    @foreach (var result in lookupResults)
-                                    {
-                                        <div class="row mb-4">
-                                            <div class="col-md-6">
-                                                <p><strong>Khách hàng:</strong> @result.CustomerName</p>
-                                                <p><strong>Số điện thoại:</strong> @result.PhoneNumber</p>
-                                                <p><strong>Email:</strong> @result.Email</p>
-
-                                                <p><strong>Ngày khởi hành:</strong> @result.TripStartDate.ToString("dd/MM/yyyy")</p>
-                                                <p><strong>Ngày kết thúc:</strong> @result.TripEndDate.ToString("dd/MM/yyyy")</p>
-                                                <p><strong>Điểm đón:</strong> @result.TripFrom</p>
-                                                <p><strong>Điểm đến:</strong> @result.TripTo</p>
-
-                                                <p><strong>Giá vé:</strong> @result.TripPrice</p>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p><strong>Số ghế:</strong> @result.CarSeat</p>
-                                                <p><strong>Màu xe:</strong> @result.CarColor</p>
-                                                <p><strong>Tên xe:</strong> @result.CarName</p>
-                                                <p><strong>Biển số xe:</strong> @result.CarNumber</p>
-                                                <p><strong>Tên tài xế:</strong> @result.DriverName</p>
-                                                <p><strong>Hiệu xe:</strong> @result.CarBrand</p>
-                                                <p><strong>Loại xe:</strong> @result.CarType</p>
-                                                <p><strong>Trạng thái chuyến xe:</strong> @result.TripStatus</p>
-                                            </div>
-                                        </div>
-                                        <hr />
-                                    }
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger me-2" data-bs-dismiss="modal" @onclick="CloseModal">Thoát</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </MudCardContent>
                 }
+            }
+        </MudCard>
+    </MudItem>
+</MudGrid>
 
-                @if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    <div class="alert alert-danger mt-4">@errorMessage</div>
-                }
-            </div>
-        </div>
-    </div>
-</main>
 
 @code {
     private LookupModel lookupModel = new LookupModel();
     private List<lookup> lookupResults = new List<lookup>();
     private string errorMessage;
+    private bool isDialogVisible = false;
+    private readonly DialogOptions _policyDown = new() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
+    private readonly DialogOptions _policyPrice = new() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
 
     private async Task OnSubmit()
     {
@@ -109,6 +183,10 @@
             {
                 errorMessage = "Không tìm thấy thông tin đặt vé!";
             }
+            else
+            {
+                isDialogVisible = true; // Bật modal khi có dữ liệu
+            }
         }
         else
         {
@@ -117,7 +195,7 @@
     }
     private void CloseModal()
     {
-       
+        isDialogVisible = false;
     }
 
     public class LookupModel
@@ -130,4 +208,12 @@
         public string? TicketCode { get; set; }
     }
 
+    private Task OpenDialogDown(DialogOptions options)
+    {
+        return Dialog.ShowAsync<DialogPolicyDown>("Đón trả khách", options);
+    }
+    private Task OpenDialogPrice(DialogOptions options)
+    {
+        return Dialog.ShowAsync<DialogPolicyPrice>("Chính sách hủy vé", options);
+    }
 }
