@@ -6,7 +6,7 @@
     <MudGrid Class="pa-0">
         <NavProfileUser />
 
-        <MudItem xs="9">
+        <MudItem xs="12" md="9">
             <MudGrid Class="pa-0">
                 <MudItem xs="12">
                     <MudPaper Elevation="0" Class="mb-3" Style="@($"color:{Colors.Grey.Darken4}; background:{Colors.Grey.Lighten4};")">
@@ -60,13 +60,15 @@
                                         }
                                         else @* if (context.Item.status == 1 && context.Item.status== 5) *@
                                         {
-                                            <MudIconButton Icon="@Icons.Material.Filled.Payment" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" />
-                                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                                           Variant="Variant.Filled"
-                                                           Color="Color.Error"
-                                                           Size="Size.Small"
-                                                           OnClick="@(() => OpenDeleteDialog(context.Item))" />
-                                           
+                                            <div class="d-flex justify-content-end">
+                                                <MudIconButton Icon="@Icons.Material.Filled.Payment" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" />
+                                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                                               Class="ml-3"
+                                                               Variant="Variant.Filled"
+                                                               Color="Color.Error"
+                                                               Size="Size.Small"
+                                                               OnClick="@(() => OpenDeleteDialog(context.Item))" />
+                                            </div>
                                         }
                                     </CellTemplate>
                                 </TemplateColumn>

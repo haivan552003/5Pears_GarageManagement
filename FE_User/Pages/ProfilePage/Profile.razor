@@ -11,12 +11,12 @@
 
         <NavProfileUser />
 
-        <MudItem xs="9">
+        <MudItem xs="12" md="9">
             <MudPaper Elevation="2" Class="mb-5">
                 <MudText Class="pa-3 fw-bold text-uppercase" Typo="Typo.subtitle1">Thông tin tài khoản</MudText>
 
                 <MudGrid>
-                    <MudItem xs="4" Class="pa-5">
+                    <MudItem xs="12" sm="4" Class="pa-5">
                         <InputFile id="profileImageInput" OnChange="@LoadEmpImage" hidden accept=".jpg,.jpeg,.png" />
                         <MudCard Elevation="0" Class="mb-4">
                             @if (!string.IsNullOrEmpty(newRoleTask.img_cus))
@@ -47,7 +47,7 @@
                         </MudCard>
                     </MudItem>
 
-                    <MudItem xs="8" Class="pa-5">
+                    <MudItem xs="12" sm="8" Class="pa-5">
                         <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Họ và tên</MudText>
                         <MudTextField Class="mb-3" ShrinkLabel @bind-Value="newRoleTask.fullname" Variant="Variant.Outlined" Required="true" />
 
@@ -77,7 +77,7 @@
 
             <MudPaper Elevation="2" Class="mb-5">
                 <MudGrid>
-                    <MudItem xs="4" Class="pa-5">
+                    <MudItem xs="12" sm="4" Class="pa-5">
                         <InputFile id="idCardImageInput" OnChange="@LoadEmpImage1" hidden accept=".jpg,.jpeg,.png" />
                         <MudCard Elevation="0">
                             @if (!string.IsNullOrEmpty(newRoleTask.citizen_identity_img1))
@@ -108,7 +108,7 @@
                         </MudCard>
                     </MudItem>
 
-                    <MudItem xs="8" Class="pa-5">
+                    <MudItem xs="12" sm="8" Class="pa-5">
                        
 
                         <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Số CCCD</MudText>
@@ -119,7 +119,7 @@
 
             <MudPaper Elevation="2" Class="mb-5">
                 <MudGrid>
-                    <MudItem xs="4" Class="pa-5">
+                    <MudItem xs="12" sm="4" Class="pa-5">
                         <InputFile id="idCardImageInput2" OnChange="@LoadEmpImage2" hidden accept=".jpg,.jpeg,.png" />
                         <MudCard Elevation="0">
                             @if (!string.IsNullOrEmpty(newRoleTask.driver_license_img1))
@@ -150,7 +150,7 @@
                         </MudCard>
                     </MudItem>
 
-                    <MudItem xs="8" Class="pa-5">
+                    <MudItem xs="12" sm="8" Class="pa-5">
                         <MudText Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.subtitle1">Số GPLX</MudText>
                         <MudTextField Class="mb-3" ShrinkLabel @bind-Value="newRoleTask.driver_license_number" Variant="Variant.Outlined" Required="true" />
                     </MudItem>

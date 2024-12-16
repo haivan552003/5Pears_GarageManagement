@@ -1,4 +1,5 @@
-﻿@page "/GetIntroduce"
+﻿@using MudBlazor
+@page "/GetIntroduce"
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-5 mb-5">
     <MudPaper Class="p-5 mud-elevation-3 rounded-4">
@@ -9,7 +10,7 @@
             "Chất Lượng Là Danh Dự"
         </MudText>
 
-        <MudText Typo="Typo.body1" Class="justify-text mb-5">
+        <MudText Align="Align.Justify" Typo="Typo.body1" Class="justify-text mb-5">
             Công ty TNHH và dịch vụ 5PEARS - 5PEARS BOXCARS được thành lập năm 2001. Với hoạt động kinh doanh chính trong lĩnh vực mua bán ô tô,
             vận tải hành khách, bất động sản và dịch vụ, Boxcars dần trở thành cái tên quen thuộc đồng hành cùng người Việt
             trên mọi lĩnh vực. Chúng tôi tự hào trở thành doanh nghiệp vận tải nòng cốt, đóng góp tích cực vào sự phát triển
@@ -20,16 +21,10 @@
 
         <MudGrid Spacing="3" AlignItems="Center" Class="mb-5">
             <MudItem xs="12" md="6">
-                <MudCard Class="h-100 mud-elevation-4 rounded-4">
-                    <MudCardMedia Image="https://tse1.mm.bing.net/th?id=OIP.ZFIPB7sR70N23HVLVPI-KwHaEo&pid=Api&P=0&h=220"
-                                  Alt="Tầm Nhìn và Sứ Mệnh" Class="rounded-4" />
-                </MudCard>
-            </MudItem>
-            <MudItem xs="12" md="6">
                 <MudText Typo="Typo.h4" Color="Color.Secondary" Align="Align.Left" Class="mb-2">
                     <MudIcon Icon="@Icons.Material.Filled.Flag" Class="me-2" /> Tầm Nhìn Và Sứ Mệnh
                 </MudText>
-                <MudText Typo="Typo.body2" Class="justify-text">
+                <MudText Align="Align.Justify" Typo="Typo.body2" Class="justify-text">
                     <b>Báo đáp tổ quốc vì một Việt Nam hùng cường.</b><br />
                     Trở thành tập đoàn uy tín và chất lượng hàng đầu Việt Nam với cam kết:
                     <ul>
@@ -39,6 +34,13 @@
                     </ul>
                 </MudText>
             </MudItem>
+            <MudItem xs="12" md="6">
+                <MudCard Class="h-100 mud-elevation-4 rounded-4">
+                    <MudCardMedia Image="https://tse1.mm.bing.net/th?id=OIP.ZFIPB7sR70N23HVLVPI-KwHaEo&pid=Api&P=0&h=220"
+                                  Alt="Tầm Nhìn và Sứ Mệnh"
+                                  Class="rounded-4"/>
+                </MudCard>
+            </MudItem>
         </MudGrid>
 
         <MudGrid Spacing="3" AlignItems="Center" Class="mb-5">
@@ -46,7 +48,7 @@
                 <MudText Typo="Typo.h4" Color="Color.Info" Align="Align.Left" Class="mb-2">
                     <MudIcon Icon="@Icons.Material.Filled.Star" Class="me-2" /> Giá Trị Cốt Lõi
                 </MudText>
-                <MudText Typo="Typo.body2" Class="justify-text">
+                <MudText Align="Align.Justify" Typo="Typo.body2" Class="justify-text">
                     Xe khách đóng vai trò quan trọng trong việc cung cấp phương tiện giao thông công cộng, giúp giảm kẹt xe
                     và ô nhiễm môi trường. Ngoài ra, nó cũng là yếu tố then chốt trong ngành du lịch và vận tải, mang lại sự
                     thuận tiện cho hành khách và du khách.
@@ -62,21 +64,22 @@
 
         <MudGrid Spacing="3" AlignItems="Center" Class="mb-5">
             <MudItem xs="12" md="6">
-                <MudCard Class="mud-elevation-4 rounded-4">
-                    <MudCardMedia Image="https://tse3.mm.bing.net/th?id=OIP.1yuyab39iaQi6uNgFnNgrQHaE-&pid=Api&P=0&h=220"
-                                  Alt="Triết Lý" Class="rounded-4" />
-                </MudCard>
-            </MudItem>
-            <MudItem xs="12" md="6">
                 <MudText Typo="Typo.h4" Color="Color.Warning" Align="Align.Left" Class="mb-2">
                     <MudIcon Icon="@Icons.Material.Filled.Bolt" Class="me-2" /> Triết Lý
                 </MudText>
-                <MudText Typo="Typo.body2" Class="justify-text">
+                <MudText Align="Align.Justify" Typo="Typo.body2" Class="justify-text">
                     Hội nhập và phát triển góp phần vào sự thịnh vượng của đất nước. Chúng tôi coi nhân lực là tài sản lớn nhất,
                     chú trọng tạo ra môi trường làm việc hiện đại và trao cơ hội phát triển cho mọi thành viên. Sự hài lòng của
                     khách hàng chính là minh chứng cho chất lượng dịch vụ mà chúng tôi không ngừng cải tiến.
                 </MudText>
             </MudItem>
+            <MudItem xs="12" md="6">
+                <MudCard Class="mud-elevation-4 rounded-4">
+                    <MudCardMedia Image="https://tse3.mm.bing.net/th?id=OIP.1yuyab39iaQi6uNgFnNgrQHaE-&pid=Api&P=0&h=220"
+                                  Alt="Triết Lý" Class="rounded-4" />
+                </MudCard>
+            </MudItem>
+            
         </MudGrid>
     </MudPaper>
 </MudContainer>
