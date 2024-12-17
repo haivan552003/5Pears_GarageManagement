@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BE_API.Controllers
@@ -223,6 +224,54 @@ namespace BE_API.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpPost("AddImgCarDriver")]
+        public async Task<ActionResult> AddImg(AddImgCarDriver request)
+        {
+            try
+            {
+                var parameters = new DynamicParameters(request);
+
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var result = await connection.ExecuteAsync("sp_update_gcd_img", parameters, commandType: CommandType.StoredProcedure);
+
+                    if (result > 0)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi: {ex.Message}");
+            }
+        }
+        [HttpGet("GetImg/{id}")]
+        public async Task<ActionResult<List<GetImgGcd>>> GetImgByID(int id)
+        {
+            var procedureName = "sp_get_id_gcd_img";
+            var parameters = new DynamicParameters();
+            parameters.Add("@guest_car_driver_Id", id, DbType.Int32, ParameterDirection.Input);
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                var images = await connection.QueryAsync<GetImgGcd>(
+                    procedureName, parameters, commandType: CommandType.StoredProcedure);
+
+                if (images == null || !images.Any())
+                {
+                    return NotFound();
+                }
+                return Ok(images.ToList());
+            }
         }
     }
 }

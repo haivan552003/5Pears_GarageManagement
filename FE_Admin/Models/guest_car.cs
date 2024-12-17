@@ -66,4 +66,15 @@
         public DateTime? date_start { get; set; }
         public DateTime? date_end { get; set; }
     }
+    public class AddImgGC
+    {
+        public string img_name { get; set; }
+        public int guest_car_Id { get; set; }
+    }
+    public class GetImgGC
+    {
+        public int id { get; set; }
+        public string img_car { get; set; }
+        public int guest_car_id { get; set; }
+    }
 }
