@@ -176,7 +176,6 @@ namespace BE_API.Controllers
                 await connection.OpenAsync();
 
                 var result = await connection.ExecuteAsync("sp_update_status_10_guest_car", parameters, commandType: CommandType.StoredProcedure);
-
                 if (result == 0)
                 {
                     return NotFound();
@@ -294,6 +293,54 @@ namespace BE_API.Controllers
                 {
                     return Ok(false);
                 }
+            }
+        }
+
+        [HttpPost("AddImgCarDriver")]
+        public async Task<ActionResult> AddImg(AddImgGC request)
+        {
+            try
+            {
+                var parameters = new DynamicParameters(request);
+
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var result = await connection.ExecuteAsync("sp_update_gc_img", parameters, commandType: CommandType.StoredProcedure);
+
+                    if (result > 0)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi: {ex.Message}");
+            }
+        }
+        [HttpGet("GetImg/{id}")]
+        public async Task<ActionResult<List<GetImgGC>>> GetImgByID(int id)
+        {
+            var procedureName = "sp_get_id_gc_img";
+            var parameters = new DynamicParameters();
+            parameters.Add("@guest_car_Id", id, DbType.Int32, ParameterDirection.Input);
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                var images = await connection.QueryAsync<GetImgGC>(
+                    procedureName, parameters, commandType: CommandType.StoredProcedure);
+
+                if (images == null || !images.Any())
+                {
+                    return NotFound();
+                }
+                return Ok(images.ToList());
             }
         }
 

@@ -129,14 +129,14 @@
                                 }
                                 else if (bill.status == 9)
                                 {
-@*                                     <MudItem xs="2" Class="mb-4">
-                                        <MudTextField ShrinkLabel
-                                                      Label="Hoàn tiền"
-                                                      T="float"
-                                                      @bind-Value="bill.return_money"
-                                                      Variant="Variant.Outlined"
-                                                      ReadOnly="true" />
-                                    </MudItem> *@
+                                    @*                                     <MudItem xs="2" Class="mb-4">
+                                <MudTextField ShrinkLabel
+                                Label="Hoàn tiền"
+                                T="float"
+                                @bind-Value="bill.return_money"
+                                Variant="Variant.Outlined"
+                                ReadOnly="true" />
+                                </MudItem> *@
                                     <MudItem xs="3" Class="mb-4">
                                         <MudTextField ShrinkLabel
                                                       Label="Trạng thái"
@@ -156,9 +156,46 @@
                                                       Variant="Variant.Outlined"
                                                       ReadOnly="true" />
                                     </MudItem>
+                                    @*   <MudItem xs="3">
+                                <MudCard Elevation="0" Class="mb-4">
+                                <InputFile OnChange="LoadCarDriverImages" hidden multiple accept=".jpg,.jpeg,.png" id="carDriverImageUpload" />
+                                <MudCard>
+                                <div class="image-scroll-container">
+@foreach (var previewUrl in imagePreviewUrls)
+                                {
+                                <div class="image-scroll-item">
+                                <img src="@previewUrl" alt="Preview" />
+
+                                </div>
+                                }
+                                </div>
+
+                                <MudCardActions>
+                                <MudButton HtmlTag="label"
+                                For="carDriverImageUpload"
+                                Variant="Variant.Filled"
+                                Color="Color.Secondary"
+                                StartIcon="@Icons.Material.Filled.CloudUpload"
+                                FullWidth="true"
+                                Disabled="@isUploading">
+                                @(isUploading ? "Đang tải..." : "Chọn ảnh")
+                                </MudButton>
+
+                                <MudButton Variant="Variant.Filled"
+                                Color="Color.Primary"
+                                Disabled="@(imgs.Count == 0 || isUploading)"
+                                OnClick="AddMultipleImgs"
+                                FullWidth="true">
+                                Tải nhiều ảnh
+                                </MudButton>
+                                </MudCardActions>
+                                </MudCard>
+                                </MudCard>
+                                </MudItem> *@
                                 }
                                 else if (bill.status == 11)
                                 {
+
                                     <MudItem xs="3" Class="mb-4">
                                         <MudTextField ShrinkLabel
                                                       Label="Trạng thái"
@@ -167,6 +204,18 @@
                                                       Variant="Variant.Outlined"
                                                       ReadOnly="true" />
                                     </MudItem>
+                                    @* <MudItem xs="3">
+                                <MudCard Elevation="0" Class="mb-4">
+                                <div class="image-scroll-container">
+                                @foreach (var imageUrl in imagePreviewUrls)
+                                {
+                                <div class="image-scroll-item">
+                                <img src="@imageUrl" alt="Hình ảnh" />
+                                </div>
+                                }
+                                </div>
+                                </MudCard>
+                                </MudItem> *@
                                 }
                                 else if (bill.status == 12)
                                 {
@@ -178,6 +227,18 @@
                                                       Variant="Variant.Outlined"
                                                       ReadOnly="true" />
                                     </MudItem>
+                                    @* <MudItem xs="3">
+                                <MudCard Elevation="0" Class="mb-4">
+                                <div class="image-scroll-container">
+                                @foreach (var imageUrl in imagePreviewUrls)
+                                {
+                                <div class="image-scroll-item">
+                                <img src="@imageUrl" alt="Hình ảnh" />
+                                </div>
+                                }
+                                </div>
+                                </MudCard>
+                                </MudItem> *@
                                 }
                                 else if (bill.status == 13)
                                 {
@@ -189,6 +250,18 @@
                                                       Variant="Variant.Outlined"
                                                       ReadOnly="true" />
                                     </MudItem>
+                                    @*  <MudItem xs="3">
+                                <MudCard Elevation="0" Class="mb-4">
+                                <div class="image-scroll-container">
+                                @foreach (var imageUrl in imagePreviewUrls)
+                                {
+                                <div class="image-scroll-item">
+                                <img src="@imageUrl" alt="Hình ảnh" />
+                                </div>
+                                }
+                                </div>
+                                </MudCard>
+                                </MudItem> *@
                                 }
                                 else if (bill.status == 14)
                                 {
@@ -242,6 +315,68 @@
                     </MudPaper>
                 </MudItem>
             </MudPaper>
+            @if (bill.status == 10 || bill.status == 11 || bill.status == 12 || bill.status == 13)
+            {
+                <MudPaper Elevation="0" Class="pa-3 mt-3">
+                    <MudText Typo="Typo.h6" Class="mb-3">Quản lý hình ảnh</MudText>
+
+                    <MudGrid>
+                        <MudItem xs="12" Class="d-flex flex-column">
+                            <MudCard Elevation="0" Class="mb-4">
+                                @if (bill.status == 10)
+                                {
+                                    <InputFile OnChange="LoadCarDriverImages" hidden multiple accept=".jpg,.jpeg,.png" id="carDriverImageUpload" />
+                                }
+
+                                <MudCardContent>
+                                    <div class="image-scroll-container" style="max-height: 300px; overflow-x: auto; white-space: nowrap;">
+                                        @foreach (var previewUrl in imagePreviewUrls)
+                                        {
+                                            <div class="image-scroll-item d-inline-block me-2" style="width: 200px; height: 200px; display: inline-flex; justify-content: center; align-items: center;">
+                                                <MudImage Src="@previewUrl"
+                                                          Alt="Preview"
+                                                          Height="200"
+                                                          Width="200"
+                                                          ObjectFit="ObjectFit.Cover"
+                                                          Class="rounded-lg" />
+                                            </div>
+                                        }
+
+                                        @if (!imagePreviewUrls.Any())
+                                        {
+                                            <MudText Typo="Typo.body2" Class="text-center mt-4">Chưa có hình ảnh</MudText>
+                                        }
+                                    </div>
+                                </MudCardContent>
+
+                                @if (bill.status == 10)
+                                {
+                                    <MudCardActions>
+                                        <MudButton HtmlTag="label"
+                                                   For="carDriverImageUpload"
+                                                   Variant="Variant.Filled"
+                                                   Color="Color.Secondary"
+                                                   StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                   FullWidth="true"
+                                                   Disabled="@isUploading">
+                                            @(isUploading ? "Đang tải..." : "Chọn ảnh")
+                                        </MudButton>
+
+                                        <MudButton Variant="Variant.Filled"
+                                                   Color="Color.Primary"
+                                                   Disabled="@(imgs.Count == 0 || isUploading)"
+                                                   OnClick="AddMultipleImgs"
+                                                   FullWidth="true"
+                                                   Class="ms-2">
+                                            @(isUploading ? "Đang tải..." : "Lưu ảnh")
+                                        </MudButton>
+                                    </MudCardActions>
+                                }
+                            </MudCard>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            }
         </MudItem>
     </MudGrid>
 </MudContainer>
@@ -264,6 +399,11 @@
 @code {
     [Parameter] public int Id { get; set; }
     private string statusText;
+    private AddImgCarDriver img = new AddImgCarDriver();
+    private List<AddImgCarDriver> imgs = new List<AddImgCarDriver>();
+    private List<string> imagePreviewUrls = new List<string>();
+    private List<GetImgGcd> billImages = new List<GetImgGcd>();
+
     private GuestCarDriver bill = new GuestCarDriver();
     private List<dropdown> customer = new List<dropdown>();
     private List<dropdown> emp = new List<dropdown>();
@@ -285,11 +425,257 @@
     private string urlStatus13 = "http://localhost:49922/api/GuestCarDriver/PutStatus13/";
     private string urlStatus14 = "http://localhost:49922/api/GuestCarDriver/PutStatus14/";
 
+    private string urladdImg = "http://localhost:49922/api/GuestCarDriver/AddImgCarDriver";
+    private string imagePreview;
+
     private int empId;
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+    private async Task LoadBillImages()
+    {
+        try
+        {
+            if (bill.status == 11 || bill.status == 12 || bill.status == 13)
+            {
+                var response = await httpClient.GetFromJsonAsync<List<GetImgGcd>>($"{url}/GetImg/{Id}");
 
+                if (response != null && response.Any())
+                {
+                    billImages = response;
+
+                    imagePreviewUrls.Clear();
+                    imagePreviewUrls.AddRange(billImages.Select(img => img.img_car));
+
+                    StateHasChanged();
+                }
+                else
+                {
+                    Snackbar.Add("Không tìm thấy ảnh", Severity.Warning);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Không tìm thấy ảnh: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task AddImg()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(img.img_name))
+            {
+                Snackbar.Add("Vui lòng chọn hình ảnh", Severity.Warning);
+                return;
+            }
+
+            isUploading = true;
+            img.guest_car_driver_Id = Id;
+
+            var response = await httpClient.PostAsJsonAsync(urladdImg, img);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Tải ảnh thành công", Severity.Success);
+                _selectedFile = null;
+            }
+            else
+            {
+                Snackbar.Add($"Tải ảnh thất bại: {response.StatusCode}", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗiiii: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isUploading = false;
+        }
+    }
+    private async Task LoadCarDriverImages(InputFileChangeEventArgs e)
+    {
+        int totalImageCount = imagePreviewUrls.Count + e.GetMultipleFiles().Count();
+        if (totalImageCount > 10)
+        {
+            Snackbar.Add("Chỉ được tải tối đa 10 hình ảnh", Severity.Warning);
+            return;
+        }
+
+        var tasks = e.GetMultipleFiles().Select(async file =>
+        {
+            try
+            {
+                var resizedFile = await file.RequestImageFileAsync("image/jpeg", 300, 300);
+                using var stream = resizedFile.OpenReadStream(5 * 1024 * 1024);
+                var buffer = new byte[stream.Length];
+                await stream.ReadAsync(buffer, 0, buffer.Length);
+                var base64String = Convert.ToBase64String(buffer);
+
+                string fileName = $"image_car_driver_{Id}_{Guid.NewGuid()}";
+                string imageUrl = await UploadImageToFirebase(fileName, base64String);
+
+                if (!string.IsNullOrEmpty(imageUrl))
+                {
+                    var imgCarDriver = new AddImgCarDriver
+                        {
+                            guest_car_driver_Id = Id,
+                            img_name = imageUrl
+                        };
+
+                    return imgCarDriver;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Lỗi xử lý hình ảnh: {ex.Message}", Severity.Error);
+                return null;
+            }
+        });
+
+        var imageObjects = await Task.WhenAll(tasks);
+        var newImgs = imageObjects.Where(img => img != null).ToList();
+        if (imgs.Count + newImgs.Count > 10)
+        {
+            Snackbar.Add("Chỉ được tải tối đa 10 hình ảnh", Severity.Warning);
+            return;
+        }
+
+        imgs.AddRange(newImgs);
+        imagePreviewUrls.Clear();
+        imagePreviewUrls.AddRange(imgs.Select(i => i.img_name));
+    }
+
+    private async Task AddMultipleImgs()
+    {
+        try
+        {
+            if (imgs.Count == 0)
+            {
+                Snackbar.Add("Vui lòng chọn hình ảnh", Severity.Warning);
+                return;
+            }
+
+            if (imgs.Count > 10)
+            {
+                Snackbar.Add("Chỉ được tải tối đa 10 hình ảnh", Severity.Warning);
+                return;
+            }
+
+            isUploading = true;
+            int successCount = 0;
+            int failCount = 0;
+            foreach (var imgToUpload in imgs)
+            {
+                try
+                {
+                    var response = await httpClient.PostAsJsonAsync(urladdImg, imgToUpload);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        successCount++;
+                    }
+                    else
+                    {
+                        failCount++;
+                    }
+                }
+                catch
+                {
+                    failCount++;
+                }
+            }
+            if (successCount > 0)
+            {
+                Snackbar.Add($"Tải lên {successCount} ảnh thành công", Severity.Success);
+                await LoadBillImages();
+            }
+
+            if (failCount > 0)
+            {
+                Snackbar.Add($"Có {failCount} ảnh tải lên thất bại", Severity.Warning);
+            }
+            imgs.Clear();
+            imagePreviewUrls.Clear();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isUploading = false;
+        }
+    }
+
+    private IBrowserFile _selectedFile;
+    private bool isUploading = false;
+
+    private async Task<string> GetBase64Image(IBrowserFile file)
+    {
+        try
+        {
+            using var memoryStream = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(memoryStream);
+            return Convert.ToBase64String(memoryStream.ToArray());
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi xử lý hình ảnh: {ex.Message}", Severity.Error);
+            return null;
+        }
+    }
+    private async Task<string> UploadImageToFirebase(string fileName, string base64String)
+    {
+        try
+        {
+            var response = await js.InvokeAsync<string>("uploadImage", fileName, base64String);
+            img.img_name = response;
+            return response;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi tải ảnh lên: {ex.Message}", Severity.Error);
+            return null;
+        }
+    }
+    private async Task LoadImage(InputFileChangeEventArgs e, Action<string> setImageUrl)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            try
+            {
+                var resizedFile = await file.RequestImageFileAsync("image/jpeg", 300, 300);
+                using var stream = resizedFile.OpenReadStream(5 * 1024 * 1024);
+                var buffer = new byte[stream.Length];
+                await stream.ReadAsync(buffer, 0, buffer.Length);
+                var base64String = Convert.ToBase64String(buffer);
+
+                string fileName = $"image_car_driver_{Id}_{Guid.NewGuid()}";
+                string imageUrl = await UploadImageToFirebase(fileName, base64String);
+
+                setImageUrl(imageUrl);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Lỗi xử lý hình ảnh: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task LoadCarDriverImage(InputFileChangeEventArgs e)
+    {
+        await LoadImage(e, (imageUrl) =>
+        {
+            img.img_name = imageUrl;
+            imagePreview = imageUrl;
+        });
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !isInitialized)
@@ -309,7 +695,6 @@
                         var jwtToken = handler.ReadJwtToken(token);
 
                         var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
-
                         if (roleClaim != null)
                         {
                             userRole = roleClaim.Value;
@@ -356,7 +741,7 @@
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Đặt vé", href: "/index", icon: @Icons.Material.Outlined.Payments),
-        new BreadcrumbItem("Danh sách hóa đơn", href: "/index", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Danh sách hóa đơn", href: "/guestcardriver", icon: @Icons.Material.Outlined.List),
         new BreadcrumbItem("Chỉnh sửa hóa đơn", href: "/edit_guest_trip/{id:int}", icon: @Icons.Material.Filled.Edit),
     };
 
@@ -409,6 +794,7 @@
         {
             statusText = "Đã hủy";
         }
+        await LoadBillImages();
     }
 
     private string GetLastSegment(string url)
@@ -528,6 +914,38 @@
     {
         try
         {
+            HttpResponseMessage imageResponse;
+            try
+            {
+                imageResponse = await httpClient.GetAsync($"{url}/GetImg/{Id}");
+            }
+            catch (HttpRequestException ex)
+            {
+                Snackbar.Add($"Lỗi kết nối khi kiểm tra ảnh: {ex.Message}", Severity.Error);
+                return;
+            }
+
+            if (imageResponse.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                Snackbar.Add("Không tìm thấy hình ảnh", Severity.Warning);
+                return;
+            }
+            else if (imageResponse.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                Snackbar.Add($"Lỗi kiểm tra hình ảnh: {imageResponse.StatusCode}", Severity.Warning);
+                return;
+            }
+
+            // Nếu response OK, đọc nội dung
+            var existingImages = await imageResponse.Content.ReadFromJsonAsync<List<GetImgGcd>>();
+
+            if (existingImages == null || existingImages.Count == 0)
+            {
+                Snackbar.Add("Vui lòng tải và lưu ít nhất một hình ảnh trước khi giao xe", Severity.Warning);
+                return;
+            }
+
+
             var response = await httpClient.PutAsJsonAsync(urlStatus11 + Id, bill);
             if (response.IsSuccessStatusCode)
             {
@@ -540,7 +958,7 @@
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Lỗii: {ex.Message}", Severity.Error);
         }
     }
     private async Task UpdateStatusBill12()

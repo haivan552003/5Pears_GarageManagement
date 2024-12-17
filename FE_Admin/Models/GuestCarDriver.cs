@@ -71,4 +71,26 @@
         public string? customer_address { get; set; }
 
     }
+    public class AddImgCarDriver
+    {
+        public string img_name { get; set; }
+        public int guest_car_driver_Id { get; set; }
+    }
+    public class GetImgGcd
+    {
+        public int id { get; set; }
+        public string img_car { get; set; }
+        public int guest_car_driver_Id { get; set; }
+    }
+    public class AddImgGC
+    {
+        public string img_name { get; set; }
+        public int guest_car_Id { get; set; }
+    }
+    public class GetImgGC
+    {
+        public int id { get; set; }
+        public string img_car { get; set; }
+        public int guest_car_id { get; set; }
+    }
 }
