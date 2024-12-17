@@ -12,38 +12,32 @@
 
 @if (userRole == "1")
 {
-    <MudContainer Class="pt-5 pb-5">
+    <MudContainer Class="pt-5 pb-5 d-none d-md-block">
         <MudAppBar Elevation="1">
             <MudLink Typo="Typo.h4" Href="/" Underline="Underline.None">
                 <MudText Typo="Typo.h4" Class="fw-bold text-white">BOXCARS</MudText>
             </MudLink>
 
-<MudContainer Class="pt-5 pb-5 d-none d-md-block">
-    <MudAppBar Elevation="1">
-        <MudLink Typo="Typo.h4" Href="/" Underline="Underline.None">
-            <MudText Typo="Typo.h4" Class="fw-bold text-white">BOXCARS</MudText>
-        </MudLink>
-
-        <MudSpacer />
-        <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
-            <ActivatorContent>
-                <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
-                    <MudText Class="text-uppercase">
-                        <MudIcon Icon="@Icons.Material.Outlined.DirectionsCar" Size="Size.Medium" Class="mb-1" />
-                        quản lý chung
-                        <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
-                    </MudText>
-                </MudChip>
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Href="/getemp">Danh sách Nhân Viên</MudMenuItem>
-                <MudMenuItem Href="/getdriver">Danh sách Tài Xế</MudMenuItem>
-                <MudMenuItem Href="/getcars">Danh sách Xe</MudMenuItem>
-                <MudMenuItem Href="/getcustomer">Danh sách Khách Hàng</MudMenuItem>
-                <MudMenuItem Href="/getcartypes">Danh sách Loại Xe</MudMenuItem>
-                <MudMenuItem Href="/getcarbrand">Danh sách Hãng Xe</MudMenuItem>
-            </ChildContent>
-        </MudMenu>
+            <MudSpacer />
+            <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+                <ActivatorContent>
+                    <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
+                        <MudText Class="text-uppercase">
+                            <MudIcon Icon="@Icons.Material.Outlined.DirectionsCar" Size="Size.Medium" Class="mb-1" />
+                            quản lý chung
+                            <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
+                        </MudText>
+                    </MudChip>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Href="/getemp">Danh sách Nhân Viên</MudMenuItem>
+                    <MudMenuItem Href="/getdriver">Danh sách Tài Xế</MudMenuItem>
+                    <MudMenuItem Href="/getcars">Danh sách Xe</MudMenuItem>
+                    <MudMenuItem Href="/getcustomer">Danh sách Khách Hàng</MudMenuItem>
+                    <MudMenuItem Href="/getcartypes">Danh sách Loại Xe</MudMenuItem>
+                    <MudMenuItem Href="/getcarbrand">Danh sách Hãng Xe</MudMenuItem>
+                </ChildContent>
+            </MudMenu>
 
             <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
                 <ActivatorContent>
@@ -246,7 +240,7 @@ else if (userRole == "3")
             "/getcartypes", "/getcarbrand", "/guesttrip", "/guestcar",
             "/trip-statistics", "/driver-statistics", "/car-statistics",
             "/profile",
-            "/getnews", "/getbanner"
+            "/getnews", "/getbanner", "/index", "/ocrcar"
         };
 
         driverPages = new List<string>
@@ -276,10 +270,10 @@ else if (userRole == "3")
                 }
                 else
                 {
-                      isLoading = false;
+                    isLoading = false;
                 }
                 break;
-          
+
             case "3":
                 if (!driverPages.Contains(currentPage))
                 {
