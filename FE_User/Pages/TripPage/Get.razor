@@ -76,7 +76,7 @@
                                                  AdornmentColor="Color.Primary"
                                                  Placeholder="Nhập điểm đi..." />
                             </MudStack>
-                            
+
                         </MudItem>
                         <MudItem xs="12" sm="6" md="4">
                             <MudStack>
@@ -114,7 +114,7 @@
             {
                 @foreach (var trip in tripForm1)
                 {
-                    <MudItem xs="10" Class="mx-auto">
+                    <MudItem xs="12" Class="mx-auto">
                         <MudCard Outlined="true">
                             <MudCardContent>
                                 <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-0">
@@ -122,46 +122,59 @@
                                         <MudPaper Elevation="0" Class="pa-5 mb-5">
                                             <MudGrid>
                                                 <MudItem xs="4">
-                                                    <MudText Typo="Typo.h6" Class="me-2">
-                                                        @trip.time_start.ToString("HH:mm")
-                                                        <MudIcon Icon="@Icons.Material.Filled.FiberManualRecord" Size="Size.Medium" Color="Color.Primary" Class="me-2" />
-                                                    </MudText>
+                                                    <MudGrid>
+                                                        <MudItem xs="12">
+                                                            <MudText Typo="Typo.h6" Class="me-2">
+                                                                @trip.time_start.ToString("HH:mm")
+                                                                <MudIcon Icon="@Icons.Material.Filled.FiberManualRecord" Size="Size.Medium" Color="Color.Primary" Class="me-2" />
+                                                            </MudText>
+                                                        </MudItem>
+                                                        <MudItem xs="12">
+                                                            <MudText Typo="Typo.subtitle1" Class="fw-bold">@trip.from</MudText>
+                                                        </MudItem>
+                                                    </MudGrid>
                                                 </MudItem>
 
-                                                <MudItem xs="2">
-                                                    <MudText Typo="Typo.subtitle1" Class="me-2 text-center">
-                                                        @GetTimeDifference(@trip.time_start, @trip.time_end)
-                                                    </MudText>
-                                                </MudItem>
-
-                                                <MudItem xs="4">
-                                                    <MudText Typo="Typo.h6" Class="me-2" Align="Align.End">
-                                                        <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Medium" Color="Color.Secondary" Class="me-2" />
-                                                        @trip.time_end.ToString("HH:mm")
-                                                    </MudText>
-                                                </MudItem>
-
-                                                <MudItem xs="2">
-                                                    <MudText Typo="Typo.h6" Color="Color.Error" Class="fw-bold" Align="Align.End">@trip.price.ToString("#,##0")</MudText>
-                                                </MudItem>
-                                            </MudGrid>
-                                            <MudGrid>
-                                                <MudItem xs="4">
-                                                    <MudText Typo="Typo.h6" Class="fw-bold">@trip.from</MudText>
-                                                </MudItem>
-
-                                                <MudItem xs="2">
-                                                    <MudText Typo="Typo.body2" Class="text-muted text-center">(UTC+07:00) Hanoi</MudText>
+                                                <MudItem xs="4" md="2">
+                                                    <MudGrid>
+                                                        <MudItem xs="12">
+                                                            <MudText Typo="Typo.subtitle1" Class="me-2 text-center">
+                                                                @GetTimeDifference(@trip.time_start, @trip.time_end)
+                                                            </MudText>
+                                                        </MudItem>
+                                                        <MudItem xs="12">
+                                                            <MudText Typo="Typo.body2" Class="text-muted text-center">(UTC+07:00) Hanoi</MudText>
+                                                        </MudItem>
+                                                    </MudGrid>
                                                 </MudItem>
 
                                                 <MudItem xs="4">
-                                                    <MudText Typo="Typo.h6" Class="fw-bold" Align="Align.End">@trip.to</MudText>
+                                                    <MudGrid>
+                                                        <MudItem xs="12">
+                                                            <MudText Typo="Typo.h6" Class="me-2" Align="Align.End">
+                                                                <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Medium" Color="Color.Secondary" Class="me-2" />
+                                                                @trip.time_end.ToString("HH:mm")
+                                                            </MudText>
+                                                        </MudItem>
+                                                        <MudItem xs="12">
+                                                            <MudText Typo="Typo.subtitle1" Class="fw-bold" Align="Align.End">@trip.to</MudText>
+                                                        </MudItem>
+                                                    </MudGrid>
                                                 </MudItem>
-                                                <MudItem xs="2">
-                                                    <MudButton Variant="Variant.Outlined" Class="float-end" Color="Color.Primary" Size="Size.Small" Href="@($"/getTrip/{trip.id}")">
-                                                        Đặt vé
-                                                    </MudButton>
+
+                                                <MudItem xs="12" md="2">
+                                                    <MudGrid>
+                                                        <MudItem xs="9" md="12">
+                                                            <MudText Typo="Typo.h6" Color="Color.Error" Align="Align.End">@trip.price.ToString("#,##0")</MudText>
+                                                        </MudItem>
+                                                        <MudItem xs="3" md="12">
+                                                            <MudButton Variant="Variant.Outlined" Class="float-end" Color="Color.Primary" Size="Size.Small" Href="@($"/getTrip/{trip.id}")">
+                                                                Đặt vé
+                                                            </MudButton>
+                                                        </MudItem>
+                                                    </MudGrid>
                                                 </MudItem>
+
                                                 <MudItem xs="12">
                                                     @if (trip.seat_null > 0)
                                                     {
@@ -175,7 +188,7 @@
                                             </MudGrid>
                                         </MudPaper>
 
-                                        <MudTimeline TimelineAlign="TimelineAlign.Start">
+                                        <MudTimeline Class="d-none d-md-block" TimelineAlign="TimelineAlign.Start">
                                             <MudTimelineItem Color="Color.Secondary" Elevation="25">
                                                 <ItemContent>
                                                     <MudPaper Elevation="0" Class="mt-n1">
@@ -240,55 +253,68 @@
                         <MudTabPanel Text="CHUYẾN ĐI">
                             @foreach (var trip in tripForm1)
                             {
-                                <MudItem xs="10" Class="mx-auto mt-5">
+                                <MudItem xs="12" Class="mx-auto mt-5">
                                     <MudCard Outlined="true">
                                         <MudCardContent>
                                             <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-0">
                                                 <MudTabPanel Text="Lịch trình">
                                                     <MudPaper Elevation="0" Class="pa-5 mb-5">
-                                                        <MudGrid>
+                                                        <MudGrid Spacing="4">
                                                             <MudItem xs="4">
-                                                                <MudText Typo="Typo.h6" Class="me-2">
-                                                                    @trip.time_start.ToString("HH:mm")
-                                                                    <MudIcon Icon="@Icons.Material.Filled.FiberManualRecord" Size="Size.Medium" Color="Color.Primary" Class="me-2" />
-                                                                </MudText>
+                                                                <MudGrid>
+                                                                    <MudItem xs="12">
+                                                                        <MudText Typo="Typo.h6" Class="me-2">
+                                                                            @trip.time_start.ToString("HH:mm")
+                                                                            <MudIcon Icon="@Icons.Material.Filled.FiberManualRecord" Size="Size.Medium" Color="Color.Primary" Class="me-2" />
+                                                                        </MudText>
+                                                                    </MudItem>
+                                                                    <MudItem xs="12">
+                                                                        <MudText Typo="Typo.h6" Class="fw-bold">@trip.from</MudText>
+                                                                    </MudItem>
+                                                                </MudGrid>
                                                             </MudItem>
 
-                                                            <MudItem xs="2">
-                                                                <MudText Typo="Typo.subtitle1" Class="me-2 text-center">
-                                                                    @GetTimeDifference(@trip.time_start, @trip.time_end)
-                                                                </MudText>
+                                                            <MudItem xs="4" md="2">
+                                                                <MudGrid>
+                                                                    <MudItem xs="12">
+                                                                        <MudText Typo="Typo.subtitle1" Class="me-2 text-center">
+                                                                            @GetTimeDifference(@trip.time_start, @trip.time_end)
+                                                                        </MudText>
+                                                                    </MudItem>
+                                                                    <MudItem xs="12">
+                                                                        <MudText Typo="Typo.body2" Class="text-muted text-center">(UTC+07:00) Hanoi</MudText>
+                                                                    </MudItem>
+                                                                </MudGrid>
                                                             </MudItem>
 
-
-                                                            <MudItem xs="4">
-                                                                <MudText Typo="Typo.h6" Class="me-2" Align="Align.End">
-                                                                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Medium" Color="Color.Secondary" Class="me-2" />
-                                                                    @trip.time_end.ToString("HH:mm")
-                                                                </MudText>
-                                                            </MudItem>
-
-                                                            <MudItem xs="2">
-                                                                <MudText Typo="Typo.h6" Color="Color.Error" Class="fw-bold" Align="Align.End">@trip.price.ToString("#,##0")</MudText>
-                                                            </MudItem>
-                                                        </MudGrid>
-                                                        <MudGrid>
-                                                            <MudItem xs="4">
-                                                                <MudText Typo="Typo.h6" Class="fw-bold">@trip.from</MudText>
-                                                            </MudItem>
-
-                                                            <MudItem xs="2">
-                                                                <MudText Typo="Typo.body2" Class="text-muted text-center">(UTC+07:00) Hanoi</MudText>
-                                                            </MudItem>
 
                                                             <MudItem xs="4">
-                                                                <MudText Typo="Typo.h6" Class="fw-bold" Align="Align.End">@trip.to</MudText>
+                                                                <MudGrid>
+                                                                    <MudItem xs="12">
+                                                                        <MudText Typo="Typo.h6" Class="me-2" Align="Align.End">
+                                                                            <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Medium" Color="Color.Secondary" Class="me-2" />
+                                                                            @trip.time_end.ToString("HH:mm")
+                                                                        </MudText>
+                                                                    </MudItem>
+                                                                    <MudItem xs="12">
+                                                                        <MudText Typo="Typo.h6" Class="fw-bold" Align="Align.End">@trip.to</MudText>
+                                                                    </MudItem>
+                                                                </MudGrid>
                                                             </MudItem>
-                                                            <MudItem xs="2">
-                                                                <MudButton Variant="Variant.Outlined" Class="float-end" Color="Color.Primary" Size="Size.Small" OnClick="() => SaveTripIdTo(trip.id)">
-                                                                    Chọn chuyến
-                                                                </MudButton>
+
+                                                            <MudItem xs="12" md="2">
+                                                                <MudGrid>
+                                                                    <MudItem xs="7" md="12">
+                                                                        <MudText Typo="Typo.h6" Color="Color.Error" Class="fw-bold" Align="Align.End">@trip.price.ToString("#,##0")</MudText>
+                                                                    </MudItem>
+                                                                    <MudItem xs="5" md="12">
+                                                                        <MudButton Variant="Variant.Outlined" Class="float-end" Color="Color.Primary" Size="Size.Small" OnClick="() => SaveTripIdTo(trip.id)">
+                                                                            Chọn chuyến
+                                                                        </MudButton>
+                                                                    </MudItem>
+                                                                </MudGrid>
                                                             </MudItem>
+
                                                             <MudItem xs="12">
                                                                 @if (trip.seat_null > 0)
                                                                 {
@@ -300,10 +326,9 @@
                                                                 }
                                                             </MudItem>
                                                         </MudGrid>
-
                                                     </MudPaper>
 
-                                                    <MudTimeline TimelineAlign="TimelineAlign.Start">
+                                                    <MudTimeline Class="d-none d-md-block" TimelineAlign="TimelineAlign.Start">
                                                         <MudTimelineItem Color="Color.Secondary" Elevation="25">
                                                             <ItemContent>
                                                                 <MudPaper Elevation="0" Class="mt-n1">
@@ -363,7 +388,7 @@
                         <MudTabPanel Text="CHUYẾN VỀ">
                             @foreach (var trip in tripForm2)
                             {
-                                <MudItem xs="10" Class="mx-auto mt-5">
+                                <MudItem xs="12" Class="mx-auto mt-5">
                                     <MudCard Outlined="true">
                                         <MudCardContent>
                                             <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-0">
@@ -371,48 +396,60 @@
                                                     <MudPaper Elevation="0" Class="pa-5 mb-5">
                                                         <MudGrid>
                                                             <MudItem xs="4">
-                                                                <MudText Typo="Typo.h6" Class="me-2">
-                                                                    @trip.time_start.ToString("HH:mm")
-                                                                    <MudIcon Icon="@Icons.Material.Filled.FiberManualRecord" Size="Size.Medium" Color="Color.Primary" Class="me-2" />
-                                                                </MudText>
+                                                                <MudGrid Spacing="4">
+                                                                    <MudItem xs="12">
+                                                                        <MudText Typo="Typo.h6" Class="me-2">
+                                                                            @trip.time_start.ToString("HH:mm")
+                                                                            <MudIcon Icon="@Icons.Material.Filled.FiberManualRecord" Size="Size.Medium" Color="Color.Primary" Class="me-2" />
+                                                                        </MudText>
+                                                                    </MudItem>
+                                                                    <MudItem xs="12">
+                                                                        <MudText Typo="Typo.h6" Class="fw-bold">@trip.from</MudText>
+                                                                    </MudItem>
+                                                                </MudGrid>
                                                             </MudItem>
 
-                                                            <MudItem xs="2">
-                                                                <MudText Typo="Typo.subtitle1" Class="me-2 text-center">
-                                                                    @GetTimeDifference(@trip.time_start, @trip.time_end)
-                                                                </MudText>
+                                                            <MudItem xs="4" md="2">
+                                                                <MudGrid>
+                                                                    <MudItem xs="12">
+                                                                        <MudText Typo="Typo.subtitle1" Class="me-2 text-center">
+                                                                            @GetTimeDifference(@trip.time_start, @trip.time_end)
+                                                                        </MudText>
+                                                                    </MudItem>
+                                                                    <MudItem xs="12">
+                                                                        <MudText Typo="Typo.body2" Class="text-muted text-center">(UTC+07:00) Hanoi</MudText>
+                                                                    </MudItem>
+                                                                </MudGrid>
                                                             </MudItem>
 
-
-                                                            <MudItem xs="4">
-                                                                <MudText Typo="Typo.h6" Class="me-2" Align="Align.End">
-                                                                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Medium" Color="Color.Secondary" Class="me-2" />
-                                                                    @trip.time_end.ToString("HH:mm")
-                                                                </MudText>
-                                                            </MudItem>
-
-                                                            <MudItem xs="2">
-                                                                <MudText Typo="Typo.h6" Color="Color.Error" Class="fw-bold" Align="Align.End">@trip.price.ToString("#,##0")</MudText>
-                                                            </MudItem>
-                                                        </MudGrid>
-                                                        <MudGrid>
-                                                            <MudItem xs="4">
-                                                                <MudText Typo="Typo.h6" Class="fw-bold">@trip.from</MudText>
-                                                            </MudItem>
-
-                                                            <MudItem xs="2">
-                                                                <MudText Typo="Typo.body2" Class="text-muted text-center">(UTC+07:00) Hanoi</MudText>
-                                                            </MudItem>
 
                                                             <MudItem xs="4">
-                                                                <MudText Typo="Typo.h6" Class="fw-bold" Align="Align.End">@trip.to</MudText>
+                                                                <MudGrid>
+                                                                    <MudItem xs="12">
+                                                                        <MudText Typo="Typo.h6" Class="me-2" Align="Align.End">
+                                                                            <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Medium" Color="Color.Secondary" Class="me-2" />
+                                                                            @trip.time_end.ToString("HH:mm")
+                                                                        </MudText>
+                                                                    </MudItem>
+                                                                    <MudItem xs="12">
+                                                                        <MudText Typo="Typo.h6" Class="fw-bold" Align="Align.End">@trip.to</MudText>
+                                                                    </MudItem>
+                                                                </MudGrid>
                                                             </MudItem>
-                                                            <MudItem xs="2">
-                                                                <MudButton Variant="Variant.Outlined" Class="float-end" Color="Color.Primary" Size="Size.Small" OnClick="() => SaveTripIdReturn(trip.id)">
-                                                                    Chọn chuyến
-                                                                </MudButton>
 
+                                                            <MudItem xs="12" md="2">
+                                                                <MudGrid>
+                                                                    <MudItem xs="7" md="12">
+                                                                        <MudText Typo="Typo.h6" Color="Color.Error" Class="fw-bold" Align="Align.End">@trip.price.ToString("#,##0")</MudText>
+                                                                    </MudItem>
+                                                                    <MudItem xs="5" md="12">
+                                                                        <MudButton Variant="Variant.Outlined" Class="float-end" Color="Color.Primary" Size="Size.Small" OnClick="() => SaveTripIdReturn(trip.id)">
+                                                                            Chọn chuyến
+                                                                        </MudButton>
+                                                                    </MudItem>
+                                                                </MudGrid>
                                                             </MudItem>
+
                                                             <MudItem xs="12">
                                                                 @if (trip.seat_null > 0)
                                                                 {
@@ -424,10 +461,9 @@
                                                                 }
                                                             </MudItem>
                                                         </MudGrid>
-
                                                     </MudPaper>
 
-                                                    <MudTimeline TimelineAlign="TimelineAlign.Start">
+                                                    <MudTimeline Class="d-none d-md-block" TimelineAlign="TimelineAlign.Start">
                                                         <MudTimelineItem Color="Color.Secondary" Elevation="25">
                                                             <ItemContent>
                                                                 <MudPaper Elevation="0" Class="mt-n1">
