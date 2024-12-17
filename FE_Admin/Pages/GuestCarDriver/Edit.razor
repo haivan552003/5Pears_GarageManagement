@@ -1,4 +1,4 @@
-﻿@page "/edit_bill/{id:int}"
+﻿@page "/edit_bill_cardriver/{id:int}"
 @inject HttpClient httpClient
 @inject IJSRuntime js
 @inject NavigationManager Navigation
@@ -66,7 +66,7 @@
                                         }
                                     </MudSelect>
                                 </MudItem>
-<MudItem xs="2" Class="mb-4">
+                                <MudItem xs="2" Class="mb-4">
                                     <MudTextField ShrinkLabel
                                                   Label="Tổng tiền"
                                                   @bind-Value="bill.price"
@@ -99,7 +99,7 @@
                                     <MudItem xs="3" Class="mb-4">
                                         <MudTextField ShrinkLabel
                                                       Label="Ngày thanh toán"
-                                                      T="DateTime"
+                                                      T="DateTime?"
                                                       @bind-Value="bill.pay_date"
                                                       Variant="Variant.Outlined"
                                                       ReadOnly="true" />
@@ -113,7 +113,7 @@
                                                       T="string"
                                                       @bind-Value="statusText"
                                                       Variant="Variant.Outlined"
-ReadOnly="true" />
+                                                      ReadOnly="true" />
                                     </MudItem>
                                 }
                                 else if (bill.status == 8)
@@ -129,14 +129,14 @@ ReadOnly="true" />
                                 }
                                 else if (bill.status == 9)
                                 {
-                                    <MudItem xs="2" Class="mb-4">
+@*                                     <MudItem xs="2" Class="mb-4">
                                         <MudTextField ShrinkLabel
                                                       Label="Hoàn tiền"
                                                       T="float"
                                                       @bind-Value="bill.return_money"
                                                       Variant="Variant.Outlined"
                                                       ReadOnly="true" />
-                                    </MudItem>
+                                    </MudItem> *@
                                     <MudItem xs="3" Class="mb-4">
                                         <MudTextField ShrinkLabel
                                                       Label="Trạng thái"
@@ -161,7 +161,7 @@ ReadOnly="true" />
                                 {
                                     <MudItem xs="3" Class="mb-4">
                                         <MudTextField ShrinkLabel
-Label="Trạng thái"
+                                                      Label="Trạng thái"
                                                       T="string"
                                                       @bind-Value="statusText"
                                                       Variant="Variant.Outlined"
@@ -207,7 +207,8 @@ Label="Trạng thái"
                                         <MudSelectItem Value="false">Chuyển khoản</MudSelectItem>
                                     </MudSelect>
                                 </MudItem>
-<MudItem xs="3" Class="mb-4">
+
+                                <MudItem xs="3" Class="mb-4">
                                     <MudSelect Variant="Variant.Outlined" T="int" @bind-Value="@bill.emp_id" Label="Người tạo" ReadOnly="true">
                                         @foreach (var item in emp)
                                         {
@@ -220,7 +221,7 @@ Label="Trạng thái"
                             @if (bill.status == 1)
                             {
                                 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="UpdateStatusBill2" Class="mt-3">Thanh toán</MudButton>
-                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Warning" OnClick="UpdateStatusBill6" Class="mt-3">Hủy đơn</MudButton>
+                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Warning" OnClick="UpdateStatusBill6" Class="mt-3 ms-2">Hủy đơn</MudButton>
                             }
                             else if (bill.status == 8)
                             {
@@ -228,81 +229,19 @@ Label="Trạng thái"
                             }
                             else if (bill.status == 10)
                             {
-                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Tertiary" OnClick="UpdateStatusBill11" Class="mt-3">Giao xe</MudButton>
-                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Tertiary" OnClick="UpdateStatusBill14" Class="mt-3">Hủy</MudButton>
+                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Autorenew" Color="Color.Tertiary" OnClick="UpdateStatusBill11" Class="mt-3">Giao xe</MudButton>
+                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Tertiary" OnClick="UpdateStatusBill14" Class="mt-3 ms-2">Hủy</MudButton>
                             }
                             else if (bill.status == 11)
                             {
-                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Tertiary" OnClick="UpdateStatusBill12" Class="mt-3">Giao xe</MudButton>
-                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Tertiary" OnClick="UpdateStatusBill13" Class="mt-3">Thanh toán</MudButton>
+                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.CancelScheduleSend" Color="Color.Tertiary" OnClick="UpdateStatusBill12" Class="mt-3">Quá hạn</MudButton>
+                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Tertiary" OnClick="UpdateStatusBill13" Class="mt-3 ms-2">Thanh toán</MudButton>
                             }
 
                         </MudForm>
                     </MudPaper>
                 </MudItem>
             </MudPaper>
-            @if (bill.status == 10 || bill.status == 11 || bill.status == 12 || bill.status == 13)
-            {
-                <MudPaper Elevation="0" Class="pa-3 mt-3">
-                    <MudText Typo="Typo.h6" Class="mb-3">Quản lý hình ảnh</MudText>
-
-                    <MudGrid>
-                        <MudItem xs="12" Class="d-flex flex-column">
-                            <MudCard Elevation="0" Class="mb-4">
-@if (bill.status == 10)
-                                {
-                                    <InputFile OnChange="LoadCarDriverImages" hidden multiple accept=".jpg,.jpeg,.png" id="carDriverImageUpload" />
-                                }
-
-                                <MudCardContent>
-                                    <div class="image-scroll-container" style="max-height: 300px; overflow-x: auto; white-space: nowrap;">
-                                        @foreach (var previewUrl in imagePreviewUrls)
-                                        {
-                                            <div class="image-scroll-item d-inline-block me-2" style="width: 200px; height: 200px; display: inline-flex; justify-content: center; align-items: center;">
-                                                <MudImage Src="@previewUrl"
-                                                          Alt="Preview"
-                                                          Height="200"
-                                                          Width="200"
-                                                          ObjectFit="ObjectFit.Cover"
-                                                          Class="rounded-lg" />
-                                            </div>
-                                        }
-
-                                        @if (!imagePreviewUrls.Any())
-                                        {
-                                            <MudText Typo="Typo.body2" Class="text-center mt-4">Chưa có hình ảnh</MudText>
-                                        }
-                                    </div>
-                                </MudCardContent>
-
-                                @if (bill.status == 10)
-                                {
-                                    <MudCardActions>
-                                        <MudButton HtmlTag="label"
-                                                   For="carDriverImageUpload"
-                                                   Variant="Variant.Filled"
-                                                   Color="Color.Secondary"
-                                                   StartIcon="@Icons.Material.Filled.CloudUpload"
-                                                   FullWidth="true"
-                                                   Disabled="@isUploading">
-                                            @(isUploading ? "Đang tải..." : "Chọn ảnh")
-                                        </MudButton>
-
-                                        <MudButton Variant="Variant.Filled"
-                                                   Color="Color.Primary"
-                                                   Disabled="@(imgs.Count == 0 || isUploading)"
-                                                   OnClick="AddMultipleImgs"
-                                                   FullWidth="true"
-Class="ms-2">
-                                            @(isUploading ? "Đang tải..." : "Lưu ảnh")
-                                        </MudButton>
-                                    </MudCardActions>
-                                }
-                            </MudCard>
-                        </MudItem>
-                    </MudGrid>
-                </MudPaper>
-            }
         </MudItem>
     </MudGrid>
 </MudContainer>
@@ -325,284 +264,31 @@ Class="ms-2">
 @code {
     [Parameter] public int Id { get; set; }
     private string statusText;
-    private guest_car bill = new guest_car();
+    private GuestCarDriver bill = new GuestCarDriver();
     private List<dropdown> customer = new List<dropdown>();
     private List<dropdown> emp = new List<dropdown>();
     private List<dropdown> car = new List<dropdown>();
-    private AddImgGC img = new AddImgGC();
-    private List<AddImgGC> imgs = new List<AddImgGC>();
-    private List<string> imagePreviewUrls = new List<string>();
-    private List<GetImgGC> billImages = new List<GetImgGC>();
 
     private MudForm form;
     private string LastSegment;
 
-    private string url = "http://localhost:49922/api/GuestCars";
+    private string url = "http://localhost:49922/api/GuestCarDriver";
     private string urlCustomer = "http://localhost:49922/api/Dropdown/customer";
     private string urlCar = "http://localhost:49922/api/Dropdown/car";
     private string urlEmp = "http://localhost:49922/api/Dropdown/emp";
     private string urlCarID = "http://localhost:49922/api/Cars/";
-    private string urlStatus2 = "http://localhost:49922/api/GuestCars/PutStatus2/";
-    private string urlStatus6 = "http://localhost:49922/api/GuestCars/PutStatus6/";
-    private string urlStatus9 = "http://localhost:49922/api/GuestCars/PutStatus9/";
-    private string urlStatus11 = "http://localhost:49922/api/GuestCars/PutStatus11/";
-    private string urlStatus12 = "http://localhost:49922/api/GuestCars/PutStatus12/";
-    private string urlStatus13 = "http://localhost:49922/api/GuestCars/PutStatus13/";
-    private string urlStatus14 = "http://localhost:49922/api/GuestCars/PutStatus14/";
-
-
-    private string urladdImg = "http://localhost:49922/api/GuestCars/AddImgCarDriver";
-    private string imagePreview;
+    private string urlStatus2 = "http://localhost:49922/api/GuestCarDriver/PutStatus2/";
+    private string urlStatus6 = "http://localhost:49922/api/GuestCarDriver/PutStatus6/";
+    private string urlStatus9 = "http://localhost:49922/api/GuestCarDriver/PutStatus9/";
+    private string urlStatus11 = "http://localhost:49922/api/GuestCarDriver/PutStatus11/";
+    private string urlStatus12 = "http://localhost:49922/api/GuestCarDriver/PutStatus12/";
+    private string urlStatus13 = "http://localhost:49922/api/GuestCarDriver/PutStatus13/";
+    private string urlStatus14 = "http://localhost:49922/api/GuestCarDriver/PutStatus14/";
 
     private int empId;
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
-
-    private async Task LoadBillImages()
-    {
-        try
-        {
-            if (bill.status == 11 || bill.status == 12 || bill.status == 13)
-            {
-                var response = await httpClient.GetFromJsonAsync<List<GetImgGC>>($"{url}/GetImg/{Id}");
-
-                if (response != null && response.Any())
-                {
-billImages = response;
-
-                    imagePreviewUrls.Clear();
-                    imagePreviewUrls.AddRange(billImages.Select(img => img.img_car));
-
-                    StateHasChanged();
-                }
-                else
-                {
-                    Snackbar.Add("Không tìm thấy ảnh", Severity.Warning);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Không tìm thấy ảnh: {ex.Message}", Severity.Error);
-        }
-    }
-
-    private async Task AddImg()
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(img.img_name))
-            {
-                Snackbar.Add("Vui lòng chọn hình ảnh", Severity.Warning);
-                return;
-            }
-
-            isUploading = true;
-            img.guest_car_Id = Id;
-
-            var response = await httpClient.PostAsJsonAsync(urladdImg, img);
-
-            if (response.IsSuccessStatusCode)
-            {
-                Snackbar.Add("Tải ảnh thành công", Severity.Success);
-                _selectedFile = null;
-            }
-            else
-            {
-                Snackbar.Add($"Tải ảnh thất bại: {response.StatusCode}", Severity.Warning);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isUploading = false;
-        }
-    }
-    private async Task LoadCarDriverImages(InputFileChangeEventArgs e)
-    {
-        int totalImageCount = imagePreviewUrls.Count + e.GetMultipleFiles().Count();
-        if (totalImageCount > 10)
-        {
-            Snackbar.Add("Chỉ được tải tối đa 10 hình ảnh", Severity.Warning);
-            return;
-        }
-
-        var tasks = e.GetMultipleFiles().Select(async file =>
-        {
-            try
-            {
-                var resizedFile = await file.RequestImageFileAsync("image/jpeg", 300, 300);
-                using var stream = resizedFile.OpenReadStream(5 * 1024 * 1024);
-                var buffer = new byte[stream.Length];
-                await stream.ReadAsync(buffer, 0, buffer.Length);
-                var base64String = Convert.ToBase64String(buffer);
-
-                string fileName = $"image_car_driver_{Id}_{Guid.NewGuid()}";
-                string imageUrl = await UploadImageToFirebase(fileName, base64String);
-
-                if (!string.IsNullOrEmpty(imageUrl))
-                {
-                    var imgCarDriver = new AddImgGC
-                        {
-                            guest_car_Id = Id,
-                            img_name = imageUrl
-                        };
-
-                    return imgCarDriver;
-                }
-
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Snackbar.Add($"Lỗi xử lý hình ảnh: {ex.Message}", Severity.Error);
-                return null;
-            }
-        });
-var imageObjects = await Task.WhenAll(tasks);
-        var newImgs = imageObjects.Where(img => img != null).ToList();
-        if (imgs.Count + newImgs.Count > 10)
-        {
-            Snackbar.Add("Chỉ được tải tối đa 10 hình ảnh", Severity.Warning);
-            return;
-        }
-
-        imgs.AddRange(newImgs);
-        imagePreviewUrls.Clear();
-        imagePreviewUrls.AddRange(imgs.Select(i => i.img_name));
-    }
-
-    private async Task AddMultipleImgs()
-    {
-        try
-        {
-            if (imgs.Count == 0)
-            {
-                Snackbar.Add("Vui lòng chọn hình ảnh", Severity.Warning);
-                return;
-            }
-
-            if (imgs.Count > 10)
-            {
-                Snackbar.Add("Chỉ được tải tối đa 10 hình ảnh", Severity.Warning);
-                return;
-            }
-
-            isUploading = true;
-            int successCount = 0;
-            int failCount = 0;
-            foreach (var imgToUpload in imgs)
-            {
-                try
-                {
-                    var response = await httpClient.PostAsJsonAsync(urladdImg, imgToUpload);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        successCount++;
-                    }
-                    else
-                    {
-                        failCount++;
-                    }
-                }
-                catch
-                {
-                    failCount++;
-                }
-            }
-            if (successCount > 0)
-            {
-                Snackbar.Add($"Tải lên {successCount} ảnh thành công", Severity.Success);
-                await LoadBillImages();
-            }
-
-            if (failCount > 0)
-            {
-                Snackbar.Add($"Có {failCount} ảnh tải lên thất bại", Severity.Warning);
-            }
-            imgs.Clear();
-            imagePreviewUrls.Clear();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isUploading = false;
-        }
-    }
-
-    private IBrowserFile _selectedFile;
-    private bool isUploading = false;
-
-    private async Task<string> GetBase64Image(IBrowserFile file)
-    {
-        try
-        {
-            using var memoryStream = new MemoryStream();
-            await file.OpenReadStream().CopyToAsync(memoryStream);
-            return Convert.ToBase64String(memoryStream.ToArray());
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Lỗi xử lý hình ảnh: {ex.Message}", Severity.Error);
-            return null;
-        }
-    }
-    private async Task<string> UploadImageToFirebase(string fileName, string base64String)
-    {
-        try
-        {
-            var response = await js.InvokeAsync<string>("uploadImage", fileName, base64String);
-            img.img_name = response;
-            return response;
-        }
-        catch (Exception ex)
-{
-            Snackbar.Add($"Lỗi khi tải ảnh lên: {ex.Message}", Severity.Error);
-            return null;
-        }
-    }
-    private async Task LoadImage(InputFileChangeEventArgs e, Action<string> setImageUrl)
-    {
-        var file = e.File;
-        if (file != null)
-        {
-            try
-            {
-                var resizedFile = await file.RequestImageFileAsync("image/jpeg", 300, 300);
-                using var stream = resizedFile.OpenReadStream(5 * 1024 * 1024);
-                var buffer = new byte[stream.Length];
-                await stream.ReadAsync(buffer, 0, buffer.Length);
-                var base64String = Convert.ToBase64String(buffer);
-
-                string fileName = $"image_car_driver_{Id}_{Guid.NewGuid()}";
-                string imageUrl = await UploadImageToFirebase(fileName, base64String);
-
-                setImageUrl(imageUrl);
-            }
-            catch (Exception ex)
-            {
-                Snackbar.Add($"Lỗi xử lý hình ảnh: {ex.Message}", Severity.Error);
-            }
-        }
-    }
-
-    private async Task LoadCarDriverImage(InputFileChangeEventArgs e)
-    {
-        await LoadImage(e, (imageUrl) =>
-        {
-            img.img_name = imageUrl;
-            imagePreview = imageUrl;
-        });
-    }
-
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -642,6 +328,7 @@ var imageObjects = await Task.WhenAll(tasks);
             CheckRole();
             StateHasChanged();
             await js.InvokeVoidAsync("triggerSelectClick");
+
         }
     }
 
@@ -655,7 +342,7 @@ var imageObjects = await Task.WhenAll(tasks);
         {
             Console.WriteLine("User is a regular User.");
         }
-else if (userRole == "3")
+        else if (userRole == "3")
         {
             Console.WriteLine("User is a regular Driver.");
         }
@@ -663,19 +350,19 @@ else if (userRole == "3")
         {
             isLoading = true;
         }
+
     }
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Đặt vé", href: "/index", icon: @Icons.Material.Outlined.Payments),
-        new BreadcrumbItem("Danh sách hóa đơn", href: "/guestcar", icon: @Icons.Material.Outlined.List),
+        new BreadcrumbItem("Danh sách hóa đơn", href: "/index", icon: @Icons.Material.Outlined.List),
         new BreadcrumbItem("Chỉnh sửa hóa đơn", href: "/edit_guest_trip/{id:int}", icon: @Icons.Material.Filled.Edit),
     };
 
     protected override async Task OnInitializedAsync()
     {
-        var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
-        var response = await httpClient.GetFromJsonAsync<guest_car>(url + "/" + Id);
+        var response = await httpClient.GetFromJsonAsync<GuestCarDriver>(url + "/" + Id);
         bill = response;
         var uri = Navigation.Uri;
         LastSegment = GetLastSegment(uri);
@@ -722,7 +409,6 @@ else if (userRole == "3")
         {
             statusText = "Đã hủy";
         }
-        await LoadBillImages();
     }
 
     private string GetLastSegment(string url)
@@ -759,7 +445,7 @@ else if (userRole == "3")
         }
         catch (Exception ex)
         {
-Snackbar.Add("Lỗi khi tải danh sách xe", Severity.Error);
+            Snackbar.Add("Lỗi khi tải danh sách xe", Severity.Error);
         }
     }
 
@@ -842,37 +528,6 @@ Snackbar.Add("Lỗi khi tải danh sách xe", Severity.Error);
     {
         try
         {
-            HttpResponseMessage imageResponse;
-            try
-            {
-                imageResponse = await httpClient.GetAsync($"{url}/GetImg/{Id}");
-            }
-            catch (HttpRequestException ex)
-            {
-                Snackbar.Add($"Lỗi kết nối khi kiểm tra ảnh: {ex.Message}", Severity.Error);
-                return;
-            }
-
-            // Kiểm tra trạng thái response của API lấy ảnh
-            if (imageResponse.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                Snackbar.Add("Không tìm thấy hình ảnh", Severity.Warning);
-                return;
-            }
-else if (imageResponse.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                Snackbar.Add($"Lỗi kiểm tra hình ảnh: {imageResponse.StatusCode}", Severity.Warning);
-                return;
-            }
-
-            // Nếu response OK, đọc nội dung
-            var existingImages = await imageResponse.Content.ReadFromJsonAsync<List<GetImgGcd>>();
-
-            if (existingImages == null || existingImages.Count == 0)
-            {
-                Snackbar.Add("Vui lòng tải và lưu ít nhất một hình ảnh trước khi giao xe", Severity.Warning);
-                return;
-            }
             var response = await httpClient.PutAsJsonAsync(urlStatus11 + Id, bill);
             if (response.IsSuccessStatusCode)
             {

@@ -164,6 +164,113 @@ namespace BE_API.Controllers
             return NoContent();
         }
 
+        //update -> status = 10(Đã cọc)
+        [HttpPut("PutStatus10/{id}")]
+        public async Task<IActionResult> PutStatus10(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var result = await connection.ExecuteAsync("sp_update_status_10_guest_car", parameters, commandType: CommandType.StoredProcedure);
+
+                if (result == 0)
+                {
+                    return NotFound();
+                }
+            }
+
+            return NoContent();
+        }
+
+        //update -> status = 11(Đã giao xe)
+        [HttpPut("PutStatus11/{id}")]
+        public async Task<IActionResult> PutStatus11(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var result = await connection.ExecuteAsync("sp_update_status_11_guest_car", parameters, commandType: CommandType.StoredProcedure);
+
+                if (result == 0)
+                {
+                    return NotFound();
+                }
+            }
+
+            return NoContent();
+        }
+        [HttpPut("PutStatus12/{id}")]
+        public async Task<IActionResult> PutStatus12(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var result = await connection.ExecuteAsync("sp_update_status_12_guest_car", parameters, commandType: CommandType.StoredProcedure);
+
+                if (result == 0)
+                {
+                    return NotFound();
+                }
+            }
+
+            return NoContent();
+        }
+
+        [HttpPut("PutStatus13/{id}")]
+        public async Task<IActionResult> PutStatus13(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var result = await connection.ExecuteAsync("sp_update_status_13_guest_car", parameters, commandType: CommandType.StoredProcedure);
+
+                if (result == 0)
+                {
+                    return NotFound();
+                }
+            }
+
+            return NoContent();
+        }
+
+        //update -> status = 14(Đã hủy)
+        [HttpPut("PutStatus14/{id}")]
+        public async Task<IActionResult> PutStatus14(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var result = await connection.ExecuteAsync("sp_update_status_14_guest_car", parameters, commandType: CommandType.StoredProcedure);
+
+                if (result == 0)
+                {
+                    return NotFound();
+                }
+            }
+
+            return NoContent();
+        }
+
         // POST: api/Products/CheckDateRetailCar
         [HttpPost("CheckDateRetailCar")]
         public async Task<ActionResult<bool>> CheckDateRetailCar([FromBody] CarRentalRequest request)

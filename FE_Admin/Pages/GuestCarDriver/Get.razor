@@ -1,4 +1,4 @@
-﻿@page "/guestcar"
+﻿@page "/guestcardriver"
 @inject HttpClient httpClient
 @inject IJSRuntime js
 <style>
@@ -35,7 +35,7 @@
             </MudPaper>
             <MudPaper Elevation="0">
                 <MudDataGrid Class="mx-auto pa-2"
-                             T="guest_car"
+                             T="GuestCarDriver"
                              Dense="true"
                              Hover="true"
                              Bordered="true"
@@ -63,13 +63,13 @@
                     </ToolBarContent>
 
                     <Columns>
-                        <PropertyColumn T="guest_car" TProperty="string" Property="x => x.guest_car_code" SortBy="@_sortBy" Class="fw-bold" Title="Mã hóa đơn" />
-<PropertyColumn T="guest_car" TProperty="string" style="width:100px" Property="x => x.car_name" SortBy="@_sortBy" Class="fw-bold" Title="Tên xe" />
-                        <PropertyColumn T="guest_car" TProperty="string" style="width:100px" Property="x => x.cus_name" SortBy="@_sortBy" Class="fw-bold" Title="Khách hàng" />
-                        <PropertyColumn T="guest_car" TProperty="string" style="width:100px" Property="x => x.date_start.ToShortDateString()" SortBy="@_sortBy" Class="fw-bold" Title="Bắt đầu" />
-                        <PropertyColumn T="guest_car" TProperty="string" style="width:100px" Property="x => x.date_end.ToShortDateString()" SortBy="@_sortBy" Class="fw-bold" Title="Kết thúc" />
-                        <PropertyColumn T="guest_car" TProperty="string" style="width:100px" Property="x => x.date_create.ToShortDateString()" SortBy="@_sortBy" Class="fw-bold" Title="Ngày tạo" />
-                        <TemplateColumn T="guest_car" Class="fw-bold" style="width:100px" Title="Thanh toán">
+                        <PropertyColumn T="GuestCarDriver" TProperty="string" Property="x => x.guest_car_code" SortBy="@_sortBy" Class="fw-bold" Title="Mã hóa đơn" />
+                        <PropertyColumn T="GuestCarDriver" TProperty="string" style="width:100px" Property="x => x.car_name" SortBy="@_sortBy" Class="fw-bold" Title="Tên xe" />
+                        <PropertyColumn T="GuestCarDriver" TProperty="string" style="width:100px" Property="x => x.cus_name" SortBy="@_sortBy" Class="fw-bold" Title="Khách hàng" />
+                        <PropertyColumn T="GuestCarDriver" TProperty="string" style="width:100px" Property="x => x.date_start.ToShortDateString()" SortBy="@_sortBy" Class="fw-bold" Title="Bắt đầu" />
+                        <PropertyColumn T="GuestCarDriver" TProperty="string" style="width:100px" Property="x => x.date_end.ToShortDateString()" SortBy="@_sortBy" Class="fw-bold" Title="Kết thúc" />
+@*                         <PropertyColumn T="GuestCarDriver" TProperty="string" style="width:100px" Property="x => x.date_create.ToShortDateString()" SortBy="@_sortBy" Class="fw-bold" Title="Ngày tạo" />
+ *@                        <TemplateColumn T="GuestCarDriver" Class="fw-bold" style="width:100px" Title="Thanh toán">
                             <CellTemplate Context="element">
                                 @if (element.Item.payment_method)
                                 {
@@ -81,9 +81,9 @@
                                 }
                             </CellTemplate>
                         </TemplateColumn>
-                        <PropertyColumn T="guest_car" style="width:100px" TProperty="float" Property="x => x.price" SortBy="@_sortBy" Class="fw-bold" Title="Tổng tiền" />
-                        <PropertyColumn T="guest_car" style="width:100px" TProperty="string" Property="x => x.emp_name" SortBy="@_sortBy" Class="fw-bold" Title="Người tạo" />
-                        <TemplateColumn T="guest_car" style="width:100px" Class="fw-bold" Title="Trạng Thái">
+                        <PropertyColumn T="GuestCarDriver" style="width:100px" TProperty="float" Property="x => x.price" SortBy="@_sortBy" Class="fw-bold" Title="Tổng tiền" />
+                        <PropertyColumn T="GuestCarDriver" style="width:100px" TProperty="string" Property="x => x.emp_name" SortBy="@_sortBy" Class="fw-bold" Title="Người tạo" />
+                        <TemplateColumn T="GuestCarDriver" style="width:100px" Class="fw-bold" Title="Trạng Thái">
                             <CellTemplate Context="element">
                                 @if (element.Item.status == 1)
                                 {
@@ -93,11 +93,11 @@
                                 {
                                     <MudChip Color="Color.Primary" Size="Size.Small" Variant="Variant.Text">Đã thanh toán</MudChip>
                                 }
-@*                                 else if (element.Item.status == 6)
+                                @*                                 else if (element.Item.status == 6)
                                 {
-                                    <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Đã hủy</MudChip>
+                                <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Đã hủy</MudChip>
                                 } *@
-else if (element.Item.status == 10)
+                                else if (element.Item.status == 10)
                                 {
                                     <MudChip Color="Color.Error" Size="Size.Small" Variant="Variant.Text">Đã cọc</MudChip>
                                 }
@@ -123,16 +123,16 @@ else if (element.Item.status == 10)
                                 }
                             </CellTemplate>
                         </TemplateColumn>
-                        <TemplateColumn T="guest_car" style="width:100px" Class="fw-bold" Title="Chức năng">
+                        <TemplateColumn T="GuestCarDriver" style="width:100px" Class="fw-bold" Title="Chức năng">
                             <CellTemplate Context="element">
                                 <MudTooltip Text="Chi tiết">
-                                    <MudIconButton Href="@($"/edit_bill/{element.Item.id}")" Icon="far fa-eye" Color="Color.Primary" Size="Size.Small" />
+                                    <MudIconButton Href="@($"/edit_bill_cardriver/{element.Item.id}")" Icon="far fa-eye" Color="Color.Primary" Size="Size.Small" />
                                 </MudTooltip>
                             </CellTemplate>
                         </TemplateColumn>
                     </Columns>
                     <PagerContent>
-                        <MudDataGridPager T="guest_car" />
+                        <MudDataGridPager T="GuestCarDriver" />
                     </PagerContent>
                 </MudDataGrid>
             </MudPaper>
@@ -143,19 +143,19 @@ else if (element.Item.status == 10)
 
 @code {
     [Parameter] public int Id { get; set; }
-    private IEnumerable<guest_car> Elements = new List<guest_car>();
+    private IEnumerable<GuestCarDriver> Elements = new List<GuestCarDriver>();
     private Dictionary<int, string> CategoryDict = new Dictionary<int, string>();
     private string _searchString;
     private bool _sortNameByLength;
     private List<string> _events = new();
-    private string url = "http://localhost:49922/api/GuestCars/GetAll";
+    private string url = "http://localhost:49922/api/GuestCarDriver/GetAll";
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-if (firstRender && !isInitialized)
+        if (firstRender && !isInitialized)
         {
             isInitialized = true;
 
@@ -220,7 +220,7 @@ if (firstRender && !isInitialized)
             };
 
 
-    private Func<guest_car, object> _sortBy => x =>
+    private Func<GuestCarDriver, object> _sortBy => x =>
     {
         if (_sortNameByLength)
             return x.guest_car_code.Length;
@@ -237,7 +237,7 @@ if (firstRender && !isInitialized)
     {
         try
         {
-            Elements = await httpClient.GetFromJsonAsync<List<guest_car>>(url);
+            Elements = await httpClient.GetFromJsonAsync<List<GuestCarDriver>>(url);
         }
         catch (Exception ex)
         {
@@ -245,22 +245,22 @@ if (firstRender && !isInitialized)
         }
     }
 
-    void RowClicked(DataGridRowClickEventArgs<guest_car> args)
+    void RowClicked(DataGridRowClickEventArgs<GuestCarDriver> args)
     {
         _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
     }
 
-    void RowRightClicked(DataGridRowClickEventArgs<guest_car> args)
+    void RowRightClicked(DataGridRowClickEventArgs<GuestCarDriver> args)
     {
-_events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
     }
 
-    void SelectedItemsChanged(HashSet<guest_car> items)
+    void SelectedItemsChanged(HashSet<GuestCarDriver> items)
     {
         _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
     }
 
-    private Func<guest_car, bool> _quickFilter => x =>
+    private Func<GuestCarDriver, bool> _quickFilter => x =>
       {
           if (string.IsNullOrWhiteSpace(_searchString))
               return true;
