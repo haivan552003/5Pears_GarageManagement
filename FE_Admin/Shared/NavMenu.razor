@@ -11,12 +11,12 @@
 }
 
 
-<MudContainer Class="pt-5 pb-5">
+<MudContainer Class="pt-5 pb-5 d-none d-md-block">
     <MudAppBar Elevation="1">
         <MudLink Typo="Typo.h4" Href="/" Underline="Underline.None">
             <MudText Typo="Typo.h4" Class="fw-bold text-white">BOXCARS</MudText>
         </MudLink>
-       
+
         <MudSpacer />
         <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
             <ActivatorContent>
@@ -120,8 +120,53 @@
             </ChildContent>
         </MudMenu>
     </MudAppBar>
-
 </MudContainer>
+
+
+
+<MudAppBar Elevation="1" Class="d-md-none">
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+    <MudSpacer />
+    <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopCenter">
+        <ActivatorContent>
+            <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
+                <MudImage ObjectFit="ObjectFit.Cover" Height="45" Width="45" Src="https://www.mudblazor.com/images/castle.jpg" Alt="Örebro Slott" Elevation="0" Class="rounded-circle" />
+            </MudChip>
+        </ActivatorContent>
+        <ChildContent>
+            <MudMenuItem Href="/profile">
+                <MudIcon Icon="@Icons.Material.Outlined.SupervisedUserCircle" Color="Color.Default" />
+                @fullname
+            </MudMenuItem>
+            <hr class="m-0" />
+            <MudMenuItem>Danh sách Chuyến Xe</MudMenuItem>
+        </ChildContent>
+    </MudMenu>
+</MudAppBar>
+
+<MudDrawer @bind-Open="_drawerOpen"
+           Elevation="2"
+           Anchor="Anchor.Start"
+           Variant="@DrawerVariant.Persistent"
+           ClipMode="DrawerClipMode.Docked"
+           DisableOverlay="false"
+           Class="d-md-none">
+    <MudDrawerHeader Class="d-flex justify-content-center">
+        <MudLink Typo="Typo.h4" Href="/" Underline="Underline.None">
+            <MudText Typo="Typo.h4" Class="fw-bold" Color="Color.Primary">BOXCARS</MudText>
+        </MudLink>
+    </MudDrawerHeader>
+
+    <MudDivider Class="my-2" Style="flex-grow: 0; border-width: 1px; border-color: gray;" />
+    <MudNavMenu Style="overflow: hidden;">
+        <MudNavLink Href="/ocrcar">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                <MudIcon Icon="@Icons.Material.Filled.CameraAlt" Size="Size.Small" Color="Color.Primary" />
+                <MudText Class="text-uppercase">quét biển số xe</MudText>
+            </MudStack>
+        </MudNavLink>
+    </MudNavMenu>
+</MudDrawer>
 
 
 <script>
@@ -142,6 +187,12 @@
     private List<string> adminPages; // Trang của admin
     private List<string> driverPages; // Trang của tài xế
     private List<string> restrictedPages; // Trang bị hạn chế
+    private bool _drawerOpen = false;
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
 
 
     protected override async Task OnInitializedAsync()
@@ -176,7 +227,7 @@
 
     private void CheckRole()
     {
-      
+
         switch (userRole)
         {
             case "1":  // Admin
@@ -201,18 +252,18 @@
                 }
                 break;
 
-            case "3":  
+            case "3":
                 if (driverPages.Contains(currentPage))
                 {
                     isLoading = false;
                 }
                 else
                 {
-                    isLoading = true;                
+                    isLoading = true;
                 }
                 break;
             default:
-                isLoading = false;               
+                isLoading = false;
                 break;
         }
     }
@@ -241,7 +292,7 @@
                             fullname = fullnameClaim.Value;
                             userRole = roleClaim.Value;
                             Console.WriteLine(userRole + "quyền");
-                           
+
                         }
                     }
                 }
