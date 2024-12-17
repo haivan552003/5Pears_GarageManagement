@@ -15,6 +15,7 @@ namespace FE_User.Models
         public DateTime vehicle_registration_end { get; set; }
         public string status { get; set; }
         public byte isAuto { get; set; }
+        public byte is_retail { get; set; }
         public float price { get; set; }
         public int type_id { get; set; }
         public string type_name { get; set; }

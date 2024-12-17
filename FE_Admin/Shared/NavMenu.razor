@@ -1,12 +1,22 @@
 ﻿@inject IJSRuntime js
 @inject NavigationManager NavigationManager
+@using System.Security.Claims;
+@if (isLoading == true)
+{
+    <div class="loading-overlay">
+        <MudItem xs="12" Class="text-center">
+            <MudImage Src="/Image/404.jpg" Alt="NOT FOUND" Elevation="0" Fluid="true" />
+        </MudItem>
+    </div>
+}
+
 
 <MudContainer Class="pt-5 pb-5">
     <MudAppBar Elevation="1">
         <MudLink Typo="Typo.h4" Href="/" Underline="Underline.None">
             <MudText Typo="Typo.h4" Class="fw-bold text-white">BOXCARS</MudText>
         </MudLink>
-
+       
         <MudSpacer />
         <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
             <ActivatorContent>
@@ -125,30 +135,113 @@
 @code {
     private string fullname;
     private bool isInitialized = false;
+    private bool isUnauthorized = false;
+    private bool isLoading = false;
+    private string userRole;
+    private string currentPage;
+    private List<string> adminPages; // Trang của admin
+    private List<string> driverPages; // Trang của tài xế
+    private List<string> restrictedPages; // Trang bị hạn chế
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Lấy đường dẫn hiện tại
+        currentPage = NavigationManager.Uri.Replace(NavigationManager.BaseUri, "/");
+
+        // Khởi tạo danh sách các trang
+        adminPages = new List<string>
+        {
+            "/getemp", "/getDriver", "/getcars", "/getcustomer",
+            "/getcartypes", "/getcarbrand", "/guesttrip", "/guestcar",
+            "/trip-statistics", "/driver-statistics", "/car-statistics",
+            "/profile",
+            "/getnews", "/getbanner"
+        };
+
+        driverPages = new List<string>
+        {
+            "/profile",
+        };
+
+        restrictedPages = new List<string>
+        {
+            "/getemp", "/getdriver", "/getcars", "/getcustomer",
+            "/getcartypes", "/getcarbrand", "/trip-statistics",
+            "/car-statistics", "/getnews", "/getbanner"
+        };
+
+        CheckRole();
+    }
+
+    private void CheckRole()
+    {
+      
+        switch (userRole)
+        {
+            case "1":  // Admin
+                if (adminPages.Contains(currentPage))
+                {
+                    isLoading = false;
+                }
+                else
+                {
+                    isLoading = false;
+                }
+                break;
+
+            case "2":  // Tài xế
+                if (restrictedPages.Contains(currentPage))
+                {
+                    isLoading = false;
+                }
+                else
+                {
+                    isLoading = true;
+                }
+                break;
+
+            case "3":  
+                if (driverPages.Contains(currentPage))
+                {
+                    isLoading = false;
+                }
+                else
+                {
+                    isLoading = true;                
+                }
+                break;
+            default:
+                isLoading = false;               
+                break;
+        }
+    }
+
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !isInitialized)
         {
             isInitialized = true;
-
             var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
-
             if (!string.IsNullOrEmpty(token))
             {
                 try
                 {
                     var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-
                     if (handler.CanReadToken(token))
                     {
                         var jwtToken = handler.ReadJwtToken(token);
-
                         var fullnameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "fullname");
+                        var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
 
-                        if (fullnameClaim != null)
+                        if (fullnameClaim != null && roleClaim != null)
                         {
                             fullname = fullnameClaim.Value;
+                            userRole = roleClaim.Value;
+                            Console.WriteLine(userRole + "quyền");
+                           
                         }
                     }
                 }

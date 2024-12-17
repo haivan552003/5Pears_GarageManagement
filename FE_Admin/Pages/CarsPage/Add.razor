@@ -124,7 +124,13 @@
                                      />
                 </MudItem>
                 <MudItem xs="3">
-                    <MudSelect Variant="Variant.Outlined" @bind-Value="newCar.is_retail" Label="Loại xe" Required="true" Placeholder="Loại xe" RequiredError="Loại xe là bắt buộc">
+                    <MudSelect Variant="Variant.Outlined"
+                               Value="newCar.is_retail"
+                               ValueChanged="@(async (byte value) => await OnCarTypeChanged(value))"
+                               Label="Loại xe"
+                               Required="true"
+                               Placeholder="Loại xe"
+                               RequiredError="Loại xe là bắt buộc">
                         <MudSelectItem Value="@((byte)0)">Xe dịch vụ</MudSelectItem>
                         <MudSelectItem Value="@((byte)1)">Xe cho thuê</MudSelectItem>
                     </MudSelect>
@@ -142,17 +148,15 @@
                                      Min="0" />
                 </MudItem>
                 <MudItem xs="3">
-
                     <MudSelect T="int" @bind-Value="newCar.number_seat"
                                Label="Số ghế"
                                Required="true"
                                RequiredError="Số ghế là bắt buộc"
                                Variant="Variant.Outlined">
-                        <MudSelectItem Value="4">4 chỗ</MudSelectItem>
-                        <MudSelectItem Value="7">7 chỗ</MudSelectItem>
-                        <MudSelectItem Value="16">16 chỗ</MudSelectItem>
-                        <MudSelectItem Value="29">29 chỗ</MudSelectItem>                    
-                        <MudSelectItem Value="44">44 chỗ</MudSelectItem>
+                        @foreach (var seatOption in availableSeatOptions)
+                        {
+                            <MudSelectItem Value="@seatOption">@seatOption chỗ</MudSelectItem>
+                        }
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="12">
@@ -176,6 +180,23 @@
     private string userRole;
     private bool isInitialized = false;
     private bool isLoading = false;
+
+    private List<int> availableSeatOptions = new List<int> { 4, 7, 16, 29, 44 };
+
+    private async Task OnCarTypeChanged(byte value)
+    {
+        newCar.is_retail = value;
+        if (value == 0)
+        {
+            availableSeatOptions = new List<int> { 16, 29, 44 };
+        }
+        else if (value == 1)
+        {
+            availableSeatOptions = new List<int> { 4, 7, 16, 29, 44 };
+        }
+        newCar.number_seat = availableSeatOptions.FirstOrDefault();
+    }
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

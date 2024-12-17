@@ -15,48 +15,21 @@
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-6 mb-5">
     <MudGrid Class="mt-5">
-        <MudItem xs="3">
-            <MudPaper Width="300px" Class="d-inline-flex p-3" Elevation="0">
-                <MudNavMenu Dense="true" Rounded="true" Class="mud-width-full">
-                    <MudTextField T="string"
-                                  Placeholder="Tìm kiếm dòng xe, thương hiệu..."
-                                  Variant="Variant.Outlined"
-                                  Adornment="Adornment.Start"
-                                  AdornmentIcon="@Icons.Material.Filled.Search"
-                                  Class="mb-4"
-                                  @bind-Value="searchString1"
-                                  OnInput="OnSearchInput" />
-                    <MudDivider Class="my-2" />
+        <MudTextField T="string"
+                      Placeholder="Tìm kiếm dòng xe, thương hiệu..."
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Class="mb-4"
+                      @bind-Value="searchString1"
+                      OnInput="OnSearchInput" />
+       
 
-                    <MudNavGroup Title="Chọn loại xe" Icon="" Expanded="false">
-                        @foreach (var item in car_Types)
-                        {
-                            <MudNavLink Href="/users" Icon="" IconColor="Color.Success">@item.name</MudNavLink>
-                        }
-                    </MudNavGroup>
-
-                    <MudNavGroup Title="Chọn loại hộp số" Icon="" Expanded="false">
-                        <MudNavLink Href="/users" Icon="" IconColor="Color.Success">Số tự động</MudNavLink>
-                        <MudNavLink Href="/security" Icon="" IconColor="Color.Info">Số sàn</MudNavLink>
-                    </MudNavGroup>
-
-                    <MudNavGroup Title="Chọn hãng xe" Icon="" Expanded="false">
-                        @foreach (var item in car_Brands)
-                        {
-                            <MudNavLink Href="/users" Icon="" IconColor="Color.Success">@item.name</MudNavLink>
-                        }
-                    </MudNavGroup>
-
-                    <MudNavLink Href="/getdriver" Icon="">Thuê Tài Xế</MudNavLink>
-                </MudNavMenu>
-            </MudPaper>
-        </MudItem>
-
-        <MudItem xs="9">
+        <MudItem xs="12">
             <MudGrid>
                 @foreach (var item in PaginatedElements)
                 {
-                    <MudItem xs="12" sm="6" md="4" Class="mb-4">
+                    <MudItem xs="12" sm="6" md="3" Class="mb-4">
                         <a Href="@($"/getidcar/{item.id}")" Style="text-decoration: none;">
                             <MudPaper Class="p-3 mud-card1">
                                 <img src="@item.img_name" alt="Hình xe"
@@ -169,7 +142,8 @@
     {
         try
         {
-            Elements = await httpClient.GetFromJsonAsync<List<car>>("http://localhost:49922/api/Cars/getAllCars");
+            var allCars  = await httpClient.GetFromJsonAsync<List<car>>("http://localhost:49922/api/Cars/getAllCars");
+            Elements = allCars?.Where(car => car.is_retail == 1).ToList();
         }
         catch (Exception ex)
         {
