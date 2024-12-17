@@ -24,6 +24,7 @@
         public string from { get; set; }
         public string to { get; set; }
         public float sale { get; set; }
+        public float price_voucher { get; set; }
         public List<car_seat> car_seat { get; set; }
     }
 

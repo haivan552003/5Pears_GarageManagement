@@ -2,6 +2,8 @@
 @using System.Net.Http.Json
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
+@inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
 
 <div class="container">
     <MudItem xs="12" Class="mx-auto mt-10">
@@ -138,6 +140,16 @@
                                                         Đặt vé
                                                     </MudButton>
                                                 </MudItem>
+                                                <MudItem xs="12">
+                                                    @if (trip.seat_null > 0)
+                                                    {
+                                                        <MudText Typo="Typo.subtitle1" Color="Color.Success" Class="fw-bold" Align="Align.End">@trip.seat_null ghế trống</MudText>
+                                                    }
+                                                    else
+                                                    {
+                                                        <MudText Typo="Typo.subtitle1" Color="Color.Success" Class="fw-bold" Align="Align.End">Hết ghế</MudText>
+                                                    }
+                                                </MudItem>
                                             </MudGrid>
                                         </MudPaper>
 
@@ -251,9 +263,19 @@
                                                                 <MudText Typo="Typo.h6" Class="fw-bold" Align="Align.End">@trip.to</MudText>
                                                             </MudItem>
                                                             <MudItem xs="2">
-                                                                <MudButton Variant="Variant.Outlined" Class="float-end" Color="Color.Primary" Size="Size.Small" Href="@($"/getTrip/{trip.trip_id}")">
-                                                                    Đặt vé
+                                                                <MudButton Variant="Variant.Outlined" Class="float-end" Color="Color.Primary" Size="Size.Small" OnClick="() => SaveTripIdTo(trip.id)">
+                                                                    Chọn chuyến
                                                                 </MudButton>
+                                                            </MudItem>
+                                                            <MudItem xs="12">
+                                                                @if (trip.seat_null > 0)
+                                                                {
+                                                                    <MudText Typo="Typo.subtitle1" Color="Color.Success" Class="fw-bold" Align="Align.End">@trip.seat_null ghế trống</MudText>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <MudText Typo="Typo.subtitle1" Color="Color.Success" Class="fw-bold" Align="Align.End">Hết ghế</MudText>
+                                                                }
                                                             </MudItem>
                                                         </MudGrid>
 
@@ -364,9 +386,20 @@
                                                                 <MudText Typo="Typo.h6" Class="fw-bold" Align="Align.End">@trip.to</MudText>
                                                             </MudItem>
                                                             <MudItem xs="2">
-                                                                <MudButton Variant="Variant.Outlined" Class="float-end" Color="Color.Primary" Size="Size.Small" Href="@($"/getTrip/{trip.trip_id}")">
-                                                                    Đặt vé
+                                                                <MudButton Variant="Variant.Outlined" Class="float-end" Color="Color.Primary" Size="Size.Small" OnClick="() => SaveTripIdReturn(trip.id)">
+                                                                    Chọn chuyến
                                                                 </MudButton>
+
+                                                            </MudItem>
+                                                            <MudItem xs="12">
+                                                                @if (trip.seat_null > 0)
+                                                                {
+                                                                    <MudText Typo="Typo.subtitle1" Color="Color.Success" Class="fw-bold" Align="Align.End">@trip.seat_null ghế trống</MudText>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <MudText Typo="Typo.subtitle1" Color="Color.Success" Class="fw-bold" Align="Align.End">Hết ghế</MudText>
+                                                                }
                                                             </MudItem>
                                                         </MudGrid>
 
@@ -436,7 +469,7 @@
         else
         {
             <MudText Typo="Typo.h6" Color="Color.Secondary" Class="mx-auto">
-                Không có tuyến xe theo tuyến đường này
+                Không có dữ liệu
             </MudText>
         }
     </MudGrid>
@@ -534,6 +567,17 @@
                     DateTime? parsedDateStart = searchRequest.date_start;
                     DateTime? parsedDateReturn = searchRequest.date_return;
 
+                    // Kiểm tra nếu date_start là ngày hôm nay và điều chỉnh thời gian bắt đầu
+                    if (parsedDateStart.HasValue && parsedDateStart.Value.Date == DateTime.Today)
+                    {
+                        parsedDateStart = DateTime.Now.AddHours(4);
+                    }
+
+                    if (parsedDateReturn.HasValue && parsedDateReturn.Value.Date == DateTime.Today)
+                    {
+                        parsedDateReturn = DateTime.Now.AddHours(4);
+                    }
+
                     if (parsedDateReturn.HasValue && isReturnRaw == "True")
                     {
                         tripForm1 = tripDetails
@@ -552,7 +596,7 @@
                         if (!tripForm2.Any())
                         {
                             Console.WriteLine("Không tìm thấy chuyến về nào phù hợp với yêu cầu.");
-                            Mess = "Không có chuyến đi phù hợp với yêu cầu. Vui lòng chọn lại!";
+                            Mess = "Không có chuyến về phù hợp với yêu cầu. Vui lòng chọn lại!";
                         }
                     }
                     else
@@ -589,6 +633,7 @@
             isLoading = false;
         }
     }
+
 
     private string GetTimeDifference(DateTime startTime, DateTime endTime)
     {
@@ -665,4 +710,48 @@
         }
         StateHasChanged();
     }
+
+    private async Task SaveTripIdTo(int tripIdTo)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "selectedTripIdTo", tripIdTo.ToString());
+            var tripIdReturn = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "selectedTripIdReturn");
+            if (string.IsNullOrEmpty(tripIdReturn))
+            {
+                Snackbar.Add("Bạn đã chọn chuyến đi. Vui lòng chọn chuyến về", Severity.Success);
+            }
+            else
+            {
+                navigationManager.NavigateTo($"/getTrip/{tripIdTo}/{tripIdReturn}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi xử lý chuyến đi: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task SaveTripIdReturn(int tripIdReturn)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "selectedTripIdReturn", tripIdReturn.ToString());
+            var tripIdTo = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "selectedTripIdTo");
+
+            if (string.IsNullOrEmpty(tripIdTo))
+            {
+                Snackbar.Add("Bạn đã chọn chuyến về. Vui lòng chọn chuyến đi", Severity.Success);
+            }
+            else
+            {
+                navigationManager.NavigateTo($"/getTrip/{tripIdTo}/{tripIdReturn}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi xử lý chuyến về: {ex.Message}", Severity.Error);
+        }
+    }
+
 }

@@ -29,5 +29,6 @@
         public DateTime time_start { get; set; }
         public DateTime time_end { get; set; }
         public float price { get; set; }
+        public int seat_null { get; set; }
     }
 }

@@ -58,6 +58,7 @@ namespace BE_API.Models
         public string fullname { get; set; }
         public string from { get; set; }
         public string to { get; set; }
+        public float price_voucher { get; set; }
         public List<car_seat> car_seat { get; set; }
 
     }
@@ -118,5 +119,7 @@ namespace BE_API.Models
         public DateTime time_start { get; set; }
         public DateTime time_end { get; set; }
         public float price { get; set; }
+        public string is_return { get; set; }
+        public int seat_null { get; set; }
     }
 }
