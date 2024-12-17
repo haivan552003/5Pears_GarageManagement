@@ -150,24 +150,6 @@ else if (userRole == "3")
 
                 </ChildContent>
             </MudMenu>
-
-
-            <MudSpacer />
-            <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopCenter">
-                <ActivatorContent>
-                    <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
-                        <MudImage ObjectFit="ObjectFit.Cover" Height="45" Width="45" Src="https://www.mudblazor.com/images/castle.jpg" Alt="Örebro Slott" Elevation="0" Class="rounded-circle" />
-                    </MudChip>
-                </ActivatorContent>
-                <ChildContent>
-                    <MudMenuItem Href="/profile">
-                        <MudIcon Icon="@Icons.Material.Outlined.SupervisedUserCircle" Color="Color.Default" />
-                        @fullname
-                    </MudMenuItem>
-                    <hr class="m-0" />
-                    <MudMenuItem>Danh sách Chuyến Xe</MudMenuItem>
-                </ChildContent>
-            </MudMenu>
         </MudAppBar>
 
     </MudContainer>
@@ -189,9 +171,9 @@ else if (userRole == "3")
     private bool isLoading = false;
     private string userRole;
     private string currentPage;
-    private List<string> adminPages; // Trang của admin
-    private List<string> driverPages; // Trang của tài xế
-    private List<string> restrictedPages; // Trang bị hạn chế
+    private List<string> adminPages; 
+    private List<string> driverPages; 
+    private List<string> restrictedPages;
 
 
     protected override async Task OnInitializedAsync()
@@ -254,9 +236,6 @@ else if (userRole == "3")
                 break;
         }
     }
-
-
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !isInitialized)
