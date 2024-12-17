@@ -20,7 +20,7 @@
                 QUÍ KHÁCH VUI LÒNG THANH TOÁN TRONG THỜI GIAN 15 PHÚT
             </MudText>
         }
-      
+
         <MudGrid Class="mt-4">
             <MudItem xs="12">
                 <MudPaper Class="p-4" Elevation="4">
@@ -156,7 +156,7 @@
                             </MudItem>
                             <MudItem xs="6" Class="pb-0">
                                 <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">TX241212</MudText>
-                                <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary" >Can Tho - Ho Chi Minh</MudText>
+                                <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">Can Tho - Ho Chi Minh</MudText>
                                 <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">15:59 - 12/12/2024</MudText>
                                 <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">B01</MudText>
                             </MudItem>
@@ -174,7 +174,7 @@
                                     <b style="color: #594AE2; font-weight: none;">BX Cần Thơ</b>
                                     <b style="color: #F44336; font-weight: none;">trước 15:44 12/12/2024</b>
                                     để kiểm tra thông tin trước khi lên xe.
-                                    </MudText>
+                                </MudText>
                             </MudItem>
 
                             <MudItem xs="12" Class="pt-0 pb-0">
@@ -193,7 +193,7 @@
                                 </MudText>
                             </MudItem>
                             <MudItem xs="12" Class="pt-0 pb-0 pl-0 ml-6">
-                                <MudText Class="mb-2" Typo="Typo.subtitle1" >395 Kinh Dương Vương, P.An Lạc, Q.Bình Tân, TP.HCM</MudText>
+                                <MudText Class="mb-2" Typo="Typo.subtitle1">395 Kinh Dương Vương, P.An Lạc, Q.Bình Tân, TP.HCM</MudText>
                             </MudItem>
 
                             <MudItem xs="6" Class="pb-0">
@@ -229,6 +229,7 @@
     private readonly DialogOptions _policyPrice = new() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
     private string url = "http://localhost:49922/api/GuestTrip";
     private string urlUpdateStatusBill = "http://localhost:49922/api/GuestTrip/PutStatus2";
+    private string urlUpdateStatusBill6 = "http://localhost:49922/api/GuestTrip/PutStatus6";
     private string billId;
     private string responseCode;
 
@@ -258,6 +259,11 @@
         if (responseCode == "00")
         {
             await UpdateStatusBill2();
+        }
+        else
+        {
+            await UpdateStatusBill6();
+
         }
         await js.InvokeVoidAsync("sessionStorage.removeItem", "billId");
     }
@@ -307,4 +313,27 @@
     {
         return Dialog.ShowAsync<DialogPolicyPrice>("Chính sách hủy vé", options);
     }
+
+    private async Task UpdateStatusBill6()
+    {
+        try
+        {
+        
+            var response = await httpClient.PutAsJsonAsync($"{urlUpdateStatusBill6}/{billId}", bill);
+            // if (response.IsSuccessStatusCode)
+            // {
+            //     Console.WriteLine($"Cập nhật trạng thái hóa đơn {billId} thành công!");
+            // }
+            // else
+            // {
+            //     var errorMessage = await response.Content.ReadAsStringAsync();
+            //     Console.WriteLine($"Cập nhật trạng thái thất bại: {errorMessage}");
+            // }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+
 }
