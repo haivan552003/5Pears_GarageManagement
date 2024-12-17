@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BE_API.ModelCustom
+﻿namespace FE_Admin.Models
 {
     public class CarRentalRequest
     {

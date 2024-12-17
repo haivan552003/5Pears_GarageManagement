@@ -1,252 +1,566 @@
 ﻿@page "/calendarCar/{CarId:int}"
 @using System.Net.Http
-@using System.Net.Http.Json
+@using System.Text.Json
+@using ModelCustom
+@using System.Net
 @inject HttpClient HttpClient
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
 @inject IJSRuntime js
 
-<style>
-    .loading-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(255, 255, 255); /* Màu trắng với độ mờ 50% */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999; /* Đảm bảo overlay hiển thị trên các thành phần khác */
-    }
-
-</style>
-
-@if (isLoading)
-{
-    <div class="loading-overlay">
-        <MudItem xs="12" Class="text-center">
-            <MudImage Src="/Image/404.jpg" Alt="NOT FOUND" Elevation="0" Fluid="true" />
-        </MudItem>
-    </div>
-}
 
 <MudContainer>
-    <MudPaper Elevation="3" Class="pa-4">
-        <MudText Typo="Typo.h5" Class="mb-4">Lịch Xe @CarId</MudText>
+    @*     <MudPaper Elevation="3" Class="pa-4">
 
-        @if (isLoading)
-        {
-            <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
-        }
-        else
-        {
-            @if (isServiceCar)
-            {
-                @if (serviceCarCalendars != null && serviceCarCalendars.Any(x => x.date.HasValue))
-                {
-                    <MudTable Items="@serviceCarCalendars.Where(x => x.date.HasValue)"
-                              Hover="true"
-                              Breakpoint="Breakpoint.Sm"
-                              Dense="true"
-                              Bordered="true">
-                        <HeaderContent>
-                            <MudTh>Ngày</MudTh>
-                            <MudTh>Giờ Bắt Đầu</MudTh>
-                            <MudTh>Giờ Kết Thúc</MudTh>
-                            <MudTh>Tên Tài Xế</MudTh>
-                            <MudTh>Số Điện Thoại</MudTh>
-                            <MudTh>Email</MudTh>
-                            <MudTh>Mã Lái Xe</MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd>@context.date?.ToString("dd/MM/yyyy")</MudTd>
-                            <MudTd>@context.date_start?.ToString("HH:mm")</MudTd>
-                            <MudTd>@context.date_end?.ToString("HH:mm")</MudTd>
-                            <MudTd>@context.name_drivers</MudTd>
-                            <MudTd>@context.sdt_driver</MudTd>
-                            <MudTd>@context.email_driver</MudTd>
-                            <MudTd>@context.code_driver</MudTd>
-                        </RowTemplate>
-                        <PagerContent>
-                            <MudTablePager />
-                        </PagerContent>
-                    </MudTable>
-                }
-                else
-                {
-                    <MudAlert Severity="Severity.Info" Class="mt-4">
-                        Không có lịch cho xe dịch vụ này
-                    </MudAlert>
-                }
-            }
-            else
-            {
-                <MudTabs Elevation="2" Rounded="true" Centered="true" Color="@Color.Primary">
-                    <MudTabPanel Text="Thuê Xe">
-                        @if (guestCarCalendars != null && guestCarCalendars.Any(x => x.date.HasValue))
+    </MudPaper> *@
+    <MudGrid Class="pa-4 mt-1">
+        <MudItem xs="8">
+            <MudGrid Class="mb-4">
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h5" Class="fw-bold">Đặc Điểm</MudText>
+                </MudItem>
+                <MudItem xs="4">
+                    <MudText Class="mb-1" Typo="Typo.subtitle1">Loại hộp số</MudText>
+                    @if (@cars.isAuto == 0)
+                    {
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Số Tự Động</MudText>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Số Sàn</MudText>
+                    }
+                </MudItem>
+
+                <MudItem xs="4">
+                    <MudText Class="mb-1" Typo="Typo.subtitle1">Số Ghế</MudText>
+                    <MudText Typo="Typo.subtitle1" Class=" fw-bold">@cars.number_seat ghế</MudText>
+                </MudItem>
+
+                <MudItem xs="4">
+                    <MudText Class="mb-1" Typo="Typo.subtitle1">Nhiên Liệu</MudText>
+                    @if (cars.fuel == 1)
+                    {
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Xăng RON 92 (E5)</MudText>
+                    }
+                    else if (cars.fuel == 2)
+                    {
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">RON 95-III</MudText>
+                    }
+                    else if (cars.fuel == 3)
+                    {
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">RON 95-IV</MudText>
+                    }
+                    else if (cars.fuel == 4)
+                    {
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Diesel 0,05%5</MudText>
+                    }
+                    else if (cars.fuel == 5)
+                    {
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Diesel 0,001%S (Diesel Euro 5)</MudText>
+                    }
+                    else if (cars.fuel == 6)
+                    {
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Pin Lithium-ion (Li-ion)</MudText>
+                    }
+                    else if (cars.fuel == 7)
+                    {
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Pin Lithium Iron Phosphate (LFP)</MudText>
+                    }
+                    else if (cars.fuel == 8)
+                    {
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Pin thể rắn (Solid-State Battery)</MudText>
+                    }
+                    else if (cars.fuel == 9)
+                    {
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Hybrid truyền thống (HEV)</MudText>
+                    }
+                    else if (cars.fuel == 10)
+                    {
+                        <MudText Typo="Typo.subtitle1" Class=" fw-bold">Plug-in Hybrid (PHEV)</MudText>
+                    }
+                </MudItem>
+            </MudGrid>
+
+            <MudDivider Class="mt-6 mb-6" />
+            <MudGrid Class="mb-4">
+                <MudPaper Class="mb-4 w-100 p-3">
+                    <MudItem xs="12">
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3">
+                            <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Color="Color.Primary" Size="Size.Large" />
+                            <MudText Typo="Typo.h5" Color="Color.Primary">Lịch Xe @cars.car_name</MudText>
+                            <MudSpacer />
+                            <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        </MudStack>
+                    </MudItem>
+
+                    <MudItem xs="12" Class="mt-5">
+                        @if (isLoading)
                         {
-                            <MudTable Items="@guestCarCalendars.Where(x => x.date.HasValue)"
-                                      Hover="true"
-                                      Breakpoint="Breakpoint.Sm"
-                                      Dense="true"
-                                      Bordered="true">
-                                <HeaderContent>
-                                    <MudTh>Ngày</MudTh>
-                                    <MudTh>Ngày Bắt Đầu</MudTh>
-                                    <MudTh>Ngày Kết Thúc</MudTh>
-                                    <MudTh>Tên Khách Hàng</MudTh>
-                                    <MudTh>Số Điện Thoại</MudTh>
-                                    <MudTh>Email</MudTh>
-                                </HeaderContent>
-                                <RowTemplate>
-                                    <MudTd>@context.date?.ToString("dd/MM/yyyy")</MudTd>
-                                    <MudTd>@context.date_start?.ToString("dd/MM/yyyy")</MudTd>
-                                    <MudTd>@context.date_end?.ToString("dd/MM/yyyy")</MudTd>
-                                    <MudTd>@context.name_cus</MudTd>
-                                    <MudTd>@context.phone</MudTd>
-                                    <MudTd>@context.email</MudTd>
-                                </RowTemplate>
-                                <PagerContent>
-                                    <MudTablePager />
-                                </PagerContent>
-                            </MudTable>
+                            <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
                         }
                         else
                         {
-                            <MudAlert Severity="Severity.Info" Class="mt-4">
-                                Không có lịch thuê xe
-                            </MudAlert>
-                        }
-                    </MudTabPanel>
+                            @if (isServiceCar)
+                            {
+                                @if (serviceCarCalendars != null && serviceCarCalendars.Any(x => x.date.HasValue))
+                                {
+                                    <MudTable Items="@serviceCarCalendars.Where(e => FilterFunc1(e)).ToList()"
+                                              Hover="true"
+                                              Breakpoint="Breakpoint.Sm"
+                                              Dense="true"
+                                              Bordered="true">
+                                        <HeaderContent>
+                                            <MudTh>Ngày</MudTh>
+                                            <MudTh>Giờ Bắt Đầu</MudTh>
+                                            <MudTh>Giờ Kết Thúc</MudTh>
+                                            <MudTh>Mã Lái Xe</MudTh>
+                                            <MudTh>Tên Tài Xế</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            <MudTd>@context.date?.ToString("dd/MM/yyyy")</MudTd>
+                                            <MudTd>@context.date_start?.ToString("HH:mm")</MudTd>
+                                            <MudTd>@context.date_end?.ToString("HH:mm")</MudTd>
+                                            <MudTd>@context.code_driver</MudTd>
+                                            <MudTd>@context.name_drivers</MudTd>
+                                        </RowTemplate>
+                                        <PagerContent>
+                                            <MudTablePager />
+                                        </PagerContent>
+                                    </MudTable>
+                                }
+                                else
+                                {
+                                    <MudAlert Severity="Severity.Info" Class="mt-4">
+                                        Không có lịch cho xe dịch vụ này
+                                    </MudAlert>
+                                }
+                            }
+                            else
+                            {
+                                <MudTabs Elevation="2" Rounded="true" Centered="true" Color="@Color.Primary">
+                                    <MudTabPanel Text="Thuê Xe">
+                                        @if (guestCarCalendars != null && guestCarCalendars.Any(x => x.date.HasValue))
+                                        {
+                                            <MudTable Items="@guestCarCalendars.Where(e => FilterFunc1(e)).ToList()"
+                                                      Hover="true"
+                                                      Breakpoint="Breakpoint.Sm"
+                                                      Dense="true"
+                                                      Bordered="true">
+                                                <HeaderContent>
+                                                    <MudTh>Ngày</MudTh>
+                                                    <MudTh>Ngày Bắt Đầu</MudTh>
+                                                    <MudTh>Ngày Kết Thúc</MudTh>
+                                                    <MudTh>Tên Khách Hàng</MudTh>
+                                                    <MudTh>Số Điện Thoại</MudTh>
+                                                    <MudTh>Email</MudTh>
+                                                </HeaderContent>
+                                                <RowTemplate>
+                                                    <MudTd>@context.date?.ToString("dd/MM/yyyy")</MudTd>
+                                                    <MudTd>@context.date_start?.ToString("dd/MM/yyyy")</MudTd>
+                                                    <MudTd>@context.date_end?.ToString("dd/MM/yyyy")</MudTd>
+                                                    <MudTd>@context.name_cus</MudTd>
+                                                    <MudTd>@context.phone</MudTd>
+                                                    <MudTd>@context.email</MudTd>
+                                                </RowTemplate>
+                                                <PagerContent>
+                                                    <MudTablePager />
+                                                </PagerContent>
+                                            </MudTable>
+                                        }
+                                        else
+                                        {
+                                            <MudAlert Severity="Severity.Info" Class="mt-4">
+                                                Không có lịch thuê xe
+                                            </MudAlert>
+                                        }
+                                    </MudTabPanel>
 
-                    <MudTabPanel Text="Thuê Xe Có Tài Xế">
-                        @if (guestCarDriverCalendars != null && guestCarDriverCalendars.Any(x => x.date.HasValue))
+                                    <MudTabPanel Text="Thuê Xe Có Tài Xế">
+                                        @if (guestCarDriverCalendars != null && guestCarDriverCalendars.Any(x => x.date.HasValue))
+                                        {
+                                            <MudTable Items="@guestCarDriverCalendars.Where(e => FilterFunc1(e)).ToList()"
+                                                      Hover="true"
+                                                      Breakpoint="Breakpoint.Sm"
+                                                      Dense="true"
+                                                      Bordered="true">
+                                                <HeaderContent>
+                                                    <MudTh>Ngày</MudTh>
+                                                    <MudTh>Ngày Bắt Đầu</MudTh>
+                                                    <MudTh>Ngày Kết Thúc</MudTh>
+                                                    <MudTh>Tên Khách Hàng</MudTh>
+                                                    <MudTh>Tên Tài Xế</MudTh>
+                                                </HeaderContent>
+                                                <RowTemplate>
+                                                    <MudTd>@context.date?.ToString("dd/MM/yyyy")</MudTd>
+                                                    <MudTd>@context.date_start?.ToString("dd/MM/yyyy")</MudTd>
+                                                    <MudTd>@context.date_end?.ToString("dd/MM/yyyy")</MudTd>
+                                                    <MudTd>@context.name_cus</MudTd>
+                                                    <MudTd>@context.name_drivers</MudTd>
+                                                </RowTemplate>
+                                                <PagerContent>
+                                                    <MudTablePager />
+                                                </PagerContent>
+                                            </MudTable>
+                                        }
+                                        else
+                                        {
+                                            <MudAlert Severity="Severity.Info" Class="mt-4">
+                                                Không có lịch thuê xe và tài xế
+                                            </MudAlert>
+                                        }
+                                    </MudTabPanel>
+                                </MudTabs>
+                            }
+                        }
+                    </MudItem>
+                </MudPaper>
+
+
+            </MudGrid>
+
+            <MudDivider Class="mt-6 mb-6" />
+
+            <MudGrid Class="mt-4">
+                <MudCard Elevation="1" Class="w-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3">
+                                <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Color="Color.Primary" Size="Size.Large" />
+                                <MudText Typo="Typo.h5" Color="Color.Primary">Lịch Làm Việc Của Tài Xế</MudText>
+                            </MudStack>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+
+                    <MudCardContent>
+                        <MudStack Row="true" Spacing="3" AlignItems="AlignItems.Center" Class="mb-4">
+                            @*                             <MudAutocomplete T="DriverDropdown"
+                            Value="@SelectedDriver"
+                            SearchFunc="@SearchDrivers"
+                            ValueChanged="@OnDriverSelected"
+                            Clearable="true"
+                            Variant="Variant.Outlined"
+                            ToStringFunc="@(x => x?.name)"
+                            AnchorOrigin="Origin.BottomCenter">
+                            <ItemTemplate Context="driver">
+                            <MudStack Row="true" AlignItems="AlignItems.Center">
+                            <MudText>@driver.name</MudText>
+                            </MudStack>
+                            </ItemTemplate>
+                            </MudAutocomplete> *@
+                            <MudItem xs="12" Class="mb-4 w-100">
+                                <MudSelect T="int" @bind-Value="bill2.driver_id" Label="Mã Tài Xế" Variant="Variant.Outlined" Required="true">
+                                    @foreach (var driver in drivers)
+                                    {
+                                        <MudSelectItem Value="@driver.id">@driver.name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                        </MudStack>
+
+                        <MudTabs Rounded="true" Centered="true" Color="Color.Primary">
+                            <MudTabPanel Text="Lịch Chính">
+                                @if (MainCalendarEvents.Any())
+                                {
+                                    <MudTable Items="@MainCalendarEvents"
+                                              Hover="true"
+                                              Dense="true"
+                                              Striped="true"
+                                              FixedHeader="true"
+                                              Class="mt-4"
+                                              Height="150px">
+                                        <HeaderContent>
+                                            <MudTh>Ngày</MudTh>
+                                            <MudTh>Giờ Bắt Đầu</MudTh>
+                                            <MudTh>Giờ Kết Thúc</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            <MudTd>@context.date.ToString("dd/MM/yyyy")</MudTd>
+                                            <MudTd>@context.date_start?.ToString(@"hh\:mm")</MudTd>
+                                            <MudTd>@context.date_end?.ToString(@"hh\:mm")</MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                    @*                                     <MudPagination Color="Color.Primary" Class="mt-2 text-center" Count="@TotalPages" @bind-Selected="@_selected" />
+                                *@
+                                    <div class="d-flex flex-column align-center">
+                                        <MudPagination Rectangular="true" Class="mt-2" Variant="Variant.Text" Count="@TotalPages" @bind-Selected="@_selected" />
+                                    </div>
+
+                                }
+                                else
+                                {
+                                    <MudAlert Severity="Severity.Info" Class="mt-4">Không có lịch làm việc cho tài xế này.</MudAlert>
+                                }
+                            </MudTabPanel>
+                            <MudTabPanel Text="Lịch Khách">
+                                @if (GuestDriverCalendar.Any())
+                                {
+                                    <MudTable Items="@GuestDriverCalendar"
+                                              Hover="true"
+                                              Dense="true"
+                                              Striped="true"
+                                              FixedHeader="true"
+                                              Class="mt-4"
+                                              Height="150px">
+                                        <HeaderContent>
+                                            <MudTh>Ngày</MudTh>
+                                            <MudTh>Giờ Bắt Đầu</MudTh>
+                                            <MudTh>Giờ Kết Thúc</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            <MudTd>@context.date.ToString("dd/MM/yyyy")</MudTd>
+                                            <MudTd>@context.date_start?.ToString(@"hh\:mm")</MudTd>
+                                            <MudTd>@context.date_end?.ToString(@"hh\:mm")</MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                    <div class="d-flex flex-column align-center">
+                                        <MudPagination Rectangular="true" Class="mt-2" Variant="Variant.Text" Count="@TotalPages" @bind-Selected="@_selected" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <MudAlert Severity="Severity.Info" Class="mt-4">Không có lịch khách cho tài xế này.</MudAlert>
+                                }
+                            </MudTabPanel>
+
+                            <MudTabPanel Text="Lịch Xe Khách">
+                                @if (GuestCarDriverCalendar.Any())
+                                {
+                                    <MudTable Items="@GuestCarDriverCalendar"
+                                              Hover="true"
+                                              Dense="true"
+                                              Striped="true"
+                                              Class="mt-4"
+                                              FixedHeader="true"
+                                              Height="150px">
+                                        <HeaderContent>
+                                            <MudTh>Ngày Bắt Đầu</MudTh>
+                                            <MudTh>Ngày Kết Thúc</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            <MudTd>@context.date_start?.ToString("dd/MM/yyyy")</MudTd>
+                                            <MudTd>@context.date_end?.ToString("dd/MM/yyyy")</MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                    <div class="d-flex flex-column align-center">
+                                        <MudPagination Rectangular="true" Class="mt-2" Variant="Variant.Text" Count="@TotalPages" @bind-Selected="@_selected" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <MudAlert Severity="Severity.Info" Class="mt-4">Không có lịch xe khách cho tài xế này.</MudAlert>
+                                }
+                            </MudTabPanel>
+                        </MudTabs>
+                    </MudCardContent>
+                </MudCard>
+
+
+            </MudGrid>
+        </MudItem>
+
+        <MudItem xs="4">
+            <MudItem xs="12" Style="margin-top:-5px;margin-bottom:10px;text-align:center">
+                <MudRadioGroup @bind-Value="Dense_Radio">
+                    <MudRadio Value="true" Color="Color.Primary" Dense="true" Size="Size.Medium">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-16">Tiền Mặt</MudText>
+                    </MudRadio>
+                    <MudRadio Value="false" Color="Color.Secondary" Dense="false" Size="Size.Medium">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Default" Class="fs-16">Chuyển Khoản</MudText>
+                    </MudRadio>
+                </MudRadioGroup>
+            </MudItem>
+            <MudPaper Class="p-4" MaxWidth="MaxWidth.Medium" Elevation="1">
+                <MudGrid>
+                    <MudItem xs="8" Class="pb-0 pt-0">
+                        <MudText Typo="Typo.h6" Class="fw-bold" Color="Color.Primary">
+                            @car_price.ToString("#,##0") VNĐ/ngày
+                        </MudText>
+                        @*                         <MudText Class="text-decoration-line-through fs-14 pt-2">@cars.price.ToString("#,##0") VNĐ/ngày</MudText>*@
+                    </MudItem>
+                    @*                     <MudItem xs="5" Class="pb-0 pt-0">
+                    </MudItem> *@
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1">
+                            Thời gian thuê
+                        </MudText>
+                        <MudDateRangePicker Variant="Variant.Outlined" @bind-DateRange="_dateRange" MinDate="DateTime.Today" />
+                    </MudItem>
+
+                    <MudItem xs="6" Class="pb-2 pt-2">
+                        <MudText Typo="Typo.subtitle1">Bảo hiểm thuê xe</MudText>
+                    </MudItem>
+                    <MudItem xs="6" Class="pb-2 pt-2">
+                        <MudText Align="Align.End" Typo="Typo.subtitle1">@cars.insurance_fee.ToString("#,##0") VNĐ</MudText>
+                    </MudItem>
+
+                    <MudItem xs="6" Class="pb-2 pt-2">
+                        <MudText Typo="Typo.subtitle1">Thành Tiền</MudText>
+                    </MudItem>
+                    <MudItem xs="6" Class="pb-2 pt-2">
+
+                        @if (_dateRange?.Start != null && _dateRange?.End != null)
                         {
-                            <MudTable Items="@guestCarDriverCalendars.Where(x => x.date.HasValue)"
-                                      Hover="true"
-                                      Breakpoint="Breakpoint.Sm"
-                                      Dense="true"
-                                      Bordered="true">
-                                <HeaderContent>
-                                    <MudTh>Ngày</MudTh>
-                                    <MudTh>Ngày Bắt Đầu</MudTh>
-                                    <MudTh>Ngày Kết Thúc</MudTh>
-                                    <MudTh>Tên Khách Hàng</MudTh>
-                                    <MudTh>Tên Tài Xế</MudTh>
-                                </HeaderContent>
-                                <RowTemplate>
-                                    <MudTd>@context.date?.ToString("dd/MM/yyyy")</MudTd>
-                                    <MudTd>@context.date_start?.ToString("dd/MM/yyyy")</MudTd>
-                                    <MudTd>@context.date_end?.ToString("dd/MM/yyyy")</MudTd>
-                                    <MudTd>@context.name_cus</MudTd>
-                                    <MudTd>@context.name_drivers</MudTd>
-                                </RowTemplate>
-                                <PagerContent>
-                                    <MudTablePager />
-                                </PagerContent>
-                            </MudTable>
+                            date_number = (_dateRange.End.Value - _dateRange.Start.Value).Days;
+                            money = (date_number * car_price) - cars.insurance_fee;
+                            <MudText Align="Align.End" Typo="Typo.subtitle1">@money.ToString("#,##0") VNĐ</MudText>
                         }
                         else
                         {
-                            <MudAlert Severity="Severity.Info" Class="mt-4">
-                                Không có lịch thuê xe và tài xế
-                            </MudAlert>
+                            <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Error">
+                                Vui lòng chọn khoảng thời gian thuê
+                            </MudText>
                         }
-                    </MudTabPanel>
-                </MudTabs>
-            }
-        }
 
-        <div class="mt-4 d-flex justify-center">
-            <MudButton Variant="Variant.Outlined"
-                       Color="Color.Primary"
-                       OnClick="@(() => NavigationManager.NavigateTo("/getcars"))">
-                Quay Lại Danh Sách Xe
-            </MudButton>
-        </div>
-    </MudPaper>
+
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="bill2.customer_address" Label="Địa chỉ" Variant="Variant.Outlined" Class="mud-width-full" />
+                    </MudItem>
+
+
+                    <MudItem xs="12">
+
+                        <MudButton OnClick="OnCheckout" FullWidth="true" Variant="Variant.Filled" Color="Color.Primary">thuê xe</MudButton>
+                        @if (_showMessage)
+                        {
+                            <MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Error">@message</MudText>
+                        }
+                    </MudItem>
+
+                </MudGrid>
+            </MudPaper>
+            <MudPaper Class="p-4 mt-4" Elevation="1">
+                <MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" Class="mx-auto">
+                            <MudText Typo="Typo.h6" Color="Color.Primary">Thông tin khách hàng</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField ShrinkLabel @bind-Value="customer.phone_number" Label="Số điện thoại" Margin="Margin.Dense" Variant="Variant.Outlined" OnBlur="@SearchPhoneNumber" Required />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField ShrinkLabel @bind-Value="customer.fullname" Label="Họ và tên" Margin="Margin.Dense" Variant="Variant.Outlined" Required />
+                        </MudItem>
+                        <MudItem xs="12" Class="d-flex justify-end">
+                            @if (SaveButton)
+                            {
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Primary" OnClick="AddCus">Lưu</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+
 </MudContainer>
 
 @code {
     [Parameter]
     public int CarId { get; set; }
+    private int _selected = 1;
+    private int PageSize = 5;
+    private int TotalPages => (int)Math.Ceiling((double)MainCalendarEvents.Count / PageSize);
+    private List<dropdown> drivers = new List<dropdown>();
+
+
 
     private bool isServiceCar = false;
-    // private bool isLoading = true;
-    private string userRole;
-    private bool isInitialized = false;
-    private bool isLoading = false;
+    private bool isLoading = true;
+    private int cus_id;
+    private int driver_id;
+    private List<carlendarCar> serviceCarCalendars = new List<carlendarCar>();
+    private List<carlendarCar> guestCarCalendars = new List<carlendarCar>();
+    private List<carlendarCar> guestCarDriverCalendars = new List<carlendarCar>();
+    private List<car_img> latestImages;
+    private bool loading = false;
+    private bool? isCarRented;
+    private bool _showMessage = false;
+    private string message;
+    private int date_number;
+    private customer customer = new customer();
+    private car cars = new car();
+    private float money;
+    private DateRange? _dateRange;
+    private float car_price;
+    private guest_car_create bill = new guest_car_create();
+    private guest_driver_create bill1 = new guest_driver_create();
+    private GuestCarDriver_create bill2 = new GuestCarDriver_create();
 
 
-    private List<carlendarCar> serviceCarCalendars;
-    private List<carlendarCar> guestCarCalendars;
-    private List<carlendarCar> guestCarDriverCalendars;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && !isInitialized)
-        {
-            isInitialized = true;
+    private string urlCheckDateRetailCar = "http://localhost:49922/api/GuestCars/CheckDateRetailCar";
+    private string urlBill = "http://localhost:49922/api/GuestCars";
+    private string urlTopGuestCar = "http://localhost:49922/api/GuestCars/GetTop";
+    private string url = "http://localhost:49922/api/Cars/viewCar/";
+    private string urlCus = "http://localhost:49922/api/Customer";
+    private string urlGetTopCus = "http://localhost:49922/api/Customer/GetTop";
+    private string errorMessageCheckCus;
+    private bool SaveButton = false;
+    public bool Dense_Radio { get; set; } = true;
+    private int empId;
+    private List<DriverCalendar> GuestDriverCalendar = new();
+    private List<DriverCalendar> GuestCarDriverCalendar = new();
+    private List<DriverCalendar> MainCalendarEvents = new();
+    private DriverDropdown SelectedDriver;
+    private List<DriverDropdown> Drivers = new();
+    private bool IsLoading = false;
+    private string baseUrl = "http://localhost:49922/api/CalendarDriver/";
+    private string searchString1 = "";
+    public int id { get; set; }
+    private string urlBill1 = "http://localhost:49922/api/GuestDriver";
+    private string urlTopGuestDriver = "http://localhost:49922/api/GuestDriver/GetTop";
+    private string urlVNPayCreate = "http://localhost:49922/api/Payment/create-payment";
+    private driver Driver;
+    private string urlCheckDateRetail = "http://localhost:49922/api/GuestCarDriver/CheckDateRetailDriver";
+    private string urlCheckCarDateRetail = "http://localhost:49922/api/GuestCars/CheckDateRetailCar";
+    private string urlGuestCarDriver = "http://localhost:49922/api/GuestCarDriver";
+    private string urlTopGuestCarDriver = "http://localhost:49922/api/GuestCarDriver/GetTop";
+    private string urlUpdateStatusCar = "http://localhost:49922/api/GuestCars/PutStatus10";
+    private string urlUpdateStatusCarDriver = "http://localhost:49922/api/GuestCarDriver/PutStatus10";
 
-            var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
 
-            if (!string.IsNullOrEmpty(token))
-            {
-                try
-                {
-                    var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
 
-                    if (handler.CanReadToken(token))
-                    {
-                        var jwtToken = handler.ReadJwtToken(token);
 
-                        var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
 
-                        if (roleClaim != null)
-                        {
-                            userRole = roleClaim.Value;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Role claim not found in the token.");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Lỗi khi giải mã token: {ex.Message}");
-                }
-            }
-            CheckRole();
-            StateHasChanged();
-        }
-    }
 
-    private void CheckRole()
-    {
-        if (userRole == "1")
-        {
-            Console.WriteLine("User is an Admin.");
-        }
-        else if (userRole == "2")
-        {
-            Console.WriteLine("User is a regular User.");
-        }
-        else if (userRole == "3")
-        {
-            Console.WriteLine("User is a regular Driver.");
-        }
-        else
-        {
-            isLoading = true;
-        }
-    }
+
+
+
+    private List<guest_car_create> elements = new List<guest_car_create>();
 
     protected override async Task OnInitializedAsync()
     {
+        drivers = await HttpClient.GetFromJsonAsync<List<dropdown>>("http://localhost:49922/api/Dropdown/driver");
+
+
         await FetchCarCalendar();
+        await LoadDrivers();
+
     }
+    private async Task LoadUser()
+    {
+        customer = await HttpClient.GetFromJsonAsync<customer>($"{urlCus}/{CarId}");
+    }
+    private async Task LoadDrivers()
+    {
+        try
+        {
+            var drivers = await HttpClient.GetFromJsonAsync<List<DriverDropdown>>($"{baseUrl}dropdown-drivers");
+            if (drivers != null && drivers.Any())
+            {
+                Drivers = drivers.OrderBy(d => d.id).ToList();
+                SelectedDriver = Drivers.First();
+                await LoadDriverCalendars(SelectedDriver.id);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+    }
+
 
     private async Task FetchCarCalendar()
     {
@@ -254,16 +568,32 @@
         {
             isLoading = true;
 
-            // Lấy thông tin xe để xác định isRetail
-            var carTypeResponse = await HttpClient.GetFromJsonAsync<CarTypeResponse>($"http://localhost:49922/api/Cars/{CarId}");
+            // Fetch car information
+            var carResponse = await HttpClient.GetAsync($"http://localhost:49922/api/Cars/viewCar/{CarId}");
+            if (carResponse.IsSuccessStatusCode)
+            {
+                cars = await carResponse.Content.ReadFromJsonAsync<car>();
+                if (cars == null)
+                {
+                    Snackbar.Add("Không tìm thấy thông tin xe", Severity.Error);
+                    return;
+                }
 
-            if (carTypeResponse == null)
+                latestImages = cars.car_img?.OrderByDescending(img => img.id).Take(1).ToList() ?? new List<car_img>();
+                car_price = cars.price - cars.voucher;
+            }
+            else
+            {
+                Snackbar.Add("Không thể tải thông tin xe", Severity.Error);
+            }
+
+            if (cars == null)
             {
                 Snackbar.Add("Không thể xác định loại xe", Severity.Error);
                 return;
             }
 
-            isServiceCar = carTypeResponse.is_retail == 0;
+            isServiceCar = cars.is_retail == 0;
 
             // Gọi API tương ứng với loại xe
             if (isServiceCar)
@@ -310,9 +640,408 @@
         }
     }
 
-    // Lớp hỗ trợ để lấy thông tin xe
-    public class CarTypeResponse
+    private async Task OnCheckout()
     {
-        public int is_retail { get; set; }
+        _showMessage = false;
+        if (_dateRange == null || CarId == 0 || !_dateRange.Start.HasValue)
+        {
+            _showMessage = true;
+            message = "Quý khách vui lòng chọn ngày thuê.";
+            return;
+        }
+
+        var checkRentalRequest = new DriverRentalRequest
+            {
+                DateStart = _dateRange.Start.Value,
+                DriverId = bill2.driver_id,
+                CarID = bill2.car_id,
+
+            };
+
+        var checkRentalResponse = await HttpClient.PostAsJsonAsync(urlCheckDateRetail, checkRentalRequest);
+        if (checkRentalResponse.IsSuccessStatusCode)
+        {
+            var isRented = await checkRentalResponse.Content.ReadFromJsonAsync<bool>();
+            if (isRented)
+            {
+                _showMessage = true;
+                message = "Tài xế và xe đã có khách thuê vào ngày này!";
+                return;
+            }
+        }
+
+        var checkCarRentalRequest = new Models.CarRentalRequest
+            {
+                DateStart = _dateRange.Start.Value,
+                CarId = CarId
+            };
+
+        var checkCarRentalResponse = await HttpClient.PostAsJsonAsync(urlCheckDateRetailCar, checkCarRentalRequest);
+        if (checkCarRentalResponse.IsSuccessStatusCode)
+        {
+            var isRented = await checkCarRentalResponse.Content.ReadFromJsonAsync<bool>();
+            if (isRented)
+            {
+                _showMessage = true;
+                message = "Xe đã có khách thuê vào ngày này!";
+                return;
+            }
+        }
+
+
+        if (cus_id == 0)
+        {
+            if (string.IsNullOrWhiteSpace(customer.fullname) || string.IsNullOrWhiteSpace(customer.phone_number))
+            {
+                _showMessage = true;
+                message = "Vui lòng điền đầy đủ thông tin khách hàng.";
+                return;
+            }
+
+            var response = await HttpClient.GetAsync($"http://localhost:49922/api/Validate/CheckPhoneNumberCustomer/{customer.phone_number}");
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                Console.WriteLine("Số điện thoại chưa được đăng ký, thêm khách hàng mới.");
+                await AddCus();
+            }
+            else if (response.IsSuccessStatusCode)
+            {
+                var existingCustomer = await response.Content.ReadFromJsonAsync<Guest_Customer>();
+                if (existingCustomer != null)
+                {
+                    cus_id = existingCustomer.id;
+                }
+            }
+            else
+            {
+                _showMessage = true;
+                message = "Lỗi khi kiểm tra thông tin khách hàng.";
+                return;
+            }
+        }
+        if(bill2.driver_id == 0)
+        {
+            await AddBill();
+        }
+        else
+        {
+            await AddDriverr();
+        }
     }
+
+
+    private async Task AddBill()
+    {
+        try
+        {
+            bill.date_start = _dateRange.Start.Value;
+            bill.date_end = _dateRange.End.Value;
+            bill.car_id = CarId;
+            bill.cus_id = cus_id;
+            bill.price = car_price;
+            empId = await GetEmpIdFromToken();
+            bill.emp_id = empId;
+            if (Dense_Radio = true)
+            {
+                bill.payment_method = true;
+            }
+            else
+            {
+                bill.payment_method = false;
+            }
+
+            var response = await HttpClient.PostAsJsonAsync(urlBill, bill);
+            if (response.IsSuccessStatusCode)
+            {
+                _showMessage = true;
+                message = "Thanh toán thành công!";
+
+                var responseTop = await HttpClient.GetAsync(urlTopGuestCar);
+                var jsonResponse = await responseTop.Content.ReadAsStringAsync();
+                var guestTrips = JsonSerializer.Deserialize<List<guest_car>>(jsonResponse);
+                var guestTripId = guestTrips.First().id;
+                NavigationManager.NavigateTo($"/checkoutcar/{guestTripId}");
+                var updateResponse = await HttpClient.PutAsJsonAsync($"{urlUpdateStatusCar}/{guestTripId}", new
+                {
+                    id = guestTripId
+                });
+
+
+                // NavigationManager.NavigateTo($"/checkoutcar/{guestTripId}");
+            }
+            else
+            {
+                _showMessage = true;
+                message = "Thêm hóa đơn thất bại, vui lòng thử lại.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _showMessage = true;
+            message = $"Lỗi: {ex.Message}";
+            Console.WriteLine(message);
+        }
+    }
+    private async Task AddDriverr()
+    {
+        empId = await GetEmpIdFromToken();
+        bill2.emp_id = empId;
+        bill2.date_start = _dateRange.Start.Value;
+        bill2.date_end = _dateRange.End.Value;
+        bill2.cus_id = cus_id;
+        bill2.deposit = (int)Math.Ceiling(money / 3);
+        bill2.bank_code = null;
+        bill2.card_type = null;
+        bill2.transaction_no = null;
+        bill2.pay_date = null;
+        bill2.price = money;
+        bill2.car_id = CarId;
+        if (string.IsNullOrEmpty(bill2.customer_address))
+        {
+            bill2.customer_address = null;
+        }
+
+
+        if (Dense_Radio = true)
+        {
+            bill.payment_method = true;
+        }
+        else
+        {
+            bill.payment_method = false;
+        }
+        var response = await HttpClient.PostAsJsonAsync(urlGuestCarDriver, bill2);
+        if (response.IsSuccessStatusCode)
+        {
+            _showMessage = true;
+            message = "Thanh toán thành công!";
+
+            var responseTop = await HttpClient.GetAsync(urlTopGuestCarDriver);
+            var jsonResponse = await responseTop.Content.ReadAsStringAsync();
+            var guestTrips = JsonSerializer.Deserialize<List<GuestCarDriver>>(jsonResponse);
+            var guestTripId = guestTrips.First().id;
+            // await js.InvokeVoidAsync("sessionStorage.setItem", "billId", guestTripId);
+            NavigationManager.NavigateTo($"/checkoutdriver/{guestTripId}");
+            var updateResponse = await HttpClient.PutAsJsonAsync($"{urlUpdateStatusCarDriver}/{guestTripId}", new
+            {
+                id = guestTripId
+            });
+
+            var paymentRequest = new PaymentRequestModel
+                {
+                    OrderId = guestTripId.ToString(),
+                    Amount = (int)(bill.deposit),
+                    OrderInfo = guestTripId.ToString(),
+                    returnUrl = "http://localhost:5112/checkoutdriver"
+                };
+
+
+            var paymentResponse = await HttpClient.PostAsJsonAsync(urlVNPayCreate, paymentRequest);
+            if (paymentResponse.IsSuccessStatusCode)
+            {
+                var paymentData = await paymentResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                if (paymentData != null && paymentData.ContainsKey("paymentUrl"))
+                {
+
+                    var paymentUrl = paymentData["paymentUrl"];
+                    NavigationManager.NavigateTo(paymentUrl, forceLoad: true);
+                    return;
+                }
+            }
+
+        }
+    }
+
+    private async Task SearchPhoneNumber()
+    {
+        if (string.IsNullOrWhiteSpace(customer.phone_number))
+        {
+            customer.fullname = string.Empty;
+            SaveButton = false;
+            return;
+        }
+        else
+        {
+            SaveButton = true;
+        }
+        var response = await HttpClient.GetAsync($"http://localhost:49922/api/Validate/CheckPhoneNumberCustomer/{customer.phone_number}");
+        if (response.IsSuccessStatusCode)
+        {
+            var responseTop = await HttpClient.GetAsync(urlTopGuestCar);
+            var jsonResponse = await responseTop.Content.ReadAsStringAsync();
+            var guestTrips = JsonSerializer.Deserialize<List<guest_trip_create>>(jsonResponse);
+            var guestTripId = guestTrips.First().id;
+            var existingCustomer = await response.Content.ReadFromJsonAsync<Guest_Customer>();
+            if (existingCustomer != null)
+            {
+                customer.fullname = existingCustomer.fullname;
+                customer.Id = existingCustomer.id;
+                SaveButton = false;
+            }
+            else
+            {
+                errorMessageCheckCus = "Số điện thoại chưa được đăng ký.";
+                SaveButton = true;
+            }
+        }
+        else if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            errorMessageCheckCus = "Số điện thoại không tồn tại.";
+        }
+        else
+        {
+            errorMessageCheckCus = $"Đã xảy ra lỗi khi kiểm tra số điện thoại. Mã lỗi: {response.StatusCode}";
+            Console.WriteLine($"API Error: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}");
+        }
+    }
+
+    private async Task AddCus()
+    {
+        try
+        {
+            customer.password = "123456";
+            customer.birthday = DateTime.Now.AddYears(-18);
+            customer.gender = 0;
+            customer.citizen_identity_img1 = null;
+            customer.citizen_identity_number = null;
+            customer.driver_license_img1 = null;
+            customer.driver_license_number = null;
+            customer.status = true;
+            customer.img_cus = null;
+            var response = await HttpClient.PostAsJsonAsync(urlCus, customer);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseTop = await HttpClient.GetAsync(urlGetTopCus);
+                var jsonResponse = await responseTop.Content.ReadAsStringAsync();
+                Console.WriteLine($"JSON Response: {jsonResponse}");
+                Snackbar.Add("Khách hàng đã được thêm thành công!", Severity.Success);
+
+                var customerTop = JsonSerializer.Deserialize<List<Guest_Customer>>(jsonResponse);
+                if (customerTop != null && customerTop.Any())
+                {
+                    foreach (var customer in customerTop)
+                    {
+                        Console.WriteLine($"Customer ID: {customer.id}");
+                    }
+                    var cusID = customerTop.First().id;
+                    Console.WriteLine(customerTop.FirstOrDefault().id);
+                    bill.cus_id = cusID;
+                }
+                else
+                {
+                    Console.WriteLine("Danh sách khách hàng trả về rỗng hoặc null.");
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi khi thêm khách hàng: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task<int> GetEmpIdFromToken()
+    {
+        var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            var empIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "emp_id");
+            if (empIdClaim != null)
+            {
+                return int.Parse(empIdClaim.Value);
+            }
+        }
+
+        return 0;
+    }
+    private async Task<IEnumerable<DriverDropdown>> SearchDrivers(string value)
+    {
+
+        if (string.IsNullOrWhiteSpace(value))
+            return Drivers;
+
+        return Drivers.Where(d =>
+            d.name.Contains(value, StringComparison.OrdinalIgnoreCase)
+        );
+    }
+    private async Task OnDriverSelected(DriverDropdown driver)
+    {
+        SelectedDriver = driver;
+        await LoadDriverCalendars(driver.id);
+    }
+    private async Task LoadDriverCalendars(int driverId)
+    {
+        IsLoading = true;
+        try
+        {
+            var mainCalendarTask = HttpClient.GetFromJsonAsync<List<DriverCalendar>>($"{baseUrl}?id_driver={driverId}");
+            var guestDriverCalendarTask = HttpClient.GetFromJsonAsync<List<DriverCalendar>>($"{baseUrl}guest-driver-calendar?id_driver={driverId}");
+            var guestCarDriverCalendarTask = HttpClient.GetFromJsonAsync<List<DriverCalendar>>($"{baseUrl}guest-car-driver-calendar?id_driver={driverId}");
+
+            try
+            {
+                MainCalendarEvents = await mainCalendarTask ?? new List<DriverCalendar>();
+            }
+            catch (HttpRequestException)
+            {
+                MainCalendarEvents = new List<DriverCalendar>();
+            }
+
+            try
+            {
+                GuestDriverCalendar = await guestDriverCalendarTask ?? new List<DriverCalendar>();
+            }
+            catch (HttpRequestException)
+            {
+                GuestDriverCalendar = new List<DriverCalendar>();
+            }
+
+            try
+            {
+                GuestCarDriverCalendar = await guestCarDriverCalendarTask ?? new List<DriverCalendar>();
+            }
+            catch (HttpRequestException)
+            {
+                GuestCarDriverCalendar = new List<DriverCalendar>();
+            }
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+    private bool FilterFunc1(Models.carlendarCar element) => FilterFunc(element, searchString1);
+
+    private bool FilterFunc(Models.carlendarCar element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+
+        if (element.email != null && element.email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (element.email_driver != null && element.email_driver.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        string dateRange = $"{element.date_start?.ToString("HH:mm")} {element.date_end?.ToString("HH:mm")}";
+        if (dateRange.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if ($"{element.code_driver} {element.name_drivers}".Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
 }

@@ -1,0 +1,105 @@
+﻿@page "/checkoutcar/{id:int}"
+@inject HttpClient httpClient
+@inject IJSRuntime js
+@inject NavigationManager Navigation
+
+
+<MudContainer Class="mt-8 mb-5" MaxWidth="MaxWidth.Medium">
+    <MudPaper Class="p-4" Elevation="0">
+        <MudText Typo="Typo.h5" Align="Align.Center" Color="Color.Primary">
+            QUÍ KHÁCH VUI LÒNG THANH TOÁN KHI NHẬN XE
+        </MudText>
+        <MudGrid Class="mt-4">
+            <MudItem xs="12">
+                <MudPaper Class="p-4" Elevation="4">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6" Color="Color.Primary">THÔNG TIN KHÁCH HÀNG</MudText>
+                        </MudItem>
+
+                        <MudItem xs="4" Class="mb-3">
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Tên khách hàng
+                            </MudText>
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Email
+                            </MudText>
+                            <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                                Số điện thoại
+                            </MudText>
+                        </MudItem>
+
+                        <MudItem xs="8" Class="mb-3">
+                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                @bill.cus_name
+                            </MudText>
+                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                @bill.email
+                            </MudText>
+                            <MudText Align="Align.Right" Class="fw-bold" Typo="Typo.subtitle1">
+                                @bill.phone_number
+                            </MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudPaper Class="p-4" Elevation="4">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6" Color="Color.Primary">THÔNG TIN HÓA ĐƠN</MudText>
+                        </MudItem>
+
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Default">Mã đơn</MudText>
+                        </MudItem>
+                        <MudItem xs="9">
+                            <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@bill.guest_car_code</MudText>
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Default">Xe</MudText>
+                        </MudItem>
+                        <MudItem xs="9">
+                            <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@bill.car_number - @bill.car_name</MudText>
+                        </MudItem>
+
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Default">Thời gian thuê</MudText>
+                        </MudItem>
+                        <MudItem xs="9">
+                            <MudText Align="Align.End" Class="fw-bold" Typo="Typo.subtitle1">@bill.date_start - @bill.date_end</MudText>
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Default">Tổng Tiền</MudText>
+                        </MudItem>
+                        <MudItem xs="9">
+                            <MudText Align="Align.End" Color="Color.Secondary" Class="fw-bold" Typo="Typo.subtitle1">@bill.price.ToString("#,##0") VNĐ</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+</MudContainer>
+
+@code {
+
+    [Parameter] public int id { get; set; }
+    private guest_car_checkout bill = new guest_car_checkout();
+    private string url = "http://localhost:49922/api/GuestCars";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<guest_car_checkout>($"{url}/{id}");
+
+            bill = response;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi khi gọi API: {ex.Message}");
+        }
+    }
+}
