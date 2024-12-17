@@ -45,7 +45,8 @@
                     </MudItem>
                     <MudItem xs="10">
                         <MudText Typo="Typo.body2" Class="fw-medium">
-                            <strong>Khách hàng:</strong> Mã khách: @notification.guest_driver_code
+                            <strong>Khách hàng:</strong> số điện thoại: @notification.phone , tên khách hàng : @notification.name , email : @notification.email
+                           
                         </MudText>
                         <MudText Typo="Typo.caption" Color="Color.Secondary">Ngày: @notification.date</MudText>
                     </MudItem>
@@ -60,7 +61,7 @@
                     </MudItem>
                     <MudItem xs="10">
                         <MudText Typo="Typo.body2" Class="fw-medium">
-                            <strong>Xe khách:</strong> Mã xe: @notification.guest_car_code, Tên xe: @notification.car_name
+                            <strong>Xe khách:</strong> Mã xe: @notification.code, Tên xe: @notification.car_name
                         </MudText>
                         <MudText Typo="Typo.caption" Color="Color.Secondary">Ngày: @notification.date</MudText>
                     </MudItem>
@@ -105,9 +106,8 @@
     private List<DriverGuestCarNotification> DriverGuestCarNotifications = new();
     private bool isLoading = true;
     private bool hasError = false;
-    private int userId = 1; 
-    private int userIdcar = 2; 
-    private int DriverId;
+
+    private string DriverId;
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -121,31 +121,69 @@
                 var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
                 var jwtToken = handler.ReadJwtToken(token);
 
-                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "driver_id");
+                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "emp_id");
 
                 if (userId != null)
                 {
-                    DriverId = int.Parse(userId.Value);
-                    await LoadNotifications();
+                    DriverId = userId.Value;
+                    Console.WriteLine(DriverId + "đâsdaaa");
+                   
                 }
             }
-        }
-    }
+            Console.WriteLine(DriverId + "đâsdaaaaa");
+            await LoadNotifications();
+            StateHasChanged();
 
+        }
+        Console.WriteLine(DriverId + "đâsaaada");
+    }
     private async Task LoadNotifications()
     {
         try
         {
             isLoading = true;
+            hasError = false;
 
-            DriverGuestTripNotifications = await Http.GetFromJsonAsync<List<DriverGuestTripNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetDriverGuestTrips/{DriverId}") ?? new();
-            DriverGuestDriverNotifications = await Http.GetFromJsonAsync<List<DriverGuestNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetDriverGuestDriverNotifications/{DriverId}") ?? new();
-            DriverGuestCarNotifications = await Http.GetFromJsonAsync<List<DriverGuestCarNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetGuestDriverCarNotifications/{DriverId}") ?? new();
+            // Log or debug print the DriverId
+            Console.WriteLine($"Loading notifications for DriverId: {DriverId}");
+
+            var tripNotificationsResponse = await Http.GetAsync($"http://localhost:49922/api/GuestTripNotifications/GetDriverGuestTrips/{DriverId}");
+            var driverNotificationsResponse = await Http.GetAsync($"http://localhost:49922/api/GuestTripNotifications/GetDriverGuestDriverNotifications/{DriverId}");
+            var carNotificationsResponse = await Http.GetAsync($"http://localhost:49922/api/GuestTripNotifications/GetGuestDriverCarNotifications/{DriverId}");
+
+            // Check response status codes
+            if (tripNotificationsResponse.IsSuccessStatusCode)
+            {
+                DriverGuestTripNotifications = await tripNotificationsResponse.Content.ReadFromJsonAsync<List<DriverGuestTripNotification>>() ?? new();
+            }
+            else
+            {
+                Console.WriteLine($"Trip Notifications Error: {tripNotificationsResponse.StatusCode}");
+            }
+
+            if (driverNotificationsResponse.IsSuccessStatusCode)
+            {
+                DriverGuestDriverNotifications = await driverNotificationsResponse.Content.ReadFromJsonAsync<List<DriverGuestNotification>>() ?? new();
+            }
+            else
+            {
+                Console.WriteLine($"Driver Notifications Error: {driverNotificationsResponse.StatusCode}");
+            }
+
+            if (carNotificationsResponse.IsSuccessStatusCode)
+            {
+                DriverGuestCarNotifications = await carNotificationsResponse.Content.ReadFromJsonAsync<List<DriverGuestCarNotification>>() ?? new();
+            }
+            else
+            {
+                Console.WriteLine($"Car Notifications Error: {carNotificationsResponse.StatusCode}");
+            }
 
             StateHasChanged();
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"Error loading notifications: {ex.Message}");
             hasError = true;
         }
         finally

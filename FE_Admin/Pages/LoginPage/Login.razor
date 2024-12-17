@@ -75,7 +75,14 @@
             {
                 var token = await response.Content.ReadAsStringAsync();
                 await js.InvokeVoidAsync("localStorage.setItem", "authToken", token);
-                NavigationManager.NavigateTo("/index", true);
+                if (LoginRole == "admin")
+                {
+                    NavigationManager.NavigateTo("/index", true);
+                }
+                else
+                {
+                    NavigationManager.NavigateTo("/notifications", true);              }
+              
             }
             else
             {

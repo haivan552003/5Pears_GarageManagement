@@ -9,14 +9,17 @@
     }
     public class DriverGuestNotification
     {
-        public string guest_driver_code { get; set; }
         public string date { get; set; }
+        public string phone { get; set; }
+        public string email { get; set; }
+        public string name { get; set; }
+
     }
 
 
     public class DriverGuestCarNotification
     {
-        public string guest_car_code { get; set; }
+        public string code { get; set; }
         public string date { get; set; }
         public string car_name { get; set; }
     }
