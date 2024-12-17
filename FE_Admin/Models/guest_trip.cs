@@ -86,7 +86,7 @@
     public class guest_trip_create
     {
         public int id { get; set; }
-        public int trip_detail_id { get; set; }
+        public int? trip_detail_id { get; set; }
         public int emp_id { get; set; }
         public int cus_id { get; set; }
         public float price { get; set; }

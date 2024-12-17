@@ -11,20 +11,13 @@
 
 
 <MudContainer Class="mt-8 mb-5" MaxWidth="MaxWidth.Medium">
-    <MudPaper Class="p-4" Elevation="0">
+@*     <MudPaper Class="p-4" Elevation="0">
         @if (responseCode == "00")
         {
             <MudText Typo="Typo.h5" Align="Align.Center" Color="Color.Primary">
                 THANH TOÁN THÀNH CÔNG
             </MudText>
         }
-        else
-        {
-            <MudText Typo="Typo.h5" Align="Align.Center" Color="Color.Primary">
-                QUÍ KHÁCH VUI LÒNG THANH TOÁN TRONG THỜI GIAN 15 PHÚT
-            </MudText>
-        }
-
         <MudGrid Class="mt-4">
             <MudItem xs="12">
                 <MudPaper Class="p-4" Elevation="4">
@@ -103,7 +96,7 @@
                 </MudPaper>
             </MudItem>
         </MudGrid>
-    </MudPaper>
+    </MudPaper> *@
     <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
         <MudImage Src="/success.png" Alt="success" />
     </div>
@@ -116,20 +109,20 @@
 
         <MudCardContent Class="mb-6">
             <MudGrid>
-                <MudItem xs="6" Class="pb-0">
+                <MudItem xs="4" Class="pb-0">
                     <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Mã vé</MudText>
                     <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Tuyến xe</MudText>
                     <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Thời gian xuất bến</MudText>
                     <MudText Class="mb-2" Typo="Typo.subtitle1" Style="color: #637280;">Số ghế</MudText>
                 </MudItem>
 
-                <MudItem xs="6" Class="pb-0" Style="display: flex; flex-wrap: wrap; justify-content: flex-end;">              
+                <MudItem xs="6" Class="pb-0" Style="display: flex; flex-wrap: wrap; justify-content: flex-end;">
                     <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">@bill.guest_trip_code</MudText>
                     <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary" Style="word-wrap: break-word; max-width: 100%;">@bill.location_from (@bill.from) - @bill.location_to (@bill.to)</MudText>
                     <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">@bill.time_start</MudText>
                     <MudText Class="mb-2 text-end fw-bold" Typo="Typo.subtitle1" Color="Color.Primary">@guest_trip_child.Count()</MudText>
                 </MudItem>
-                <MudItem xs="6">
+                <MudItem xs="8">
                     <MudGrid>
                         <MudItem xs="4">
                             <MudText Class="mb-2" Typo="Typo.subtitle1" Style=" color: #637280;">Tổng giá vé:</MudText>
@@ -143,10 +136,10 @@
                         </MudItem>
                     </MudGrid>
                 </MudItem>
-                 @foreach (var seat in guest_trip_child)
-                    {
+                @foreach (var seat in guest_trip_child)
+                {
                     <MudItem xs="12" Class="d-flex justify-center align-center">
-                   
+
                         <MudPaper Class="p-3" Elevation="0" Style="border: 1px solid #DDE2E8; border-radius: 1rem !important; width: 400px;">
                             <MudGrid>
                                 <!-- Mỗi MudItem chiếm toàn bộ chiều rộng (xs="12"), tạo chiều dọc -->
@@ -203,18 +196,17 @@
                                 </MudItem>
                             </MudGrid>
                         </MudPaper>
-                   
-                </MudItem>
+
+                    </MudItem>
                 }
 
-                
+
             </MudGrid>
         </MudCardContent>
     </MudCard>
     <MudButton Color="Color.Primary"
                Variant="Variant.Filled"
                Class="mt-4 d-block mx-auto"
-         
                OnClick="PrintTicket"
                StartIcon="@Icons.Material.Filled.Print">
         In Vé
@@ -331,159 +323,8 @@
             Snackbar.Add($"Lỗi khi gọi API: {ex.Message}", Severity.Error);
         }
 
-        string currentUrl = Navigation.Uri;
-        var uri = new Uri(currentUrl);
-        var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
-        responseCode = queryParams["vnp_ResponseCode"];
-
-        if (responseCode == "00")
-        {
-            await UpdateStatusBill2();
-        }
-        else
-        {
-            Snackbar.Add("Thanh toán chưa thành công", Severity.Warning);
-        }
+        await UpdateStatusBill2();
     }
-
-    // private async Task PrintTicket()
-    // {
-    //     try
-    //     {
-    //         if (bill == null || guest_trip_child == null || !guest_trip_child.Any())
-    //         {
-    //             Snackbar.Add("Không có dữ liệu để in vé", Severity.Warning);
-    //             return;
-    //         }
-
-    //         // Chuyển đổi dữ liệu sang JSON để kiểm tra
-    //         var printData = new
-    //         {
-    //             Bill = bill,
-    //             Tickets = guest_trip_child
-    //         };
-
-    //         // Chuyển đổi sang chuỗi JSON để debug
-    //         var jsonData = JsonSerializer.Serialize(printData);
-    //         Console.WriteLine("Print Data JSON: " + jsonData);
-
-    //         // Đăng ký hàm JavaScript một cách rõ ràng
-    //         await js.InvokeVoidAsync("eval", @"
-    //             window.printTicketFromBlazor = function (jsonData) {
-    //                 try {
-    //                     // Parse dữ liệu JSON
-    //                     console.log('Received JSON data:', jsonData);
-    //                     var data = JSON.parse(jsonData);
-
-    //                     // Kiểm tra dữ liệu
-    //                     console.log('Parsed Bill:', data.Bill);
-    //                     console.log('Parsed Tickets:', data.Tickets);
-
-    //                     // Tạo cửa sổ in
-    //                     var printWindow = window.open('', 'PrintTicket', 'width=800,height=600');
-
-    //                     if (!printWindow) {
-    //                         alert('Trình duyệt chặn cửa sổ popup. Vui lòng cho phép popup để in vé.');
-    //                         return;
-    //                     }
-
-    //                     // Tạo nội dung HTML
-    //                     printWindow.document.write('<html><head><title>Vé Xe</title>');
-
-    //                     // CSS in
-    //                     printWindow.document.write(`
-    //                         <style>
-    //                             body {
-    //                                 font-family: Arial, sans-serif;
-    //                                 margin: 20px;
-    //                             }
-    //                             .ticket {
-    //                                 border: 1px solid #ddd;
-    //                                 margin-bottom: 20px;
-    //                                 padding: 15px;
-    //                                 page-break-after: always;
-    //                             }
-    //                             .ticket-header {
-    //                                 text-align: center;
-    //                                 font-weight: bold;
-    //                                 margin-bottom: 15px;
-    //                             }
-    //                             @media print {
-    //                                 body { margin: 0; }
-    //                                 .ticket {
-    //                                     border: none;
-    //                                     margin: 0;
-    //                                 }
-    //                             }
-    //                         </style>
-    //                     `);
-
-    //                     printWindow.document.write('</head><body>');
-
-    //                     // Kiểm tra và in dữ liệu
-    //                     if (!data || !data.Bill) {
-    //                         printWindow.document.write('<h1>Không có dữ liệu vé</h1>');
-    //                     } else {
-    //                         // Tiêu đề chung
-    //                         printWindow.document.write(`
-    //                             <div class='ticket-header'>
-    //                                 <h1>VÉ XE</h1>
-    //                                 <p>Mã vé: ${data.Bill.guest_trip_code || 'Không có mã vé'}</p>
-    //                             </div>
-    //                         `);
-
-    //                         // In từng vé
-    //                         if (data.Tickets && data.Tickets.length > 0) {
-    //                             data.Tickets.forEach(ticket => {
-    //                                 printWindow.document.write(`
-    //                                     <div class='ticket'>
-    //                                         <h2>Chi Tiết Vé</h2>
-    //                                         <p><strong>Tuyến:</strong> ${data.Bill.location_from || 'Chưa xác định'} - ${data.Bill.location_to || 'Chưa xác định'}</p>
-    //                                         <p><strong>Khách Hàng:</strong> ${data.Bill.cus_name || 'Không tên'}</p>
-    //                                         <p><strong>Số Ghế:</strong> ${ticket.seat_name || 'Chưa chọn ghế'}</p>
-    //                                         <p><strong>Giá Vé:</strong> ${ticket.price ? ticket.price.toLocaleString() + ' VNĐ' : 'Chưa có giá'}</p>
-    //                                         <p><strong>Thời Gian:</strong> ${data.Bill.time_start || 'Chưa xác định'}</p>
-    //                                     </div>
-    //                                 `);
-    //                             });
-    //                         } else {
-    //                             printWindow.document.write('<p>Không có thông tin vé chi tiết</p>');
-    //                         }
-    //                     }
-
-    //                     printWindow.document.write('</body></html>');
-
-    //                     // Đóng và in
-    //                     printWindow.document.close();
-
-    //                     // Thêm log để kiểm tra
-    //                     console.log('Document content:', printWindow.document.body.innerHTML);
-
-    //                     printWindow.print();
-    //                     printWindow.close();
-    //                 } catch (error) {
-    //                     console.error('Lỗi in vé:', error);
-    //                     alert('Có lỗi xảy ra khi in vé: ' + error.message);
-    //                 }
-    //             };
-    //         ");
-
-    //         // Gọi hàm JavaScript để in vé
-    //         await js.InvokeVoidAsync("printTicketFromBlazor", jsonData);
-
-    //         Snackbar.Add("Đang thực hiện in vé", Severity.Info);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         Snackbar.Add($"Lỗi in vé: {ex.Message}", Severity.Error);
-    //         Console.WriteLine($"Chi tiết lỗi: {ex}");
-    //     }
-    // }
-
-
-
-
-
 
     private async Task PrintTicket()
     {
@@ -503,7 +344,7 @@
                     guest_trip_code = VietnameseConverter.RemoveDiacritics(bill.guest_trip_code),
                     location_from = VietnameseConverter.RemoveDiacritics(bill.location_from),
                     location_to = VietnameseConverter.RemoveDiacritics(bill.location_to),
-                     
+
                     cus_name = VietnameseConverter.RemoveDiacritics(bill.cus_name),
                     phone_number = VietnameseConverter.RemoveDiacritics(bill.phone_number),
                     car_number = VietnameseConverter.RemoveDiacritics(bill.car_number),
@@ -767,10 +608,6 @@
         }
     }
 
-
-
-
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && responseCode == "00")
@@ -782,23 +619,6 @@
     {
         try
         {
-            string currentUrl = Navigation.Uri;
-
-            var uri = new Uri(currentUrl);
-            var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
-
-            string amount = queryParams["vnp_Amount"];
-            string transactionStatus = queryParams["vnp_TransactionStatus"];
-            string bankCode = queryParams["vnp_BankCode"];
-            string cardType = queryParams["vnp_CardType"];
-            string transactionNo = queryParams["vnp_TransactionNo"];
-
-            bill_update.payment_method = false;
-            bill_update.transaction_status = transactionStatus;
-            bill_update.bank_code = bankCode;
-            bill_update.card_type = cardType;
-            bill_update.transaction_no = transactionNo;
-
             var response = await httpClient.PutAsJsonAsync($"{urlUpdateStatusBill}/{billId}", bill_update);
             // if (response.IsSuccessStatusCode)
             // {

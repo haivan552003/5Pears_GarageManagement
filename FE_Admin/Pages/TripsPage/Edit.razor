@@ -4,6 +4,8 @@
 @inject NavigationManager Navigation
 @inject IDialogService DialogService
 @inject IJSRuntime js
+@inject ISnackbar Snackbar
+
 <style>
     .loading-overlay {
         position: fixed;
@@ -95,12 +97,13 @@ else
                             </MudItem>
 
                             <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
+                                <MudSwitch @bind-Value="Label_Switch1" Label="Khứ hồi" Color="Color.Info" />
                                 <MudButton OnClick="@(async () => await OpenDetailCreateDialog(null))" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
                                     Thêm mới
                                 </MudButton>
-                                  <MudButton OnClick="@(async () => await OpenGenDialog(null))" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.AutoFixHigh" Color="Color.Warning" Size="Size.Small">
-                                Gen chuyến
-                            </MudButton>
+                                <MudButton OnClick="@(async () => await OpenGenDialog(null))" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.AutoFixHigh" Color="Color.Warning" Size="Size.Small">
+                                    Gen chuyến
+                                </MudButton>
                             </MudItem>
                         </ToolBarContent>
                         <Columns>
@@ -123,9 +126,19 @@ else
                             </TemplateColumn>
                             <TemplateColumn T="trip_detail" Class="fw-bold" Title="Chức năng" Width="150px">
                                 <CellTemplate Context="element">
-                                    <MudTooltip Text="Đặt vé">
-                                        <MudIconButton Href="@($"/rentail_guest_trip/{element.Item.id}")" Icon="@Icons.Material.Outlined.AddCircle" Color="Color.Secondary" Size="Size.Small" />
-                                    </MudTooltip>
+                                    @if (Label_Switch1 == false)
+                                    {
+                                        <MudTooltip Text="Đặt vé">
+                                            <MudIconButton Href="@($"/rentail_guest_trip/{element.Item.id}")" Icon="@Icons.Material.Outlined.AddCircle" Color="Color.Secondary" Size="Size.Small" />
+                                        </MudTooltip>
+                                    }
+                                    else
+                                    {
+                                        <MudTooltip Text="Đặt vé">
+                                            <MudIconButton OnClick="() => HandleTripSelection(element.Item.id)" Icon="@Icons.Material.Outlined.AddCircle" Color="Color.Secondary" Size="Size.Small" />
+                                        </MudTooltip>
+                                    }
+
                                     <MudTooltip Text="Chỉnh sửa">
                                         <MudIconButton OnClick="@(async () => await OpenDetailUpdateDialog(element.Item))" Icon="far fa-edit" Color="Color.Success" Size="Size.Small" />
                                     </MudTooltip>
@@ -172,6 +185,7 @@ else
     private bool isInitialized = false;
     private bool isLoading = false;
     private bool isLoadingProgress = true;
+    public bool Label_Switch1 { get; set; } = false;
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -466,4 +480,64 @@ else
     {
 
     }
+
+    private async Task SaveTripIdTo(int tripIdTo)
+    {
+        try
+        {
+            await js.InvokeVoidAsync("localStorage.setItem", "selectedTripIdTo", tripIdTo.ToString());
+            var tripIdReturn = await js.InvokeAsync<string>("localStorage.getItem", "selectedTripIdReturn");
+            if (string.IsNullOrEmpty(tripIdReturn))
+            {
+                Snackbar.Add("Bạn đã chọn chuyến đi. Vui lòng chọn chuyến về", Severity.Success);
+            }
+            else
+            {
+                Navigation.NavigateTo($"/rentail_guest_trip/{tripIdTo}/{tripIdReturn}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi xử lý chuyến đi: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task SaveTripIdReturn(int tripIdReturn)
+    {
+        try
+        {
+            await js.InvokeVoidAsync("localStorage.setItem", "selectedTripIdReturn", tripIdReturn.ToString());
+            var tripIdTo = await js.InvokeAsync<string>("localStorage.getItem", "selectedTripIdTo");
+
+            if (string.IsNullOrEmpty(tripIdTo))
+            {
+                Snackbar.Add("Bạn đã chọn chuyến về. Vui lòng chọn chuyến đi", Severity.Success);
+            }
+            else
+            {
+                Navigation.NavigateTo($"/rentail_guest_trip/{tripIdTo}/{tripIdReturn}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Lỗi khi xử lý chuyến về: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private bool isFirstClick = true;
+
+    private async Task HandleTripSelection(int tripId)
+    {
+        if (isFirstClick)
+        {
+            await SaveTripIdTo(tripId);
+            isFirstClick = false;
+        }
+        else
+        {
+            await SaveTripIdReturn(tripId);
+            isFirstClick = true;
+        }
+    }
+
 }

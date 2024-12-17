@@ -144,39 +144,45 @@
                     return;
                 }
 
-                // Xác định thời gian chuyến đầu tiên
-                var startTime = SelectedTrip.DateStart.Value.Date.AddHours(6); 
-                var tripDuration = TimeSpan.FromHours(time); 
-                var endTime = startTime + tripDuration;
+                var baseDate = SelectedTrip.DateStart.Value.Date;
+                var tripDuration = TimeSpan.FromHours(time); // Thời gian chạy của mỗi chuyến
 
-                // Lặp để sinh chuyến trong ngày
-                while (startTime.TimeOfDay < TimeSpan.FromHours(22)) 
+                // Lặp qua 7 ngày liên tiếp
+                for (int dayOffset = 0; dayOffset < 7; dayOffset++)
                 {
-                    // Gán giá trị thời gian bắt đầu và kết thúc cho chuyến đi
-                    SelectedTrip.time_start = startTime;
-                    SelectedTrip.time_end = endTime;
-                    var uri = Navigation.Uri;
-                    LastSegment = GetLastSegment(uri);
-                    SelectedTrip.trip_id = int.Parse(LastSegment);
+                    var currentDate = baseDate.AddDays(dayOffset); // Tính ngày hiện tại trong vòng lặp
+                    var startTime = currentDate.AddHours(6); // Thời gian bắt đầu ngày (6:00 AM)
+                    var endTime = startTime + tripDuration;
 
-                    // Gửi thông tin chuyến đi đến API
-                    var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Trips/tripdetail", SelectedTrip);
-                    if (response.IsSuccessStatusCode)
+                    // Lặp để sinh chuyến trong ngày
+                    while (startTime.TimeOfDay < TimeSpan.FromHours(22))
                     {
-                        Snackbar.Add($"Thêm chuyến từ {startTime:t} đến {endTime:t} thành công!", Severity.Success);
-                    }
-                    else
-                    {
-                        Snackbar.Add($"Lỗi khi thêm chuyến từ {startTime:t} đến {endTime:t}: {response.ReasonPhrase}", Severity.Error);
-                    }
+                        // Gán giá trị thời gian bắt đầu và kết thúc cho chuyến đi
+                        SelectedTrip.time_start = startTime;
+                        SelectedTrip.time_end = endTime;
+                        var uri = Navigation.Uri;
+                        LastSegment = GetLastSegment(uri);
+                        SelectedTrip.trip_id = int.Parse(LastSegment);
 
-                    // Cập nhật thời gian cho chuyến tiếp theo
-                    startTime = endTime.AddHours(1); 
-                    endTime = startTime + tripDuration; 
+                        // Gửi thông tin chuyến đi đến API
+                        var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Trips/tripdetail", SelectedTrip);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            Snackbar.Add($"Thêm chuyến ngày {currentDate:dd/MM/yyyy} từ {startTime:t} đến {endTime:t} thành công!", Severity.Success);
+                        }
+                        else
+                        {
+                            Snackbar.Add($"Lỗi khi thêm chuyến ngày {currentDate:dd/MM/yyyy} từ {startTime:t} đến {endTime:t}: {response.ReasonPhrase}", Severity.Error);
+                        }
 
-                    if (endTime.TimeOfDay > TimeSpan.FromHours(22)) break;
+                        // Cập nhật thời gian cho chuyến tiếp theo
+                        startTime = endTime.AddHours(1); // Thời gian bắt đầu chuyến tiếp theo (giãn cách 1 giờ)
+                        endTime = startTime + tripDuration;
+
+                        // Thoát vòng lặp ngày nếu chuyến kết thúc vượt quá 22:00
+                        if (endTime.TimeOfDay > TimeSpan.FromHours(22)) break;
+                    }
                 }
-
 
                 // Đóng dialog sau khi hoàn thành
                 MudDialog.Close(DialogResult.Ok(SelectedTrip));

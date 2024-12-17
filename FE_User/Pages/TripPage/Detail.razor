@@ -3,6 +3,7 @@
 @using MudBlazor
 @using System.Text.Json
 @using System.Collections.Concurrent
+@using System.Text.RegularExpressions
 @inject HttpClient httpClient
 @inject IJSRuntime js
 @inject NavigationManager Navigation
@@ -977,6 +978,25 @@ else
                 errorMessageCheckCus = "Quý khách vui lòng điền đầy đủ thông tin hoặc đăng nhập.";
                 return;
             }
+
+            var emailRegex = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            if (!Regex.IsMatch(addCus.email, emailRegex))
+            {
+                errorMessageCheckCus = "Email không hợp lệ. Vui lòng nhập đúng định dạng email.";
+                return;
+            }
+
+            // Validate số điện thoại
+            var phoneRegex = @"^0[0-9]{9}$"; // Chỉ chấp nhận số điện thoại 10 chữ số, bắt đầu bằng số 0
+            if (!Regex.IsMatch(addCus.phone_number, phoneRegex))
+            {
+                errorMessageCheckCus = "Số điện thoại không hợp lệ. Vui lòng nhập đúng định dạng số điện thoại.";
+                return;
+            }
+
+            // Nếu tất cả hợp lệ
+            errorMessageCheckCus = string.Empty; // Xóa thông báo lỗi
+
             var response = await httpClient.GetAsync($"http://localhost:49922/api/Validate/CheckPhoneNumberCustomer/{addCus.phone_number}");
             if (response.IsSuccessStatusCode)
             {
@@ -1219,6 +1239,25 @@ else
                 errorMessageCheckCus = "Quý khách vui lòng điền đầy đủ thông tin hoặc đăng nhập.";
                 return;
             }
+
+            var emailRegex = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            if (!Regex.IsMatch(addCus.email, emailRegex))
+            {
+                errorMessageCheckCus = "Email không hợp lệ. Vui lòng nhập đúng định dạng email.";
+                return;
+            }
+
+            // Validate số điện thoại
+            var phoneRegex = @"^0[0-9]{9}$"; // Chỉ chấp nhận số điện thoại 10 chữ số, bắt đầu bằng số 0
+            if (!Regex.IsMatch(addCus.phone_number, phoneRegex))
+            {
+                errorMessageCheckCus = "Số điện thoại không hợp lệ. Vui lòng nhập đúng định dạng số điện thoại.";
+                return;
+            }
+
+            // Nếu tất cả hợp lệ
+
+            errorMessageCheckCus = string.Empty; // Xóa thông báo lỗi
             var response = await httpClient.GetAsync($"http://localhost:49922/api/Validate/CheckPhoneNumberCustomer/{addCus.phone_number}");
             if (response.IsSuccessStatusCode)
             {
