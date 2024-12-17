@@ -5,6 +5,9 @@
 @inject NavigationManager Navigation
 @inject IDialogService Dialog
 @inject ISnackbar Snackbar
+@using System;
+@using System.Globalization;
+@using System.Text;
 
 
 <MudContainer Class="mt-8 mb-5" MaxWidth="MaxWidth.Medium">
@@ -495,9 +498,23 @@
             // Chuyển đổi dữ liệu sang JSON để kiểm tra
             var printData = new
             {
-                Bill = bill,
-                Tickets = guest_trip_child
+                Bill = new
+                {
+                    guest_trip_code = VietnameseConverter.RemoveDiacritics(bill.guest_trip_code),
+                    location_from = VietnameseConverter.RemoveDiacritics(bill.location_from),
+                    location_to = VietnameseConverter.RemoveDiacritics(bill.location_to),
+                     
+                    cus_name = VietnameseConverter.RemoveDiacritics(bill.cus_name),
+                    phone_number = VietnameseConverter.RemoveDiacritics(bill.phone_number),
+                    car_number = VietnameseConverter.RemoveDiacritics(bill.car_number),
+                },
+                Tickets = guest_trip_child.Select(ticket => new
+                {
+                    seat_name = VietnameseConverter.RemoveDiacritics(ticket.seat_name),
+                    price = ticket.price // Giữ nguyên giá, không cần chuyển đổi
+                }).ToList()
             };
+
 
             // Chuyển đổi sang chuỗi JSON để debug
             var jsonData = JsonSerializer.Serialize(printData);
@@ -537,7 +554,7 @@
                                 font-family: 'Roboto', Arial, sans-serif;
                                 width: 188.976px;
                                 margin: 0 auto;
-                                padding: 10px;
+                                padding: 0px;
                                 font-size: 10px;
                                 line-height: 1.4;
                             }
@@ -545,8 +562,10 @@
                             .ticket-container {
                                 border: 1px solid #DDE2E8;
                                 border-radius: 15px;
-                                padding: 10px;
-                                page-break-before: always; /* Force a page break before each ticket */
+                                padding: 5px;  /* Giảm padding để giảm khoảng cách */
+       margin-bottom: 5px;  /* Giảm margin giữa các vé */
+       page-break-before: auto;  /* Không bắt buộc phải bắt đầu từ trang mới */
+        page-break-inside: avoid;
                             }
 
                             .ticket-header {
@@ -601,9 +620,11 @@
                             .text-danger { color: #F44336; }
                             .text-success { color: #4CAF50; }
 
+
                             @media print {
                                 body {
                                     width: 100%;
+                                    height:auto;
                                     margin: 0;
                                 }
                                 .ticket-container {
@@ -621,81 +642,82 @@
                         printWindow.document.write(`
                             <div class='ticket-container'>
                                 <div class='ticket-header'>
-                                    <h1>VÉ XE KHÁCH</h1>
+                                    <h1>VE XE KHACH</h1>
                                     <div class='ticket-info'>
-                                        <span class='ticket-info-label'>Mã vé:</span>
+                                        <span class='ticket-info-label'>Ma ve:</span>
                                         <span class='ticket-info-value'>${data.Bill.guest_trip_code || 'N/A'}</span>
                                     </div>
                                 </div>
 
                                 <div class='ticket-section'>
-                                    <h2 class='ticket-section-title'>Thông Tin Chuyến Xe</h2>
+                                    <h2 class='ticket-section-title'>Thong tin chuyen xe</h2>
                                     <div class='ticket-info'>
-                                        <span class='ticket-info-label'>Tuyến:</span>
+                                        <span class='ticket-info-label'>Tuyen:</span>
                                         <span class='ticket-info-value'>${data.Bill.location_from} - ${data.Bill.location_to}</span>
                                     </div>
                                     <div class='ticket-info'>
-                                        <span class='ticket-info-label'>Thời Gian:</span>
+                                        <span class='ticket-info-label'>Thoi Gian:</span>
                                         <span class='ticket-info-value'>${data.Bill.time_start}</span>
                                     </div>
                                 </div>
-
+ư
                                 <div class='ticket-section'>
-                                    <h2 class='ticket-section-title'>Thông Tin Khách Hàng</h2>
+                                    <h2 class='ticket-section-title'>Thong Tin Khach Hang</h2>
                                     <div class='ticket-info'>
-                                        <span class='ticket-info-label'>Tên:</span>
+                                        <span class='ticket-info-label'>Ten:</span>
                                         <span class='ticket-info-value'>${data.Bill.cus_name}</span>
                                     </div>
                                     <div class='ticket-info'>
-                                        <span class='ticket-info-label'>Số ĐT:</span>
+                                        <span class='ticket-info-label'>SDT:</span>
                                         <span class='ticket-info-value'>${data.Bill.phone_number || 'Chưa có'}</span>
                                     </div>
                                 </div>
 
                                 <div class='ticket-section'>
-                                    <h2 class='ticket-section-title'>Chi Tiết Vé</h2>
+                                    <h2 class='ticket-section-title'>Chi Tiet Ve</h2>
                                     <div class='ticket-info'>
-                                        <span class='ticket-info-label'>Số Ghế:</span>
-                                        <span class='ticket-info-value'>${ticket.seat_name || 'Chưa chọn ghế'}</span>
+                                        <span class='ticket-info-label'>So Ghe:</span>
+                                        <span class='ticket-info-value'>${ticket.seat_name || 'Chua chon ghe'}</span>
                                     </div>
                                     <div class='ticket-info'>
-                                        <span class='ticket-info-label'>Giá Vé:</span>
-                                        <span class='ticket-info-value'>${ticket.price ? ticket.price.toLocaleString() + ' VNĐ' : 'Chưa có giá'}</span>
+                                        <span class='ticket-info-label'>Gia Ve:</span>
+                                        <span class='ticket-info-value'>${ticket.price ? ticket.price.toLocaleString() + ' VND' : 'Chaa co gia'}</span>
                                     </div>
                                 </div>
 
                                 <div class='ticket-section'>
-                                    <h2 class='ticket-section-title'>Điểm Đón/Trả</h2>
+                                    <h2 class='ticket-section-title'>Diem Don/Tra</h2>
                                     <div class='ticket-info'>
-                                        <span class='ticket-info-label'>Điểm Đón:</span>
+                                        <span class='ticket-info-label'>Diem Don:</span>
                                         <span class='ticket-info-value'>${data.Bill.location_from}</span>
                                     </div>
                                     <div class='ticket-info'>
-                                        <span class='ticket-info-label'>Điểm Trả:</span>
+                                        <span class='ticket-info-label'>Diem Tra:</span>
                                         <span class='ticket-info-value'>${data.Bill.location_to}</span>
                                     </div>
                                 </div>
 
                                 <div class='ticket-notice'>
                                     <p>
-                                        Quý khách vui lòng có mặt tại
+                                        Quy khach vui long co mat tai
                                         <span class='text-primary'>${data.Bill.location_from}</span>
-                                        <span class='text-danger'>Trước ${data.Bill.time_start}</span>
-                                        để kiểm tra thông tin trước khi lên xe.
+                                        <span class='text-danger'> Truoc ${data.Bill.time_start}</span> // thoi gian sai
+                                       de kiem tra thong tin truoc khi len xe
                                     </p>
                                 </div>
 
                                 <div class='ticket-section'>
                                     <div class='ticket-info'>
-                                        <span class='ticket-info-label'>Biển Số Xe:</span>
+                                        <span class='ticket-info-label'>Bien So Xe:</span>
                                         <span class='ticket-info-value'>${data.Bill.car_number}</span>
                                     </div>
                                     <div class='ticket-info'>
-                                        <span class='ticket-info-label'>Trạng Thái:</span>
-                                        <span class='text-success'>Đã Thanh Toán</span>
+                                        <span class='ticket-info-label'>Trang Thai:</span>
+                                        <span class='text-success'>Da Thanh Toan</span>
                                     </div>
                                 </div>
                             </div>
+<p>--------------------------------</p>
                         `);
                     });
 
@@ -722,7 +744,28 @@
         }
     }
 
+    public class VietnameseConverter
+    {
+        public static string RemoveDiacritics(string text)
+        {
+            if (text == null)
+                return null;
 
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (char c in normalizedString)
+            {
+                // Kiểm tra xem ký tự có phải là dấu hay không
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+        }
+    }
 
 
 

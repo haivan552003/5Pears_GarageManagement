@@ -10,6 +10,7 @@ using Microsoft.Data.SqlClient;
 using Dapper;
 using System.Security.Cryptography;
 using BE_API.ModelCustom;
+using System.Data;
 
 namespace BE_API.Controllers
 {
@@ -112,7 +113,6 @@ namespace BE_API.Controllers
             return BadRequest(new { message = "OTP không hợp lệ hoặc đã hết hạn.", isValid = false });
         }
 
-        // Phương thức đặt lại mật khẩu
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
@@ -129,18 +129,20 @@ namespace BE_API.Controllers
 
             try
             {
-                // Hash the new password
                 string hashedPassword = HashPassword(request.NewPassword);
-
-                // Update the password in the customers table in the database
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
 
-                    // Update query reflecting the correct database structure
+                  
                     int affectedRows = await connection.ExecuteAsync(
-                        "UPDATE customers SET password = @Password WHERE username = @Email",  // Assume customer_email is the right column
-                        new { Password = hashedPassword, Email = request.Email } // Matching parameters to the new query
+                        "sp_reset_pass", 
+                        new
+                        {
+                            Email = request.Email,
+                            NewPassword = hashedPassword
+                        },
+                        commandType: CommandType.StoredProcedure
                     );
 
                     if (affectedRows == 0)
@@ -149,7 +151,7 @@ namespace BE_API.Controllers
                     }
                 }
 
-                // Remove OTP verification flag after successful password reset
+                // Remove OTP verification flag
                 _otpVerifiedStore.TryRemove(request.Email, out _);
 
                 return Ok("Đặt lại mật khẩu thành công.");
@@ -160,16 +162,9 @@ namespace BE_API.Controllers
                 return StatusCode(500, "Có lỗi xảy ra khi đặt lại mật khẩu. Vui lòng thử lại sau.");
             }
         }
-
-
-        // Hàm mã hóa mật khẩu
         private string HashPassword(string password)
         {
-            using (var sha256 = SHA256.Create())
-            {
-                byte[] hashedBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                return Convert.ToBase64String(hashedBytes);
-            }
+            return BCrypt.Net.BCrypt.HashPassword(password);
         }
     }
    
