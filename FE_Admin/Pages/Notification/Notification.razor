@@ -10,14 +10,14 @@
         <MudIconButton Icon="notifications" Color="Color.Primary" Class="notification-icon" />
     </div>
 
-    @if (isLoading)
+   @*  @if (isLoading)
     {
         <MudProgressLinear Indeterminate Color="Color.Primary" />
     }
     else if (hasError)
     {
         <MudText Typo="Typo.body1" Color="Color.Error">Đã xảy ra lỗi khi tải thông báo.</MudText>
-    }
+    } *@
     else
     {
         @if (DriverGuestTripNotifications.Any() || DriverGuestDriverNotifications.Any() || DriverGuestCarNotifications.Any())
@@ -136,12 +136,12 @@
     {
         try
         {
-            isLoading = true;
+            // isLoading = true;
 
             DriverGuestTripNotifications = await Http.GetFromJsonAsync<List<DriverGuestTripNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetDriverGuestTrips/{DriverId}") ?? new();
             DriverGuestDriverNotifications = await Http.GetFromJsonAsync<List<DriverGuestNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetDriverGuestDriverNotifications/{DriverId}") ?? new();
             DriverGuestCarNotifications = await Http.GetFromJsonAsync<List<DriverGuestCarNotification>>($"http://localhost:49922/api/GuestTripNotifications/GetGuestDriverCarNotifications/{DriverId}") ?? new();
-
+            // isLoading = false;
             StateHasChanged();
         }
         catch
@@ -150,7 +150,7 @@
         }
         finally
         {
-            isLoading = false;
+            // isLoading = false;
         }
     }
 

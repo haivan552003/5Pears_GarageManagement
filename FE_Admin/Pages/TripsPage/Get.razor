@@ -50,22 +50,24 @@ else
                                  Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
 
                         <ToolBarContent>
-                            <MudItem xs="4">
+                            <MudItem xs="4" Class="mr-4">
                                 <MudTextField @bind-Value="_searchFrom" Placeholder="Tìm điểm khởi hành..."
                                               Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
                                               Immediate="true" IconSize="Size.Medium" Class="mt-0" />
                             </MudItem>
-                            <MudItem xs="4">
+                            <MudItem xs="4" Class="mr-4">
                                 <MudTextField @bind-Value="_searchTo" Placeholder="Tìm điểm đến..."
                                               Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
                                               Immediate="true" IconSize="Size.Medium" Class="mt-0" />
                             </MudItem>
-                            <MudItem xs="8" Elevation="0" Class="d-flex justify-end flex-grow-1 gap-4 pb-3">
-                                <MudButton Href="/addtrip" Variant="Variant.Outlined" StartIcon="fas fa-plus" Color="Color.Info" Size="Size.Small">
+                            <MudItem xs="4" Class="d-flex justify-end">
+                                <MudButton Href="/addtrip" Variant="Variant.Outlined" StartIcon="fas fa-plus"
+                                           Color="Color.Info" Size="Size.Small">
                                     Thêm mới
                                 </MudButton>
                             </MudItem>
                         </ToolBarContent>
+
 
                         <Columns>
                             <PropertyColumn T="trip" Class="fw-bold" TProperty="string" Property="x => x.trip_code" Title="Mã chuyến đi"

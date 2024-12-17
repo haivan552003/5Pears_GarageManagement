@@ -10,118 +10,168 @@
     </div>
 }
 
+@if (userRole == "1")
+{
+    <MudContainer Class="pt-5 pb-5">
+        <MudAppBar Elevation="1">
+            <MudLink Typo="Typo.h4" Href="/" Underline="Underline.None">
+                <MudText Typo="Typo.h4" Class="fw-bold text-white">BOXCARS</MudText>
+            </MudLink>
 
-<MudContainer Class="pt-5 pb-5">
-    <MudAppBar Elevation="1">
-        <MudLink Typo="Typo.h4" Href="/" Underline="Underline.None">
-            <MudText Typo="Typo.h4" Class="fw-bold text-white">BOXCARS</MudText>
-        </MudLink>
-       
-        <MudSpacer />
-        <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
-            <ActivatorContent>
-                <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
-                    <MudText Class="text-uppercase">
-                        <MudIcon Icon="@Icons.Material.Outlined.DirectionsCar" Size="Size.Medium" Class="mb-1" />
-                        quản lý chung
-                        <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
-                    </MudText>
-                </MudChip>
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Href="/getemp">Danh sách Nhân Viên</MudMenuItem>
-                <MudMenuItem Href="/getdriver">Danh sách Tài Xế</MudMenuItem>
-                <MudMenuItem Href="/getcars">Danh sách Xe</MudMenuItem>
-                <MudMenuItem Href="/getcustomer">Danh sách Khách Hàng</MudMenuItem>
-                <MudMenuItem Href="/getcartypes">Danh sách Loại Xe</MudMenuItem>
-                <MudMenuItem Href="/getcarbrand">Danh sách Hãng Xe</MudMenuItem>
-            </ChildContent>
-        </MudMenu>
+            <MudSpacer />
+            <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+                <ActivatorContent>
+                    <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
+                        <MudText Class="text-uppercase">
+                            <MudIcon Icon="@Icons.Material.Outlined.DirectionsCar" Size="Size.Medium" Class="mb-1" />
+                            quản lý chung
+                            <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
+                        </MudText>
+                    </MudChip>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Href="/getemp">Danh sách Nhân Viên</MudMenuItem>
+                    <MudMenuItem Href="/getdriver">Danh sách Tài Xế</MudMenuItem>
+                    <MudMenuItem Href="/getcars">Danh sách Xe</MudMenuItem>
+                    <MudMenuItem Href="/getcustomer">Danh sách Khách Hàng</MudMenuItem>
+                    <MudMenuItem Href="/getcartypes">Danh sách Loại Xe</MudMenuItem>
+                    <MudMenuItem Href="/getcarbrand">Danh sách Hãng Xe</MudMenuItem>
+                </ChildContent>
+            </MudMenu>
 
-        <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
-            <ActivatorContent>
-                <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
-                    <MudText Class="text-uppercase">
-                        <MudIcon Icon="@Icons.Material.Outlined.SettingsSuggest" Size="Size.Medium" Class="mb-1" />
-                        dịch vụ
-                        <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
-                    </MudText>
-                </MudChip>
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Href="@($"/guesttrip")">Hóa đơn Đặt vé</MudMenuItem>
-                <MudMenuItem Href="@($"/guestcar")">Hóa đơn Xe</MudMenuItem>
-                <MudMenuItem Href="@($"/guestcar")">Hóa đơn Thuê Tài Xế</MudMenuItem>
-                <MudMenuItem Href="@($"/guestcar")">Hóa đơn Thuê Tài Xế & Xe</MudMenuItem>
-            </ChildContent>
-        </MudMenu>
+            <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+                <ActivatorContent>
+                    <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
+                        <MudText Class="text-uppercase">
+                            <MudIcon Icon="@Icons.Material.Outlined.SettingsSuggest" Size="Size.Medium" Class="mb-1" />
+                            dịch vụ
+                            <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
+                        </MudText>
+                    </MudChip>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Href="@($"/guesttrip")">Hóa đơn Đặt vé</MudMenuItem>
+                    <MudMenuItem Href="@($"/guestcar")">Hóa đơn Xe</MudMenuItem>
+                    <MudMenuItem Href="@($"/guestcar")">Hóa đơn Thuê Tài Xế</MudMenuItem>
+                    <MudMenuItem Href="@($"/guestcar")">Hóa đơn Thuê Tài Xế & Xe</MudMenuItem>
+                </ChildContent>
+            </MudMenu>
 
-        <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
-            <ActivatorContent>
-                <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
-                    <MudText Class="text-uppercase">
-                        <MudIcon Icon="@Icons.Material.Outlined.TravelExplore" Size="Size.Medium" Class="mb-1" />
-                        tuyến xe
-                        <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
-                    </MudText>
-                </MudChip>
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Href="/gettrip">Danh sách Chuyến Xe</MudMenuItem>
-                <MudMenuItem Href="/getlocation">Danh sách Bến Xe</MudMenuItem>
-            </ChildContent>
-        </MudMenu>
+            <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+                <ActivatorContent>
+                    <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
+                        <MudText Class="text-uppercase">
+                            <MudIcon Icon="@Icons.Material.Outlined.TravelExplore" Size="Size.Medium" Class="mb-1" />
+                            tuyến xe
+                            <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
+                        </MudText>
+                    </MudChip>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Href="/gettrip">Danh sách Chuyến Xe</MudMenuItem>
+                    <MudMenuItem Href="/getlocation">Danh sách Bến Xe</MudMenuItem>
+                </ChildContent>
+            </MudMenu>
 
-        <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
-            <ActivatorContent>
-                <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
-                    <MudText Class="text-uppercase">
-                        <MudIcon Icon="@Icons.Material.Outlined.Report" Size="Size.Medium" Class="mb-1" />
-                        thống kê
-                        <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
-                    </MudText>
-                </MudChip>
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Href="/trip-statistics">Thống kê đặt vé</MudMenuItem>
-                <MudMenuItem Href="/driver-statistics">Thống kê thuê tài xế</MudMenuItem>
-                <MudMenuItem Href="/car-statistics">Thống kê thuê xe</MudMenuItem>
-            </ChildContent>
-        </MudMenu>
-        <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
-            <ActivatorContent>
-                <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
-                    <MudText Class="text-uppercase">
-                        <MudIcon Icon="@Icons.Material.Outlined.PostAdd" Size="Size.Medium" Class="mb-1" />
-                        khác
-                        <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
-                    </MudText>
-                </MudChip>
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Href="/getnews">Danh sách Tin Tức</MudMenuItem>
-                <MudMenuItem Href="/getbanner">Danh sách Banner</MudMenuItem>
-            </ChildContent>
-        </MudMenu>
-        <MudSpacer />
-        <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopCenter">
-            <ActivatorContent>
-                <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
-                    <MudImage ObjectFit="ObjectFit.Cover" Height="45" Width="45" Src="https://www.mudblazor.com/images/castle.jpg" Alt="Örebro Slott" Elevation="0" Class="rounded-circle" />
-                </MudChip>
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Href="/profile">
-                    <MudIcon Icon="@Icons.Material.Outlined.SupervisedUserCircle" Color="Color.Default" />
-                    @fullname
-                </MudMenuItem>
-                <hr class="m-0" />
-                <MudMenuItem>Danh sách Chuyến Xe</MudMenuItem>
-            </ChildContent>
-        </MudMenu>
-    </MudAppBar>
+            <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+                <ActivatorContent>
+                    <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
+                        <MudText Class="text-uppercase">
+                            <MudIcon Icon="@Icons.Material.Outlined.Report" Size="Size.Medium" Class="mb-1" />
+                            thống kê
+                            <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
+                        </MudText>
+                    </MudChip>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Href="/trip-statistics">Thống kê đặt vé</MudMenuItem>
+                    <MudMenuItem Href="/driver-statistics">Thống kê thuê tài xế</MudMenuItem>
+                    <MudMenuItem Href="/car-statistics">Thống kê thuê xe</MudMenuItem>
+                </ChildContent>
+            </MudMenu>
+            <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+                <ActivatorContent>
+                    <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
+                        <MudText Class="text-uppercase">
+                            <MudIcon Icon="@Icons.Material.Outlined.PostAdd" Size="Size.Medium" Class="mb-1" />
+                            khác
+                            <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
+                        </MudText>
+                    </MudChip>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Href="/getnews">Danh sách Tin Tức</MudMenuItem>
+                    <MudMenuItem Href="/getbanner">Danh sách Banner</MudMenuItem>
+                </ChildContent>
+            </MudMenu>
+            <MudSpacer />
+            <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopCenter">
+                <ActivatorContent>
+                    <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
+                        <MudImage ObjectFit="ObjectFit.Cover" Height="45" Width="45" Src="https://www.mudblazor.com/images/castle.jpg" Alt="Örebro Slott" Elevation="0" Class="rounded-circle" />
+                    </MudChip>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Href="/profile">
+                        <MudIcon Icon="@Icons.Material.Outlined.SupervisedUserCircle" Color="Color.Default" />
+                        @fullname
+                    </MudMenuItem>
+                    <hr class="m-0" />
+                    <MudMenuItem>Danh sách Chuyến Xe</MudMenuItem>
+                </ChildContent>
+            </MudMenu>
+        </MudAppBar>
 
-</MudContainer>
+    </MudContainer>
+}
+else if (userRole == "3")
+{
+    <MudContainer Class="pt-5 pb-5">
+        <MudAppBar Elevation="1">
+            <MudLink Typo="Typo.h4" Href="/" Underline="Underline.None">
+                <MudText Typo="Typo.h4" Class="fw-bold text-white">BOXCARS</MudText>
+            </MudLink>
+
+            <MudSpacer />
+
+
+            <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+                <ActivatorContent>
+                    <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
+                        <MudText Class="text-uppercase">
+                            <MudIcon Icon="@Icons.Material.Outlined.CalendarViewDay" Size="Size.Medium" Class="mb-1" />
+                            Lịch tài xế
+                            <MudIcon Icon="@Icons.Material.Outlined.KeyboardArrowDown" Size="Size.Small" Class="mb-1" />
+                        </MudText>
+                    </MudChip>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Href="@($"/notifications")">Lịch tài xế</MudMenuItem>
+
+                </ChildContent>
+            </MudMenu>
+
+
+            <MudSpacer />
+            <MudMenu Style="width:fit-content" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopCenter">
+                <ActivatorContent>
+                    <MudChip Style="@($"background:none; color:{Colors.Shades.White};")" T="string">
+                        <MudImage ObjectFit="ObjectFit.Cover" Height="45" Width="45" Src="https://www.mudblazor.com/images/castle.jpg" Alt="Örebro Slott" Elevation="0" Class="rounded-circle" />
+                    </MudChip>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Href="/profile">
+                        <MudIcon Icon="@Icons.Material.Outlined.SupervisedUserCircle" Color="Color.Default" />
+                        @fullname
+                    </MudMenuItem>
+                    <hr class="m-0" />
+                    <MudMenuItem>Danh sách Chuyến Xe</MudMenuItem>
+                </ChildContent>
+            </MudMenu>
+        </MudAppBar>
+
+    </MudContainer>
+}
 
 
 <script>
@@ -161,7 +211,7 @@
 
         driverPages = new List<string>
         {
-            "/profile",
+            "/notifications"
         };
 
         restrictedPages = new List<string>
@@ -176,43 +226,31 @@
 
     private void CheckRole()
     {
-      
+
         switch (userRole)
         {
             case "1":  // Admin
-                if (adminPages.Contains(currentPage))
-                {
-                    isLoading = false;
-                }
-                else
-                {
-                    isLoading = false;
-                }
-                break;
-
-            case "2":  // Tài xế
-                if (restrictedPages.Contains(currentPage))
-                {
-                    isLoading = false;
-                }
-                else
+                if (!adminPages.Contains(currentPage))
                 {
                     isLoading = true;
                 }
-                break;
-
-            case "3":  
-                if (driverPages.Contains(currentPage))
+                else
                 {
                     isLoading = false;
                 }
+                break;
+            case "3":
+                if (!driverPages.Contains(currentPage))
+                {
+                    isLoading = true;
+                }
                 else
                 {
-                    isLoading = true;                
+                    isLoading = false;
                 }
                 break;
             default:
-                isLoading = false;               
+                isLoading = false;
                 break;
         }
     }
@@ -241,7 +279,7 @@
                             fullname = fullnameClaim.Value;
                             userRole = roleClaim.Value;
                             Console.WriteLine(userRole + "quyền");
-                           
+
                         }
                     }
                 }
@@ -250,6 +288,7 @@
                     Console.WriteLine($"Lỗi khi giải mã token: {ex.Message}");
                 }
             }
+            CheckRole();
             StateHasChanged();
         }
     }
