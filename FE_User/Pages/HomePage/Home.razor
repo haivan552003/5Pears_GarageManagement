@@ -133,12 +133,12 @@
                         </MudItem>
                         <MudItem xs="12" sm="6" md="3">
                             <MudStack>
-                                <MudDatePicker Label="Ngày đi" Variant="Variant.Outlined" @bind-Date="searchRequest.date_start" RequiredError="Vui lòng chọn thông tin" />
+                                <MudDatePicker Label="Ngày đi" Variant="Variant.Outlined" @bind-Date="searchRequest.date_start" MinDate="@DateTime.Today" RequiredError="Vui lòng chọn thông tin" />
                             </MudStack>
                         </MudItem>
                         <MudItem xs="12" sm="6" md="3">
                             <MudStack>
-                                <MudDatePicker Label="Ngày về" Variant="Variant.Outlined" @bind-Date="searchRequest.date_return" RequiredError="Vui lòng chọn thông tin" />
+                                <MudDatePicker Label="Ngày về" Variant="Variant.Outlined" @bind-Date="searchRequest.date_return" MinDate="@(searchRequest.date_start ?? DateTime.Today)" RequiredError=" Vui lòng chọn thông tin" />
                             </MudStack>
                         </MudItem>
                     }
@@ -177,7 +177,7 @@
                         </MudItem>
                         <MudItem xs="12" sm="6" md="4">
                             <MudStack>
-                                <MudDatePicker Label="Ngày đi" Variant="Variant.Outlined" @bind-Date="searchRequest.date_start" RequiredError="Vui lòng chọn thông tin" />
+                                <MudDatePicker Label="Ngày đi" Variant="Variant.Outlined" @bind-Date="searchRequest.date_start" MinDate="@DateTime.Today" RequiredError="Vui lòng chọn thông tin" />
                             </MudStack>
                         </MudItem>
                     }
