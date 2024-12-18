@@ -1,215 +1,210 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Vonage;
-using Vonage.Request;
-using Vonage.Verify;
-using Dapper;
-using Microsoft.Data.SqlClient;
-using System;
-using System.Data;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.Extensions.Caching.Memory;
+﻿//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.Extensions.Configuration;
+//using Microsoft.Extensions.Logging;
+//using Vonage;
+//using Vonage.Request;
+//using Vonage.Verify;
+//using Dapper;
+//using Microsoft.Data.SqlClient;
+//using System;
+//using System.Data;
+//using System.Threading.Tasks;
+//using System.Collections.Generic;
+//using Microsoft.Extensions.Caching.Memory;
+//using static System.Net.WebRequestMethods;
 
-namespace BE_API.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PhoneNumberController : ControllerBase
-    {
-        private readonly IMemoryCache _cache;
+//namespace BE_API.Controllers
+//{
+//    [Route("api/[controller]")]
+//    [ApiController]
+//    public class PhoneNumberController : ControllerBase
+//    {
+//        private readonly IMemoryCache _cache;
 
-        private readonly string _apiKey;
-        private readonly string _apiSecret;
-        private readonly string _connectionString;
-        private readonly ILogger<PhoneNumberController> _logger;
-        private static readonly Dictionary<string, string> _requestIdCache = new();
+//        private readonly string _apiKey;
+//        private readonly string _apiSecret;
+//        private readonly string _connectionString;
+//        private readonly ILogger<PhoneNumberController> _logger;
+//        private static readonly Dictionary<string, string> _requestIdCache = new();
 
 
-        public PhoneNumberController(IConfiguration configuration, ILogger<PhoneNumberController> logger, IMemoryCache memoryCache)
-        {
-            _apiKey = configuration["Vonage:ApiKey"];
-            _apiSecret = configuration["Vonage:ApiSecret"];
-            _connectionString = configuration.GetConnectionString("SqlConnection");
-            _logger = logger;
-            _cache = memoryCache;
-        }
+//        public PhoneNumberController(IConfiguration configuration, ILogger<PhoneNumberController> logger, IMemoryCache memoryCache)
+//        {
+//            _apiKey = configuration["Vonage:ApiKey"];
+//            _apiSecret = configuration["Vonage:ApiSecret"];
+//            _connectionString = configuration.GetConnectionString("SqlConnection");
+//            _logger = logger;
+//            _cache = memoryCache;
+//        }
 
-        [HttpPost("send-otp")]
-        public async Task<IActionResult> SendOtp([FromBody] SendOtpRequest request)
-        {
-            if (string.IsNullOrWhiteSpace(request.PhoneNumber))
-            {
-                return BadRequest("Số điện thoại không hợp lệ.");
-            }
+//        [HttpPost("send-otp")]
+//        public async Task<IActionResult> SendOtp([FromBody] SendOtpRequest request)
+//        {
+//            if (string.IsNullOrWhiteSpace(request.PhoneNumber))
+//            {
+//                return BadRequest("Số điện thoại không hợp lệ.");
+//            }
 
-            try
-            {
-                var credentials = Credentials.FromApiKeyAndSecret(_apiKey, _apiSecret);
-                var client = new VonageClient(credentials);
+//            try
+//            {
+//                var credentials = Credentials.FromApiKeyAndSecret(_apiKey, _apiSecret);
+//                var client = new VonageClient(credentials);
 
-                var otp = GenerateRandomOtp();  // Tạo mã OTP ngẫu nhiên
+//                var verifyRequest = new VerifyRequest()
+//                {
+//                    Brand = "Vonage",
+//                    Number = request.PhoneNumber
+//                };
+//                var response = client.VerifyClient.VerifyRequest(verifyRequest);
 
-                var verifyRequest = new VerifyRequest()
-                {
-                    Brand = "Vonage",
-                    Number = request.PhoneNumber
-                };
-                var response = client.VerifyClient.VerifyRequest(verifyRequest);
+//                if (response.Status == "0")
+//                {
+//                    _cache.Set(request.PhoneNumber, response.RequestId, TimeSpan.FromMinutes(5));
 
-                if (response.Status == "0")
-                {
-                    // Lưu RequestId vào Cache
-                    _cache.Set(request.PhoneNumber, response.RequestId, TimeSpan.FromMinutes(5));
 
-                    // Gọi hàm lưu số điện thoại và OTP vào CSDL
-                    await AddPhoneNumberToDatabase(request.PhoneNumber, otp);  // Sử dụng OTP ngẫu nhiên ở đây
-
-                    return Ok(new { Message = "Mã OTP đã được gửi qua SMS." });
-                }
-                else
-                {
-                    _logger.LogError($"Gửi OTP không thành công: {response.ErrorText}");
-                    return StatusCode(500, $"Lỗi: {response.ErrorText}");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi khi gửi OTP");
-                return StatusCode(500, "Lỗi khi gửi OTP. Vui lòng thử lại sau.");
-            }
-        }
+//                    return Ok(new { Message = "Mã OTP đã được gửi qua SMS." });
+//                }
+//                else
+//                {
+//                    _logger.LogError($"Gửi OTP không thành công: {response.ErrorText}");
+//                    return StatusCode(500, $"Lỗi: {response.ErrorText}");
+//                }
+//            }
+//            catch (Exception ex)
+//            {
+//                _logger.LogError(ex, "Lỗi khi gửi OTP");
+//                return StatusCode(500, "Lỗi khi gửi OTP. Vui lòng thử lại sau.");
+//            }
+//        }
 
 
 
-        // Tạo mã OTP ngẫu nhiên
-        private string GenerateRandomOtp()
-        {
-            var random = new Random();
-            return random.Next(1000, 9999).ToString();
-        }
-
-
-        // Xác minh OTP
-        [HttpPost("verify-otp")]
-        public IActionResult VerifyOtp([FromBody] VerifyOtpRequest1 request)
-        {
-            if (string.IsNullOrWhiteSpace(request.PhoneNumber))
-            {
-                return BadRequest("Số điện thoại là bắt buộc.");
-            }
-
-            try
-            {
-                // Truy xuất RequestId từ Cache
-                if (!_cache.TryGetValue(request.PhoneNumber, out string requestId) || string.IsNullOrWhiteSpace(requestId))
-                {
-                    return BadRequest("RequestId không tồn tại hoặc đã hết hạn.");
-                }
-
-                var credentials = Credentials.FromApiKeyAndSecret(_apiKey, _apiSecret);
-                var client = new VonageClient(credentials);
-
-                var verifyCheckRequest = new VerifyCheckRequest()
-                {
-                    RequestId = requestId,
-                    Code = request.Otp
-                };
-                var response = client.VerifyClient.VerifyCheck(verifyCheckRequest);
-
-                if (response.Status == "0")
-                {
-                    return Ok("Số điện thoại đã được xác minh và lưu thành công.");
-                }
-                else
-                {
-                    return BadRequest($"Lỗi: {response.ErrorText}");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi khi xác minh OTP");
-                return StatusCode(500, "Lỗi khi xác minh OTP. Vui lòng thử lại sau.");
-            }
-        }
-
-
-        // Hủy yêu cầu xác minh
-        [HttpPost("cancel-verify-request")]
-        public IActionResult CancelVerifyRequest([FromBody] CancelVerifyRequest request)
-        {
-            if (string.IsNullOrWhiteSpace(request.RequestId))
-            {
-                return BadRequest("RequestId là bắt buộc.");
-            }
-
-            try
-            {
-                var credentials = Credentials.FromApiKeyAndSecret(_apiKey, _apiSecret);
-                var client = new VonageClient(credentials);
-
-                var verifyControlRequest = new VerifyControlRequest()
-                {
-                    RequestId = request.RequestId,
-                    Cmd = "cancel"
-                };
-                var response = client.VerifyClient.VerifyControl(verifyControlRequest);
-
-                if (response.Status == "0")
-                {
-                    return Ok("Yêu cầu xác minh đã được hủy.");
-                }
-                else
-                {
-                    return BadRequest($"Lỗi: {response.ErrorText}");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi khi hủy yêu cầu xác minh");
-                return StatusCode(500, "Lỗi khi hủy yêu cầu xác minh. Vui lòng thử lại sau.");
-            }
-        }
-
-        private async Task AddPhoneNumberToDatabase(string phoneNumber, string otp)
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    await connection.OpenAsync();
-                    var parameters = new DynamicParameters();
-                    parameters.Add("@phone_number", phoneNumber, DbType.String);
-                    parameters.Add("@password", otp, DbType.String); // Lưu mã OTP làm password
-
-                    await connection.ExecuteAsync("sp_add_phone_number", parameters, commandType: CommandType.StoredProcedure);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Lỗi khi lưu số điện thoại vào cơ sở dữ liệu");
-                    throw;
-                }
-            }
-        }
 
 
 
-    }
+//        // Xác minh OTP
+//        [HttpPost("verify-otp")]
+//        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest1 request)
+//        {
+//            if (string.IsNullOrWhiteSpace(request.PhoneNumber))
+//            {
+//                return BadRequest("Số điện thoại là bắt buộc.");
+//            }
 
-    public class SendOtpRequest
-    {
-        public string PhoneNumber { get; set; }
-    }
+//            try
+//            {
+//                // Truy xuất RequestId từ Cache
+//                if (!_cache.TryGetValue(request.PhoneNumber, out string requestId) || string.IsNullOrWhiteSpace(requestId))
+//                {
+//                    return BadRequest("RequestId không tồn tại hoặc đã hết hạn.");
+//                }
 
-    public class VerifyOtpRequest1
-    {
-        public string PhoneNumber { get; set; }
-        public string Otp { get; set; }
-    }
+//                var credentials = Credentials.FromApiKeyAndSecret(_apiKey, _apiSecret);
+//                var client = new VonageClient(credentials);
 
-    public class CancelVerifyRequest
-    {
-        public string RequestId { get; set; }
-    }
-}
+//                var verifyCheckRequest = new VerifyCheckRequest()
+//                {
+//                    RequestId = requestId,
+//                    Code = request.Otp
+//                };
+//                var response = client.VerifyClient.VerifyCheck(verifyCheckRequest);
+//                await AddPhoneNumberToDatabase(request.PhoneNumber, request.Otp);
+
+
+//                if (response.Status == "0")
+//                {
+//                    return Ok("Số điện thoại đã được xác minh và lưu thành công.");
+//                }
+//                else
+//                {
+//                    return BadRequest($"Lỗi: {response.ErrorText}");
+//                }
+//            }
+//            catch (Exception ex)
+//            {
+//                _logger.LogError(ex, "Lỗi khi xác minh OTP");
+//                return StatusCode(500, "Lỗi khi xác minh OTP. Vui lòng thử lại sau.");
+//            }
+//        }
+
+
+//        // Hủy yêu cầu xác minh
+//        [HttpPost("cancel-verify-request")]
+//        public IActionResult CancelVerifyRequest([FromBody] CancelVerifyRequest request)
+//        {
+//            if (string.IsNullOrWhiteSpace(request.RequestId))
+//            {
+//                return BadRequest("RequestId là bắt buộc.");
+//            }
+
+//            try
+//            {
+//                var credentials = Credentials.FromApiKeyAndSecret(_apiKey, _apiSecret);
+//                var client = new VonageClient(credentials);
+
+//                var verifyControlRequest = new VerifyControlRequest()
+//                {
+//                    RequestId = request.RequestId,
+//                    Cmd = "cancel"
+//                };
+//                var response = client.VerifyClient.VerifyControl(verifyControlRequest);
+
+//                if (response.Status == "0")
+//                {
+//                    return Ok("Yêu cầu xác minh đã được hủy.");
+//                }
+//                else
+//                {
+//                    return BadRequest($"Lỗi: {response.ErrorText}");
+//                }
+//            }
+//            catch (Exception ex)
+//            {
+//                _logger.LogError(ex, "Lỗi khi hủy yêu cầu xác minh");
+//                return StatusCode(500, "Lỗi khi hủy yêu cầu xác minh. Vui lòng thử lại sau.");
+//            }
+//        }
+
+//        private async Task AddPhoneNumberToDatabase(string phoneNumber, string otp)
+//        {
+//            using (var connection = new SqlConnection(_connectionString))
+//            {
+//                try
+//                {
+//                    await connection.OpenAsync();
+//                    //string hashedOtp = BCrypt.Net.BCrypt.HashPassword(otp);
+
+//                    var parameters = new DynamicParameters();
+//                    parameters.Add("@phoneNumber", phoneNumber, DbType.String);
+//                    parameters.Add("@otp", otp, DbType.String);
+
+//                    await connection.ExecuteAsync("sp_add_phone", parameters, commandType: CommandType.StoredProcedure);
+//                }
+//                catch (Exception ex)
+//                {
+//                    _logger.LogError(ex, "Lỗi khi lưu số điện thoại vào cơ sở dữ liệu");
+//                    throw;
+//                }
+//            }
+//        }
+
+
+
+//    }
+
+//    public class SendOtpRequest
+//    {
+//        public string PhoneNumber { get; set; }
+//    }
+
+//    public class VerifyOtpRequest1
+//    {
+//        public string PhoneNumber { get; set; }
+//        public string Otp { get; set; }
+//    }
+
+//    public class CancelVerifyRequest
+//    {
+//        public string RequestId { get; set; }
+//    }
+//}
