@@ -52,8 +52,7 @@
                 <ChildContent>
                     <MudMenuItem Href="@($"/guesttrip")">Hóa đơn Đặt vé</MudMenuItem>
                     <MudMenuItem Href="@($"/guestcar")">Hóa đơn Xe</MudMenuItem>
-                    <MudMenuItem Href="@($"/guestcar")">Hóa đơn Thuê Tài Xế</MudMenuItem>
-                    <MudMenuItem Href="@($"/guestcar")">Hóa đơn Thuê Tài Xế & Xe</MudMenuItem>
+                    <MudMenuItem Href="@($"/guestcardriver")">Hóa đơn Thuê Tài Xế & Xe</MudMenuItem>
                 </ChildContent>
             </MudMenu>
 
@@ -116,6 +115,7 @@
                         <MudIcon Icon="@Icons.Material.Outlined.SupervisedUserCircle" Color="Color.Default" />
                         @fullname
                     </MudMenuItem>
+                    <MudNavLink Class="mb-5" OnClick="Logout" Icon="@Icons.Material.Filled.Logout">Đăng xuất</MudNavLink>
                 </ChildContent>
             </MudMenu>
         </MudAppBar>
@@ -238,7 +238,8 @@ else if (userRole == "3")
             "/getcartypes", "/getcarbrand", "/guesttrip", "/guestcar",
             "/trip-statistics", "/driver-statistics", "/car-statistics",
             "/profile",
-            "/getnews", "/getbanner", "/index", "/ocrcar"
+            "/getnews", "/getbanner", "/index", "/ocrcar", "/guestcardriver",
+            "/checkout"
         };
 
         driverPages = new List<string>
@@ -264,7 +265,7 @@ else if (userRole == "3")
             case "1":  // Admin
                 if (!adminPages.Contains(currentPage))
                 {
-                    isLoading = true;
+                    isLoading = false;
                 }
                 else
                 {
@@ -327,6 +328,6 @@ else if (userRole == "3")
     {
         await js.InvokeVoidAsync("localStorage.removeItem", "authToken");
 
-        NavigationManager.NavigateTo("/login", true);
+        NavigationManager.NavigateTo("/", true);
     }
 }

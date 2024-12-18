@@ -380,6 +380,8 @@ else
             statusText = "Đã hoàn tiền";
         }
         await js.InvokeVoidAsync("triggerSelectClick");
+        isLoadingProgress = false;
+        StateHasChanged();
     }
 
     private string GetLastSegment(string url)
