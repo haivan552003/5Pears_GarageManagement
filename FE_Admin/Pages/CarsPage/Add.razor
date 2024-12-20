@@ -131,19 +131,16 @@ else
                                          Validation="@(new Func<float, string>(ValidateInsuranceFee))" />
                     </MudItem>
                     <MudItem xs="3">
-                       <MudSelect Variant="Variant.Outlined"
-            Value="newCar.is_retail"
-            ValueChanged="@(async (byte value) => await OnCarTypeChanged(value))"
-            Label="Loại xe"
-            Required="true"
-            Placeholder="Loại xe"
-            RequiredError="Loại xe là bắt buộc">
-     <MudSelectItem Value="@((byte)0)">Xe dịch vụ</MudSelectItem>
-     <MudSelectItem Value="@((byte)1)">Xe cho thuê</MudSelectItem>
- </MudSelect>
-                    </MudItem>
-                    <MudItem xs="3">
-                        <MudTextField Variant="Variant.Outlined" @bind-Value="newCar.location_car" Label="Vị trí xe" Placeholder="Nhập vị trí xe" ReadOnly />
+                        <MudSelect Variant="Variant.Outlined"
+                                   Value="newCar.is_retail"
+                                   ValueChanged="@(async (byte value) => await OnCarTypeChanged(value))"
+                                   Label="Loại xe"
+                                   Required="true"
+                                   Placeholder="Loại xe"
+                                   RequiredError="Loại xe là bắt buộc">
+                            <MudSelectItem Value="@((byte)0)">Xe dịch vụ</MudSelectItem>
+                            <MudSelectItem Value="@((byte)1)">Xe cho thuê</MudSelectItem>
+                        </MudSelect>
                     </MudItem>
                     <MudItem xs="3">
                         <MudNumericField Variant="Variant.Outlined"
@@ -161,10 +158,10 @@ else
                                    Required="true"
                                    RequiredError="Số ghế là bắt buộc"
                                    Variant="Variant.Outlined">
-                           @foreach (var seatOption in availableSeatOptions)
-{
-    <MudSelectItem Value="@seatOption">@seatOption chỗ</MudSelectItem>
-}
+                            @foreach (var seatOption in availableSeatOptions)
+                            {
+                                <MudSelectItem Value="@seatOption">@seatOption chỗ</MudSelectItem>
+                            }
                         </MudSelect>
                     </MudItem>
                     <MudItem xs="12">
@@ -355,7 +352,7 @@ else
         {
             try
             {
-                var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Cars/PostCars/", newCar);            
+                var response = await httpClient.PostAsJsonAsync("http://localhost:49922/api/Cars/PostCars/", newCar);
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
@@ -363,7 +360,7 @@ else
 
                     if (addedCar != null && addedCar.id > 0)
                     {
-                        if ( newCar.number_seat > 0)
+                        if (newCar.number_seat > 0)
                         {
                             try
                             {
@@ -397,7 +394,7 @@ else
                         // vehicle_registration_start = null;
                         // vehicle_registration_end = null;
                         // year_production = null;
-                      
+
                         // StateHasChanged();
                     }
                     Snackbar.Add("Thêm xe thành công", Severity.Success);
@@ -434,7 +431,7 @@ else
                 col = 1
             });
 
-      
+
         return seats;
     }
 
@@ -557,7 +554,7 @@ else
         {
             yield return "Vui lòng điền mô tả.";
         }
-        else if (description.Length < 2 || description.Length > 250)
+        else if (description.Length < 2 || description.Length > 3999)
         {
             yield return "Mô tả không hợp lệ.";
         }

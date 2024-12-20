@@ -64,7 +64,7 @@ else
                             <PropertyColumn T="location" Style="width: 80%;" TProperty="string" Property="x => x.name" SortBy="@_sortBy" Class="fw-bold" Title="Địa Chỉ" />
                             <PropertyColumn T="location" Style="width: 80%;" TProperty="string" Property="x => x.address" SortBy="@_sortBy" Class="fw-bold" Title="Thành Phố" />
                             <PropertyColumn T="location" Style="width: 80%;" TProperty="string" Property="x => x.phone_number" SortBy="@_sortBy" Class="fw-bold" Title="Số Điện Thoại" />
-                            <PropertyColumn T="location" Style="width: 80%;" TProperty="string" Property="x => x.location_code" SortBy="@_sortBy" Class="fw-bold" Title="Mã Địa Chỉ" />
+                            @* <PropertyColumn T="location" Style="width: 80%;" TProperty="string" Property="x => x.location_code" SortBy="@_sortBy" Class="fw-bold" Title="Mã Địa Chỉ" /> *@
                             <TemplateColumn T="location" Style="width: 80%;" Class="fw-bold" Title="Trạng Thái">
                                 <CellTemplate Context="element">
                                     @if (element.Item.status)

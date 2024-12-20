@@ -88,17 +88,6 @@ else
                                     </MudItem>
 
                                     <MudItem xs="12" sm="6">
-                                        <MudTextField @bind-Value="newEmployee.citizen_identity_number"
-                                                      Label="Số CCCD"
-                                                      Required="true"
-                                                      RequiredError="Vui lòng nhập số CCCD"
-                                                      Variant="Variant.Outlined"
-                                                      Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidateCCCD))"
-                                                      Immediate="true"
-                                                      Placeholder="Số CCCD" />
-                                    </MudItem>
-
-                                    <MudItem xs="12" sm="6">
                                         <MudDatePicker @bind-Date="birthdayDate"
                                                        Label="Ngày sinh"
                                                        Required="true"
@@ -109,6 +98,19 @@ else
                                                        MinDate="@DateTime.Now.AddYears(-65)"
                                                        Placeholder="Ngày Sinh" />
                                     </MudItem>
+
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField @bind-Value="newEmployee.citizen_identity_number"
+                                                      Label="Số CCCD"
+                                                      Required="true"
+                                                      RequiredError="Vui lòng nhập số CCCD"
+                                                      Variant="Variant.Outlined"
+                                                      Validation="@(new Func<string, Task<IEnumerable<string>>>(EmployeeValidateCCCD))"
+                                                      Immediate="true"
+                                                      Placeholder="Số CCCD" />
+                                    </MudItem>
+
+                             
 
                                     <MudItem xs="12" sm="6">
                                         <MudTextField @bind-Value="newEmployee.password"
@@ -134,13 +136,11 @@ else
                                                    Placeholder="Trạng thái">
                                             <MudSelectItem Value="true">
                                                 <div class="d-flex align-center">
-                                                    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="mr-2" />
                                                     Đang hoạt động
                                                 </div>
                                             </MudSelectItem>
                                             <MudSelectItem Value="false">
                                                 <div class="d-flex align-center">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Cancel" Color="Color.Error" Class="mr-2" />
                                                     Ngưng hoạt động
                                                 </div>
                                             </MudSelectItem>
@@ -181,7 +181,7 @@ else
                                                        StartIcon="@Icons.Material.Filled.Save"
                                                        Color="Color.Primary"
                                                        OnClick="AddEmp">
-                                                <MudText>Lưu thông tin</MudText>
+                                                <MudText>Lưu</MudText>
                                             </MudButton>
                                         </MudPaper>
                                     </MudItem>
